@@ -1,7 +1,7 @@
-As of v0.5, metadata is provided to the models through the ```dbt_project.yml``` file instead of being specified in
+dbtvault is metadata driven. YAML variables are provided to macros via the ```dbt_project.yml``` file instead of being specified in
 the models themselves. This keeps the metadata all in one place and simplifies the use of dbtvault.
 
-For further detail of the below table templates, see: [table templates](macros.md#table-templates).
+For further detail about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
 !!! note
     In v0.5, only source column metadata is necessary, we have removed target column metadata.  

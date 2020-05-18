@@ -1,13 +1,16 @@
 ## Introduction
 
-!!! info
-    The intent behind this demonstration is to give you further understanding of how 
-    dbt and dbtvault could be used in a realistic environment. 
-    For a more detailed guide on how to create your own Data Vault using dbtvault, 
-    with a simplified example, take a look at our [walk-through](../walkthrough/wt_getting_started.md) guide.
+!!! warning
+    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
 
-In this section we teach you how to use dbtvault by example. We guide you through developing a 
+In this section we demonstrate dbtvault by example. We guide you through developing a 
 Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbtvault models.
+
+This demonstration was developed to give users a further understanding of how dbt and dbtvault could be used to build
+a Data Vault using an actual data set.  
+
+For a more detailed guide on how to use the provided macros create your own Data Vault using dbtvault, 
+with a simplified example, take a look at our [walk-through](../walkthrough/wt_getting_started.md) guide.
 
 We will:
 
@@ -44,7 +47,7 @@ be the only necessary requirements you will need to get started with the example
 
 Please be aware that table structures are simulated from the TPC-H dataset. The TPC-H dataset is a static view of data. 
 
-Only a subset of the data contains dates which allows us to simulate daily feeds. The ```v_stg_orders``` orders view is 
+Only a subset of the data contains dates which allow us to simulate daily feeds. The ```v_stg_orders``` orders view is 
 filtered by date, unfortunately the ```v_stg_inventory``` view cannot be filtered by date, so it ends up being a feed of 
 the entire contents of the view each cycle. 
 
@@ -55,5 +58,5 @@ As the dataset increases in size, e.g if you run with a larger TPC-H dataset (10
 processing the entire inventory dataset each cycle, which results in unrepresentative load cycle times.
 
 We have minimised the impact of this by adding a join in the raw inventory table on the raw orders table to ensure only 
-inventory items which are included in orders are fed into raw staging. The outcome is the same, but it significantly 
-optimises the loading process and thereby reduces load time.
+inventory items which are included in orders are loaded into the raw staging layer. The outcome is the same, but it 
+significantly optimises the loading process and thereby reduces load time.
