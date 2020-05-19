@@ -10,17 +10,17 @@ order number (can be multi-column).
 3. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
 
 4. The source for the record, a code identifying where the data comes from. 
-(i.e. ```1``` from the [previous section](wt_staging.md#adding-the-footer), which is the code fo stg_customer)
+(i.e. `1` from the [previous section](wt_staging.md#adding-the-footer), which is the code fo stg_customer)
 
 ### Configuring hub models
 
-Create a new dbt model as before. We'll call this one ```hub_customer```. 
+Create a new dbt model as before. We'll call this one `hub_customer`. 
 
 Hubs should use the incremental materialization, as we load and add new records to the existing data set. 
 
 We recommend setting the incremental materialization on all of your hubs using the `dbt_project.yml` file:
 
-```dbt_project.yml```
+`dbt_project.yml`
 ```yaml
 models:
   my_dbtvault_project:
@@ -51,7 +51,7 @@ Let's look at the metadata we need to provide to the [hub](../macros.md#hub) mac
 The first piece of metadata we need is the source table. This step is easy, as in this example we created the 
 staging layer ourselves. All we need to do is provide the name of the model for the stage table as a string in our metadata as follows:
 
-```dbt_project.yml```
+`dbt_project.yml`
 ```yaml
 hub_customer:
   vars:
@@ -62,18 +62,18 @@ hub_customer:
 #### Source columns
 
 Next, we define the columns which we would like to bring from the source.
-Using our knowledge of what columns we need in our  ```hub_customer``` table, we can identify columns in our
+Using our knowledge of what columns we need in our  `hub_customer` table, we can identify columns in our
 staging layer which we will then use to form our hub:
 
-1. A primary key, which is a hashed natural key. The ```CUSTOMER_PK``` we created earlier in the [staging](wt_staging.md) 
-section will be used for ```hub_customer```.
-2. The natural key, ```CUSTOMER_ID``` which we added using the [add_columns](../macros.md#add_columns) macro.
-3. A load date timestamp, which is present in the staging layer as ```LOADDATE``` 
-4. A ```SOURCE``` column.
+1. A primary key, which is a hashed natural key. The `CUSTOMER_PK` we created earlier in the [staging](wt_staging.md) 
+section will be used for `hub_customer`.
+2. The natural key, `CUSTOMER_ID` which we added using the [stage](../macros.md#stage) macro.
+3. A load date timestamp, which is present in the staging layer as `LOADDATE`
+4. A `SOURCE` column.
 
-We can now add this metadata to the ```dbt_project.yml``` file:
+We can now add this metadata to the `dbt_project.yml` file:
 
-```dbt_project.yml```
+`dbt_project.yml`
 ```yaml hl_lines="4 5 6 7"
 hub_customer:
   vars:
@@ -88,24 +88,24 @@ hub_customer:
 
 Now all that is needed is to create your hub:
 
-```hub_customer.sql```
+`hub_customer.sql`
 ```sql hl_lines="3 4"
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source'))              }}
+                var('src_source'), var('source_model'))        }}
 ```
 
 Here we have added a call to the [hub](../macros.md#hub) macro, referencing our variables declared in the 
-```dbt_project.yml``` file.
+`dbt_project.yml` file.
 
 ### Running dbt
 
-With our model complete, we can run dbt to create our ```hub_customer``` hub.
+With our model complete, we can run dbt to create our `hub_customer` hub.
 
-```dbt run --models +hub_customer```
+`dbt run --models +hub_customer`
 
 !!! tip
     Using the '+' in the command above will get dbt to compile and run all parent dependencies for the model we are 
-    running, in this case, it will re-create the staging layer from the ```stg_customer_hashed``` model if needed. 
+    running, in this case, it will re-create the staging layer from the `stg_customer_hashed` model if needed. 
     dbt will also create our hub if it doesn't already exist.
     
 And our table will look like this:
@@ -128,19 +128,19 @@ The data can and should be combined because these records have a related key, an
 We can union the tables on that key, and create a hub containing a complete record set.
 
 We'll need to have a [staging model](wt_staging.md) for each of the sources involved, 
-and provide them as a list of strings in the ```dbt_project.yml``` file as shown below.
+and provide them as a list of strings in the `dbt_project.yml` file as shown below.
 
 !!! note
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
-    via the [add_columns](../macros.md#add_columns) macro.
+    via the [stage](../macros.md#stage) macro.
 
 The macro needed to create a union hub is identical to a single-source hub, we just provide a 
 list of sources rather than a single source in the metadata, the [hub](../macros.md#hub) macro 
 will handle the rest. 
 
-```dbt_project.yml```
-```yaml hl_lines="3 4 5"      
+`dbt_project.yml`
+```yaml hl_lines="3 4 5"
 hub_nation:
   vars:
     source:
