@@ -32,6 +32,10 @@ Generates sql to build a hub table using the provided metadata in your `dbt_proj
                 var('src_source'), var('source_model'))        }}
 ```
 
+#### Example YAML Metadata
+
+[See examples](metadata.md#hubs)
+
 #### Example Output
 
 ```mysql tab='Single-Source'
@@ -100,6 +104,10 @@ Generates sql to build a link table using the provided metadata in your `dbt_pro
 {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
                  var('src_source'), var('source_model'))        }}
 ```                                                  
+
+#### Example YAML Metadata
+
+[See examples](metadata.md#links)
 
 #### Example Output
 
@@ -178,6 +186,10 @@ Generates sql to build a satellite table using the provided metadata in your `db
                 var('source_moddel'))                                   }}
 ```
 
+#### Example YAML Metadata
+
+[See examples](metadata.md#satellites)
+
 #### Example Output
 
 ```mysql
@@ -245,6 +257,10 @@ Generates sql to build a transactional link table using the provided metadata in
                    var('source_model'))                                }}
 ```
 
+#### Example YAML Metadata
+
+[See examples](metadata.md#transactional-links-non-historized-links)
+
 #### Example Output
 
 ```mysql
@@ -284,6 +300,72 @@ These macros are intended for use in the staging layer.
 ___
 
 ### stage
+
+Generates sql to build a staging area using the provided metadata in your `dbt_project.yml`.
+
+#### Parameters
+
+| Parameter              | Description                                       | Type           | Default    | Required?                                                          |
+| ---------------------- | ------------------------------------------------- | -------------- | ---------- | ------------------------------------------------------------------ |
+| include_source_columns | If true, select all columns in the `source_model` | Boolean        | true       | <i class="md-icon" style="color: red">clear</i>                    |
+| source_model           | Staging model name                                | String/Mapping | N/A        | <i class="md-icon" alt="Yes" style="color: green">check_circle</i> |
+| hashed_columns         | Mappings of hashes to their component columns     | String/Mapping | none       | <i class="md-icon" style="color: red">clear</i>                    |
+| derived_columns        | Mappings of constants to their source columns     | String/Mapping | none       | <i class="md-icon" style="color: red">clear</i>                    |
+
+#### Usage
+
+``` sql
+{{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
+                  source_model=var('source_model', none), 
+                  hashed_columns=var('hashed_columns', none), 
+                  derived_columns=var('derived_columns', none)) }}
+```
+
+#### Example YAML Metadata
+
+[See examples](metadata.md#staging)
+
+#### Example Output
+
+```sql tab='All variables'
+
+SELECT
+
+CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+CAST(MD5_BINARY(CONCAT(
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
+AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
+CAST(MD5_BINARY(CONCAT(
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
+AS BINARY(16)) AS CUSTOMER_HASHDIFF,
+
+BOOKING_FK,
+ORDER_FK,
+CUSTOMER_PK,
+CUSTOMER_ID,
+LOADDATE,
+RECORD_SOURCE,
+CUSTOMER_DOB,
+CUSTOMER_NAME,
+NATIONALITY,
+PHONE,
+TEST_COLUMN_2,
+TEST_COLUMN_3,
+TEST_COLUMN_4,
+TEST_COLUMN_5,
+TEST_COLUMN_6,
+TEST_COLUMN_7,
+TEST_COLUMN_8,
+TEST_COLUMN_9
+
+FROM DBT_VAULT.TEST.raw_source
+
+```
+___
 
 ### hash_columns
 
