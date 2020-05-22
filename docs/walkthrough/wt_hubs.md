@@ -12,13 +12,13 @@ order number (can be multi-column).
 4. The source for the record, a code identifying where the data comes from. 
 (i.e. `1` from the [previous section](wt_staging.md#adding-the-footer), which is the code fo stg_customer)
 
-### Configuring hub models
+### Setting up hub models
 
 Create a new dbt model as before. We'll call this one `hub_customer`. 
 
 Hubs should use the incremental materialization, as we load and add new records to the existing data set. 
 
-We recommend setting the incremental materialization on all of your hubs using the `dbt_project.yml` file:
+We recommend setting the `incremental` materialization on all of your hubs using the `dbt_project.yml` file:
 
 `dbt_project.yml`
 ```yaml
@@ -38,18 +38,14 @@ models:
 
 [Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
 
-!!! note "dbtvault handles it" 
-    The [hub](../macros.md#hub) deals with the Data Vault
-    2.0 standards when loading into the hub from the source. We won't need to worry about unwanted duplicates.
-    
 ### Adding the metadata
 
 Let's look at the metadata we need to provide to the [hub](../macros.md#hub) macro.
 
-#### Source table
+#### Source model
 
-The first piece of metadata we need is the source table. This step is easy, as in this example we created the 
-staging layer ourselves. All we need to do is provide the name of the model for the stage table as a string in our metadata as follows:
+The first piece of metadata we need is the source model. This step is simple, 
+all we need to do is provide the name of the model for the stage table as a string in our metadata as follows:
 
 `dbt_project.yml`
 ```yaml
@@ -77,7 +73,7 @@ We can now add this metadata to the `dbt_project.yml` file:
 ```yaml hl_lines="4 5 6 7"
 hub_customer:
   vars:
-    source: 'stg_customer_hashed'
+    source_model: 'stg_customer_hashed'
     src_pk: 'CUSTOMER_PK'
     src_nk: 'CUSTOMER_ID'
     src_ldts: 'LOADDATE'
@@ -101,12 +97,11 @@ Here we have added a call to the [hub](../macros.md#hub) macro, referencing our 
 
 With our model complete, we can run dbt to create our `hub_customer` hub.
 
-`dbt run --models +hub_customer`
+`dbt run -m +hub_customer`
 
 !!! tip
     Using the '+' in the command above will get dbt to compile and run all parent dependencies for the model we are 
-    running, in this case, it will re-create the staging layer from the `stg_customer_hashed` model if needed. 
-    dbt will also create our hub if it doesn't already exist.
+    running, in this case, it will compile and run the staging layer as well as the hub if they don't already exist. 
     
 And our table will look like this:
 
@@ -143,7 +138,7 @@ will handle the rest.
 ```yaml hl_lines="3 4 5"
 hub_nation:
   vars:
-    source:
+    source_model:
       - 'stg_customer_hashed'
       - 'v_stg_inventory'
     src_pk: 'NATION_PK'

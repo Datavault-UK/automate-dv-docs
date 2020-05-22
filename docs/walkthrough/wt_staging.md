@@ -7,18 +7,20 @@ from a source system or feed (the 'raw staging layer').
 
 There are a few conditions that need to be met for the dbtvault package to work:
 
-- All records are for the same ```load_datetime```
+- All records are for the same `load_datetime`
 - The table is truncated & loaded with data for each load cycle
 
 Instead of truncating and loading, you may also build a view over the table to filter out the right records and load 
 from the view.
 
+**We will shortly be removing this restriction**
+
 ### Let's Begin
 
-The raw staging table needs to be pre-processed to add extra columns of data to make it ready to load to the raw vault.
+The raw staging table needs to be prepared with additional columns so that we may load our raw vault.
 Specifically, we need to add primary key hashes, hashdiffs, and any implied fixed-value columns (see the diagram).
 
-We also need to ensure column names align with target hub or link tables.
+We also need to ensure column names align with target hub or link table column names.
 
 !!! info
     Hashing of primary keys is optional in Snowflake and natural keys alone can be used in place of hashing. 
@@ -27,186 +29,168 @@ We also need to ensure column names align with target hub or link tables.
     
 ## Creating the stage model
 
-To prepare our raw staging layer for loading the vault, we create a dbt model and call dbtvault staging macros with 
+To prepare our raw staging layer, we create a dbt model and call the dbtvault [stage](../macros.md#stage) macro with 
 provided metadata. 
 
-Our model will consist of:
+### Setting up staging models
 
-- a header
-- a source table declaration
-- metadata passed to staging macros.
-- a footer
+First we create a new dbt model. Our example source table is called `raw_orders`, and in this scenario contains data about customers and orders.
+We should name our staging model sensibly, for example `stg_orders_hashed.sql`, although any consistent and sensible naming convention will work.
 
-### Creating the model header
+Staging models should use the `view` materialization, though it can be a `table` depending on your requirements. 
+We recommend setting the `view` materialization on all of your staging models using the `dbt_project.yml` file:
 
-First we create a new dbt model. Our source table is called ```stg_customer``` 
-so we should name our additional layer ```stg_customer_hashed```, although any sensible naming convention will work if 
-kept consistent. In this case, we create a new file ```stg_customer_hashed.sql``` in our models folder.
-
-Let's start by adding the model header to the file:
-
-```stg_customer_hashed.sql```
-```sql
-
-{{- config(materialized='view', schema='MYSCHEMA', enabled=true, tags='staging') -}}
-
+`dbt_project.yml`
+```yaml
+models:
+  my_dbtvault_project:
+   staging:
+    materialized: view
+    tags:
+      - stage
+    stg_customer_hashed:
+      vars:
+        ...
+    stg_booking_hashed:
+      vars:
+        ...
 ```
 
-This is a simple header block. You may add further tags if necessary, for your own needs, the important parts are the 
-materialization type and the schema name:
+#### Adding the metadata
 
-- The ```materialized``` parameter defines how our table will be materialised in our database. 
-Usually we want hashing layers to be views, as they build upon the raw staging layer. 
-- The ```schema``` parameter is the name of the schema where this staging table will be created.
+Let's look at the metadata we need to provide to the [stage](../macros.md#stage) macro.
 
-### Setting the source table
+#### Source model
 
-Next we will create a variable which holds a reference to the raw source table, since we will need to refer to it a few times
-in our model.
+The first piece of metadata we need is the source name. This can be in dbt `source` style, or `ref` style.
+Generally speaking, our source for staging will be an external raw source of data, so we should set up 
+a dbt source and use the `source` style.
+We will assume you have opted to use the `source` style for the remainder of the staging tutorial. 
 
-!!! note
-    On line 3 below we are using a dbt source. 
-    
-    If you have not yet set up sources in your dbt configuration please refer to [setting up sources](../walkthrough/wt_getting_started.md#setting-up-sources).
+```yaml tab='source'
+# schema.yml
+version: 2
 
+sources:
+  - name: my_source
+    database: MY_DATABASE
+    schema: MY_SCHEMA
+    tables:
+      - name: raw_customer
 
-```stg_customer_hashed.sql```
-```sql hl_lines="3"
-
-{{- config(materialized='view', schema='MYSCHEMA', enabled=true, tags='staging') -}}
-
-{%- set source_table = source('MYSOURCE', 'stg_customer')                        -%}
+# dbt_project.yml
+stg_customer_hashed:
+  vars:
+    source_model: 
+      my_source: "raw_customer"
 ```
 
-### Generating hashes from metadata
-
-Now we get into the core component of staging: the metadata. 
-The metadata consists of the column names we want to use in our hash, to use as primary keys in our data vault or to use as 
-hashdiffs for satellites (see the DV 2.0 book for detail of what these are) and the alias for our new hash column.
-
-We need to call the [multi_hash](../macros.md#multi_hash) macro and provide the appropriate parameters. The macro takes
-our provided lists of columns, iterates through each of them, and generates all of the necessary SQL to create the hash for us. More on how to use this macro is 
-provided in the link above.
-
-After adding the macro call, our model will now look something like this:
-
-```stg_customer_hashed.sql```
-```sql hl_lines="5 6 7 8 9 10"
-
-{{- config(materialized='view', schema='MYSCHEMA', enabled=true, tags='staging') -}} 
-                                                                                 
-{%- set source_table = source('MYSOURCE', 'stg_customer')                        -%}
-                                                                                   
-{{ dbtvault.multi_hash([('CUSTOMER_KEY', 'CUSTOMER_PK'),                           
-                        ('NATION_KEY', 'NATION_PK'),                               
-                        (['CUSTOMER_KEY', 'NATION_KEY'], 'CUSTOMER_NATION_PK'),     
-                        (['CUSTOMER_KEY', 'CUSTOMER_NAME',                         
-                          'CUSTOMER_PHONE', 'CUSTOMER_DOB'],                      
-                         'CUSTOMER_HASHDIFF', true)])                            -}},
+```yaml tab='ref'
+# dbt_project.yml
+stg_customer_hashed:
+  vars:
+    source_model: "raw_customer"
 ```
 
-!!! note
-    Make sure you add the trailing comma after the call, at the end of line 9.
-    
-This call will:
+### Adding hashed columns
 
-- Hash the ```CUSTOMER_KEY``` column, and create a new column called ```CUSTOMER_PK``` containing the hash 
-value.
-- Hash the ```NATION_KEY``` column, and create a new column called ```NATION_PK``` containing the hash 
-value.
-- Concatenate the values in the ```CUSTOMER_KEY``` and ```NATION_KEY``` columns and hash them in the order supplied, creating a new
-column called ```CUSTOMER_NATION_PK``` containing the hash of the combination of the values.
-- Concatenate the values in the ```CUSTOMER_KEY```, ```CUSTOMER_NAME```, ```CUSTOMER_PHONE```, ```CUSTOMER_DOB``` 
-columns and hash them, creating a new column called ```CUSTOMER_NATION_PK``` containing the hash of the 
-combination of the values. The ```true``` parameter should be provided so that the columns are alpha-sorted. 
+We can now specify a mapping of columns to hash, which we will use in our raw vault layer.
 
-The latter three pairs will be used later when creating [links](wt_links.md) and [satellites](wt_satellites.md).
-    
-### Additional columns
+`dbt_project.yml`
 
-With the [add_columns](../macros.md#add_columns) macro, we can provide a list of columns and any corresponding aliases for 
-those columns.
+```yaml hl_lines="5 6 7 8 9 10 11 12 13 14 15 16 17"
 
-We now add the column names we want to bring forward/feed from the raw staging table into the raw vault.
-To include all columns which exist in the source table, we provide the ```source_table``` variable we created earlier.
+stg_customer_hashed:
+  vars:
+    source_model: 
+      my_source: "raw_customer"
+    hashed_columns:
+      CUSTOMER_PK: "CUSTOMER_ID"
+      NATION_PK: "NATION_ID"
+      CUSTOMER_NATION_PK:
+        - "CUSTOMER_ID"
+        - "NATION_ID"
+      CUSTOMER_HASHDIFF:
+        hashdiff: true
+        columns:
+          - "CUSTOMER_NAME"
+          - "CUSTOMER_ID"
+          - "CUSTOMER_PHONE"
+          - "CUSTOMER_DOB"
+```
 
-We will also need to add some additional columns to our staging layer, containing 'constants' implied by the context of the 
-staging data. For example, we can add a source table code value for audit purposes, the load date, or some other constant needed in
-the primary key.
+With this metadata, the [stage](../macros.md#stage) macro will:
+
+- Hash the `CUSTOMER_ID` column, and create a new column called `CUSTOMER_PK` containing the hash value.
+- Hash the `NATION_ID` column, and create a new column called `NATION_PK` containing the hash value.
+- Concatenate the values in the `CUSTOMER_ID` and ```NATION_ID``` columns and hash them in the order supplied, creating a new
+column called `CUSTOMER_NATION_PK` containing the hash of the combination of the values.
+- Concatenate the values in the `CUSTOMER_ID`, `CUSTOMER_NAME`, `CUSTOMER_PHONE`, `CUSTOMER_DOB` 
+columns and hash them, creating a new column called `CUSTOMER_NATION_PK` containing the hash of the 
+combination of the values. The `hashdiff: true` flag should be provided so that dbtvault knows to treat this column as a hashdiff.
+Treating this column as a hashdiff means dbtvault with automatically sort the columns prior to hashing.
+
+See [Why do we hash?](../best_practices.md#why-do-we-hash) for details on hashing best practises.
+
+### Adding calculated and derived columns
+
+We can also provide a mapping of derived, calculated or constant columns which will be needed for the raw vault 
+but which do not already exist in the raw data.
+
+Some of these columns may be 'constants' implied by the context of the staging data.
+For example, we could add a source table code value for audit purposes or a load date which is the result of a function if
+it doesn't already exist in the raw data.
 
 We can also override any columns coming in from the source, with different data. We may want to do this if a source 
 column already exists in the raw stage and the values aren't appropriate.
  
-We provide a constant by adding an ```!``` to the data and alias them with the same name as the column we want to 
-override. We can also use this method to create any new columns which do not already 
-exist in the source.
+We provide a constant by prepending a `!` to the front of the value in the key/value pair.
 
+For full usage examples and syntax, please refer to the [stage](../macros.md#stage) macro documentation.
 
-```stg_customer_hashed.sql```
-```sql hl_lines="12 13 14"
+```yaml hl_lines="18 19 20"
 
-{{- config(materialized='view', schema='MYSCHEMA', enabled=true, tags='staging')    -}} 
-
-{%- set source_table = source('MYSOURCE', 'stg_customer')                           -%}
-                                                                                     
-{{ dbtvault.multi_hash([('CUSTOMER_KEY', 'CUSTOMER_PK'),
-                        ('NATION_KEY', 'NATION_PK'),
-                        (['CUSTOMER_KEY', 'NATION_KEY'], 'CUSTOMER_NATION_PK'),
-                        (['CUSTOMER_KEY', 'CUSTOMER_NAME',
-                          'CUSTOMER_PHONE', 'CUSTOMER_DOB'], 
-                          'CUSTOMER_HASHDIFF', true)]) -}},
-
-{{ dbtvault.add_columns(source_table,
-                        [('!1', 'SOURCE'),
-                         ('LOADDATE', 'EFFECTIVE_FROM')])                            }}
-
+stg_customer_hashed:
+  vars:
+    source_model: 
+      my_source: "raw_customer"
+    hashed_columns:
+      CUSTOMER_PK: "CUSTOMER_ID"
+      NATION_PK: "NATION_ID"
+      CUSTOMER_NATION_PK:
+        - "CUSTOMER_ID"
+        - "NATION_ID"
+      CUSTOMER_HASHDIFF:
+        hashdiff: true
+        columns:
+          - "CUSTOMER_NAME"
+          - "CUSTOMER_ID"
+          - "CUSTOMER_PHONE"
+          - "CUSTOMER_DOB"
+    derived_columns:
+      SOURCE: "!1"
+      EFFECTIVE_FROM: "BOOKING_DATE"
 ```
 
-In summary, above we have:
+!!! info
+    By default, the stage macro will automatically select all columns which exist in the source model, unless
+    the `include_source_columns` macro is set to `false`.
 
-- Added a header (line 1).
-- Set the source_table variable to our raw staging table (line 3).
-- Defined some hashing to create primary keys and a hashdiff (lines 5-10).
-- Brought in all of the raw staging table's columns (line 12).
-- Added a ```SOURCE``` column with the constant value ```1``` (line 13).
-- Added an ```EFFECTIVE_FROM``` column which uses the ```LOADDATE``` value as its value (line 11).
-    
-### Adding the footer
+We are now ready to run our staging model.
 
-Now we just need to provide the ```source_table``` variable we created earlier, as a parameter to the [from](../macros.md#from)
-macro.
+In summary this model will:
 
-After adding the footer, our completed model should now look like this:
-
-```stg_customer_hashed.sql```
-```sql hl_lines="16"
-
-{{- config(materialized='view', schema='MYSCHEMA', enabled=true, tags='staging')    -}} 
-
-{%- set source_table = source('MYSOURCE', 'stg_customer')                           -%}
-                                                                                     
-{{ dbtvault.multi_hash([('CUSTOMER_KEY', 'CUSTOMER_PK'),
-                        ('NATION_KEY', 'NATION_PK'),
-                        (['CUSTOMER_KEY', 'NATION_KEY'], 'CUSTOMER_NATION_PK'),
-                        (['CUSTOMER_KEY', 'CUSTOMER_NAME',
-                          'CUSTOMER_PHONE', 'CUSTOMER_DOB'], 
-                          'CUSTOMER_HASHDIFF', true)]) -}},
-
-{{ dbtvault.add_columns(source_table,
-                        [('!1', 'SOURCE'),
-                         ('LOADDATE', 'EFFECTIVE_FROM')])                            }}
-
-{{ dbtvault.from(source_table)                                                       }}
-
-``` 
-
-This model is now ready to run to create a view with all the added data/columns needed to load the raw vault.
+- Be created as a view (or table depending on your needs)
+- Select all columns from the external data source `raw_customer`
+- Create some hashed columns to create primary keys and a hashdiff
+- Create a new `SOURCE` column with the constant value `1`
+- Create an `EFFECTIVE_FROM` column from the ```LOADDATE``` column present in the raw data.
 
 ### Running dbt
 
 With our model complete, we can run dbt and have our new staging layer materialised as configured in the header:
 
-```dbt run --models stg_customer_hashed```
+```dbt run -m stg_customer_hashed```
 
 And our table will look like this:
 

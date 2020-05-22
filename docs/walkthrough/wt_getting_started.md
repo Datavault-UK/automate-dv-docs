@@ -50,12 +50,11 @@ in the root of your ```models``` folder, however you can place it wherever neede
 version: 2
 
 sources:
-  - name: MYSOURCE
-    database: MYDATABASE
-    schema: MYSCHEMA
+  - name: my_source
+    database: MY_DATABASE
+    schema: MY_SCHEMA
     tables:
-      - name: stg_customer # alias
-        identifier: stg_customer_hashed # table name
+      - name: raw_orders
       - name: ...
 ```
 
