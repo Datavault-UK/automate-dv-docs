@@ -323,7 +323,78 @@ Generates sql to build a staging area using the provided metadata in your `dbt_p
 
 #### Example YAML Metadata
 
-[See examples](metadata.md#staging)
+```yaml tab='All variables'
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:
+          source_model: "raw_source"
+          hashed_columns:
+            CUSTOMER_PK: "CUSTOMER_ID"
+            CUST_CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_DOB"
+                - "CUSTOMER_ID"
+                - "CUSTOMER_NAME"
+            CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_ID"
+                - "NATIONALITY"
+                - "PHONE"
+          derived_columns:
+            SOURCE: "!STG_BOOKING"
+            EFFECTIVE_FROM: "BOOKING_DATE"
+```
+
+```yaml tab="Only source"
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:
+          source_model: "raw_source"
+```
+
+```yaml tab='Only hashing'
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:
+          include_source_columns: false
+          source_model: "raw_source"
+          hashed_columns:
+            CUSTOMER_PK: CUSTOMER_ID
+            CUST_CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - CUSTOMER_DOB
+                - CUSTOMER_ID
+                - CUSTOMER_NAME
+            CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - CUSTOMER_ID
+                - NATIONALITY
+                - PHONE
+```
+
+
+```yaml tab="Only derived"
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:   
+          include_source_columns: false
+          source_model: "raw_source"
+          derived_columns:
+            SOURCE: "!STG_BOOKING"
+            EFFECTIVE_FROM: "BOOKING_DATE"
+```
 
 #### Example Output
 
@@ -343,28 +414,73 @@ CAST(MD5_BINARY(CONCAT(
     IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
 AS BINARY(16)) AS CUSTOMER_HASHDIFF,
 
+'STG_BOOKING' AS SOURCE,
+BOOKING_DATE AS EFFECTIVE_FROM,
 BOOKING_FK,
 ORDER_FK,
 CUSTOMER_PK,
-CUSTOMER_ID,
-LOADDATE,
+CUSTOMER_ID,   
+BOOKING_DATE,
+LOAD_DATETIME,
 RECORD_SOURCE,
 CUSTOMER_DOB,
 CUSTOMER_NAME,
 NATIONALITY,
-PHONE,
-TEST_COLUMN_2,
-TEST_COLUMN_3,
-TEST_COLUMN_4,
-TEST_COLUMN_5,
-TEST_COLUMN_6,
-TEST_COLUMN_7,
-TEST_COLUMN_8,
-TEST_COLUMN_9
+PHONE
 
-FROM DBT_VAULT.TEST.raw_source
-
+FROM MY_DATABASE.MY_SCHEMA.raw_source
 ```
+
+```sql tab="Only source"
+
+SELECT
+
+BOOKING_FK,
+ORDER_FK,
+CUSTOMER_PK,
+CUSTOMER_ID,
+BOOKING_DATE,
+LOAD_DATETIME,
+RECORD_SOURCE,
+CUSTOMER_DOB,
+CUSTOMER_NAME,
+NATIONALITY,
+PHONE
+
+FROM MY_DATABASE.MY_SCHEMA.raw_source
+```
+
+```sql tab='Only hashing'
+
+SELECT
+
+CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+CAST(MD5_BINARY(CONCAT(
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
+AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
+CAST(MD5_BINARY(CONCAT(
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
+AS BINARY(16)) AS CUSTOMER_HASHDIFF
+
+FROM MY_DATABASE.MY_SCHEMA.raw_source
+```
+
+
+```sql tab="Only derived"
+
+SELECT
+
+'STG_BOOKING' AS SOURCE,
+BOOKING_DATE AS EFFECTIVE_FROM
+
+FROM MY_DATABASE.MY_SCHEMA.raw_source
+```
+
+
 ___
 
 ### hash_columns

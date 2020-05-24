@@ -11,10 +11,12 @@ We will be releasing changes incrementally, so you can reap the benefits as soon
 
 ## Coming soon
 
-These features are currently planned for the near-future, 
-and are available now in a beta release (v0.6b2)
+These features are currently planned for the near-future:
 
 - Effectivity satellites, [try it out now!](changelog/changelog_beta.md)
+- Custom materialization for periodic loading similar to the 
+[dbt_utils offering for Redshift](https://github.com/fishtown-analytics/dbt-utils/blob/master/README.md#insert_by_period-source)
+- Removal of single-day loading restrictions  
 
 ## Future releases
 
@@ -28,13 +30,7 @@ In future releases, we hope to include the following:
 - Bridge tables
 - Reference Tables
 - Mart loading helpers
-- Custom materialization for periodic loading similar to the 
-[dbt_utils offering for Redshift](https://github.com/fishtown-analytics/dbt-utils/blob/master/README.md#insert_by_period-source)
 - And more!
-
-### Improvements
-
-- Staging re-work (move to YAML)
 
 ### Additional features
 

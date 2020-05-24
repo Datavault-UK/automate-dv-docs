@@ -13,7 +13,8 @@ There are a few conditions that need to be met for the dbtvault package to work:
 Instead of truncating and loading, you may also build a view over the table to filter out the right records and load 
 from the view.
 
-**We will shortly be removing this restriction**
+!!! tip "Good News!"
+    **We will shortly be removing this restriction**
 
 ### Let's Begin
 
@@ -25,7 +26,7 @@ We also need to ensure column names align with target hub or link table column n
 !!! info
     Hashing of primary keys is optional in Snowflake and natural keys alone can be used in place of hashing. 
     
-    We've implemented hashing as the only option for now, though a non-hashed version will be added in future releases.
+    We've implemented hashing as the only option for now, though a non-hashed version will be added in future releases, checkout our [roadmap](../roadmap.md).
     
 ## Creating the stage model
 
@@ -138,15 +139,11 @@ We can also provide a mapping of derived, calculated or constant columns which w
 but which do not already exist in the raw data.
 
 Some of these columns may be 'constants' implied by the context of the staging data.
-For example, we could add a source table code value for audit purposes or a load date which is the result of a function if
-it doesn't already exist in the raw data.
-
-We can also override any columns coming in from the source, with different data. We may want to do this if a source 
-column already exists in the raw stage and the values aren't appropriate.
- 
+For example, we could add a source table code value for audit purposes, or a load date which is the result of a function such as `CURRENT_TIMESTAMP()`.
 We provide a constant by prepending a `!` to the front of the value in the key/value pair.
 
-For full usage examples and syntax, please refer to the [stage](../macros.md#stage) macro documentation.
+!!! tip
+    For full options, usage examples and syntax, please refer to the [stage](../macros.md#stage) macro documentation.
 
 ```yaml hl_lines="18 19 20"
 
@@ -180,26 +177,26 @@ We are now ready to run our staging model.
 
 In summary this model will:
 
-- Be created as a view (or table depending on your needs)
+- Be materialized as a view
 - Select all columns from the external data source `raw_customer`
-- Create some hashed columns to create primary keys and a hashdiff
-- Create a new `SOURCE` column with the constant value `1`
-- Create an `EFFECTIVE_FROM` column from the ```LOADDATE``` column present in the raw data.
+- Generate hashed columns to create primary keys and a hashdiff
+- Generate a `SOURCE` column with the constant value `1`
+- Generate an `EFFECTIVE_FROM` column derived from the `BOOKING_DATE` column present in the raw data.
 
 ### Running dbt
 
-With our model complete, we can run dbt and have our new staging layer materialised as configured in the header:
-
-```dbt run -m stg_customer_hashed```
+With our model complete, we can run dbt:
+                                       
+`dbt run -m stg_customer_hashed`
 
 And our table will look like this:
 
-| CUSTOMER_PK  | NATION_PK    | CUSTOMER_NATION_PK  | CUSTOMER_HASHDIFF   | (source table columns) | EFFECTIVE_FROM | SOURCE       |
-| ------------ | ------------ | ------------------- | ------------------- | ---------------------- | -------------- | ------------ |
-| B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1993-01-01     | 1            |
-| .            | .            | .                   | .                   | .                      | .              | .            |
-| .            | .            | .                   | .                   | .                      | .              | .            |
-| FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1993-01-01     | 1            |
+| CUSTOMER_PK  | NATION_PK    | CUSTOMER_NATION_PK  | CUSTOMER_HASHDIFF   | (source table columns) | SOURCE       | EFFECTIVE_FROM |
+| ------------ | ------------ | ------------------- | ------------------- | ---------------------- | ------------ | -------------- |
+| B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1            | 1993-01-01     |
+| .            | .            | .                   | .                   | .                      | .            | .              |
+| .            | .            | .                   | .                   | .                      | .            | .              |
+| FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1            | 1993-01-01     |
 
 ### Next steps
 
