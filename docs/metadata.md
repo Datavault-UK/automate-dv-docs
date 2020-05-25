@@ -3,7 +3,7 @@ the models themselves. This keeps the metadata all in one place and simplifies t
 
 For further detail about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
-#### Staging
+### Staging
 
 Only the source metadata is needed to build a hub, as column types and names are inferred from the source in the target 
 table. The parameters that the [stage](macros.md#stage) macro accepts are:
@@ -90,7 +90,7 @@ models:
             EFFECTIVE_FROM: "BOOKING_DATE"
 ```
 
-#### Hubs
+### Hubs
 
 Only the source metadata is needed to build a hub, as column types and names are inferred from the source in the target 
 table. The parameters that the [hub](macros.md#hub) macro accepts are:
@@ -116,7 +116,7 @@ hub_customer:
     src_source: 'SOURCE'
 ``` 
 
-#### Links
+### Links
 
 The link metadata is very similar to the hub metadata. The parameters that the [link](macros.md#link) macro accept are:
 
@@ -143,7 +143,7 @@ link_customer_nation:
     src_source: 'SOURCE'
 ```
 
-#### Satellites
+### Satellites
 
 The metadata for satellites are different from that of links and hubs. The parameters the [sat](macros.md#sat) macro 
 accepts is:
@@ -179,7 +179,7 @@ sat_order_customer_details:
     src_source: 'SOURCE'
 ```
 
-#### Transactional links (non-historized links)
+### Transactional links (non-historized links)
 
 The [t_link](macros.md#t_link) macro accepts the following parameters:
 

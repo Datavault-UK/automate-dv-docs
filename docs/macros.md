@@ -132,7 +132,7 @@ STG AS (
 
 SELECT c.* FROM STG AS c
 ```
-___a
+___
 
 ### link
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/tables/link.sql))
@@ -141,6 +141,7 @@ ___a
     In v0.6, we have made changes to the link macro sql. The link macro now deals with multi date loads. 
 
 Generates sql to build a link table using the provided metadata in your `dbt_project.yml`.
+
 ``` sql
 {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
                  var('src_source'), var('source_model'))        }}
@@ -290,7 +291,6 @@ Generates sql to build a satellite table using the provided metadata in your `db
 | source_model  | Staging model name                                  | String         | <i class="required">:fontawesome-solid-check-circle:</i> |
 
 #### Usage
-
 
 ``` sql
 {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),

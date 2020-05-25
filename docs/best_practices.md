@@ -127,15 +127,19 @@ AS BINARY(16)) AS HASHDIFF
 This is similar to single-column hashing aside from the use of `IFNULL` and `CONCAT`, the step-by-step process
 is described below.
 
-1-4. Steps 1-4 are described in single-column hashing above and are performed on each column 
+1\. Steps 1-4 are described in single-column hashing above and are performed on each column 
 which comprises the multi-column hash.
-5. `IFNULL` if Steps 1-4 resolve in a NULL value (in the case of the empty string or a true `NULL`)
+
+5\. `IFNULL` if Steps 1-4 resolve in a NULL value (in the case of the empty string or a true `NULL`)
 then we output a double-hat string, `^^`. This ensures that we can detect changes in columns between `NULL` 
 and non-NULL values. This is particularly import for `HASHDIFFS`.
-6. `CONCAT` Next, we concatenate the column values using a double-pipe string, `||`. This ensures we have
+
+6\. `CONCAT` Next, we concatenate the column values using a double-pipe string, `||`. This ensures we have
 consistent concatenation, using a string which is unlikely to be contained in the columns we are concatenating.
 Concatenating in this way means that we can be more confident that a combination of columns will always generate the same
 hash value, particularly where `NULLS` are concerned. 
+
+7\. Steps 7 and 8 are identical to steps 5 and 6 described in single-column hashing.
 
 #### The future of hashing in dbtvault
 
