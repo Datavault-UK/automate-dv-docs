@@ -6,6 +6,9 @@ for your Data Vault.
 
 ### hub
 
+!!! note
+    In v0.6, we have made changes to the hub macro sql. The hub macro now deals with multi date loads.   
+
 Generates sql to build a hub table using the provided metadata in your `dbt_project.yml`.
 
 ``` sql
@@ -34,49 +37,95 @@ Generates sql to build a hub table using the provided metadata in your `dbt_proj
 
 #### Example YAML Metadata
 
+!!! note 
+    Due to suggestions stating that the ```source``` var in the YAML file was causing confusion. We have decided to 
+    refactor this into ```source_model``` to reduce confusion and add more clarity to the usage of dbtvault.
+
 [See examples](metadata.md#hubs)
 
 #### Example Output
 
 ```mysql tab='Single-Source'
-SELECT DISTINCT 
-                    stg.CUSTOMER_PK, 
-                    stg.CUSTOMER_KEY, 
-                    stg.LOADDATE, 
-                    stg.SOURCE
-FROM (
-    SELECT a.CUSTOMER_PK, a.CUSTOMER_KEY, a.LOADDATE, a.SOURCE
-      FROM MYDATABASE.MYSCHEMA.v_stg_orders AS a
-) AS stg
-LEFT JOIN MYDATABASE.MYSCHEMA.hub_customer AS tgt
-ON stg.CUSTOMER_PK = tgt.CUSTOMER_PK
-WHERE tgt.CUSTOMER_PK IS NULL
+WITH STG AS (
+    SELECT DISTINCT
+    a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOADDATE, a.SOURCE
+    FROM (
+        SELECT b.*,
+        ROW_NUMBER() OVER(
+            PARTITION BY b.CUSTOMER_PK
+            ORDER BY b.LOADDATE, b.SOURCE ASC
+        ) AS RN
+        FROM DBT_VAULT.TEST_stg.test_stg_customer_hashed_hubs_current AS b
+        WHERE b.CUSTOMER_PK IS NOT NULL
+    ) AS a
+    WHERE RN = 1
+)
+
+SELECT c.* FROM STG AS c
 ```
 
 ```mysql tab='Multi-Source'
-SELECT DISTINCT 
-                    stg.PART_PK, 
-                    stg.PART_KEY, 
-                    stg.LOADDATE,
-                    stg.SOURCE
-FROM (
-    SELECT src.PART_PK, src.PART_KEY, src.LOADDATE, src.SOURCE,
-    LAG(SOURCE, 1)
-    OVER(PARTITION by PART_PK
-    ORDER BY PART_PK) AS FIRST_SOURCE
+WITH STG_1 AS (
+    SELECT DISTINCT
+    a.PART_PK, a.PART_ID, a.LOADDATE, a.SOURCE
     FROM (
-      SELECT a.PART_PK, a.PART_KEY, a.LOADDATE, a.SOURCE
-      FROM MYDATABASE.MYSCHEMA.v_stg_orders AS a
-      UNION
-      SELECT b.PART_PK, b.PART_KEY, b.LOADDATE, b.SOURCE
-      FROM MYDATABASE.MYSCHEMA.v_stg_inventory AS b
-      ) AS src
-) AS stg
-LEFT JOIN MYDATABASE.MYSCHEMA.hub_part AS tgt
-ON stg.PART_PK = tgt.PART_PK
-WHERE tgt.PART_PK IS NULL
-AND stg.FIRST_SOURCE IS NULL
+        SELECT PART_PK, PART_ID, LOADDATE, SOURCE,
+        ROW_NUMBER() OVER(
+            PARTITION BY PART_PK
+            ORDER BY LOADDATE ASC
+        ) AS RN
+        FROM DBT_VAULT.TEST_stg.test_stg_parts_hashed_current
+    ) AS a
+    WHERE RN = 1
+),
+STG_2 AS (
+    SELECT DISTINCT
+    a.PART_PK, a.PART_ID, a.LOADDATE, a.SOURCE
+    FROM (
+        SELECT PART_PK, PART_ID, LOADDATE, SOURCE,
+        ROW_NUMBER() OVER(
+            PARTITION BY PART_PK
+            ORDER BY LOADDATE ASC
+        ) AS RN
+        FROM DBT_VAULT.TEST_stg.test_stg_supplier_hashed_current
+    ) AS a
+    WHERE RN = 1
+),
+STG_3 AS (
+    SELECT DISTINCT
+    a.PART_PK, a.PART_ID, a.LOADDATE, a.SOURCE
+    FROM (
+        SELECT PART_PK, PART_ID, LOADDATE, SOURCE,
+        ROW_NUMBER() OVER(
+            PARTITION BY PART_PK
+            ORDER BY LOADDATE ASC
+        ) AS RN
+        FROM DBT_VAULT.TEST_stg.test_stg_lineitem_hashed_current
+    ) AS a
+    WHERE RN = 1
+),
+STG AS (
+    SELECT DISTINCT
+    b.PART_PK, b.PART_ID, b.LOADDATE, b.SOURCE
+    FROM (
+            SELECT *,
+            ROW_NUMBER() OVER(
+                PARTITION BY PART_PK
+                ORDER BY LOADDATE, SOURCE ASC
+            ) AS RN
+            FROM (
+                SELECT * FROM STG_1
+                UNION ALL
+                SELECT * FROM STG_2
+                UNION ALL
+                SELECT * FROM STG_3
+            )
+        WHERE PART_PK IS NOT NULL
+    ) AS b
+    WHERE RN = 1
+)
 
+SELECT c.* FROM STG AS c
 ```
 ___
 
