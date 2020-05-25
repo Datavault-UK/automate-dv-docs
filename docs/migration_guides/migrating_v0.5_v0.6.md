@@ -149,60 +149,99 @@ The old invocations of the macros were:
 
 ```sql tab='Old hub invocation'
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source'))                      }}
-```
-
-```sql tab='Old link invocation'
-{{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'),
-                 var('src_source'), var('source'))                     }}
+                var('src_source'), var('source'))               }}
+```                                                             
+                                                                
+```sql tab='Old link invocation'                                
+{{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'), 
+                 var('src_source'), var('source'))              }}
 ```
 
 The new invocation of the macros is now:
 
 ```sql tab='New hub invocation'
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source_model'))                }}
+                var('src_source'), var('source_model'))         }}
 ```
 
 ```sql tab='New link invocation'
 {{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'),
-                 var('src_source'), var('source_model'))               }}
+                 var('src_source'), var('source_model'))        }}
 ```
 
-## Other table macros
+!!! tip "Coming soon"
+    We will soon be upgrading the remaining table macros to provide multi-date loading functionality.
 
-The t-links and satellites have not changed, other than their invocation.
+## T-Links
 
-Old invocation:
+The t-links have not changed, other than their invocation.
 
 ```sql tab='Old t-link invocation'
 {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
                    var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source')) }}            
+                   var('source'))                                      }}
 ```
-
-```sql tab='Old sat invocation'
-{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
-                var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source'))                                   }}
-```
-
-
-New invocation:
 
 ```sql tab='New t-link invocation'
 {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
                    var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source_model')) }}            
+                   var('source_model'))                                }}
+```
+
+
+## Satellites
+
+Satellites have gone through a minor change in v0.6.
+
+### Invocation
+
+As with other table macros, the invocation of the macro has changed as follows:
+
+```sql tab='Old sat invocation'
+{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                var('src_eff'), var('src_ldts'), var('src_source'),
+                var('source'))                                          }}
 ```
 
 ```sql tab='New sat invocation'
 {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
                 var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source_model'))                                   }}
+                var('source_model'))                                    }}
 ```
 
+### Hashdiff aliasing
 
-!!! tip "Coming soon"
-    Soon, we will be upgrading the remaining table macros to provide multi-date loading functionality, stay tuned!
+Satellites have been updated to allow hashdiff columns to be aliased. This is a feature which will be part of
+more versatile global aliasing functionality which will allow users to set constant values for naming convention
+purposes.
 
+`HASHDIFF` columns should be called `HASHDIFF`, as per Data Vault 2.0 standards. Due to the fact we have a shared 
+staging layer for the raw vault, we cannot have multiple columns sharing the same name. This means we have to name each 
+of our `HASHDIFF` columns differently. dbtvault aims align as closely as possible with Data Vault 2.0 standards, 
+and the following new feature is one of many steps we will be making towards that goal.
+
+Below is an example satellite YAML config from a `dbt_project.yml` file:
+
+```yaml hl_lines="9 10 11"
+sat_customer_details:
+  materialized: incremental
+  schema: "vlt"
+  tags:
+    - sat
+  vars:
+    source_model: "stg_customer_details_hashed"
+    src_pk: "CUSTOMER_PK"
+    src_hashdiff: 
+      source_column: "CUSTOMER_HASHDIFF"
+      alias: "HASHDIFF"
+    src_payload:
+      - "CUSTOMER_NAME"
+      - "CUSTOMER_DOB"
+      - "CUSTOMER_PHONE"
+    src_eff: "EFFECTIVE_FROM"
+    src_ldts: "LOADDATE"
+    src_source: "SOURCE"
+```
+
+The highlighted lines show the syntax required to alias a column named `CUSTOMER_HASHDIFF` (present in the
+`stg_customer_details_hashed` staging layer) as `HASHDIFF`.

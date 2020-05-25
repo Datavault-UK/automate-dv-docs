@@ -280,15 +280,15 @@ Generates sql to build a satellite table using the provided metadata in your `db
 
 #### Parameters
 
-| Parameter     | Description                                         | Type           | Required?                                                |
-| ------------- | --------------------------------------------------- | -------------- | -------------------------------------------------------- |
-| src_pk        | Source primary key column                           | String         | <i class="required">:fontawesome-solid-check-circle:</i> |
-| src_hashdiff  | Source hashdiff column                              | String         | <i class="required">:fontawesome-solid-check-circle:</i> |
-| src_payload   | Source payload column(s)                            | List (YAML)    | <i class="required">:fontawesome-solid-check-circle:</i> |
-| src_eff       | Source effective from column                        | String         | <i class="required">:fontawesome-solid-check-circle:</i> |
-| src_ldts      | Source loaddate timestamp column                    | String         | <i class="required">:fontawesome-solid-check-circle:</i> |
-| src_source    | Name of the column containing the source ID         | String         | <i class="required">:fontawesome-solid-check-circle:</i> |
-| source_model  | Staging model name                                  | String         | <i class="required">:fontawesome-solid-check-circle:</i> |
+| Parameter     | Description                                         | Type             | Required?                                                |
+| ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------------------- |
+| src_pk        | Source primary key column                           | String           | <i class="required">:fontawesome-solid-check-circle:</i> |
+| src_hashdiff  | Source hashdiff column                              | String           | <i class="required">:fontawesome-solid-check-circle:</i> |
+| src_payload   | Source payload column(s)                            | List/Dict (YAML) | <i class="required">:fontawesome-solid-check-circle:</i> |
+| src_eff       | Source effective from column                        | String           | <i class="required">:fontawesome-solid-check-circle:</i> |
+| src_ldts      | Source loaddate timestamp column                    | String           | <i class="required">:fontawesome-solid-check-circle:</i> |
+| src_source    | Name of the column containing the source ID         | String           | <i class="required">:fontawesome-solid-check-circle:</i> |
+| source_model  | Staging model name                                  | String           | <i class="required">:fontawesome-solid-check-circle:</i> |
 
 #### Usage
 
@@ -337,6 +337,7 @@ WHERE d.CURR_FLG = 'Y') AS src
 ON src.CUSTOMER_HASHDIFF = e.CUSTOMER_HASHDIFF
 WHERE src.CUSTOMER_HASHDIFF IS NULL
 ```
+
 ___
 
 ### t_link

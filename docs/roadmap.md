@@ -9,14 +9,15 @@ We will be releasing changes incrementally, so you can reap the benefits as soon
 - Do you have some ideas? [Let us know what you want added](https://github.com/Datavault-UK/dbtvault/issues)
 - Want to contribute your own work? [Read our contribution guidelines](https://github.com/Datavault-UK/dbtvault/blob/master/CONTRIBUTING.md)
 
-## Coming soon
+## Coming soon (next release)
 
 These features are currently planned for the near-future:
 
 - Effectivity satellites, [try it out now!](changelog/beta.md)
 - Custom materialization for periodic loading similar to the 
 [dbt_utils offering for Redshift](https://github.com/fishtown-analytics/dbt-utils/blob/master/README.md#insert_by_period-source)
-- Removal of single-day loading restrictions  
+- Removal of single-day loading restrictions ([v0.6 already adds this for Hubs and Links](migration_guides/migrating_v0.5_v0.6.md#table-macros)
+- Multiple dispatch to open up future database support
 
 ## Future releases
 
@@ -36,3 +37,4 @@ In future releases, we hope to include the following:
 
 - Auditing 
 - Logging
+- Global configuration options (particularly around column naming)

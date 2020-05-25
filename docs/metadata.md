@@ -160,8 +160,9 @@ accepts is:
 
 An example of the metadata structure for a satellite is:
 
-`dbt_project.yml`
-```yaml
+
+```yaml tab='Standard'
+# dbt_project.yml
 sat_order_customer_details:
   vars:
     source_model: 'v_stg_orders'
@@ -179,7 +180,31 @@ sat_order_customer_details:
     src_source: 'SOURCE'
 ```
 
-### Transactional links (non-historized links)
+```yaml tab='Hashdiff Aliasing'
+# dbt_project.yml
+sat_order_customer_details:
+  vars:
+    source_model: 'v_stg_orders'
+    src_pk: 'CUSTOMER_PK'
+    src_hashdiff: 
+      source_column: "CUSTOMER_HASHDIFF"
+      alias: "HASHDIFF
+    src_payload:
+      - 'NAME'
+      - 'ADDRESS'
+      - 'PHONE'
+      - 'ACCBAL'
+      - 'MKTSEGMENT'
+      - 'COMMENT'
+    src_eff: 'EFFECTIVE_FROM'
+    src_ldts: 'LOADDATE'
+    src_source: 'SOURCE'
+```
+
+Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
+See 
+
+### Transactional links (non-historised links)
 
 The [t_link](macros.md#t_link) macro accepts the following parameters:
 
