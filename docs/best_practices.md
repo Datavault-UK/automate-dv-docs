@@ -85,6 +85,8 @@ Columns are sorted by their alias.
 Our hashing approach is designed to standardise the hashing process, and ensure hashing is kept consistent across
 a data warehouse. 
 
+#### Single-column hashing
+
 When we hash single columns, we take the following approach:
 
 ```sql 
@@ -110,7 +112,41 @@ This will not necessarily use `MD5_BINARY` if you have chosen to use `SHA`, in w
 
 6. `CAST AS BINARY` We then store it as a `BINARY` datatype
 
-[We plan to make hashing more configurable in the future](https://github.com/Datavault-UK/dbtvault/pull/4)
+#### Multi-column hashing
+
+When we hash multiple columns, we take the following approach:
+
+```sql 
+CAST(MD5_BINARY(CONCAT(
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
+AS BINARY(16)) AS HASHDIFF
+```
+
+This is similar to single-column hashing aside from the use of `IFNULL` and `CONCAT`, the step-by-step process
+is described below.
+
+1-4. Steps 1-4 are described in single-column hashing above and are performed on each column 
+which comprises the multi-column hash.
+5. `IFNULL` if Steps 1-4 resolve in a NULL value (in the case of the empty string or a true `NULL`)
+then we output a double-hat string, `^^`. This ensures that we can detect changes in columns between `NULL` 
+and non-NULL values. This is particularly import for `HASHDIFFS`.
+6. `CONCAT` Next, we concatenate the column values using a double-pipe string, `||`. This ensures we have
+consistent concatenation, using a string which is unlikely to be contained in the columns we are concatenating.
+Concatenating in this way means that we can be more confident that a combination of columns will always generate the same
+hash value, particularly where `NULLS` are concerned. 
+
+#### The future of hashing in dbtvault
+
+[We plan to make hashing more configurable in the future](https://github.com/Datavault-UK/dbtvault/pull/4), meaning that
+the concatenation string (`||`), `NULL` string (`^^`) and trimming, casing and `NULL` handling in general will be fully configurable. 
+
+As mentioned elsewhere in the documentation, we will also add functionality to allow hashing to be disabled entirely. 
+
+In summary, the intent behind our hashing approach is to provide a robust method of ensuring consistent hashing (same input gives same output).
+Until we provide more configuration options, feel free to modify our macros for your needs, as long as you stick to a standard that makes sense to you or your organisation.
+If you need advice, [feel free to join our slack and ask our developers](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA)!.
 
 ### Hashing best practices
 
