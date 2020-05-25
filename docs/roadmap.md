@@ -13,7 +13,7 @@ We will be releasing changes incrementally, so you can reap the benefits as soon
 
 These features are currently planned for the near-future:
 
-- Effectivity satellites, [try it out now!](changelog/changelog_beta.md)
+- Effectivity satellites, [try it out now!](changelog/beta.md)
 - Custom materialization for periodic loading similar to the 
 [dbt_utils offering for Redshift](https://github.com/fishtown-analytics/dbt-utils/blob/master/README.md#insert_by_period-source)
 - Removal of single-day loading restrictions  

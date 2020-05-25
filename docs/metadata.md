@@ -5,18 +5,103 @@ For further detail about how to use the macros in this section, see [table templ
 
 #### Staging
 
+Only the source metadata is needed to build a hub, as column types and names are inferred from the source in the target 
+table. The parameters that the [stage](macros.md#stage) macro accepts are:
+
+| Parameter     | Description                                               | 
+| ------------- | --------------------------------------------------------- | 
+| source_model | The name of the staging model that feeds the hub.         | 
+| src_pk        | The column to use for the primary key (should be hashed)  |
+| src_nk        | The natural key column that the primary key is based on.  | 
+| src_ldts      | The loaddate timestamp column of the record.              |
+| src_source    | The source column of the record.                          |
+                                                                           
+An example of the metadata structure for a hub is:
+
+```yaml tab='All variables'
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:
+          source_model: "raw_source"
+          hashed_columns:
+            CUSTOMER_PK: "CUSTOMER_ID"
+            CUST_CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_DOB"
+                - "CUSTOMER_ID"
+                - "CUSTOMER_NAME"
+            CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_ID"
+                - "NATIONALITY"
+                - "PHONE"
+          derived_columns:
+            SOURCE: "!STG_BOOKING"
+            EFFECTIVE_FROM: "BOOKING_DATE"
+```
+
+```yaml tab="Only source"
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:
+          source_model: "raw_source"
+```
+
+```yaml tab='Only hashing'
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:
+          include_source_columns: false
+          source_model: "raw_source"
+          hashed_columns:
+            CUSTOMER_PK: CUSTOMER_ID
+            CUST_CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - CUSTOMER_DOB
+                - CUSTOMER_ID
+                - CUSTOMER_NAME
+            CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - CUSTOMER_ID
+                - NATIONALITY
+                - PHONE
+```
+
+```yaml tab="Only derived"
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:   
+          include_source_columns: false
+          source_model: "raw_source"
+          derived_columns:
+            SOURCE: "!STG_BOOKING"
+            EFFECTIVE_FROM: "BOOKING_DATE"
+```
+
 #### Hubs
 
-Only the source metadata is needed to build a hub, as column types and names are retained are retained in the target 
-table. The parameters that the [hub](macros.md#hub) macro accept are:
+Only the source metadata is needed to build a hub, as column types and names are inferred from the source in the target 
+table. The parameters that the [hub](macros.md#hub) macro accepts are:
 
-| Parameter    | Description                                               | 
-| -------------| --------------------------------------------------------- | 
+| Parameter     | Description                                               | 
+| ------------- | --------------------------------------------------------- | 
 | source_model | The name of the staging model that feeds the hub.         | 
-| src_pk       | The column to use for the primary key (should be hashed)  |
-| src_nk       | The natural key column that the primary key is based on.  | 
-| src_ldts     | The loaddate timestamp column of the record.              |
-| src_source   | The source column of the record.                          |
+| src_pk        | The column to use for the primary key (should be hashed)  |
+| src_nk        | The natural key column that the primary key is based on.  | 
+| src_ldts      | The loaddate timestamp column of the record.              |
+| src_source    | The source column of the record.                          |
                                                                            
 An example of the metadata structure for a hub is:
 
@@ -35,13 +120,13 @@ hub_customer:
 
 The link metadata is very similar to the hub metadata. The parameters that the [link](macros.md#link) macro accept are:
 
-| Parameter    | Description                                              | 
-| -------------| ---------------------------------------------------------| 
+| Parameter     | Description                                              | 
+| ------------- | ---------------------------------------------------------| 
 | source_model | The staging table that feeds the link. This can be single source or a union. | 
-| src_pk       | The column to use for the primary key (should be hashed) |
-| src_fk       | The foreign key columns that the make up the primary link key. This must be entered as a list of strings. | 
-| src_ldts     | The loaddate timestamp column of the record.             |
-| src_source   | The source column of the record.                         |
+| src_pk        | The column to use for the primary key (should be hashed) |
+| src_fk        | The foreign key columns that the make up the primary link key. This must be entered as a list of strings. | 
+| src_ldts      | The loaddate timestamp column of the record.             |
+| src_source    | The source column of the record.                         |
 
 An example of the metadata structure for a link is:
 
@@ -63,15 +148,15 @@ link_customer_nation:
 The metadata for satellites are different from that of links and hubs. The parameters the [sat](macros.md#sat) macro 
 accepts is:
 
-| Parameter    | Description                                                         | 
-| -------------| ------------------------------------------------------------------- | 
-| source       | The staging table that feeds the satellite (only single sources are used for satellites). |               | 
-| src_pk       | The primary key column of the table the satellite hangs off.        | 
-| src_hashdiff | The hashdiff column of the satellite's payload.                     |
-| src_payload  | The columns that make up the payload of the satellite and are used in the hashdiff. The columns must be entered as a list of strings. |
-| src_eff      | The effective from date column.                                          |
-| src_ldts     | The loaddate timestamp column of the record.                        |
-| src_source   | The source column of the record.                                     |
+| Parameter     | Description                                                         | 
+| ------------- | ------------------------------------------------------------------- | 
+| source_model | The staging table that feeds the satellite (only single sources are used for satellites). |               | 
+| src_pk        | The primary key column of the table the satellite hangs off.        | 
+| src_hashdiff  | The hashdiff column of the satellite's payload.                     |
+| src_payload   | The columns that make up the payload of the satellite and are used in the hashdiff. The columns must be entered as a list of strings. |
+| src_eff       | The effective from date column.                                          |
+| src_ldts      | The loaddate timestamp column of the record.                        |
+| src_source    | The source column of the record.                                     |
 
 An example of the metadata structure for a satellite is:
 
@@ -98,15 +183,15 @@ sat_order_customer_details:
 
 The [t_link](macros.md#t_link) macro accepts the following parameters:
 
-| Parameter    | Description                                                         | 
-| -------------| ------------------------------------------------------------------- | 
-| source       | The staging table that feeds the transactional link (only single sources are used for transactional links). |   
-| src_pk       | The primary key column of the transactional link.                   | 
-| src_fk       | The foreign key columns that the make up the primary link key. This must be enter as a list of strings |
-| src_payload  | The columns that make up and payload of the transactional link. The columns must be entered as a list of strings. |
-| src_eff      | The effective from date column.                                     |
-| src_ldts     | The loaddate timestamp column of the record.                        |
-| src_source   | The source column of the record.                                    |
+| Parameter     | Description                                                         | 
+| ------------- | ------------------------------------------------------------------- | 
+| source_model | The staging table that feeds the transactional link (only single sources are used for transactional links). |   
+| src_pk        | The primary key column of the transactional link.                   | 
+| src_fk        | The foreign key columns that the make up the primary link key. This must be enter as a list of strings |
+| src_payload   | The columns that make up and payload of the transactional link. The columns must be entered as a list of strings. |
+| src_eff       | The effective from date column.                                     |
+| src_ldts      | The loaddate timestamp column of the record.                        |
+| src_source    | The source column of the record.                                    |
 
 `dbt_project.yml`
 ```yaml

@@ -41,8 +41,8 @@ nav:
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
   - Changelog:
-    - Stable Releases: 'changelog/changelog.md'
-    - Beta Releases: 'changelog/changelog_beta.md'
+    - Stable Releases: 'changelog/stable.md'
+    - Beta Releases: 'changelog/beta.md'
   - Contributing: 'contributing.md'
   - Licence: 'LICENSE.md'
 
@@ -66,6 +66,9 @@ markdown_extensions:
       linenums: true
   - admonition
   - pymdownx.superfences
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      repo_url_shortener: true
   - pymdownx.emoji
   - toc:
       permalink: true

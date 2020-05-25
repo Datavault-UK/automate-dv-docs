@@ -4,12 +4,13 @@
 These macros are the core of the package and can be called in your models to build the different types of tables needed
 for your Data Vault.
 
-### hub
+### hub 
+([view source](https://github.com/Datavault-UK/dbtvault/pull/4#issuecomment-627631389))
 
 !!! note
     In v0.6, we have made changes to the hub macro sql. The hub macro now deals with multi date loads.   
 
-Generates sql to build a hub table using the provided metadata in your `dbt_project.yml`.
+Generates SQL to build a hub table using the provided metadata in your `dbt_project.yml`.
 
 ``` sql
 
@@ -432,78 +433,7 @@ Generates sql to build a staging area using the provided metadata in your `dbt_p
 
 #### Example YAML Metadata
 
-```yaml tab='All variables'
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:
-          source_model: "raw_source"
-          hashed_columns:
-            CUSTOMER_PK: "CUSTOMER_ID"
-            CUST_CUSTOMER_HASHDIFF:
-              hashdiff: true
-              columns:
-                - "CUSTOMER_DOB"
-                - "CUSTOMER_ID"
-                - "CUSTOMER_NAME"
-            CUSTOMER_HASHDIFF:
-              hashdiff: true
-              columns:
-                - "CUSTOMER_ID"
-                - "NATIONALITY"
-                - "PHONE"
-          derived_columns:
-            SOURCE: "!STG_BOOKING"
-            EFFECTIVE_FROM: "BOOKING_DATE"
-```
-
-```yaml tab="Only source"
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:
-          source_model: "raw_source"
-```
-
-```yaml tab='Only hashing'
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:
-          include_source_columns: false
-          source_model: "raw_source"
-          hashed_columns:
-            CUSTOMER_PK: CUSTOMER_ID
-            CUST_CUSTOMER_HASHDIFF:
-              hashdiff: true
-              columns:
-                - CUSTOMER_DOB
-                - CUSTOMER_ID
-                - CUSTOMER_NAME
-            CUSTOMER_HASHDIFF:
-              hashdiff: true
-              columns:
-                - CUSTOMER_ID
-                - NATIONALITY
-                - PHONE
-```
-
-
-```yaml tab="Only derived"
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:   
-          include_source_columns: false
-          source_model: "raw_source"
-          derived_columns:
-            SOURCE: "!STG_BOOKING"
-            EFFECTIVE_FROM: "BOOKING_DATE"
-```
+[See examples](metadata.md#staging)
 
 #### Example Output
 

@@ -7,11 +7,9 @@ Currently, we are only supporting one load date per load, as per the [prerequisi
 Until a future release solves this limitation, we suggest that if the raw staging layer has a mix of load dates, 
 create a view on it and filter by the load date column to ensure only a single load date value is present.
 
-For the next load you then can re-create the view with a different load date and run dbt again, or alternatively 
+For the next load you then re-create the view with a different load date and run dbt again, or alternatively 
 manage a 'water-level' table which tracks the last load date for each source, and is incremented each load cycle.
 Join to the table to soft-select the next load date.
-
-#### Staging
 
 The staging layer must include all columns which are required in the raw vault.
 
@@ -20,15 +18,14 @@ the raw vault. This means that everything is derived from the staging layer.
 
 ## Record source table code
 
-We suggest you use a code. This can be anything that makes sense for your particular context, though usually an
-integer or alpha-numeric value works well. The code is often used to look up the full table name in a table.
+We suggest you use a code for your record source. This can be anything that makes sense for your particular context, though usually an
+integer or alpha-numeric value works well. The code is often used to look up the full table name in a reference table.
 
 You may do this with dbtvault by providing the code as a constant in the [staging](tutorial/tut_staging.md) layer,
-using the [stage](macros.md#derive_columns) macro. The [staging walk-through](tutorial/tut_staging.md) presents this exact
+using the [stage](macros.md#stage) macro. The [staging walk-through](tutorial/tut_staging.md) presents this exact
 use-case in the code examples.
 
-If there is already a source in the raw staging layer, you may keep this or override it; 
-[stage](macros.md#stage) can do either.
+If there is already a source in the raw staging layer, you may keep this or override it using the [stage](macros.md#stage) macro.
 
 ## Hashing
 
@@ -38,15 +35,31 @@ If there is already a source in the raw staging layer, you may keep this or over
     
 ### The drawbacks of using MD5
 
-We are using md5 to calculate the hash in the macros above. If your table contains more than a few billion rows, 
-then there is a chance of a clash: where two different values generate the same hash value 
+By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros.md#hash) and [hash_columns](macros.md#hash_columns).
+If your table contains more than a few billion rows, then there is a chance of a clash: where two different values generate the same hash value 
 (see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collision_vulnerabilities)). 
 
 For this reason, it **should not be** used for cryptographic purposes either.
 
-!!! success "Good news"
+You can however, choose between MD5 and SHA-256 in dbtvault, [read below](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault),
+which will help with reducing the possibility of collision in larger data sets. 
     
-    You can choose between MD5 and SHA-256 in dbtvault, [read below](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault).
+#### Personally Identifiable Information (PII)
+
+Although we do not use hashing for the purposes of security (but rather optimisation and uniqueness) using unsalted MD5
+and SHA-256 could still pose a security risk for your organisation. If any of your presentation layer (marts) tables or views
+are accessed with malicious intent and any hashed PII is held in the data, an attacker may be able to brute-force the hashing to 
+gain access to the PII. For this reason, we highly recommend concatenating a salt to your hashed columns in the staging layer using
+the [stage](macros.md#stage) macro. 
+
+It's generally ill-advised to store this salt in the database alongside your hashed values, so we recommend injecting it as
+an environment variable for dbt to access via the [env_var jinja context macro](https://docs.getdbt.com/docs/writing-code-in-dbt/jinja-context/env_var/).
+
+This salt **must** be a constant, as we still need to ensure that the same value produces the same hash each and every time for
+so that we may reliably look-up and reference the hashed values. The salt could be an (initially) randomly generated 128-bit string, for example, which is then
+never changed and stored securely in a secrets manager. 
+
+In future, we plan to develop a helper macro for achieving these salted hashes, to cater to this use case.
 
 ### Why do we hash?
 
@@ -69,7 +82,35 @@ Columns are sorted by their alias.
 
 ### How do we hash?
 
-TODO
+Our hashing approach is designed to standardise the hashing process, and ensure hashing is kept consistent across
+a data warehouse. 
+
+When we hash single columns, we take the following approach:
+
+```sql 
+CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(BOOKING_REF AS VARCHAR))), ''))) AS BINARY(16)) AS BOOKING_PK
+```
+
+Single-column hashing step by step:
+
+1. `CAST` to `VARCHAR` First we ensure that all data is treated the same way in the next steps by casting everything to
+strings (`VARCHAR`). For example, this means that the number 1001 and the string '1001' will always hash to the same value.
+
+2. `TRIM` We trim whitespace from string to ensure that values with arbitrary leading or trailing whitespace will
+always hash to the same value. For example `1001    ` and `1001 `. 
+
+3. `UPPER` Next we eliminate problems where the casing in a string will cause a different hash value to be generated for
+the same word, for example `DBTVAULT` and `dbtvault`.
+
+4. `NULLIF ''` At this point we ensure that if an empty string has been provided, it is considered to be `NULL`. This kind of problem
+can arise if data is ingested into your warehouse from semi-structured data such as JSON or CSV, where `NULL` values can sometimes be encoded as empty strings.
+
+5. `MD5_BINARY` At this point, we are ready to perform a hashing process on the string, having cleaned and normalised it. 
+This will not necessarily use `MD5_BINARY` if you have chosen to use `SHA`, in which case the `SHA2_BINARY` function will be used.
+
+6. `CAST AS BINARY` We then store it as a `BINARY` datatype
+
+[We plan to make hashing more configurable in the future](https://github.com/Datavault-UK/dbtvault/pull/4)
 
 ### Hashing best practices
 
@@ -131,4 +172,5 @@ Read the [dbt documentation](https://docs.getdbt.com/v0.15.0/docs/var) for furth
 
 !!! warning
     Stick with your chosen algorithm unless you can afford to full-refresh and you still have access to source data.
-    Changing between hashing configurations when data has already been loaded will require a full-refresh of your models.
+    Changing between hashing configurations when data has already been loaded will require a full-refresh 
+    of your models in order to re-calculate all hashes.
