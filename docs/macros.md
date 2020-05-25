@@ -4,7 +4,7 @@
 These macros are the core of the package and can be called in your models to build the different types of tables needed
 for your Data Vault.
 
-### hub 
+### hub
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/tables/hub.sql))
 
 !!! note
@@ -57,14 +57,14 @@ WITH STG AS (
             PARTITION BY b.CUSTOMER_PK
             ORDER BY b.LOADDATE, b.SOURCE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_orders AS b
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_orders AS b
         WHERE b.CUSTOMER_PK IS NOT NULL
     ) AS a
     WHERE RN = 1
 )
 
 SELECT c.* FROM STG AS c
-LEFT JOIN MYDATABASE.MYSCHEMA.hub_customer AS d 
+LEFT JOIN MY_DATABASE.MY_SCHEMA.hub_customer AS d 
 ON c.CUSTOMER_PK = d.CUSTOMER_PK
 WHERE d.CUSTOMER_PK IS NULL
 ```
@@ -79,7 +79,7 @@ WITH STG_1 AS (
             PARTITION BY PART_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_parts
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_parts
     ) AS a
     WHERE RN = 1
 ),
@@ -92,7 +92,7 @@ STG_2 AS (
             PARTITION BY PART_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_supplier
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_supplier
     ) AS a
     WHERE RN = 1
 ),
@@ -105,7 +105,7 @@ STG_3 AS (
             PARTITION BY PART_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_lineitem
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_lineitem
     ) AS a
     WHERE RN = 1
 ),
@@ -132,7 +132,7 @@ STG AS (
 
 SELECT c.* FROM STG AS c
 ```
-___
+___a
 
 ### link
 
@@ -183,7 +183,7 @@ WITH STG AS (
             PARTITION BY b.CUSTOMER_NATION_PK
             ORDER BY b.LOADDATE, b.SOURCE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_orders AS b
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_orders AS b
         WHERE
         b.CUSTOMER_FK IS NOT NULL AND
         b.NATION_FK IS NOT NULL
@@ -192,7 +192,7 @@ WITH STG AS (
 )
 
 SELECT c.* FROM STG AS c
-LEFT JOIN MYDATABASE.MYSCHEMA.link_customer_nation_current AS d 
+LEFT JOIN MY_DATABASE.MY_SCHEMA.link_customer_nation_current AS d 
 ON c.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
 WHERE d.CUSTOMER_NATION_PK IS NULL
 ```
@@ -207,7 +207,7 @@ WITH STG_1 AS (
             PARTITION BY CUSTOMER_NATION_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_customer_sap
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_customer_sap
     ) AS a
     WHERE RN = 1
 ),
@@ -220,7 +220,7 @@ STG_2 AS (
             PARTITION BY CUSTOMER_NATION_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_customer_crm
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_customer_crm
     ) AS a
     WHERE RN = 1
 ),
@@ -233,7 +233,7 @@ STG_3 AS (
             PARTITION BY CUSTOMER_NATION_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM MYDATABASE.MYSCHEMA.v_stg_customer_web
+        FROM MY_DATABASE.MY_SCHEMA.v_stg_customer_web
     ) AS a
     WHERE RN = 1
 ),
@@ -315,7 +315,7 @@ SELECT DISTINCT
                     e.EFFECTIVE_FROM,
                     e.LOADDATE,
                     e.SOURCE
-FROM MYDATABASE.MYSCHEMA.v_stg_orders AS e
+FROM MY_DATABASE.MY_SCHEMA.v_stg_orders AS e
 LEFT JOIN (
     SELECT d.CUSTOMER_PK, d.CUSTOMER_HASHDIFF, d.NAME, d.ADDRESS, d.PHONE, d.ACCBAL, d.MKTSEGMENT, d.COMMENT, d.EFFECTIVE_FROM, d.LOADDATE, d.SOURCE
     FROM (
@@ -326,8 +326,8 @@ LEFT JOIN (
           THEN 'Y' ELSE 'N' END CURR_FLG
           FROM (
             SELECT a.CUSTOMER_PK, a.CUSTOMER_HASHDIFF, a.NAME, a.ADDRESS, a.PHONE, a.ACCBAL, a.MKTSEGMENT, a.COMMENT, a.EFFECTIVE_FROM, a.LOADDATE, a.SOURCE
-            FROM MYDATABASE.MYSCHEMA.sat_order_customer_details as a
-            JOIN MYDATABASE.MYSCHEMA.v_stg_orders as b
+            FROM MY_DATABASE.MY_SCHEMA.sat_order_customer_details as a
+            JOIN MY_DATABASE.MY_SCHEMA.v_stg_orders as b
             ON a.CUSTOMER_PK = b.CUSTOMER_PK
           ) as c
     ) AS d
@@ -387,9 +387,9 @@ SELECT DISTINCT
                     stg.SOURCE
 FROM (
       SELECT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.ORDER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOADDATE, stg.SOURCE
-      FROM MYDATABASE.MYSCHEMA.v_stg_transactions AS stg
+      FROM MY_DATABASE.MY_SCHEMA.v_stg_transactions AS stg
 ) AS stg
-LEFT JOIN MYDATABASE.MYSCHEMA.t_link_transactions AS tgt
+LEFT JOIN MY_DATABASE.MY_SCHEMA.t_link_transactions AS tgt
 ON stg.TRANSACTION_PK = tgt.TRANSACTION_PK
 WHERE tgt.TRANSACTION_PK IS NULL
 ```
