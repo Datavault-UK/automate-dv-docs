@@ -147,27 +147,62 @@ to improve code readability.
 The invocation of the hub and link macros have not changed aside from the variable change stated above. 
 The old invocations of the macros were:
 
-```sql
+```sql tab='Old hub invocation'
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
                 var('src_source'), var('source'))                      }}
 ```
 
-```sql
+```sql tab='Old link invocation'
 {{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'),
                  var('src_source'), var('source'))                     }}
 ```
 
 The new invocation of the macros is now:
 
-```sql hl_lines="2"
+```sql tab='New hub invocation'
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source_model'))               }}
+                var('src_source'), var('source_model'))                }}
 ```
 
-```sql hl_lines="2"
+```sql tab='New link invocation'
 {{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'),
-                 var('src_source'), var('source_model'))              }}
+                 var('src_source'), var('source_model'))               }}
 ```
+
+## Other table macros
+
+The t-links and satellites have not changed, other than their invocation.
+
+Old invocation:
+
+```sql tab='Old t-link invocation'
+{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                   var('src_eff'), var('src_ldts'), var('src_source'),
+                   var('source')) }}            
+```
+
+```sql tab='Old sat invocation'
+{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                var('src_eff'), var('src_ldts'), var('src_source'),
+                var('source'))                                   }}
+```
+
+
+New invocation:
+
+```sql tab='New t-link invocation'
+{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                   var('src_eff'), var('src_ldts'), var('src_source'),
+                   var('source_model')) }}            
+```
+
+```sql tab='New sat invocation'
+{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                var('src_eff'), var('src_ldts'), var('src_source'),
+                var('source_model'))                                   }}
+```
+
 
 !!! tip "Coming soon"
     Soon, we will be upgrading the remaining table macros to provide multi-date loading functionality, stay tuned!
+
