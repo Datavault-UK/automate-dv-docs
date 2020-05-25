@@ -5,7 +5,7 @@ These macros are the core of the package and can be called in your models to bui
 for your Data Vault.
 
 ### hub 
-([view source](https://github.com/Datavault-UK/dbtvault/pull/4#issuecomment-627631389))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/tables/hub.sql))
 
 !!! note
     In v0.6, we have made changes to the hub macro sql. The hub macro now deals with multi date loads.   
