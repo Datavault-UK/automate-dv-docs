@@ -19,6 +19,11 @@ Generates sql to build a hub table using the provided metadata in your `dbt_proj
 
 #### Parameters
 
+!!! note 
+    Due to suggestions stating that the ```source``` var in the YAML file was causing confusion. We have decided to 
+    refactor this into ```source_model``` to reduce confusion and add more clarity to the usage of dbtvault. Please see
+    the YAML usage for examples.
+
 | Parameter     | Description                                         | Type (Single-Source) | Type (Multi-Source) | Required?                                                          |
 | ------------- | --------------------------------------------------- | -------------------- | ------------------- | ------------------------------------------------------------------ |
 | src_pk        | Source primary key column                           | String               | String              | <i class="md-icon" alt="Yes" style="color: green">check_circle</i> |
@@ -37,10 +42,6 @@ Generates sql to build a hub table using the provided metadata in your `dbt_proj
 
 #### Example YAML Metadata
 
-!!! note 
-    Due to suggestions stating that the ```source``` var in the YAML file was causing confusion. We have decided to 
-    refactor this into ```source_model``` to reduce confusion and add more clarity to the usage of dbtvault.
-
 [See examples](metadata.md#hubs)
 
 #### Example Output
@@ -55,13 +56,16 @@ WITH STG AS (
             PARTITION BY b.CUSTOMER_PK
             ORDER BY b.LOADDATE, b.SOURCE ASC
         ) AS RN
-        FROM DBT_VAULT.TEST_stg.test_stg_customer_hashed_hubs_current AS b
+        FROM MYDATABASE.MYSCHEMA.v_stg_orders AS b
         WHERE b.CUSTOMER_PK IS NOT NULL
     ) AS a
     WHERE RN = 1
 )
 
 SELECT c.* FROM STG AS c
+LEFT JOIN MYDATABASE.MYSCHEMA.hub_customer AS d 
+ON c.CUSTOMER_PK = d.CUSTOMER_PK
+WHERE d.CUSTOMER_PK IS NULL
 ```
 
 ```mysql tab='Multi-Source'
@@ -74,7 +78,7 @@ WITH STG_1 AS (
             PARTITION BY PART_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM DBT_VAULT.TEST_stg.test_stg_parts_hashed_current
+        FROM MYDATABASE.MYSCHEMA.v_stg_parts
     ) AS a
     WHERE RN = 1
 ),
@@ -87,7 +91,7 @@ STG_2 AS (
             PARTITION BY PART_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM DBT_VAULT.TEST_stg.test_stg_supplier_hashed_current
+        FROM MYDATABASE.MYSCHEMA.v_stg_supplier
     ) AS a
     WHERE RN = 1
 ),
@@ -100,7 +104,7 @@ STG_3 AS (
             PARTITION BY PART_PK
             ORDER BY LOADDATE ASC
         ) AS RN
-        FROM DBT_VAULT.TEST_stg.test_stg_lineitem_hashed_current
+        FROM MYDATABASE.MYSCHEMA.v_stg_lineitem
     ) AS a
     WHERE RN = 1
 ),
@@ -131,6 +135,9 @@ ___
 
 ### link
 
+!!! note
+    In v0.6, we have made changes to the link macro sql. The link macro now deals with multi date loads. 
+
 Generates sql to build a link table using the provided metadata in your `dbt_project.yml`.
 ``` sql
 {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
@@ -138,6 +145,11 @@ Generates sql to build a link table using the provided metadata in your `dbt_pro
 ```
 
 #### Parameters
+
+!!! note 
+    Due to suggestions stating that the ```source``` var in the YAML file was causing confusion. We have decided to 
+    refactor this into ```source_model``` to reduce confusion and add more clarity to the usage of dbtvault. Please see
+    the YAML usage for examples.
 
 | Parameter     | Description                                         | Type (Single-Source) | Type (Union)         | Required?                                                          |
 | ------------- | --------------------------------------------------- | ---------------------| ---------------------| ------------------------------------------------------------------ |
@@ -161,45 +173,93 @@ Generates sql to build a link table using the provided metadata in your `dbt_pro
 #### Example Output
 
 ```mysql tab='Single-Source'
-SELECT DISTINCT 
-                    stg.LINK_CUSTOMER_NATION_PK,
-                    stg.CUSTOMER_PK,
-                    stg.NATION_PK,
-                    stg.LOADDATE,
-                    stg.SOURCE
-FROM (
-    SELECT a.LINK_CUSTOMER_NATION_PK, a.CUSTOMER_PK, a.NATION_PK, a.LOADDATE, a.SOURCE
-      FROM MYDATABASE.MYSCHEMA.v_stg_orders AS a
-) AS stg
-LEFT JOIN MYDATABASE.MYSCHEMA.link_customer_nation AS tgt
-ON stg.LINK_CUSTOMER_NATION_PK = tgt.LINK_CUSTOMER_NATION_PK
-WHERE tgt.LINK_CUSTOMER_NATION_PK IS NULL
+WITH STG AS (
+    SELECT DISTINCT
+    a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
+    FROM (
+        SELECT b.*,
+        ROW_NUMBER() OVER(
+            PARTITION BY b.CUSTOMER_NATION_PK
+            ORDER BY b.LOADDATE, b.SOURCE ASC
+        ) AS RN
+        FROM MYDATABASE.MYSCHEMA.v_stg_orders AS b
+        WHERE
+        b.CUSTOMER_FK IS NOT NULL AND
+        b.NATION_FK IS NOT NULL
+    ) AS a
+    WHERE RN = 1
+)
+
+SELECT c.* FROM STG AS c
+LEFT JOIN MYDATABASE.MYSCHEMA.link_customer_nation_current AS d 
+ON c.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
+WHERE d.CUSTOMER_NATION_PK IS NULL
 ```
 
 ```mysql tab='Union'
-SELECT DISTINCT 
-                    stg.NATION_REGION_PK,
-                    stg.NATION_PK,
-                    stg.REGION_PK,
-                    stg.LOADDATE,
-                    stg.SOURCE
-FROM (
-    SELECT src.NATION_REGION_PK, src.NATION_PK, src.REGION_PK, src.LOADDATE, src.SOURCE,
-    LAG(SOURCE, 1)
-    OVER(PARTITION by NATION_REGION_PK
-    ORDER BY NATION_REGION_PK) AS FIRST_SOURCE
+WITH STG_1 AS (
+    SELECT DISTINCT
+    a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
     FROM (
-      SELECT a.NATION_REGION_PK, a.NATION_PK, a.REGION_PK, a.LOADDATE, a.SOURCE
-      FROM MYDATABASE.MYSCHEMA.v_stg_orders AS a
-      UNION
-      SELECT b.NATION_REGION_PK, b.NATION_PK, b.REGION_PK, b.LOADDATE, b.SOURCE
-      FROM MYDATABASE.MYSCHEMA.v_stg_inventory AS b
-      ) AS src
-) AS stg
-LEFT JOIN MYDATABASE.MYSCHEMA.link_nation_region AS tgt
-ON stg.NATION_REGION_PK = tgt.NATION_REGION_PK
-WHERE tgt.NATION_REGION_PK IS NULL
-AND stg.FIRST_SOURCE IS NULL
+        SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOADDATE, SOURCE,
+        ROW_NUMBER() OVER(
+            PARTITION BY CUSTOMER_NATION_PK
+            ORDER BY LOADDATE ASC
+        ) AS RN
+        FROM MYDATABASE.MYSCHEMA.v_stg_customer_sap
+    ) AS a
+    WHERE RN = 1
+),
+STG_2 AS (
+    SELECT DISTINCT
+    a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
+    FROM (
+        SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOADDATE, SOURCE,
+        ROW_NUMBER() OVER(
+            PARTITION BY CUSTOMER_NATION_PK
+            ORDER BY LOADDATE ASC
+        ) AS RN
+        FROM MYDATABASE.MYSCHEMA.v_stg_customer_crm
+    ) AS a
+    WHERE RN = 1
+),
+STG_3 AS (
+    SELECT DISTINCT
+    a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
+    FROM (
+        SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOADDATE, SOURCE,
+        ROW_NUMBER() OVER(
+            PARTITION BY CUSTOMER_NATION_PK
+            ORDER BY LOADDATE ASC
+        ) AS RN
+        FROM MYDATABASE.MYSCHEMA.v_stg_customer_web
+    ) AS a
+    WHERE RN = 1
+),
+STG AS (
+    SELECT DISTINCT
+    b.CUSTOMER_NATION_PK, b.CUSTOMER_FK, b.NATION_FK, b.LOADDATE, b.SOURCE
+    FROM (
+        SELECT *,
+        ROW_NUMBER() OVER(
+            PARTITION BY CUSTOMER_NATION_PK
+            ORDER BY LOADDATE, SOURCE ASC
+        ) AS RN
+        FROM (
+            SELECT * FROM STG_1
+            UNION ALL
+            SELECT * FROM STG_2
+            UNION ALL
+            SELECT * FROM STG_3
+        )
+        WHERE
+        CUSTOMER_FK IS NOT NULL AND
+        NATION_FK IS NOT NULL
+    ) AS b
+    WHERE RN = 1
+)
+
+SELECT c.* FROM STG AS c
 ```
 
 ___
