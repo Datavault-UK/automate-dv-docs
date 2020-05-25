@@ -68,9 +68,7 @@ markdown_extensions:
   - pymdownx.magiclink:
       repo_url_shorthand: true
       repo_url_shortener: true
-  - pymdownx.emoji:
-      emoji_index: "!!python/name:materialx.emoji.twemoji"
-      emoji_generator: "!!python/name:materialx.emoji.to_svg"
+  - pymdownx.emoji
   - toc:
       permalink: true
       toc_depth: 1-3
@@ -80,5 +78,6 @@ plugins:
 
 extra_css:
   - 'stylesheets/extra.css'
+  - 'stylesheets/all.css'
 
 copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2020 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics
