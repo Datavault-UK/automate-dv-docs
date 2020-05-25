@@ -35,3 +35,11 @@ a.btn {
 .btn:hover {
   background-color: #7B4B87;
 }
+
+.required {
+    color: green
+}
+
+.not-required {
+    color: red
+}
