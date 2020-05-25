@@ -135,6 +135,7 @@ SELECT c.* FROM STG AS c
 ___a
 
 ### link
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/tables/link.sql))
 
 !!! note
     In v0.6, we have made changes to the link macro sql. The link macro now deals with multi date loads. 
@@ -266,6 +267,7 @@ SELECT c.* FROM STG AS c
 ___
 
 ### sat
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/tables/sat.sql))
 
 Generates sql to build a satellite table using the provided metadata in your `dbt_project.yml`.
 
@@ -338,6 +340,7 @@ WHERE src.CUSTOMER_HASHDIFF IS NULL
 ___
 
 ### t_link
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/tables/t_link.sql))
 
 Generates sql to build a transactional link table using the provided metadata in your `dbt_project.yml`.
 
@@ -410,6 +413,7 @@ These macros are intended for use in the staging layer.
 ___
 
 ### stage
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/staging/stage.sql))
 
 Generates sql to build a staging area using the provided metadata in your `dbt_project.yml`.
 
@@ -522,6 +526,7 @@ FROM MY_DATABASE.MY_SCHEMA.raw_source
 ___
 
 ### hash_columns
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/staging/hash_columns.sql))
 
 Generates sql to create hashes from provided columns.
 
@@ -607,6 +612,7 @@ FROM MY_DATABASE.MY_SCHEMA.raw_source
 ```
 
 ### derive_columns
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/staging/derive_columns.sql))
 
 ___
 
@@ -619,6 +625,7 @@ are used extensively in the [table templates](#table-templates) and may be used 
 ___
 
 ### cast
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/supporting/cast.sql))
 
 A macro for generating cast sequences:
 
@@ -668,6 +675,7 @@ CAST(stg.SOURCE AS VARCHAR(15)) AS SOURCE
 ___
 
 ### hash
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/supporting/hash.sql))
 
 !!! warning
     This macro ***should not be*** used for cryptographic purposes.
@@ -736,6 +744,7 @@ CAST(SHA2_BINARY(CONCAT(IFNULL(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR))), '^^'),
 ___
 
 ### prefix
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string:
 ```mysql
