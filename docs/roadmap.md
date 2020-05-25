@@ -23,6 +23,18 @@ These features are currently planned for the near-future:
 
 In future releases, we hope to include the following:
 
+### Platform support
+
+- Google BigQuery
+- Microsoft SQL Server
+- Amazon Redshift
+- Postgres 
+
+!!! tip "Google BigQuery Support"
+    We're looking to add BigQuery support soon. If you'd like to contribute we are happy to consider pull requests.
+    You can also [join our slack](https://dbtvault.slack.com/join/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA#/)
+    and get involved, we have a channel specifically for it!
+    
 ### Tables
 
 - Multi-active satellites
@@ -33,6 +45,7 @@ In future releases, we hope to include the following:
 - Mart loading helpers
 - And more!
 
+    
 ### Additional features
 
 - Auditing 

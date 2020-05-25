@@ -403,7 +403,9 @@ ___
 
 This macro has not yet been released, it needs some further development. 
 
-If you would like to test it out, it is available in [v0.6-b2](https://dbtvault.readthedocs.io/en/v0.6-b2/macros/#eff_sat). 
+If you would like to test it out, it is available in [v0.6-b2](https://dbtvault.readthedocs.io/en/v0.6-b2/macros/#eff_sat).
+
+We're working on significant improvements to this macro, stay tuned! 
 
 ___
 
