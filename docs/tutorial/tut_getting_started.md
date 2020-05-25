@@ -1,5 +1,3 @@
-## Introduction
-
 !!! info
     This walk-through intends to give you a detailed understanding of how to use 
     dbtvault and the provided macros to develop a Data Vault Data Warehouse from the ground up. 
@@ -24,7 +22,7 @@ We will:
 3. You must have downloaded and installed dbt 0.15.2,
 and [set up a project](https://docs.getdbt.com/v0.15.0/docs/dbt-projects).
 
-4. Sources should be set up in dbt [(see below)](wt_getting_started.md#setting-up-sources-in-dbt).
+4. Sources should be set up in dbt [(see below)](tut_getting_started.md#setting-up-sources-in-dbt).
 
 5. We assume you already have a raw staging layer.
 
@@ -50,12 +48,11 @@ in the root of your ```models``` folder, however you can place it wherever neede
 version: 2
 
 sources:
-  - name: MYSOURCE
-    database: MYDATABASE
-    schema: MYSCHEMA
+  - name: my_source
+    database: MY_DATABASE
+    schema: MY_SCHEMA
     tables:
-      - name: stg_customer # alias
-        identifier: stg_customer_hashed # table name
+      - name: raw_orders
       - name: ...
 ```
 

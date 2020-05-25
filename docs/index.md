@@ -86,5 +86,5 @@ You can get further information about the Data Vault 2.0 method from the followi
 
 We keep an up-to-date log of past and planned changes:
 
-- [Changelog](changelog/changelog.md)
+- [Changelog](changelog/stable.md)
 - [Roadmap](roadmap.md)

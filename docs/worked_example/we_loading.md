@@ -1,3 +1,7 @@
+!!! warning
+    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
+    In the meantime, the demo will still work, but with outdated macros.
+
 We can begin loading our vault now that we have a staging layer with all of the columns we require.
 
 ## Hubs
@@ -14,7 +18,7 @@ order number (can be multi-column).
 3. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
 
 4. The source for the record, a code identifying where the data comes from. 
-(i.e. ```1``` from the [previous section](../walkthrough/wt_staging.md#adding-the-footer), which is the code fo stg_customer)
+(i.e. ```1``` from the [previous section](../tutorial/tut_staging.md#adding-the-footer), which is the code fo stg_customer)
 
 ### Loading Hubs
 

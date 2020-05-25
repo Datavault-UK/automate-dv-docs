@@ -68,8 +68,8 @@ Using our knowledge of what columns we need in our ```sat_customer_details``` ta
 staging layer which map to them:
 
 1. The primary key of the parent hub or link table,  which is a hashed natural key. 
-The ```CUSTOMER_PK``` we created earlier in the [staging](wt_staging.md) section will be used for ```sat_customer_details```.
-2. A hashdiff. We created ```CUSTOMER_HASHDIFF``` in [staging](wt_staging.md) earlier, which we will use here.
+The ```CUSTOMER_PK``` we created earlier in the [staging](tut_staging.md) section will be used for ```sat_customer_details```.
+2. A hashdiff. We created ```CUSTOMER_HASHDIFF``` in [staging](tut_staging.md) earlier, which we will use here.
 3. Some payload columns: ```CUSTOMER_NAME```, ```CUSTOMER_DOB```, ```CUSTOMER_PHONE``` which should be present in the 
 raw staging layer via an [add_columns](../macros.md#add_columns) macro call.
 4. An ```EFFECTIVE_FROM``` column, also added in staging. 
@@ -125,4 +125,4 @@ And our table will look like this:
 
 ### Next steps
 
-We have now created a staging layer and a hub, link and satellite. Next we will look at [transactional links](wt_t_links.md).
+We have now created a staging layer and a hub, link and satellite. Next we will look at [transactional links](tut_t_links.md).

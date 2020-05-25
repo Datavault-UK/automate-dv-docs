@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     All releases listed here are beta releases and **must be used with care**. 
     Whilst we have thoroughly tested the code, we cannot guarantee an absence of issues. 
     
-    Thank you for testing our package, if you find any issues, please report them on our 
+    Thank you for trying out our package, if you find any issues, please report them on our 
     [Github](https://github.com/Datavault-UK/dbtvault/issues) repo.
 
 ## [v0.6-b2] - 2020-04-15

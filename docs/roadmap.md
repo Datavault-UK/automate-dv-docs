@@ -9,17 +9,32 @@ We will be releasing changes incrementally, so you can reap the benefits as soon
 - Do you have some ideas? [Let us know what you want added](https://github.com/Datavault-UK/dbtvault/issues)
 - Want to contribute your own work? [Read our contribution guidelines](https://github.com/Datavault-UK/dbtvault/blob/master/CONTRIBUTING.md)
 
-## Coming soon
+## Coming soon (next release)
 
-These features are currently planned for the near-future, 
-and are available now in a beta release (v0.6b2)
+These features are currently planned for the near-future:
 
-- Effectivity satellites, [try it out now!](changelog/changelog_beta.md)
+- Effectivity satellites, [try it out now!](changelog/beta.md)
+- Custom materialization for periodic loading similar to the 
+[dbt_utils offering for Redshift](https://github.com/fishtown-analytics/dbt-utils/blob/master/README.md#insert_by_period-source)
+- Removal of single-day loading restrictions ([v0.6 already adds this for Hubs and Links](migration_guides/migrating_v0.5_v0.6.md#table-macros)
+- Multiple dispatch to open up future database support
 
 ## Future releases
 
 In future releases, we hope to include the following:
 
+### Platform support
+
+- Google BigQuery
+- Microsoft SQL Server
+- Amazon Redshift
+- Postgres 
+
+!!! tip "Google BigQuery Support"
+    We're looking to add BigQuery support soon. If you'd like to contribute we are happy to consider pull requests.
+    You can also [join our slack](https://dbtvault.slack.com/join/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA#/)
+    and get involved, we have a channel specifically for it!
+    
 ### Tables
 
 - Multi-active satellites
@@ -28,15 +43,11 @@ In future releases, we hope to include the following:
 - Bridge tables
 - Reference Tables
 - Mart loading helpers
-- Custom materialization for periodic loading similar to the 
-[dbt_utils offering for Redshift](https://github.com/fishtown-analytics/dbt-utils/blob/master/README.md#insert_by_period-source)
 - And more!
 
-### Improvements
-
-- Staging re-work (move to YAML)
-
+    
 ### Additional features
 
 - Auditing 
 - Logging
+- Global configuration options (particularly around column naming)
