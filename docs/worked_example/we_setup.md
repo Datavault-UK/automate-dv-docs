@@ -1,3 +1,7 @@
+!!! warning
+    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
+    In the meantime, the demo will still work, but with outdated macros.
+    
 ## Download the demonstration project
 
 Assuming you already have a python environment installed, the next step is to download the latest 

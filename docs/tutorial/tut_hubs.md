@@ -10,7 +10,7 @@ order number (can be multi-column).
 3. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
 
 4. The source for the record, a code identifying where the data comes from. 
-(i.e. `1` from the [previous section](wt_staging.md#adding-the-footer), which is the code fo stg_customer)
+(i.e. `1` from the [previous section](tut_staging.md#adding-the-footer), which is the code fo stg_customer)
 
 ### Setting up hub models
 
@@ -61,7 +61,7 @@ Next, we define the columns which we would like to bring from the source.
 Using our knowledge of what columns we need in our  `hub_customer` table, we can identify columns in our
 staging layer which we will then use to form our hub:
 
-1. A primary key, which is a hashed natural key. The `CUSTOMER_PK` we created earlier in the [staging](wt_staging.md) 
+1. A primary key, which is a hashed natural key. The `CUSTOMER_PK` we created earlier in the [staging](tut_staging.md) 
 section will be used for `hub_customer`.
 2. The natural key, `CUSTOMER_ID` which we added using the [stage](../macros.md#stage) macro.
 3. A load date timestamp, which is present in the staging layer as `LOADDATE`
@@ -122,7 +122,7 @@ so we union the separate sources together and load them as one.
 The data can and should be combined because these records have a related key, and are related to the same business concept. 
 We can union the tables on that key, and create a hub containing a complete record set.
 
-We'll need to have a [staging model](wt_staging.md) for each of the sources involved, 
+We'll need to have a [staging model](tut_staging.md) for each of the sources involved, 
 and provide them as a list of strings in the `dbt_project.yml` file as shown below.
 
 !!! note
@@ -149,4 +149,4 @@ hub_nation:
 
 ### Next steps
 
-We have now created a staging layer and a hub. Next we will look at [links](wt_links.md), which are created in a similar way.
+We have now created a staging layer and a hub. Next we will look at [links](tut_links.md), which are created in a similar way.

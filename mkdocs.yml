@@ -20,14 +20,13 @@ theme:
 nav:
   - Home: 'index.md'
   - Metadata: 'metadata.md'
-  - Walk-through guide:
-      - Getting Started: 'walkthrough/wt_getting_started.md'
-      - Staging: 'walkthrough/wt_staging.md'
-      - Hubs: 'walkthrough/wt_hubs.md'
-      - Links: 'walkthrough/wt_links.md'
-      - Satellites: 'walkthrough/wt_satellites.md'
-      - Transactional Links: 'walkthrough/wt_t_links.md'
-      - Effectivity Satellites: 'walkthrough/wt_eff_sats.md'
+  - Step-by-step tutorial:
+      - Getting Started: 'tutorial/tut_getting_started.md'
+      - Staging: 'tutorial/tut_staging.md'
+      - Hubs: 'tutorial/tut_hubs.md'
+      - Links: 'tutorial/tut_links.md'
+      - Satellites: 'tutorial/tut_satellites.md'
+      - Transactional Links: 'tutorial/tut_t_links.md'
   - Worked example:
     - Getting Started: 'worked_example/we_worked_example.md'
     - Project setup: 'worked_example/we_setup.md'

@@ -2,7 +2,7 @@ We advise you follow these best practises when using dbtvault.
 
 ## Staging
 
-Currently, we are only supporting one load date per load, as per the [prerequisites](walkthrough/wt_getting_started.md#pre-requisites).
+Currently, we are only supporting one load date per load, as per the [prerequisites](tutorial/tut_getting_started.md#pre-requisites).
 
 Until a future release solves this limitation, we suggest that if the raw staging layer has a mix of load dates, 
 create a view on it and filter by the load date column to ensure only a single load date value is present.
@@ -23,8 +23,8 @@ the raw vault. This means that everything is derived from the staging layer.
 We suggest you use a code. This can be anything that makes sense for your particular context, though usually an
 integer or alpha-numeric value works well. The code is often used to look up the full table name in a table.
 
-You may do this with dbtvault by providing the code as a constant in the [staging](walkthrough/wt_staging.md) layer,
-using the [stage](macros.md#derive_columns) macro. The [staging walk-through](walkthrough/wt_staging.md) presents this exact
+You may do this with dbtvault by providing the code as a constant in the [staging](tutorial/tut_staging.md) layer,
+using the [stage](macros.md#derive_columns) macro. The [staging walk-through](tutorial/tut_staging.md) presents this exact
 use-case in the code examples.
 
 If there is already a source in the raw staging layer, you may keep this or override it; 

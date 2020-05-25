@@ -1,7 +1,6 @@
-## Introduction
-
 !!! warning
     As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
+    In the meantime, the demo will still work, but with outdated macros.
 
 In this section we demonstrate dbtvault by example. We guide you through developing a 
 Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbtvault models.
@@ -10,7 +9,7 @@ This demonstration was developed to give users a further understanding of how db
 a Data Vault using an actual data set.  
 
 For a more detailed guide on how to use the provided macros create your own Data Vault using dbtvault, 
-with a simplified example, take a look at our [walk-through](../walkthrough/wt_getting_started.md) guide.
+with a simplified example, take a look at our [walk-through](../tutorial/tut_getting_started.md) guide.
 
 We will:
 
@@ -22,7 +21,7 @@ We will:
 
 ## Pre-requisites
 
-These pre-requisites are separate from those found on the [getting started](../walkthrough/wt_getting_started.md) page and will 
+These pre-requisites are separate from those found on the [getting started](../tutorial/tut_getting_started.md) page and will 
 be the only necessary requirements you will need to get started with the example project. 
 
 1. Some prior knowledge of Data Vault 2.0 architecture. Have a look at

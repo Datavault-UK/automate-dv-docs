@@ -271,7 +271,7 @@ Generates sql to build a satellite table using the provided metadata in your `db
 ``` sql
 {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
                 var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source_moddel'))                                   }}
+                var('source_model'))                                   }}
 ```
 
 #### Parameters
@@ -292,7 +292,7 @@ Generates sql to build a satellite table using the provided metadata in your `db
 ``` sql
 {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
                 var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source_moddel'))                                   }}
+                var('source_model'))                                   }}
 ```
 
 #### Example YAML Metadata
@@ -589,10 +589,92 @@ BOOKING_DATE AS EFFECTIVE_FROM
 FROM MY_DATABASE.MY_SCHEMA.raw_source
 ```
 
-
 ___
 
 ### hash_columns
+
+Generates sql to create hashes from provided columns.
+
+#### Parameters
+
+| Parameter              | Description                                       | Type           | Default    | Required?                                                          |
+| ---------------------- | ------------------------------------------------- | -------------- | ---------- | ------------------------------------------------------------------ |
+| include_source_columns | If true, select all columns in the `source_model` | Boolean        | true       | <i class="md-icon" style="color: red">clear</i>                    |
+| source_model           | Staging model name                                | String/Mapping | N/A        | <i class="md-icon" alt="Yes" style="color: green">check_circle</i> |
+| hashed_columns         | Mappings of hashes to their component columns     | String/Mapping | none       | <i class="md-icon" style="color: red">clear</i>                    |
+| derived_columns        | Mappings of constants to their source columns     | String/Mapping | none       | <i class="md-icon" style="color: red">clear</i>                    |
+
+#### Usage
+
+``` sql
+{{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
+                  source_model=var('source_model', none), 
+                  hashed_columns=var('hashed_columns', none), 
+                  derived_columns=var('derived_columns', none)) }}
+```
+
+#### Example YAML Metadata
+
+```yaml tab='All variables'
+models:
+  my_dbtvault_project:
+    staging:
+      my_staging_model:
+        vars:
+          source_model: "raw_source"
+          hashed_columns:
+            CUSTOMER_PK: "CUSTOMER_ID"
+            CUST_CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_DOB"
+                - "CUSTOMER_ID"
+                - "CUSTOMER_NAME"
+            CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_ID"
+                - "NATIONALITY"
+                - "PHONE"
+          derived_columns:
+            SOURCE: "!STG_BOOKING"
+            EFFECTIVE_FROM: "BOOKING_DATE"
+```
+
+#### Example Output
+
+```sql tab='All variables'
+
+SELECT
+
+CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+CAST(MD5_BINARY(CONCAT(
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
+AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
+CAST(MD5_BINARY(CONCAT(
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
+AS BINARY(16)) AS CUSTOMER_HASHDIFF,
+
+'STG_BOOKING' AS SOURCE,
+BOOKING_DATE AS EFFECTIVE_FROM,
+BOOKING_FK,
+ORDER_FK,
+CUSTOMER_PK,
+CUSTOMER_ID,   
+BOOKING_DATE,
+LOAD_DATETIME,
+RECORD_SOURCE,
+CUSTOMER_DOB,
+CUSTOMER_NAME,
+NATIONALITY,
+PHONE
+
+FROM MY_DATABASE.MY_SCHEMA.raw_source
+```
 
 ### derive_columns
 

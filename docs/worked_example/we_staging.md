@@ -1,3 +1,7 @@
+!!! warning
+    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
+    In the meantime, the demo will still work, but with outdated macros.
+
 ![alt text](../assets/images/staging.png "Staging from a raw table to the raw vault")
 
 We have two staging layers, as shown in the diagram above.

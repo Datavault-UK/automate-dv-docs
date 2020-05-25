@@ -5,7 +5,7 @@ information.
 
 !!! note
     Due to the similarities in the load logic between links and hubs, most of this page will be familiar if you have already read the
-    [hubs](wt_hubs.md) page.
+    [hubs](tut_hubs.md) page.
 
 Our links will contain:
 
@@ -118,7 +118,7 @@ so we union the different feeds into one source before performing the insert via
 So, this data can and should be combined because these records have a shared key. 
 We can union the tables on that key, and create a link containing a complete record set.
 
-We'll need to have a [staging model](wt_staging.md) for each of the sources involved, 
+We'll need to have a [staging model](tut_staging.md) for each of the sources involved, 
 and provide them as a list of strings in the ```dbt_project.yml``` file as shown below.
 
 !!! note
@@ -147,6 +147,6 @@ link_nation_region:
 
 ### Next steps
 
-We have now created a staging layer, a hub and a link. Next we will look at [satellites](wt_satellites.md). 
+We have now created a staging layer, a hub and a link. Next we will look at [satellites](tut_satellites.md). 
 These are a little more complicated, but don't worry, the [sat](../macros.md#sat) macro will handle that for 
 us! 
