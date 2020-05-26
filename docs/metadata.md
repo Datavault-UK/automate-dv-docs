@@ -16,7 +16,7 @@ table. The parameters that the [stage](macros.md#stage) macro accepts are:
 | src_ldts      | The loaddate timestamp column of the record.              |
 | src_source    | The source column of the record.                          |
                                                                            
-An example of the metadata structure for a hub is:
+An example of the metadata structure for a stage model is:
 
 ```yaml tab='All variables'
 models:
