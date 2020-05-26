@@ -202,7 +202,7 @@ sat_order_customer_details:
 ```
 
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
-See 
+[Read more](migration_guides/migrating_v0.5_v0.6.md#hashdiff-aliasing)
 
 ### Transactional links (non-historised links)
 
