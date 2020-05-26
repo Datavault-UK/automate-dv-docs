@@ -6,6 +6,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md)
 
+## [v0.6] - 2020-05-26
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6)](https://dbtvault.readthedocs.io/en/v0.6/?badge=v0.6)
+
+**MAJOR UPDATE**
+
+We've added a whole host of interesting new features.
+
+[Read our v0.5 to v0.6 migration guide](../migration_guides/migrating_v0.5_v0.6.md)
+
+### Added
+
+- Staging has now been moved to YAML format, meaning dbtvault is now entirely YAML and metadata driven.
+See the new [stage](../macros.md#stage) macro and the [staging tutorial](../tutorial/tut_staging.md) for more details.
+
+- Renamed `source` metadata configuration to `source_model` to clear up some confusion.
+A big thank you to @balmasi for this suggestion.
+
+- `HASHDIFF` aliasing is now available for Satellites
+[Read More](../migration_guides/migrating_v0.5_v0.6.md#hashdiff-aliasing)
+
+### Upgraded
+
+- [hub](../macros.md#hub) and [link](../macros.md#link) macros have been given a makeover.
+They can now handle multi-day loads, meaning no more loading from single-date views.
+We'll be updating the other macros soon, stay tuned!
+
+### Fixed 
+
+- Fixed `NULL` handling when hashing. We broke this in v0.5 ([see related issue](https://github.com/Datavault-UK/dbtvault/issues/5))
+[Read more](../best_practices.md#how-do-we-hash)
+
+### Removed
+
+- Deprecated macros (old table template macros) 
+- A handful of now unused internal macros
+- Documentation website from main repository (this makes the package smaller!) 
+[New docs repo](https://github.com/Datavault-UK/dbtvault-docs)
+
 ## [v0.5] - 2020-02-24
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.5)](https://dbtvault.readthedocs.io/en/v0.5/?badge=v0.5)
 
