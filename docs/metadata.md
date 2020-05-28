@@ -236,11 +236,11 @@ t_link_transactions:
     src_ldts: 'LOADDATE'
     src_source: 'SOURCE'
 ```
+___
 
-#### The problem with metadata
+### The problem with metadata
 
 As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
 projects. To help manage large amounts of metadata, we recommend the use of external licence-based tools such as WhereScape, 
 Matillion, and erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
 any feedback or ideas are welcome.    
-___
