@@ -184,8 +184,6 @@ stg_customer_hashed:
     By default, the stage macro will automatically select all columns which exist in the source model, unless
     the `include_source_columns` macro is set to `false`.
 
-We are now ready to run our staging model.
-
 In summary this model will:
 
 - Be materialized as a view
@@ -196,7 +194,7 @@ In summary this model will:
 
 ### Running dbt
 
-With our model complete, we can run dbt:
+With our model complete and our YAML written, we can run dbt:
                                        
 `dbt run -m stg_customer_hashed`
 

@@ -36,12 +36,12 @@ Create a new dbt model as before. We'll call this one `t_link_transactions`.
                    var('source_model'))                                }}
 ```
 
-To create a link model, we simply copy and paste the above template into a model named after the link we
-are creating. We will provide the metadata to this template in the next steps, which will use them to generate a link.
+To create a t-link model, we simply copy and paste the above template into a model named after the t-link we
+are creating. dbtvault will generate a t-link using metadata provided in the next steps.
 
-Links should use the incremental materialization, as we load and add new records to the existing data set. 
+Transactional links should use the incremental materialization, as we load and add new records to the existing data set. 
 
-We recommend setting the `incremental` materialization on all of your links using the `dbt_project.yml` file:
+We recommend setting the `incremental` materialization on all of your t-links using the `dbt_project.yml` file:
 
 `dbt_project.yml`
 ```yaml
@@ -86,12 +86,12 @@ using a dbt model, (let's call it `stg_transactions_hashed.sql`) and this is the
 `dbt_project.yml` file as a string.
 
 `dbt_project.yml`
-`yaml
+```yaml
 t_link_transactions:
   vars:
     source_model: 'stg_transactions_hashed'
     ...
-`   
+```   
 
 #### Source columns
 
@@ -119,9 +119,9 @@ t_link_transactions:
 
 ### Running dbt
 
-With our model complete, we can run dbt to create our `t_link_transactions` transactional link.
+With our model complete and our YAML written, we can run dbt to create our `t_link_transactions` transactional link.
 
-`dbt run --models +t_link_transactions`
+`dbt run -m +t_link_transactions`
     
 And our table will look like this:
 

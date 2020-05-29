@@ -41,7 +41,7 @@ Create a new dbt model as before. We'll call this one `sat_customer_details`.
 ```
 
 To create a satellite model, we simply copy and paste the above template into a model named after the satellite we
-are creating. We will provide the metadata to this template in the next steps, which will use them to generate a satellite.
+are creating. dbtvault will generate a satellite using metadata provided in the next steps.
 
 Satellites should use the incremental materialization, as we load and add new records to the existing data set. 
 
@@ -114,9 +114,9 @@ sat_order_customer_details:
 
 ### Running dbt
 
-With our model complete, we can run dbt to create our ```sat_customer_details``` satellite.
+With our model complete and our YAML written, we can run dbt to create our `sat_customer_details` satellite.
 
-```dbt run --models +sat_customer_details```
+`dbt run -m +sat_customer_details`
     
 And our table will look like this:
 

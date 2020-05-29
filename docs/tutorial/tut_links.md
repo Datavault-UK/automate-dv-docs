@@ -27,7 +27,7 @@ Create a new dbt model as before. We'll call this one `link_customer_nation`.
 ```
 
 To create a link model, we simply copy and paste the above template into a model named after the link we
-are creating. We will provide the metadata to this template in the next steps, which will use them to generate a link.
+are creating. dbtvault will generate a link using metadata provided in the next steps.
 
 Links should use the incremental materialization, as we load and add new records to the existing data set. 
 
@@ -49,7 +49,7 @@ models:
         ...
 ```
 
-[Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
+[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
 ### Adding the metadata
 
@@ -73,17 +73,17 @@ link_customer_nation:
 #### Source columns
 
 Next, we define the columns which we would like to bring from the source.
-Using our knowledge of what columns we need in our  ```link_customer_nation``` table, we can identify columns in our
+Using our knowledge of what columns we need in our  `link_customer_nation` table, we can identify columns in our
 staging layer which map to them:
 
-1. A primary key, which is a combination of the two natural keys: In this case ```CUSTOMER_NATION_PK``` 
+1. A primary key, which is a combination of the two natural keys: In this case `CUSTOMER_NATION_PK` 
 which we added in our staging layer.
-2. ```CUSTOMER_KEY``` which is one of our natural keys (we'll use the hashed column, ```CUSTOMER_PK```).
-3. ```NATION_KEY``` the second natural key (we'll use the hashed column, ```NATION_PK```).
-4. A load date timestamp, which is present in the staging layer as ```LOADDATE``` 
-5. A ```SOURCE``` column.
+2. `CUSTOMER_KEY` which is one of our natural keys (we'll use the hashed column, `CUSTOMER_PK`).
+3. `NATION_KEY` the second natural key (we'll use the hashed column, `NATION_PK`).
+4. A load date timestamp, which is present in the staging layer as `LOADDATE` 
+5. A `SOURCE` column.
 
-We can now add this metadata to the ```dbt_project.yml``` file:
+We can now add this metadata to the `dbt_project.yml` file:
 
 ```dbt_project.yml```
 ```yaml  hl_lines="4 5 6 7 8 9"
@@ -99,15 +99,15 @@ link_customer_nation:
 ```
 
 !!! note 
-    We are using ```src_fk```, a list of the foreign keys. This is instead of the ```src_nk``` 
-    we used when building the hubs. These columns must be given in this list format in the ```dbt_project.yml``` file
+    We are using `src_fk`, a list of the foreign keys. This is instead of the `src_nk` 
+    we used when building the hubs. These columns must be given in this list format in the `dbt_project.yml` file
     for the links.
 
 ### Running dbt
 
-With our model complete, we can run dbt to create our ```link_customer_nation``` link.
+With our model complete and our YAML written, we can run dbt to create our `link_customer_nation` link.
 
-```dbt run --models +link_customer_nation```
+`dbt run -m +link_customer_nation`
 
 And our table will look like this:
 

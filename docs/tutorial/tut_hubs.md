@@ -23,7 +23,7 @@ Create a new dbt model as before. We'll call this one `hub_customer`.
 ```
 
 To create a hub model, we simply copy and paste the above template into a model named after the hub we
-are creating. We will provide the metadata to this template in the next steps, which will use them to generate a hub.
+are creating. dbtvault will generate a hub using metadata provided in the next steps.
 
 Hubs should use the incremental materialization, as we load and add new records to the existing data set. 
 
@@ -45,7 +45,7 @@ models:
         ...
 ```
 
-[Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
+[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
 ### Adding the metadata
 
