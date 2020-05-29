@@ -34,7 +34,7 @@ nav:
   - Migration Guides:
       - Migrating from v0.5 to v0.6: 'migration_guides/migrating_v0.5_v0.6.md'
       - Migrating from v0.4 to v0.5: 'migration_guides/migrating_v0.4_v0.5.md'
-  - Metadata: 'metadata.md'
+  - Metadata Reference: 'metadata.md'
   - Macros: 'macros.md'
   - Best Practices: 'best_practices.md'
   - Extending: 'extending.md'

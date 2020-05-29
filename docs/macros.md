@@ -525,7 +525,6 @@ BOOKING_DATE AS EFFECTIVE_FROM
 
 FROM MY_DATABASE.MY_SCHEMA.raw_source
 ```
-
 ___
 
 ### hash_columns

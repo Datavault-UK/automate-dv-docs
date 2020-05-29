@@ -150,7 +150,8 @@ but which do not already exist in the raw data.
 
 Some of these columns may be 'constants' implied by the context of the staging data.
 For example, we could add a source table code value for audit purposes, or a load date which is the result of a function such as `CURRENT_TIMESTAMP()`.
-We provide a constant by prepending a `!` to the front of the value in the key/value pair.
+We provide a constant by prepending a `!` to the front of the value in the key/value pair. 
+[Read more about constants](../metadata.md#constants)
 
 !!! tip
     For full options, usage examples and syntax, please refer to the [stage](../macros.md#stage) macro documentation.

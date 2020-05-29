@@ -33,6 +33,7 @@ models:
                 - "CUSTOMER_DOB"
                 - "CUSTOMER_ID"
                 - "CUSTOMER_NAME"
+                - "!9999-12-31"
             CUSTOMER_HASHDIFF:
               hashdiff: true
               columns:
@@ -62,19 +63,20 @@ models:
           include_source_columns: false
           source_model: "raw_source"
           hashed_columns:
-            CUSTOMER_PK: CUSTOMER_ID
+            CUSTOMER_PK: "CUSTOMER_ID"
             CUST_CUSTOMER_HASHDIFF:
               hashdiff: true
               columns:
-                - CUSTOMER_DOB
-                - CUSTOMER_ID
-                - CUSTOMER_NAME
+                - "CUSTOMER_DOB"
+                - "CUSTOMER_ID"
+                - "CUSTOMER_NAME"
+                - "!9999-12-31"
             CUSTOMER_HASHDIFF:
               hashdiff: true
               columns:
-                - CUSTOMER_ID
-                - NATIONALITY
-                - PHONE
+                - "CUSTOMER_ID"
+                - "NATIONALITY"
+                - "PHONE"
 ```
 
 ```yaml tab="Only derived"
@@ -89,6 +91,14 @@ models:
             SOURCE: "!STG_BOOKING"
             EFFECTIVE_FROM: "BOOKING_DATE"
 ```
+
+#### Constants
+
+In the above examples, there are strings prefixed with `!`. This is syntactical sugar provided in dbtvault which 
+makes it easier and cleaner to specify constant values when creating a staging layer. 
+These constants can be provided as values of columns specified under `derived_columns` 
+and `hashed_columns` as showcased in the provided examples.
+
 
 ### Hubs
 
