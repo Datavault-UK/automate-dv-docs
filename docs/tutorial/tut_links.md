@@ -16,17 +16,40 @@ referenced)
 3. The load date or load date timestamp.
 4. The source for the record
 
-### Creating the model header
+### Setting up link models
 
-Create another empty dbt model. We'll call this one ```link_customer_nation```. 
+Create a new dbt model as before. We'll call this one `link_customer_nation`. 
 
-The following header is what we use, but feel free to customise it to your needs:
-
-```link_customer_nation.sql```
+`link_customer_nation.sql`
 ```sql
-{{- config(materialized='incremental', schema='MYSCHEMA', tags='link') -}}
-
+{{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
+                 var('src_source'), var('source_model'))        }}
 ```
+
+To create a link model, we simply copy and paste the above template into a model named after the link we
+are creating. We will provide the metadata to this template in the next steps, which will use them to generate a link.
+
+Links should use the incremental materialization, as we load and add new records to the existing data set. 
+
+We recommend setting the `incremental` materialization on all of your links using the `dbt_project.yml` file:
+
+`dbt_project.yml`
+```yaml
+models:
+  my_dbtvault_project:
+   links:
+    materialized: incremental
+    tags:
+      - link
+    link_customer_nation:
+      vars:
+        ...
+    link_booking_order:
+      vars:
+        ...
+```
+
+[Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
 
 ### Adding the metadata
 
@@ -42,9 +65,9 @@ and dbtvault will do the rest for us.
 
 ```yaml
 link_customer_nation:
-          vars:
-            source: 'stg_customer_hashed'
-            ...
+  vars:
+    source_model: 'stg_customer_hashed'
+    ...
 ```
 
 #### Source columns
@@ -65,33 +88,20 @@ We can now add this metadata to the ```dbt_project.yml``` file:
 ```dbt_project.yml```
 ```yaml  hl_lines="4 5 6 7 8 9"
 link_customer_nation:
-          vars:
-            source: 'stg_customer_hashed'
-            src_pk: 'LINK_CUSTOMER_NATION_PK'
-            src_fk:
-              - 'CUSTOMER_PK'
-              - 'NATION_PK'
-            src_ldts: 'LOADDATE'
-            src_source: 'SOURCE'
+  vars:
+    source_model: 'stg_customer_hashed'
+    src_pk: 'LINK_CUSTOMER_NATION_PK'
+    src_fk:
+      - 'CUSTOMER_PK'
+      - 'NATION_PK'
+    src_ldts: 'LOADDATE'
+    src_source: 'SOURCE'
 ```
 
 !!! note 
     We are using ```src_fk```, a list of the foreign keys. This is instead of the ```src_nk``` 
     we used when building the hubs. These columns must be given in this list format in the ```dbt_project.yml``` file
     for the links.
-    
-### Invoking the template 
-
-Now we bring it all together and call the [link](../macros.md#link) macro:
-
-```link_customer_nation.sql```
-```sql hl_lines="3 4"
-{{- config(materialized='incremental', schema='MYSCHEMA', tags='link') -}}
-
-{{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
-                 var('src_source'), var('source'))                      }}
-
-```
 
 ### Running dbt
 
@@ -124,7 +134,7 @@ and provide them as a list of strings in the ```dbt_project.yml``` file as shown
 !!! note
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
-    via the [add_columns](../macros.md#add_columns) macro.
+    via the [stage](../macros.md#stage) macro.
 
 The union link model will look exactly the same as creating a single source link model. To create a union you need to 
 provide a list of sources rather than a single source in the metadata, the [link](../macros.md#link) macro 
@@ -133,16 +143,16 @@ will handle the rest.
 ```dbt_project.yml```
 ```yaml hl_lines="3 4 5"   
 link_nation_region:
-          vars:
-            source:
-              - 'stg_customer_hashed'
-              - 'v_stg_inventory'
-            src_pk: 'NATION_REGION_PK'
-            src_fk:
-              - 'NATION_PK'
-              - 'REGION_PK'
-            src_ldts: 'LOADDATE'
-            src_source: 'SOURCE'
+  vars:
+    source_model:
+      - 'stg_customer_hashed'
+      - 'v_stg_inventory'
+    src_pk: 'NATION_REGION_PK'
+    src_fk:
+      - 'NATION_PK'
+      - 'REGION_PK'
+    src_ldts: 'LOADDATE'
+    src_source: 'SOURCE'
 ```
 
 ### Next steps

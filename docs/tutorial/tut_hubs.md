@@ -10,11 +10,20 @@ order number (can be multi-column).
 3. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
 
 4. The source for the record, a code identifying where the data comes from. 
-(i.e. `1` from the [previous section](tut_staging.md#adding-the-footer), which is the code fo stg_customer)
+(i.e. `1` from the [previous section](tut_staging.md#adding-calculated-and-derived-columns), which is the code for `stg_customer`)
 
 ### Setting up hub models
 
 Create a new dbt model as before. We'll call this one `hub_customer`. 
+
+`hub_customer.sql`
+```sql
+{{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
+                var('src_source'), var('source_model'))        }}
+```
+
+To create a hub model, we simply copy and paste the above template into a model named after the hub we
+are creating. We will provide the metadata to this template in the next steps, which will use them to generate a hub.
 
 Hubs should use the incremental materialization, as we load and add new records to the existing data set. 
 
@@ -80,22 +89,9 @@ hub_customer:
     src_source: 'SOURCE'
 ```
 
-### Invoking the template 
-
-Now all that is needed is to create your hub:
-
-`hub_customer.sql`
-```sql hl_lines="3 4"
-{{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source_model'))        }}
-```
-
-Here we have added a call to the [hub](../macros.md#hub) macro, referencing our variables declared in the 
-`dbt_project.yml` file.
-
 ### Running dbt
 
-With our model complete, we can run dbt to create our `hub_customer` hub.
+With our model complete and our YAML written, we can run dbt to create our `hub_customer` table.
 
 `dbt run -m +hub_customer`
 

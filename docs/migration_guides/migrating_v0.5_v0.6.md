@@ -44,33 +44,35 @@ In v0.6, the equivalent is now this:
 
 ```yaml tab="YAML"
 # dbt_project.yml
-my_dbtvault_project:
-  staging:         
-    materialized: view      
-    schema: 'my_schema'
-    tags:
-      - 'staging'
-    my_staging_model:
-      vars:
-        source_model: 
-          raw_sources: 'customer_bookings'
-        hashed_columns:
-          CUSTOMER_PK: "CUSTOMER_ID"
-          CUST_CUSTOMER_HASHDIFF:
-            hashdiff: true
-            columns:
-              - "CUSTOMER_DOB"
-              - "CUSTOMER_ID"
-              - "CUSTOMER_NAME"
-          CUSTOMER_DETAILS_HASHDIFF:
-            hashdiff: true
-            columns:
-              - "CUSTOMER_ID"
-              - "NATIONALITY"
-              - "PHONE"
-        derived_columns:
-          SOURCE: "!STG_CUSTOMER"
-          EFFECTIVE_FROM: "BOOKING_DATE"
+...
+models:
+  my_dbtvault_project:
+    staging:         
+      materialized: view      
+      schema: 'my_schema'
+      tags:
+        - 'staging'
+      my_staging_model:
+        vars:
+          source_model: 
+            raw_sources: 'customer_bookings'
+          hashed_columns:
+            CUSTOMER_PK: "CUSTOMER_ID"
+            CUST_CUSTOMER_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_DOB"
+                - "CUSTOMER_ID"
+                - "CUSTOMER_NAME"
+            CUSTOMER_DETAILS_HASHDIFF:
+              hashdiff: true
+              columns:
+                - "CUSTOMER_ID"
+                - "NATIONALITY"
+                - "PHONE"
+          derived_columns:
+            SOURCE: "!STG_CUSTOMER"
+            EFFECTIVE_FROM: "BOOKING_DATE"
 ```
 
 ```sql tab="dbt model"

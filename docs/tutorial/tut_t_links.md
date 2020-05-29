@@ -12,31 +12,52 @@ Our transactional links will contain:
 3. A payload. The payload consists of concrete data for an entity, i.e. a transaction record. This could be
 a transaction number, an amount paid, transaction type or more. The payload will contain all of the
 concrete data for a transaction. 
-4. An effectivity date. Usually called ```EFFECTIVE_FROM```, this column is the business effective date of a 
+4. An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
 satellite record. It records that a record is valid from a specific point in time. In the case of a transaction, this
-is usually the date on which the transaction occured. 
+is usually the date on which the transaction occurred. 
 
 5. The load date or load date timestamp.
 6. The source for the record
 
 !!! note
-    ```LOADDATE``` is the time the record is loaded into the database. ```EFFECTIVE_FROM``` is different and may hold a 
+    `LOADDATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
     different value, especially if there is a batch processing delay between when a business event happens and the 
     record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
-    and 'what happened when' using the ```LOADDATE``` and ```EFFECTIVE_FROM``` date accordingly. 
+    and 'what happened when' using the `LOADDATE` and `EFFECTIVE_FROM` date accordingly. 
     
-### Creating the model header
+### Setting up t-link models
 
-Create a new dbt model as before. We'll call this one ```t_link_transactions```. 
+Create a new dbt model as before. We'll call this one `t_link_transactions`. 
 
-The following header is what we use, but feel free to customise it to your needs:
-
-```t_link_transactions.sql```
+`t_link_transactions.sql`
 ```sql
-{{- config(materialized='incremental', schema='MYSCHEMA', tags='t_link') -}}
+{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                   var('src_eff'), var('src_ldts'), var('src_source'),
+                   var('source_model'))                                }}
 ```
 
-Transactional links are always incremental, as we load and add new records to the existing data set.
+To create a link model, we simply copy and paste the above template into a model named after the link we
+are creating. We will provide the metadata to this template in the next steps, which will use them to generate a link.
+
+Links should use the incremental materialization, as we load and add new records to the existing data set. 
+
+We recommend setting the `incremental` materialization on all of your links using the `dbt_project.yml` file:
+
+`dbt_project.yml`
+```yaml
+models:
+  my_dbtvault_project:
+   t_links:
+    materialized: incremental
+    tags:
+      - t_link
+    t_link_transactions:
+      vars:
+        ...
+    t_link_call_feed:
+      vars:
+        ...
+```
 
 [Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
 
@@ -56,64 +77,51 @@ For this step, ensure you have the following columns present in the source table
 1. A hashed transaction number as the primary key
 2. Hashed foreign keys, one for each of the referenced hubs.
 3. A payload. This will be data about the transaction itself e.g. the amount, type, date or non-hashed transaction number.
-4. An ```EFFECTIVE_FROM``` date. This will usually be the date of the transaction.
+4. An `EFFECTIVE_FROM` date. This will usually be the date of the transaction.
 5. A load date timestamp
 6. A source
 
 Assuming you have a raw source table with these required columns, we can create a hashed staging table
-using a dbt model, (let's call it ```stg_transactions_hashed.sql```) and this is the table we reference in the 
-```dbt_project.yml``` file as a string.
+using a dbt model, (let's call it `stg_transactions_hashed.sql`) and this is the table we reference in the 
+`dbt_project.yml` file as a string.
 
-```dbt_project.yml```
-```yaml
+`dbt_project.yml`
+`yaml
 t_link_transactions:
-          vars:
-            source: 'stg_transactions_hashed'
-            ...
-```   
+  vars:
+    source_model: 'stg_transactions_hashed'
+    ...
+`   
 
 #### Source columns
 
 Next, we define the columns which we would like to bring from the source.
-We can use the columns we identified in the ```Source table``` section, above. 
+We can use the columns we identified in the `Source table` section, above. 
 
-```dbt_project.yml```
+`dbt_project.yml`
 ```yaml hl_lines="4 5 6 7 8 9 10 11 12 13 14 15"
 t_link_transactions:
-          vars:
-            source: 'stg_transactions_hashed'
-            src_pk: 'TRANSACTION_PK'
-            src_fk:
-              - 'CUSTOMER_FK'
-              - 'ORDER_FK'
-            src_payload:
-              - 'TRANSACTION_NUMBER'
-              - 'TRANSACTION_DATE'
-              - 'TYPE'
-              - 'AMOUNT'
-            src_eff: 'EFFECTIVE_FROM'
-            src_ldts: 'LOADDATE'
-            src_source: 'SOURCE'
-```                                
-
-### Invoking the template 
-
-Now we bring it all together and call the [t_link](../macros.md#t_link) macro:
-
-```t_link_transactions.sql```
-```sql hl_lines="3 4 5"
-{{- config(materialized='incremental', schema='VLT', tags='t_link')  -}}
-
-{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'), 
-                   var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source'))                                     }}
+  vars:
+    source_model: 'stg_transactions_hashed'
+    src_pk: 'TRANSACTION_PK'
+    src_fk:
+      - 'CUSTOMER_FK'
+      - 'ORDER_FK'
+    src_payload:
+      - 'TRANSACTION_NUMBER'
+      - 'TRANSACTION_DATE'
+      - 'TYPE'
+      - 'AMOUNT'
+    src_eff: 'EFFECTIVE_FROM'
+    src_ldts: 'LOADDATE'
+    src_source: 'SOURCE'
 ```
 
 ### Running dbt
 
-With our model complete, we can run dbt to create our ```t_link_transactions``` transactional link.
+With our model complete, we can run dbt to create our `t_link_transactions` transactional link.
 
-```dbt run --models +t_link_transactions```
+`dbt run --models +t_link_transactions`
     
 And our table will look like this:
 

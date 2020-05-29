@@ -38,6 +38,17 @@ provided metadata.
 First we create a new dbt model. Our example source table is called `raw_orders`, and in this scenario contains data about customers and orders.
 We should name our staging model sensibly, for example `stg_orders_hashed.sql`, although any consistent and sensible naming convention will work.
 
+`stg_orders_hashed.sql`
+```sql
+{{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
+                  source_model=var('source_model', none), 
+                  hashed_columns=var('hashed_columns', none), 
+                  derived_columns=var('derived_columns', none)) }}
+```
+
+To create a staging model, we simply copy and paste the above template into a model named after the staging table/view we
+are creating. We provide the metadata to this template, which will use them to generate a staging layer.
+
 Staging models should use the `view` materialization, though it can be a `table` depending on your requirements. 
 We recommend setting the `view` materialization on all of your staging models using the `dbt_project.yml` file:
 
@@ -115,7 +126,6 @@ stg_customer_hashed:
         hashdiff: true
         columns:
           - "CUSTOMER_NAME"
-          - "CUSTOMER_ID"
           - "CUSTOMER_PHONE"
           - "CUSTOMER_DOB"
 ```
@@ -126,8 +136,8 @@ With this metadata, the [stage](../macros.md#stage) macro will:
 - Hash the `NATION_ID` column, and create a new column called `NATION_PK` containing the hash value.
 - Concatenate the values in the `CUSTOMER_ID` and ```NATION_ID``` columns and hash them in the order supplied, creating a new
 column called `CUSTOMER_NATION_PK` containing the hash of the combination of the values.
-- Concatenate the values in the `CUSTOMER_ID`, `CUSTOMER_NAME`, `CUSTOMER_PHONE`, `CUSTOMER_DOB` 
-columns and hash them, creating a new column called `CUSTOMER_NATION_PK` containing the hash of the 
+- Concatenate the values in the `CUSTOMER_NAME`, `CUSTOMER_PHONE`, `CUSTOMER_DOB` 
+columns and hash them, creating a new column called `CUSTOMER_HASHDIFF` containing the hash of the 
 combination of the values. The `hashdiff: true` flag should be provided so that dbtvault knows to treat this column as a hashdiff.
 Treating this column as a hashdiff means dbtvault with automatically sort the columns prior to hashing.
 
