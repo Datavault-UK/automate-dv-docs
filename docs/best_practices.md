@@ -169,7 +169,7 @@ staging tables
 - For **links**, columns must be sorted by the primary key of the hub and arranged alphabetically by the hub name. 
 The order must also be the same as each hub. 
 
-# Hashdiff Aliasing
+### Hashdiff Aliasing
 
 `HASHDIFF` columns should be called `HASHDIFF`, as per Data Vault 2.0 standards. Due to the fact we have a shared 
 staging layer for the raw vault, we cannot have multiple columns sharing the same name. This means we have to name each 
