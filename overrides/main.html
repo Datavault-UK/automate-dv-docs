@@ -35,18 +35,17 @@
 
 {% endblock %}
 
+<!-- Content -->
 {% block content %}
+  <!-- Edit button -->
   {% if page.edit_url %}
-    {% set edit_url = page.edit_url | replace('dbtvault', 'dbtvault-docs') %}
-    <a href="{{ edit_url }}" title="{{ lang.t('edit.link.title') }}" class="md-content__button md-icon">
+    <a
+      href="{{ page.edit_url | replace('dbtvault', 'dbtvault-docs')}} "
+      title="{{ lang.t('edit.link.title') }}"
+      class="md-content__button md-icon">
       {% include ".icons/material/pencil.svg" %}
     </a>
   {% endif %}
-  {% block source %}
-    {% if page and page.meta and page.meta.source %}
-      {% include "partials/source-link.html" %}
-    {% endif %}
-  {% endblock %}
   {% if not "\x3ch1" in page.content %}
     <h1>{{ page.title | default(config.site_name, true)}}</h1>
   {% endif %}
