@@ -169,6 +169,39 @@ staging tables
 - For **links**, columns must be sorted by the primary key of the hub and arranged alphabetically by the hub name. 
 The order must also be the same as each hub. 
 
+# Hashdiff Aliasing
+
+`HASHDIFF` columns should be called `HASHDIFF`, as per Data Vault 2.0 standards. Due to the fact we have a shared 
+staging layer for the raw vault, we cannot have multiple columns sharing the same name. This means we have to name each 
+of our `HASHDIFF` columns differently. dbtvault aims align as closely as possible with Data Vault 2.0 standards, 
+and the following new feature is one of many steps we will be making towards that goal.
+
+Below is an example satellite YAML config from a `dbt_project.yml` file:
+
+```yaml hl_lines="9 10 11"
+sat_customer_details:
+  materialized: incremental
+  schema: "vlt"
+  tags:
+    - sat
+  vars:
+    source_model: "stg_customer_details_hashed"
+    src_pk: "CUSTOMER_PK"
+    src_hashdiff: 
+      source_column: "CUSTOMER_HASHDIFF"
+      alias: "HASHDIFF"
+    src_payload:
+      - "CUSTOMER_NAME"
+      - "CUSTOMER_DOB"
+      - "CUSTOMER_PHONE"
+    src_eff: "EFFECTIVE_FROM"
+    src_ldts: "LOADDATE"
+    src_source: "SOURCE"
+```
+
+The highlighted lines show the syntax required to alias a column named `CUSTOMER_HASHDIFF` (present in the
+`stg_customer_details_hashed` staging layer) as `HASHDIFF`.
+
 ### Choosing a hashing algorithm in dbtvault
 
 You may choose between ```MD5``` and ```SHA-256``` hashing. ```SHA-256``` is an option for users who wish to reduce 
