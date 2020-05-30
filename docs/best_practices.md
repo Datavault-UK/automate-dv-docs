@@ -173,8 +173,7 @@ The order must also be the same as each hub.
 
 `HASHDIFF` columns should be called `HASHDIFF`, as per Data Vault 2.0 standards. Due to the fact we have a shared 
 staging layer for the raw vault, we cannot have multiple columns sharing the same name. This means we have to name each 
-of our `HASHDIFF` columns differently. dbtvault aims align as closely as possible with Data Vault 2.0 standards, 
-and the following new feature is one of many steps we will be making towards that goal.
+of our `HASHDIFF` columns differently.
 
 Below is an example satellite YAML config from a `dbt_project.yml` file:
 
