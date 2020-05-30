@@ -23,7 +23,7 @@
 {% import "partials/language.html" as lang with context %}
 
 <!-- Link to source file -->
-{% set repo = config.docs_repo_url %}
+{% set repo = config.repo_url %}
 {% if repo | last == "/" %}
   {% set repo = repo[:-1] %}
 {% endif %}
