@@ -2,11 +2,11 @@ site_name: dbtvault
 site_author: Datavault
 site_dir: 'site'
 repo_name: 'Datavault-UK/dbtvault'
-repo_url: 'https://github.com/Datavault-UK/dbtvault-docs'
+repo_url: 'https://github.com/Datavault-UK/dbtvault'
 
 theme:
     name: 'material'
-    custom_dir: 'theme'
+    custom_dir: 'overrides'
     show_sidebar: true
     logo: 'assets/images/logo.png'
     banner: 'assets/images/docs-banner.png'

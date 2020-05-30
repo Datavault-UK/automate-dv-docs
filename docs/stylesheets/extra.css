@@ -7,10 +7,6 @@ and remove edit button */
     margin-bottom: 20px;
 }
 
-.md-content__icon {
-    display: none;
-}
-
 /* Style buttons */
 .btn {
   background-color: #91569D;
