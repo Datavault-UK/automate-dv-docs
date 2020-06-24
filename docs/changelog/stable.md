@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md)
 
+## [v0.6.1] - 2020-06-24
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6.1)](https://dbtvault.readthedocs.io/en/v0.6.1/?badge=v0.6.1)
+
+### Added
+
+- dbt 0.17.0 support 
+**WARNING** This comes with a caveat that you must use `config-version: 1` in your `dbt_project.yml`
+
+- All macros now support multiple dispatch. This update is to make way for additional platform support (BigQuery, Postgres etc.)
+
+### Improved
+#### Macros
+- Minor macro re-factors to improve readability
+
+### Removed
+#### Macros
+- Cast macro (supporting) - No longer used. 
+- Check relation (internal) - No longer used.
+
 ## [v0.6] - 2020-05-26
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6)](https://dbtvault.readthedocs.io/en/v0.6/?badge=v0.6)
 
