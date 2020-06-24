@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - All macros now support multiple dispatch. This update is to make way for additional platform support (BigQuery, Postgres etc.)
 
+### Changed
+
+- A hashdiff in the stage macro now uses `is_hashdiff` as a flag instead of `hashdiff`, 
+this is to clarify this config option as a boolean flag.
+
 ### Improved
 #### Macros
 - Minor macro re-factors to improve readability

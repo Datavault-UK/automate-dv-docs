@@ -59,13 +59,13 @@ models:
           hashed_columns:
             CUSTOMER_PK: "CUSTOMER_ID"
             CUST_CUSTOMER_HASHDIFF:
-              hashdiff: true
+              is_hashdiff: true
               columns:
                 - "CUSTOMER_DOB"
                 - "CUSTOMER_ID"
                 - "CUSTOMER_NAME"
             CUSTOMER_DETAILS_HASHDIFF:
-              hashdiff: true
+              is_hashdiff: true
               columns:
                 - "CUSTOMER_ID"
                 - "NATIONALITY"

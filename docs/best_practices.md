@@ -76,7 +76,7 @@ Used to finger-print the payload of a satellite (similar to a checksum) so it is
 change in payload, to trigger the load of a new satellite record. This simplifies the SQL as otherwise we'd have to 
 compare each column in turn and handle nulls to see if a change had occurred. 
 
-Hashing is sensitive to column ordering. If you provide the `hashdiff: true` flag to your column specification 
+Hashing is sensitive to column ordering. If you provide the `is_hashdiff: true` flag to your column specification 
 in the [stage](macros.md#stage) macro, dbtvault will automatically sort the provided columns alphabetically. 
 Columns are sorted by their alias.
 

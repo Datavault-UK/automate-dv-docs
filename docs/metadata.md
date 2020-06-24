@@ -39,14 +39,14 @@ models:
           hashed_columns:
             CUSTOMER_PK: "CUSTOMER_ID"
             CUST_CUSTOMER_HASHDIFF:
-              hashdiff: true
+              is_hashdiff: true
               columns:
                 - "CUSTOMER_DOB"
                 - "CUSTOMER_ID"
                 - "CUSTOMER_NAME"
                 - "!9999-12-31"
             CUSTOMER_HASHDIFF:
-              hashdiff: true
+              is_hashdiff: true
               columns:
                 - "CUSTOMER_ID"
                 - "NATIONALITY"
@@ -76,14 +76,14 @@ models:
           hashed_columns:
             CUSTOMER_PK: "CUSTOMER_ID"
             CUST_CUSTOMER_HASHDIFF:
-              hashdiff: true
+              is_hashdiff: true
               columns:
                 - "CUSTOMER_DOB"
                 - "CUSTOMER_ID"
                 - "CUSTOMER_NAME"
                 - "!9999-12-31"
             CUSTOMER_HASHDIFF:
-              hashdiff: true
+              is_hashdiff: true
               columns:
                 - "CUSTOMER_ID"
                 - "NATIONALITY"

@@ -631,7 +631,7 @@ CAST(SHA2_BINARY(UPPER(TRIM(CAST(column AS VARCHAR)))) AS BINARY(32)) AS alias
 | ---------------- | -----------------------------------------------  | ----------- | ------------------------------------------------ |
 | columns          |  Columns to hash on                              | String/List | <i class="fas fa-check-circle required"></i>     |
 | alias            |  The name to give the hashed column              | String      | <i class="fas fa-check-circle required"></i>     |
-| hashdiff         |  Will alpha sort columns if true, default false. | Boolean     | <i class="fas fa-minus-circle not-required"></i> |
+| is_hashdiff         |  Will alpha sort columns if true, default false. | Boolean     | <i class="fas fa-minus-circle not-required"></i> |
                                 
 
 #### Usage

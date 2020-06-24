@@ -106,7 +106,7 @@ and hashdiff fields.
 !!! note "Why do we hash?"
     For more information on why we hash, refer to the [best practices](../best_practices.md#why-do-we-hash) page.
 
-For hashdiff columns, we provide an additional parameter, ```sort``` with the value ```true``` to get 
+For hashdiff columns, we provide an additional parameter, ```is_hashdiff``` with the value ```true``` to get 
 dbtvault to sort the columns alphabetically when hashing, as per best practices. 
 
 ## Additional columns

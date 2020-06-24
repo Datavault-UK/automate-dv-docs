@@ -123,7 +123,7 @@ stg_customer_hashed:
         - "CUSTOMER_ID"
         - "NATION_ID"
       CUSTOMER_HASHDIFF:
-        hashdiff: true
+        is_hashdiff: true
         columns:
           - "CUSTOMER_NAME"
           - "CUSTOMER_PHONE"
@@ -138,7 +138,7 @@ With this metadata, the [stage](../macros.md#stage) macro will:
 column called `CUSTOMER_NATION_PK` containing the hash of the combination of the values.
 - Concatenate the values in the `CUSTOMER_NAME`, `CUSTOMER_PHONE`, `CUSTOMER_DOB` 
 columns and hash them, creating a new column called `CUSTOMER_HASHDIFF` containing the hash of the 
-combination of the values. The `hashdiff: true` flag should be provided so that dbtvault knows to treat this column as a hashdiff.
+combination of the values. The `is_hashdiff: true` flag should be provided so that dbtvault knows to treat this column as a hashdiff.
 Treating this column as a hashdiff means dbtvault with automatically sort the columns prior to hashing.
 
 See [Why do we hash?](../best_practices.md#why-do-we-hash) for details on hashing best practises.
@@ -169,7 +169,7 @@ stg_customer_hashed:
         - "CUSTOMER_ID"
         - "NATION_ID"
       CUSTOMER_HASHDIFF:
-        hashdiff: true
+        is_hashdiff: true
         columns:
           - "CUSTOMER_NAME"
           - "CUSTOMER_ID"
