@@ -547,56 +547,6 @@ are used extensively in the [table templates](#table-templates) and may be used 
 
 ___
 
-### cast
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/supporting/cast.sql))
-
-A macro for generating cast sequences:
-
-```mysql
-CAST(prefix.column AS type) AS alias
-```
-
-#### Parameters
-
-| Parameter        |  Description                  | Required?                                        |
-| ---------------- | ----------------------------- | ------------------------------------------------ |
-| columns          |  Triples or strings           | <i class="fas fa-check-circle required"></i>     |
-| prefix           |  A string                     | <i class="fas fa-minus-circle not-required"></i> |
-
-#### Usage
-
-!!! note
-    As shown in the snippet below, columns must be provided as a list. 
-    The collection of items in this list can be any combination of:
-
-    - ```(column, type, alias) ``` 3-tuples 
-    - ```[column, type, alias] ``` 3-item lists
-    - ```'DOB'``` Single strings.
-
-```yaml
-
-{%- set tgt_pk = ['PART_PK', 'BINARY(16)', 'PART_PK']        -%}
-
-{{ dbtvault.cast([tgt_pk,
-                  'DOB',
-                  ('PART_PK', 'NUMBER(38,0)', 'PART_ID'),
-                  ('LOADDATE', 'DATE', 'LOADDATE'),
-                  ('SOURCE', 'VARCHAR(15)', 'SOURCE')], 
-                  'stg')                                      }}
-```
-
-#### Output
-
-```mysql
-CAST(stg.PART_PK AS BINARY(16)) AS PART_PK,
-stg.DOB,
-CAST(stg.PART_ID AS NUMBER(38,0)) AS PART_ID,
-CAST(stg.LOADDATE AS DATE) AS LOADDATE,
-CAST(stg.SOURCE AS VARCHAR(15)) AS SOURCE
-```
-
-___
-
 ### hash
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.6/macros/supporting/hash.sql))
 
