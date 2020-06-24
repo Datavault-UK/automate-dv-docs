@@ -3,6 +3,17 @@ the models themselves. This keeps the metadata all in one place and simplifies t
 
 For further detail about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
+!!! warning 
+    In dbtvault v0.6.1, if you are using dbt v0.17.0 you must use `config-version: 1`. 
+    This is a temporary workaround due to removal of model-level variable scoping in dbt core functionality.
+    We hope to have a permanent fix for this in future.
+    
+    Read more:
+    
+    - [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377)
+    - [dbt documentation on the change](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/#better-variable-scoping-semantics)
+    
+
 ### Staging
 
 Only the source metadata is needed to build a hub, as column types and names are inferred from the source in the target 

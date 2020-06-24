@@ -17,7 +17,6 @@ These features are currently planned for the near-future:
 - Custom materialization for periodic loading similar to the 
 [dbt_utils offering for Redshift](https://github.com/fishtown-analytics/dbt-utils/blob/master/README.md#insert_by_period-source)
 - Removal of single-day loading restrictions ([v0.6 already adds this for Hubs and Links](migration_guides/migrating_v0.5_v0.6.md#table-macros)
-- Multiple dispatch to open up future database support
 
 ## Future releases
 
