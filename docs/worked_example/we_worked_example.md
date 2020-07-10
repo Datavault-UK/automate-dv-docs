@@ -1,7 +1,3 @@
-!!! warning
-    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
-    In the meantime, the demo will still work, but with outdated macros.
-
 In this section we demonstrate dbtvault by example. We guide you through developing a 
 Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbtvault models.
 

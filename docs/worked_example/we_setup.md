@@ -1,7 +1,3 @@
-!!! warning
-    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
-    In the meantime, the demo will still work, but with outdated macros.
-    
 ## Download the demonstration project
 
 Assuming you already have a python environment installed, the next step is to download the latest 
@@ -45,7 +41,7 @@ dbt provides their own documentation on how to configure profiles, so we suggest
 A sample profile configuration is provided below which will get you started:
 
 ```profiles.yml```
-```yaml
+```yaml linenums="1"
 snowflake-demo:
   target: dev
   outputs:
@@ -93,67 +89,151 @@ As of v0.5, the ```dbt_project.yml``` file is now used as a metadata store. Belo
 metadata for a single instance of each of the current table types. 
 
 ```dbt_project.yml```
-```yaml 
+```yaml linenums="1"
 
 models:
   snowflakeDemo:
-    load:
-      schema: "VLT"
+    raw_stage:
+      schema: 'RAW'
+      tags:
+        - 'raw'
+      materialized: view
+    stage:
+      schema: 'STG'
+      tags:
+        - 'stage'
       enabled: true
+      materialized: view
+      v_stg_inventory:
+        vars:
+          [...]
+      v_stg_orders:
+        vars:
+          [...]
+      v_stg_transactions:
+        vars:
+          source_model: 'raw_transactions'
+          hashed_columns:
+            TRANSACTION_PK:
+              - 'CUSTOMER_ID'
+              - 'TRANSACTION_NUMBER'
+            CUSTOMER_FK: 'CUSTOMER_ID'
+            ORDER_FK: 'ORDER_ID'
+          derived_columns:
+            SOURCE: '!RAW_TRANSACTIONS'
+            LOADDATE: DATEADD(DAY, 1, TRANSACTION_DATE)
+            EFFECTIVE_FROM: 'TRANSACTION_DATE'
+    raw_vault:
+      schema: 'VLT'
+      tags:
+        - 'raw_vault'
       materialized: incremental
-      stage:
-        schema: "STG"
-        enabled: true
-        materialized: view
-      raw:
-        schema: "RAW"
-        enabled: true
-        materialized: incremental
       hubs:
-        enabled: true
+        tags:
+          - 'hub'
         hub_customer:
           vars:
-            source: 'v_stg_orders'
+            source_model: 'v_stg_orders'
             src_pk: 'CUSTOMER_PK'
-            src_nk: 'CUSTOMER_KEY'
+            src_nk: 'CUSTOMERKEY'
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
-        ...
+        hub_lineitem:
+          vars:
+            [...]
+        hub_nation:
+          vars:
+            [...]
+        hub_order:
+          vars:
+            [...]
+        hub_part:
+          vars:
+            [...]
+        hub_region:
+          vars:
+            [...]
+        hub_supplier:
+          vars:
+            [...]
       links:
-        enabled: true
+        tags:
+          - 'link'
         link_customer_nation:
           vars:
-            source: 'v_stg_orders'
+            source_model: 'v_stg_orders'
             src_pk: 'LINK_CUSTOMER_NATION_PK'
             src_fk:
               - 'CUSTOMER_PK'
               - 'NATION_PK'
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
-        ...
-      sats:
-        enabled: true
-        sat_order_customer_details:
+        link_customer_order:
           vars:
-            source: 'v_stg_orders'
-            src_pk: 'CUSTOMER_PK'
-            src_hashdiff: 'CUSTOMER_HASHDIFF'
+            [...]
+        link_inventory:
+          vars:
+            [...]
+        link_inventory_allocation:
+          vars:
+            [...]
+        link_nation_region:
+          vars:
+            [...]
+        link_order_lineitem:
+          vars:
+            [...]
+        link_supplier_nation:
+          vars:
+            [...]
+      sats:
+        tags:
+          - 'satellite'
+        sat_inv_inventory_details:
+          vars:
+            source_model: 'v_stg_inventory'
+            src_pk: 'INVENTORY_PK'
+            src_hashdiff: 'INVENTORY_HASHDIFF'
             src_payload:
-              - 'NAME'
-              - 'ADDRESS'
-              - 'PHONE'
-              - 'ACCBAL'
-              - 'MKTSEGMENT'
-              - 'COMMENT'
+              - 'AVAILQTY'
+              - 'SUPPLYCOST'
+              - 'PART_SUPPLY_COMMENT'
             src_eff: 'EFFECTIVE_FROM'
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
-        ...
+        sat_inv_part_details:
+          vars:
+            [...]
+        sat_inv_supp_nation_details:
+          vars:
+            [...]
+        sat_inv_supp_region_details:
+          vars:
+            [...]
+        sat_inv_supplier_details:
+          vars:
+            [...]
+        sat_order_cust_nation_details:
+          vars:
+            [...]
+        sat_order_cust_region_details:
+          vars:
+            [...]
+        sat_order_customer_details:
+          vars:
+            [...]
+        sat_order_lineitem_details:
+          vars:
+            [...]
+        sat_order_order_details:
+          vars:
+            [...]
       t_links:
-        enabled: true
+        tags:
+          - 't_link'
         t_link_transactions:
           vars:
-            source: 'v_stg_transactions'
+            source_model: 'v_stg_transactions'
             src_pk: 'TRANSACTION_PK'
             src_fk:
               - 'CUSTOMER_FK'
@@ -166,27 +246,28 @@ models:
             src_eff: 'EFFECTIVE_FROM'
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
-        ...
   vars:
-    date: TO_DATE('1992-01-08')
+    load_date: '1992-01-08'
+    hash: 'MD5'
 ```
 
 #### models
 
-Here we are specifying that models in the ```load``` directory should be loaded in to the ```VLT```
-schema, and models in the sub-directories ```stage``` and ```source``` should have their own schemas, 
-```STG``` and ```SRC``` respectively. We have also specified that they are all enabled, as well
-as their materialization. Many of these attributes are also provided in the files themselves and take
-precedence over these settings anyway, this is just a design choice. 
+Here we are specifying that models in the `raw_vault` directory should be loaded in to the `VLT` schema, 
+and models in the directories `stage` and `raw_stage` should have the schemas `STG` and `RAW` respectively.
+
+We have also specified that they are all enabled, as well as their materialization. Many of these attributes 
+are also provided in the files themselves and take precedence over these settings anyway, this is just a design choice. 
 
 #### table metadata
 
-The table metadata is now provided, as of v0.5, in the ```dbt_project.yml``` file as seen in the above example. 
-For each of your table models you must specify the metadata using the correct hierarchy. The metadata provided here is
-for the ```hub_customer.sql```, ```link_customer_nation.sql```, and ```sat_order_customer_details.sql``` models.
+The table metadata is now provided, as of v0.5, in the `dbt_project.yml` file as seen in the above example. 
+For each of your table models you must specify the metadata using the correct hierarchy.
+
+Take a look at our [metadata reference](../metadata.md) for a full reference and description.
 
 #### global vars
 
-On line 73, we have vars that will apply to all models. 
-To simulate day-feeds, we use a variable we have named ```date``` which is used in the ```SRC``` models to
+At the end of the file, we have vars that will apply to all models. 
+To simulate day-feeds, we use a variable we have named `load_date` which is used in the `RAW` models to
 load for a specific date. This is described in more detail in the [Profiling TPC-H](we_tpch_profile.md) section.

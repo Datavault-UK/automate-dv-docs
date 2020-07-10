@@ -10,7 +10,7 @@ For further detail about how to use the macros in this section, see [table templ
     
     Read more:
     
-    - [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377)
+    - [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377) (closed in favour of [2401](https://github.com/fishtown-analytics/dbt/issues/2401))
     - [dbt documentation on the change](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/#better-variable-scoping-semantics)
     
 
@@ -29,7 +29,7 @@ table. The parameters that the [stage](macros.md#stage) macro accepts are:
                                                                            
 An example of the metadata structure for a stage model is:
 
-```yaml tab='All variables'
+```yaml tab='All variables' linenums="1"
 models:
   my_dbtvault_project:
     staging:
@@ -56,7 +56,7 @@ models:
             EFFECTIVE_FROM: "BOOKING_DATE"
 ```
 
-```yaml tab="Only source"
+```yaml tab="Only source" linenums="1"
 models:
   my_dbtvault_project:
     staging:
@@ -65,7 +65,7 @@ models:
           source_model: "raw_source"
 ```
 
-```yaml tab='Only hashing'
+```yaml tab='Only hashing' linenums="1"
 models:
   my_dbtvault_project:
     staging:
@@ -90,7 +90,7 @@ models:
                 - "PHONE"
 ```
 
-```yaml tab="Only derived"
+```yaml tab="Only derived" linenums="1"
 models:
   my_dbtvault_project:
     staging:
@@ -127,7 +127,7 @@ table. The parameters that the [hub](macros.md#hub) macro accepts are:
 An example of the metadata structure for a hub is:
 
 `dbt_project.yml`
-```yaml
+```yaml linenums="1"
 hub_customer:
   vars:
     source_model: 'stg_customer_hashed'
@@ -152,7 +152,7 @@ The link metadata is very similar to the hub metadata. The parameters that the [
 An example of the metadata structure for a link is:
 
 `dbt_project.yml`
-```yaml
+```yaml linenums="1"
 link_customer_nation:
   vars:
     source_model: 'v_stg_orders'
@@ -182,7 +182,7 @@ accepts is:
 An example of the metadata structure for a satellite is:
 
 
-```yaml tab='Standard'
+```yaml tab='Standard' linenums="1"
 # dbt_project.yml
 sat_order_customer_details:
   vars:
@@ -201,7 +201,7 @@ sat_order_customer_details:
     src_source: 'SOURCE'
 ```
 
-```yaml tab='Hashdiff Aliasing'
+```yaml tab='Hashdiff Aliasing' linenums="1"
 # dbt_project.yml
 sat_order_customer_details:
   vars:
@@ -209,7 +209,7 @@ sat_order_customer_details:
     src_pk: 'CUSTOMER_PK'
     src_hashdiff: 
       source_column: "CUSTOMER_HASHDIFF"
-      alias: "HASHDIFF
+      alias: "HASHDIFF"
     src_payload:
       - 'NAME'
       - 'ADDRESS'
@@ -240,7 +240,7 @@ The [t_link](macros.md#t_link) macro accepts the following parameters:
 | src_source    | The source column of the record.                                    |
 
 `dbt_project.yml`
-```yaml
+```yaml linenums="1"
 t_link_transactions:
   vars:
     source_model: 'v_stg_transactions'

@@ -1,7 +1,3 @@
-!!! warning
-    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
-    In the meantime, the demo will still work, but with outdated macros.
-    
 We are using the [TPC-H benchmarking dataset provided by Snowflake](https://docs.snowflake.net/manuals/user-guide/sample-data-tpch.html)
 to demonstrate dbtvault and showcase the Data Vault architecture running on Snowflake. 
 

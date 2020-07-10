@@ -132,7 +132,7 @@ which comprises the multi-column hash.
 
 5\. `IFNULL` if Steps 1-4 resolve in a NULL value (in the case of the empty string or a true `NULL`)
 then we output a double-hat string, `^^`. This ensures that we can detect changes in columns between `NULL` 
-and non-NULL values. This is particularly import for `HASHDIFFS`.
+and non-NULL values. This is particularly important for `HASHDIFFS`.
 
 6\. `CONCAT` Next, we concatenate the column values using a double-pipe string, `||`. This ensures we have
 consistent concatenation, using a string which is unlikely to be contained in the columns we are concatenating.

@@ -1,7 +1,3 @@
-!!! warning
-    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
-    In the meantime, the demo will still work, but with outdated macros.
-
 ![alt text](../assets/images/staging.png "Staging from a raw table to the raw vault")
 
 We have two staging layers, as shown in the diagram above.
@@ -56,81 +52,107 @@ The dbt output should give something like this:
 
 ## The hashed staging layer
 
-The tables in the raw staging layer need to be processed to add extra columns of data to make it ready 
-to load to the raw vault. 
+The tables in the raw staging layer need additional columns to prepare the data for
+loading to the raw vault. 
 
 Specifically, we need to add primary key hashes, hashdiffs, and any implied fixed-value columns 
 (see the diagram at the top of the page).
 
-We have created a number of macros for dbtvault, to make this step easier. Below are some links to
-the macro documentation to provide a deeper understanding of how the macros work. 
+We have created a helper macro for dbtvault, to make this step easier. 
 
-- [multi-hash](../macros.md#multi_hash) Generates SQL for hashes from lists of column/alias pairs.
-- [add-columns](../macros.md#add_columns) Generates SQL for additional columns with constant or function-derived values, 
-from lists of column/alias pairs.
-- [from](../macros.md#from) Generates SQL for selecting from the source table.
+- [stage](../macros.md#stage) Helper macro which generates derived and hashed columns from a given raw stage.
 
-## The model header
+### Using the stage macro
 
-For the staging layers we use a header as follows:
+By using the below template and providing the required metadata, the stage macro generates hashed columns, derived columns and automatically selects all columns
+from the source table. 
 
-```sql
-{{- config(materialized='view', schema='STG', enabled=true, tags='stage') -}}
+```jinja2 linenums="1"
+{{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
+                  source_model=var('source_model', none), 
+                  hashed_columns=var('hashed_columns', none), 
+                  derived_columns=var('derived_columns', none)) }}
 ```
 
-This header is fairly-straight forward and defines the model as a view, as well as defining the schema as ```STG```
-to ensure that the location we are materializing this model in makes sense in the overall system.
+Lets go through one of the examples in the `dbt_project.yml`:
 
-We also define the ```stage``` tag to categorise this model and make it easier to isolate when
-we want to only run staging layer models.
-
-## The source table
-
-In the ```v_stg_orders``` model, we use set the following ``source_table``` variable:
-
-```sql
-{%- set source_table = ref('raw_orders') -%}
+```yaml linenums="1"
+v_stg_transactions:
+    vars:
+      source_model: 'raw_transactions'
+      hashed_columns:
+        TRANSACTION_PK:
+          - 'CUSTOMER_ID'
+          - 'TRANSACTION_NUMBER'
+        CUSTOMER_FK: 'CUSTOMER_ID'
+        ORDER_FK: 'ORDER_ID'
+      derived_columns:
+        SOURCE: '!RAW_TRANSACTIONS'
+        LOADDATE: DATEADD(DAY, 1, TRANSACTION_DATE)
+        EFFECTIVE_FROM: 'TRANSACTION_DATE'
+v_stg_orders:
+vars:
+  source_model: 'raw_orders'
+  hashed_columns:
+    [...]
+    ORDER_HASHDIFF:
+      is_hashdiff: true
+      columns:
+        - 'ORDERKEY'
+        - 'CLERK'
+        - 'ORDERDATE'
+        - 'ORDERPRIORITY'
+        - 'ORDERSTATUS'
+        - 'ORDER_COMMENT'
+        - 'SHIPPRIORITY'
+        - 'TOTALPRICE'
+  derived_columns:
+    [...]
 ```
 
-This allows us to make use of the additional functionality of the [add-columns](../macros.md#add_columns) macro
-which will enable it to automatically bring in all columns from the defined ```source_table```.
+#### source_model
 
-This will be very convenient for when we need to access the data when creating the raw vault later. 
+The `source_model` defines the raw stage `raw_transactions` which our staging layer will use as a base.
 
-## Hashing
 
-We provide a number of column/alias pairs to the [multi-hash](../macros.md#multi_hash) macro
-to generate hashing SQL. These hashes will be used in the raw vault tables as primary key 
-and hashdiff fields. 
+#### hashed_columns
 
-!!! note "Why do we hash?"
-    For more information on why we hash, refer to the [best practices](../best_practices.md#why-do-we-hash) page.
+Next, we define our `hashed_columns`. In the `v_stg_transactions` view, we are defining `TRANSACTION_PK` as a new hashed column, which is formed 
+from the concatenation of the `CUSTOMER_ID` and `TRANSACTION_NUMBER` columns present in the `raw_transactions` model. 
 
-For hashdiff columns, we provide an additional parameter, ```is_hashdiff``` with the value ```true``` to get 
-dbtvault to sort the columns alphabetically when hashing, as per best practices. 
 
-## Additional columns
+`CUSTOMER_FK` and `ORDER_FK` are both hashed from single columns, so we provide a single string with the column name. 
 
-We also provide a number of column/alias pairs to the [add-columns](../macros.md#add_columns) macro
-to generate SQL for adding additional columns to our hashed stage view.
 
-AS we mentioned before, if the ```source_table``` variable we created is provided as the first parameter,
-all of the ```source_table``` columns will automatically be selected.
+In the `v_stg_orders` view we also define a `HASHDIFF` column. These work very similarly to multi-column hashes (like `TRANSACTION_PK`)
+except that we define the `is_hashdiff` flag as `true` and provide the list of columns under a `columns` key. 
 
-If there are any constants which overlap with the ```source_table```, and the ```source_table``` has been
-provided as a parameter, the constants provided to this macro will take precedence.
+Defining a hashdiff using this syntax will ensure the columns are automatically alpha-sorted, which is standard practise for hashdiffs.
 
-This macro can crate any number of extra columns, which may contain values generated by database function calls
-or contain constant values provided by you, the user.
 
-There's a simple shorthand method for providing constants which you can observe being used in the hashed 
-staging models. If we provide a ```!``` in the string value, it will create a column with that string 
-(minus the ```!```) as its value in every row. This is very useful when defining a source,
-as you may want to force it to a certain value for auditing purposes. 
+!!! tip
+    For more detail on dbtvault's hashing process, read [how do we hash](../best_practices.md#how-do-we-hash)
+    
 
-## From
+#### derived_columns
 
-This is a simple convenience macro which generates SQL in the form ```FROM <source_table>```.
+Now we can define any additional inferred, fixed value and calculated columns using the `derived_columns` configuration. 
+
+Below is the `derived_columns` configuration from earlier:
+
+```yaml linenums="1"
+derived_columns:
+    SOURCE: '!RAW_TRANSACTIONS'
+    LOADDATE: DATEADD(DAY, 1, TRANSACTION_DATE)
+    EFFECTIVE_FROM: 'TRANSACTION_DATE'
+```
+
+Here, we define the `SOURCE` column using the `!` helper syntax, which gives `SOURCE` a constant, quoted
+string as a value in the generated SQL, making every value in the SOURCE column `RAW_TRANSACTIONS`.
+This is an alternative to awkward quotation escaping. 
+
+We also define a `LOADDATE` column, using a SQL function as the value instead, and an `EFFECTIVE_FROM` column which
+simply aliases the `TRANSACTION_DATE` as `EFFECTIVE_FROM`. 
 
 ## The hashed staging models
 
@@ -152,7 +174,7 @@ after the transaction was made.
 
 To build this layer with dbtvault, run the below command:
 
-```dbt run --models tag:stage```
+```dbt run --models +tag:stage```
 
 Running this command will run all models which have the ``stage`` tag. We have given the ```stage``` tag to the
 two hashed staging layer models, so this will compile and run both models.

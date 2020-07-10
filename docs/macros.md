@@ -12,7 +12,7 @@ for your Data Vault.
 
 Generates SQL to build a hub table using the provided metadata in your `dbt_project.yml`.
 
-``` sql
+``` sql  linenums="1"
 
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
                 var('src_source'), var('source_model'))        }}
@@ -35,7 +35,7 @@ Generates SQL to build a hub table using the provided metadata in your `dbt_proj
                                                                                                                     
 #### Usage
 
-``` sql
+``` sql linenums="1"
 
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
                 var('src_source'), var('source_model'))        }}
@@ -47,7 +47,7 @@ Generates SQL to build a hub table using the provided metadata in your `dbt_proj
 
 #### Example Output
 
-```mysql tab='Single-Source'
+```mysql tab='Single-Source' linenums="1"
 WITH STG AS (
     SELECT DISTINCT
     a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOADDATE, a.SOURCE
@@ -69,7 +69,7 @@ ON c.CUSTOMER_PK = d.CUSTOMER_PK
 WHERE d.CUSTOMER_PK IS NULL
 ```
 
-```mysql tab='Multi-Source'
+```mysql tab='Multi-Source' linenums="1"
 WITH STG_1 AS (
     SELECT DISTINCT
     a.PART_PK, a.PART_ID, a.LOADDATE, a.SOURCE
@@ -142,7 +142,7 @@ ___
 
 Generates sql to build a link table using the provided metadata in your `dbt_project.yml`.
 
-``` sql
+``` sql linenums="1"
 {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
                  var('src_source'), var('source_model'))        }}
 ```
@@ -164,7 +164,7 @@ Generates sql to build a link table using the provided metadata in your `dbt_pro
 
 #### Usage
 
-``` sql
+``` sql linenums="1"
 {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
                  var('src_source'), var('source_model'))        }}
 ```                                                  
@@ -175,7 +175,7 @@ Generates sql to build a link table using the provided metadata in your `dbt_pro
 
 #### Example Output
 
-```mysql tab='Single-Source'
+```mysql tab='Single-Source' linenums="1"
 WITH STG AS (
     SELECT DISTINCT
     a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
@@ -199,7 +199,7 @@ ON c.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
 WHERE d.CUSTOMER_NATION_PK IS NULL
 ```
 
-```mysql tab='Union'
+```mysql tab='Union' linenums="1"
 WITH STG_1 AS (
     SELECT DISTINCT
     a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
@@ -272,7 +272,7 @@ ___
 
 Generates sql to build a satellite table using the provided metadata in your `dbt_project.yml`.
 
-``` sql
+``` sql linenums="1"
 {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
                 var('src_eff'), var('src_ldts'), var('src_source'),
                 var('source_model'))                                   }}
@@ -292,7 +292,7 @@ Generates sql to build a satellite table using the provided metadata in your `db
 
 #### Usage
 
-``` sql
+``` sql linenums="1"
 {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
                 var('src_eff'), var('src_ldts'), var('src_source'),
                 var('source_model'))                                   }}
@@ -304,7 +304,7 @@ Generates sql to build a satellite table using the provided metadata in your `db
 
 #### Example Output
 
-```mysql
+```mysql linenums="1"
 SELECT DISTINCT 
                     e.CUSTOMER_PK,
                     e.CUSTOMER_HASHDIFF,
@@ -345,7 +345,7 @@ ___
 
 Generates sql to build a transactional link table using the provided metadata in your `dbt_project.yml`.
 
-``` sql
+``` sql linenums="1"
 {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
                    var('src_eff'), var('src_ldts'), var('src_source'),
                    var('source_model'))                                }}
@@ -365,7 +365,7 @@ Generates sql to build a transactional link table using the provided metadata in
 
 #### Usage
 
-``` sql
+``` sql linenums="1"
 {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
                    var('src_eff'), var('src_ldts'), var('src_source'),
                    var('source_model'))                                }}
@@ -377,7 +377,7 @@ Generates sql to build a transactional link table using the provided metadata in
 
 #### Example Output
 
-```mysql
+```mysql linenums="1"
 SELECT DISTINCT 
                     stg.TRANSACTION_PK,
                     stg.CUSTOMER_FK,
@@ -431,7 +431,7 @@ Generates sql to build a staging area using the provided metadata in your `dbt_p
 
 #### Usage
 
-``` sql
+``` sql linenums="1"
 {{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
                   source_model=var('source_model', none), 
                   hashed_columns=var('hashed_columns', none), 
@@ -444,7 +444,7 @@ Generates sql to build a staging area using the provided metadata in your `dbt_p
 
 #### Example Output
 
-```sql tab='All variables'
+```sql tab='All variables' linenums="1"
 
 SELECT
 
@@ -477,7 +477,7 @@ PHONE
 FROM MY_DATABASE.MY_SCHEMA.raw_source
 ```
 
-```sql tab="Only source"
+```sql tab="Only source" linenums="1"
 
 SELECT
 
@@ -496,7 +496,7 @@ PHONE
 FROM MY_DATABASE.MY_SCHEMA.raw_source
 ```
 
-```sql tab='Only hashing'
+```sql tab='Only hashing' linenums="1"
 
 SELECT
 
@@ -516,7 +516,7 @@ FROM MY_DATABASE.MY_SCHEMA.raw_source
 ```
 
 
-```sql tab="Only derived"
+```sql tab="Only derived" linenums="1"
 
 SELECT
 
@@ -567,11 +567,11 @@ ___
     
 A macro for generating hashing SQL for columns:
 
-```sql tab='MD5'
+```sql tab='MD5' linenums="1"
 CAST(MD5_BINARY(UPPER(TRIM(CAST(column AS VARCHAR)))) AS BINARY(16)) AS alias
 ```
 
-```sql tab='SHA'
+```sql tab='SHA' linenums="1"
 CAST(SHA2_BINARY(UPPER(TRIM(CAST(column AS VARCHAR)))) AS BINARY(32)) AS alias
 ```
 
@@ -586,7 +586,7 @@ CAST(SHA2_BINARY(UPPER(TRIM(CAST(column AS VARCHAR)))) AS BINARY(32)) AS alias
 
 #### Usage
 
-```yaml
+```yaml linenums="1"
 {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_PK') }},
 {{ dbtvault.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
 ```
@@ -596,7 +596,7 @@ CAST(SHA2_BINARY(UPPER(TRIM(CAST(column AS VARCHAR)))) AS BINARY(32)) AS alias
 
 #### Output
 
-```mysql tab='MD5'
+```mysql tab='MD5' linenums="1"
 CAST(MD5_BINARY(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR)))) AS BINARY(16)) AS CUSTOMER_PK,
 CAST(MD5_BINARY(CONCAT(IFNULL(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR))), '^^'), '||',
                        IFNULL(UPPER(TRIM(CAST(DOB AS VARCHAR))), '^^'), '||',
@@ -605,7 +605,7 @@ CAST(MD5_BINARY(CONCAT(IFNULL(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR))), '^^'), 
                        AS BINARY(16)) AS HASHDIFF
 ```
 
-```mysql tab='SHA'
+```mysql tab='SHA' linenums="1"
 CAST(SHA2_BINARY(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR)))) AS BINARY(32)) AS CUSTOMER_PK,
 CAST(SHA2_BINARY(CONCAT(IFNULL(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR))), '^^'), '||',
                         IFNULL(UPPER(TRIM(CAST(DOB AS VARCHAR))), '^^'), '||',
@@ -621,7 +621,7 @@ ___
 
 A macro for quickly prefixing a list of columns with a string:
 
-```mysql
+```mysql linenums="1"
 a.column1, a.column2, a.column3, a.column4
 ```
 
@@ -634,7 +634,7 @@ a.column1, a.column2, a.column3, a.column4
 
 #### Usage
 
-```sql
+```sql linenums="1"
 {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }}
 {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
 ```
@@ -644,7 +644,7 @@ a.column1, a.column2, a.column3, a.column4
 
 #### Output
 
-```mysql
+```mysql linenums="1"
 a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE
 a.CUSTOMERKEY
 ```

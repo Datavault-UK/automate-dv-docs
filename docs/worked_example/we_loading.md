@@ -1,7 +1,3 @@
-!!! warning
-    As of dbtvault v0.6, This section is currently out of date. We will be releasing an update in due course. 
-    In the meantime, the demo will still work, but with outdated macros.
-
 We can begin loading our vault now that we have a staging layer with all of the columns we require.
 
 ## Hubs
@@ -158,7 +154,7 @@ Each of the commands above load a particular type of table, however, we may want
 
 To do this, run the command below:
 
-```dbt run --models load.*``` 
+```dbt run``` 
 
 This will run all models in the load directory, which is where all of the provided models are located.
 
@@ -169,36 +165,17 @@ Now that we have loaded all records for the date ```1992-01-08```, we can increm
 Return to the ```dbt_project.yml``` file and change the date to ```1992-01-09```:
 
 ```dbt_project.yml```
-```yaml hl_lines="24"
+```yaml hl_lines="24" linenums="1"
 models:
   snowflakeDemo:
-    load:
-      schema: "VLT"
-      enabled: true
-      materialized: incremental
-      stage:
-        schema: "STG"
-        enabled: true
-        materialized: view
-      raw:
-        schema: "RAW"
-        enabled: true
-        materialized: incremental
-      hubs:
-        ...
-      links:
-        ...
-      sats:
-        ...
-      t_links:
-        ...
+    [...]
   vars:
-    date: TO_DATE('1992-01-09')
+    load_date: '1992-01-09'
 ```
 
 And run:
 
-```dbt run --models load.*``` 
+```dbt run``` 
 
 This will load the next day-feed into the system.
 
