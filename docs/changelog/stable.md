@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md)
 
+## [v0.6.2] - 2020-08-06
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6.2)](https://dbtvault.readthedocs.io/en/v0.6.2/?badge=v0.6.2)
+
+### Fixed
+
+`dbt_project.yml`
+
+`config-version: 1` caused an error in any dbt version prior to `0.17.x`. We only put this config
+in for users making use of variables in their `dbt_project.yml` file. 
+
+Note: If using `vars` in `dbt_project.yml`, you still need to specify `config-version: 1` in your own project's dbt_project.yml.
+Guidance will be released for alternatives to model-scoped `dbt_project.yml` vars in the next major release of dbtvault (`0.7.x`)
+
+Read more about the [config-version](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/) setting.
+
 ## [v0.6.1] - 2020-06-24
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6.1)](https://dbtvault.readthedocs.io/en/v0.6.1/?badge=v0.6.1)
 
@@ -64,8 +79,7 @@ We'll be updating the other macros soon, stay tuned!
 ### Removed
 
 - Deprecated macros (old table template macros) 
-- A handful of now unused internal macros
-- Documentation website from main repository (this makes the package smaller!) 
+- A handful of now unused internal macros- Documentation website from main repository (this makes the package smaller!) 
 [New docs repo](https://github.com/Datavault-UK/dbtvault-docs)
 
 ## [v0.5] - 2020-02-24
