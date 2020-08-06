@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 `config-version: 1` caused an error in any dbt version prior to `0.17.x`. We only put this config
 in for users making use of variables in their `dbt_project.yml` file. 
 
-Note: If using `vars` in `dbt_project.yml`, you still need to specify `config-version: 1` in your own project's dbt_project.yml.
+Note: If using `vars` in `dbt_project.yml`, you still need to specify `config-version: 1` in your own project's `dbt_project.yml`.
 Guidance will be released for alternatives to model-scoped `dbt_project.yml` vars in the next major release of dbtvault (`0.7.x`)
 
 Read more about the [config-version](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/) setting.
