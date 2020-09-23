@@ -6,7 +6,7 @@ Your old metadata would have looked something like this:
 ```sql
 {{- config(materialized='incremental', schema='vlt', enabled=true, tags='hubs')    -}}
 
-{%- set source = [ref('v_stg_orders')]                            -%}
+{%- set source = [ref('v_stg_orders')]                                             -%}
 
 {%- set src_pk = 'CUSTOMER_PK'                                                     -%}
 {%- set src_nk = 'CUSTOMER_ID'                                                     -%}

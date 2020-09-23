@@ -3,7 +3,7 @@ site_author: Datavault
 site_dir: 'site'
 repo_name: 'Datavault-UK/dbtvault'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
-
+dev_addr: 127.0.0.1:8001
 theme:
     name: 'material'
     custom_dir: 'overrides'
@@ -61,10 +61,11 @@ extra:
   req_dbt_version: 0.16.x
 
 markdown_extensions:
-  - codehilite:
-      linenums: true
   - admonition
+  - pymdownx.tabbed
   - pymdownx.superfences
+  - pymdownx.highlight:
+      linenums: true
   - pymdownx.magiclink:
       repo_url_shorthand: true
       repo_url_shortener: true
