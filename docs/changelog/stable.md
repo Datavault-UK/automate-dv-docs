@@ -6,6 +6,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md)
 
+## [v0.7.0] - 
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.0)](https://dbtvault.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
+
+### New
+
+- Effectivity Satellites: A newly supported Data Vault 2.0 structure. [Read more](../tutorial/tut_eff_satellites.md)[Macro Reference](../macros.md#eff_sat)
+- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../macros.md#vault_insert_by_period)
+- dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
+- dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/fishtown-analytics/dbt/releases/tag/v0.18.0)
+
+!!! info
+    *This is intended as quick reference and for completeness only, the online docs are still the main reference.
+      
+### Improved
+
+- All table macros now make more use of CTEs to reduce nested SQL and improve readability and debugging potential. [Why CTE's?](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091)
+- All macros have had the licence header removed. This was a little messy and unnecessary.
+
+### Removed
+
+- Support for dbt versions prior to v0.18.0 [Upgrading to v0.18.0](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-18-0/)
+
 ## [v0.6.2] - 2020-08-06
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6.2)](https://dbtvault.readthedocs.io/en/v0.6.2/?badge=v0.6.2)
 

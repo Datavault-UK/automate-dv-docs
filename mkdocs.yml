@@ -24,6 +24,7 @@ nav:
       - Hubs: 'tutorial/tut_hubs.md'
       - Links: 'tutorial/tut_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
+      - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Transactional Links: 'tutorial/tut_t_links.md'
   - Worked example:
     - Getting Started: 'worked_example/we_worked_example.md'

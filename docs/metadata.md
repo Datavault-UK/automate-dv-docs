@@ -32,10 +32,15 @@ the models themselves. This keeps the metadata all in one place and simplifies t
 
 #### Per-model
 
-- As variables
-- As YAML string
+You may also provide metadata on a per-model basis. Examples for this approach will be added soon.
+#### The problem with metadata
 
-TO DO
+As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
+projects. If your metadata is defined and stored in each model, it becomes harder to generate and develop with, 
+but it can be easier to manage. Whichever approach is chosen, metadata storage and retrieval is difficult without a dedicated tool. 
+To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
+Matillion, or Erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
+any feedback or ideas are welcome.    
 
 ### Staging
 
@@ -168,6 +173,33 @@ and `hashed_columns` as showcased in the provided examples.
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
     ```
+### Transactional links
+###### (also known as non-historised links)
+
+#### Parameters
+
+[t_link macro parameters](macros.md#t_link)
+
+#### Metadata
+
+=== "dbt_project.yml"
+    ```yaml
+    t_link_transactions:
+      vars:
+        source_model: 'v_stg_transactions'
+        src_pk: 'TRANSACTION_PK'
+        src_fk:
+          - 'CUSTOMER_PK'
+          - 'ORDER_PK'
+        src_payload:
+          - 'TRANSACTION_NUMBER'
+          - 'TRANSACTION_DATE'
+          - 'TYPE'
+          - 'AMOUNT'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
 
 ### Satellites
 
@@ -228,41 +260,16 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 #### Metadata
 === "dbt_project.yml"
     ```yaml
-    ```
-
-### Transactional links
-###### (also known as non-historised links)
-
-#### Parameters
-
-[t_link macro parameters](macros.md#t_link)
-
-#### Metadata
-
-=== "dbt_project.yml"
-    ```yaml
-    t_link_transactions:
+    eff_sat_customer_nation:
       vars:
         source_model: 'v_stg_transactions'
         src_pk: 'TRANSACTION_PK'
-        src_fk:
-          - 'CUSTOMER_FK'
-          - 'ORDER_FK'
-        src_payload:
-          - 'TRANSACTION_NUMBER'
-          - 'TRANSACTION_DATE'
-          - 'TYPE'
-          - 'AMOUNT'
+        src_dfk: 'CUSTOMER_PK'
+        src_sfk: 'NATION_PK'
+        src_start_date: 'START_DATE'
+        src_end_date: 'END_DATE'
         src_eff: 'EFFECTIVE_FROM'
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
     ```
-    
 ___
-
-### The problem with metadata
-
-As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
-projects. To help manage large amounts of metadata, we recommend the use of external licence-based tools such as WhereScape, 
-Matillion, and erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
-any feedback or ideas are welcome.    
