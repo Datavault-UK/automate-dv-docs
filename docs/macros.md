@@ -44,7 +44,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY CUSTOMER_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
         ),
         stage_1 AS (
             SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE
@@ -84,7 +84,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY CUSTOMER_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
         ),
         stage_1 AS (
             SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE
@@ -368,10 +368,10 @@ Generates sql to build a transactional link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
         ),
         records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            SELECT DISTINCzT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
         )
         
@@ -383,7 +383,8 @@ Generates sql to build a transactional link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            WHERE __PERIOD_FILTER__
         ),
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
@@ -434,13 +435,57 @@ Generates sql to build a satellite table using the provided parameters.
     === "Base Load"
     
         ```sql
+        WITH source_data AS (
+            SELECT *
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+            
+        )
         
+        SELECT * FROM records_to_insert
         ```
     
-    === "Consequent Loads"
+    === "Subsequent Loads"
         
         ```sql
+        WITH source_data AS (
+            SELECT *
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            -- if using vault_insert_by_period
+            WHERE __PERIOD_FILTER__ 
+        ),
+        update_records AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT_DEV.TEST.SATELLITE as a
+            JOIN source_data as b
+            ON a.CUSTOMER_PK = b.CUSTOMER_PK
+        ),
+        rank AS (
+            SELECT c.CUSTOMER_PK, c.HASHDIFF, c.CUSTOMER_NAME, c.CUSTOMER_PHONE, c.CUSTOMER_DOB, c.EFFECTIVE_FROM, c.LOAD_DATE, c.SOURCE,
+                   CASE WHEN RANK()
+                   OVER (PARTITION BY c.CUSTOMER_PK
+                   ORDER BY c.LOAD_DATE DESC) = 1
+            THEN 'Y' ELSE 'N' END AS latest
+            FROM update_records as c
+        ),
+        stage AS (
+            SELECT d.CUSTOMER_PK, d.HASHDIFF, d.CUSTOMER_NAME, d.CUSTOMER_PHONE, d.CUSTOMER_DOB, d.EFFECTIVE_FROM, d.LOAD_DATE, d.SOURCE
+            FROM rank AS d
+            WHERE d.latest = 'Y'
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+            LEFT JOIN stage
+            ON stage.HASHDIFF = e.HASHDIFF
+            WHERE stage.HASHDIFF IS NULL
+
+        )
         
+        SELECT * FROM records_to_insert
         ```
 
 ___
@@ -486,7 +531,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
         ),
         records_to_insert AS (
             SELECT e.CUSTOMER_ORDER_PK, e.ORDER_PK, e.CUSTOMER_PK, e.START_DATE, e.END_DATE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
@@ -501,7 +546,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
             -- if using vault_insert_by_period
             WHERE __PERIOD_FILTER__  
         ),
@@ -583,7 +628,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
             -- if using vault_insert_by_period
             WHERE __PERIOD_FILTER__ 
         ),
