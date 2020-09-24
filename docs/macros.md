@@ -33,102 +33,245 @@ Generates SQL to build a hub table using the provided parameters.
 
 #### Example Output
 
-=== "Single-Source"
-    ```sql
-    WITH rank_1 AS (
-        SELECT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE,
-               ROW_NUMBER() OVER(
-                   PARTITION BY CUSTOMER_PK
-                   ORDER BY LOADDATE ASC
-               ) AS row_number
-        FROM [DATABASE_NAME].[SCHEMA_NAME].raw_source
-    ),
-    stage_1 AS (
-        SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-        FROM rank_1
-        WHERE row_number = 1
-    ),
-    stage_union AS (
-        SELECT * FROM stage_1
-    ),
-    rank_union AS (
-        SELECT *,
-               ROW_NUMBER() OVER(
-                   PARTITION BY CUSTOMER_PK
-                   ORDER BY LOADDATE, RECORD_SOURCE ASC
-               ) AS row_number
-        FROM stage_union
-        WHERE CUSTOMER_PK IS NOT NULL
-    ),
-    stage AS (
-        SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-        FROM rank_union
-        WHERE row_number = 1
-    ),
-    records_to_insert AS (
-        SELECT stage.* FROM stage
-    )
-    
-    SELECT * FROM records_to_insert
-    ```
+=== "Snowflake"
 
-=== "Multi-Source"
-    ```sql
-    WITH rank_1 AS (
-        SELECT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE,
-               ROW_NUMBER() OVER(
-                   PARTITION BY CUSTOMER_PK
-                   ORDER BY LOADDATE ASC
-               ) AS row_number
-        FROM [DATABASE_NAME].[SCHEMA_NAME].raw_source
-    ),
-    stage_1 AS (
-        SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-        FROM rank_1
-        WHERE row_number = 1
-    ),
-    rank_2 AS (
-        SELECT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE,
-               ROW_NUMBER() OVER(
-                   PARTITION BY CUSTOMER_PK
-                   ORDER BY LOADDATE ASC
-               ) AS row_number
-        FROM [DATABASE_NAME].[SCHEMA_NAME].raw_source_2
-    ),
-    stage_2 AS (
-        SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-        FROM rank_2
-        WHERE row_number = 1
-    ),
-    stage_union AS (
-        SELECT * FROM stage_1
-        UNION ALL
-        SELECT * FROM stage_2
-    ),
-    rank_union AS (
-        SELECT *,
-               ROW_NUMBER() OVER(
-                   PARTITION BY CUSTOMER_PK
-                   ORDER BY LOADDATE, RECORD_SOURCE ASC
-               ) AS row_number
-        FROM stage_union
-        WHERE CUSTOMER_PK IS NOT NULL
-    ),
-    stage AS (
-        SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-        FROM rank_union
-        WHERE row_number = 1
-    ),
-    records_to_insert AS (
-        SELECT stage.* FROM stage
-        LEFT JOIN [DATABASE_NAME].[SCHEMA_NAME].test_hub_macro_correctly_generates_sql_for_incremental_multi_source AS d
-        ON stage.CUSTOMER_PK = d.CUSTOMER_PK
-        WHERE d.CUSTOMER_PK IS NULL
-    )
+    === "Single-Source (Base Load)"
     
-    SELECT * FROM records_to_insert
-    ```
+        ```sql
+        WITH rank_1 AS (
+            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        WITH rank_1 AS (
+            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+        ),
+        -- include this CTE if using vault_insert_by_period materialisation
+        stage_period_filter AS (
+            SELECT *
+            FROM stage_union
+            WHERE __PERIOD_FILTER__
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union -- or stage_period_filter
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+            LEFT JOIN DBTVAULT_DEV.TEST.HUB AS d
+            ON stage.CUSTOMER_PK = d.CUSTOMER_PK
+            WHERE d.CUSTOMER_PK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Multi-Source (Base Load)"
 
+        ```sql
+        WITH rank_1 AS (
+            SELECT PART_PK, PART_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_supplier_seed_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        rank_2 AS (
+            SELECT PART_PK, PART_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_parts_seed_hashed
+        ),
+        stage_2 AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_2
+            WHERE row_number = 1
+        ),
+        rank_3 AS (
+            SELECT PART_PK, PART_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_lineitem_seed_hashed
+        ),
+        stage_3 AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_3
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+            UNION ALL
+            SELECT * FROM stage_2
+            UNION ALL
+            SELECT * FROM stage_3
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union
+            WHERE PART_PK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        WITH rank_1 AS (
+            SELECT PART_PK, PART_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_parts_seed_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        rank_2 AS (
+            SELECT PART_PK, PART_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_lineitem_seed_hashed
+        ),
+        stage_2 AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_2
+            WHERE row_number = 1
+        ),
+        rank_3 AS (
+            SELECT PART_PK, PART_ID, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_supplier_seed_hashed
+        ),
+        stage_3 AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_3
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+            UNION ALL
+            SELECT * FROM stage_2
+            UNION ALL
+            SELECT * FROM stage_3
+        ),
+        -- include this CTE if using vault_insert_by_period materialisation
+        stage_period_filter AS (
+            SELECT *
+            FROM stage_union
+            WHERE __PERIOD_FILTER__
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY PART_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union  -- or stage_period_filter
+            WHERE PART_PK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+            LEFT JOIN DBTVAULT_DEV.TEST.HUB AS d
+            ON stage.PART_PK = d.PART_PK
+            WHERE d.PART_PK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 ___
 
 ### link
@@ -159,97 +302,31 @@ Generates sql to build a link table using the provided parameters.
 
 #### Example Output
 
-=== "Single-Source"
-    ```sql
-    WITH STG AS (
-        SELECT DISTINCT
-        a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
-        FROM (
-            SELECT b.*,
-            ROW_NUMBER() OVER(
-                PARTITION BY b.CUSTOMER_NATION_PK
-                ORDER BY b.LOADDATE, b.SOURCE ASC
-            ) AS RN
-            FROM MY_DATABASE.MY_SCHEMA.v_stg_orders AS b
-            WHERE
-            b.CUSTOMER_FK IS NOT NULL AND
-            b.NATION_FK IS NOT NULL
-        ) AS a
-        WHERE RN = 1
-    )
-    
-    SELECT c.* FROM STG AS c
-    LEFT JOIN MY_DATABASE.MY_SCHEMA.link_customer_nation_current AS d 
-    ON c.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
-    WHERE d.CUSTOMER_NATION_PK IS NULL
-    ```
+=== "Snowflake"
 
-=== "Multi-Source""
-    ```sql
-    WITH STG_1 AS (
-        SELECT DISTINCT
-        a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
-        FROM (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOADDATE, SOURCE,
-            ROW_NUMBER() OVER(
-                PARTITION BY CUSTOMER_NATION_PK
-                ORDER BY LOADDATE ASC
-            ) AS RN
-            FROM MY_DATABASE.MY_SCHEMA.v_stg_customer_sap
-        ) AS a
-        WHERE RN = 1
-    ),
-    STG_2 AS (
-        SELECT DISTINCT
-        a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
-        FROM (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOADDATE, SOURCE,
-            ROW_NUMBER() OVER(
-                PARTITION BY CUSTOMER_NATION_PK
-                ORDER BY LOADDATE ASC
-            ) AS RN
-            FROM MY_DATABASE.MY_SCHEMA.v_stg_customer_crm
-        ) AS a
-        WHERE RN = 1
-    ),
-    STG_3 AS (
-        SELECT DISTINCT
-        a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOADDATE, a.SOURCE
-        FROM (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOADDATE, SOURCE,
-            ROW_NUMBER() OVER(
-                PARTITION BY CUSTOMER_NATION_PK
-                ORDER BY LOADDATE ASC
-            ) AS RN
-            FROM MY_DATABASE.MY_SCHEMA.v_stg_customer_web
-        ) AS a
-        WHERE RN = 1
-    ),
-    STG AS (
-        SELECT DISTINCT
-        b.CUSTOMER_NATION_PK, b.CUSTOMER_FK, b.NATION_FK, b.LOADDATE, b.SOURCE
-        FROM (
-            SELECT *,
-            ROW_NUMBER() OVER(
-                PARTITION BY CUSTOMER_NATION_PK
-                ORDER BY LOADDATE, SOURCE ASC
-            ) AS RN
-            FROM (
-                SELECT * FROM STG_1
-                UNION ALL
-                SELECT * FROM STG_2
-                UNION ALL
-                SELECT * FROM STG_3
-            )
-            WHERE
-            CUSTOMER_FK IS NOT NULL AND
-            NATION_FK IS NOT NULL
-        ) AS b
-        WHERE RN = 1
-    )
+    === "Single-Source (Base Load)"
     
-    SELECT c.* FROM STG AS c
-    ```
+        ```sql
+       
+        ```
+    
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        
+        ```
 
 ___
 
@@ -285,26 +362,39 @@ Generates sql to build a transactional link table using the provided parameters.
 #### Example Output
 
 === "Snowflake"
-    ```sql
-    SELECT DISTINCT 
-                        stg.TRANSACTION_PK,
-                        stg.CUSTOMER_FK,
-                        stg.ORDER_FK,
-                        stg.TRANSACTION_NUMBER,
-                        stg.TRANSACTION_DATE,
-                        stg.TYPE,
-                        stg.AMOUNT,
-                        stg.EFFECTIVE_FROM,
-                        stg.LOADDATE,
-                        stg.SOURCE
-    FROM (
-          SELECT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.ORDER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOADDATE, stg.SOURCE
-          FROM MY_DATABASE.MY_SCHEMA.v_stg_transactions AS stg
-    ) AS stg
-    LEFT JOIN MY_DATABASE.MY_SCHEMA.t_link_transactions AS tgt
-    ON stg.TRANSACTION_PK = tgt.TRANSACTION_PK
-    WHERE tgt.TRANSACTION_PK IS NULL
-    ```
+
+    === "Base Load"
+    
+        ```sql
+        WITH stage AS (
+            SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            FROM stage AS stg
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH stage AS (
+            SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            FROM stage AS stg
+            LEFT JOIN DBTVAULT_DEV.TEST.T_LINK AS tgt
+            ON stg.TRANSACTION_PK = tgt.TRANSACTION_PK
+            WHERE tgt.TRANSACTION_PK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 ___
 
 ### sat
@@ -340,39 +430,18 @@ Generates sql to build a satellite table using the provided parameters.
 #### Example Output
 
 === "Snowflake"
-    ```sql
-    SELECT DISTINCT 
-                        e.CUSTOMER_PK,
-                        e.CUSTOMER_HASHDIFF,
-                        e.NAME,
-                        e.ADDRESS,
-                        e.PHONE,
-                        e.ACCBAL,
-                        e.MKTSEGMENT,
-                        e.COMMENT,
-                        e.EFFECTIVE_FROM,
-                        e.LOADDATE,
-                        e.SOURCE
-    FROM MY_DATABASE.MY_SCHEMA.v_stg_orders AS e
-    LEFT JOIN (
-        SELECT d.CUSTOMER_PK, d.CUSTOMER_HASHDIFF, d.NAME, d.ADDRESS, d.PHONE, d.ACCBAL, d.MKTSEGMENT, d.COMMENT, d.EFFECTIVE_FROM, d.LOADDATE, d.SOURCE
-        FROM (
-              SELECT c.CUSTOMER_PK, c.CUSTOMER_HASHDIFF, c.NAME, c.ADDRESS, c.PHONE, c.ACCBAL, c.MKTSEGMENT, c.COMMENT, c.EFFECTIVE_FROM, c.LOADDATE, c.SOURCE,
-              CASE WHEN RANK()
-              OVER (PARTITION BY c.CUSTOMER_PK
-              ORDER BY c.LOADDATE DESC) = 1
-              THEN 'Y' ELSE 'N' END CURR_FLG
-              FROM (
-                SELECT a.CUSTOMER_PK, a.CUSTOMER_HASHDIFF, a.NAME, a.ADDRESS, a.PHONE, a.ACCBAL, a.MKTSEGMENT, a.COMMENT, a.EFFECTIVE_FROM, a.LOADDATE, a.SOURCE
-                FROM MY_DATABASE.MY_SCHEMA.sat_order_customer_details as a
-                JOIN MY_DATABASE.MY_SCHEMA.v_stg_orders as b
-                ON a.CUSTOMER_PK = b.CUSTOMER_PK
-              ) as c
-        ) AS d
-    WHERE d.CURR_FLG = 'Y') AS src
-    ON src.CUSTOMER_HASHDIFF = e.CUSTOMER_HASHDIFF
-    WHERE src.CUSTOMER_HASHDIFF IS NULL
-    ```
+
+    === "Base Load"
+    
+        ```sql
+        
+        ```
+    
+    === "Consequent Loads"
+        
+        ```sql
+        
+        ```
 
 ___
 
@@ -412,9 +481,151 @@ Generates sql to build an effectivity satellite table using the provided paramet
 #### Example Output
 
 === "Snowflake"
-    ```sql
+    === "Base Load"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT *
+            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+        ),
+        records_to_insert AS (
+            SELECT e.CUSTOMER_ORDER_PK, e.ORDER_PK, e.CUSTOMER_PK, e.START_DATE, e.END_DATE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 
-    ```
+    === "With auto end-dating (existing)"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT *
+            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            -- if using vault_insert_by_period
+            WHERE __PERIOD_FILTER__  
+        ),
+        latest_eff AS
+        (
+            SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
+                   ROW_NUMBER() OVER (
+                        PARTITION BY b.CUSTOMER_ORDER_PK
+                        ORDER BY b.LOAD_DATE DESC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.EFF_SAT AS b
+        ),
+        latest_open_eff AS
+        (
+            SELECT a.CUSTOMER_ORDER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM latest_eff AS a 
+            WHERE TO_DATE(a.END_DATE) = TO_DATE('9999-12-31')
+            AND a.row_number = 1
+        ),
+        stage_slice AS
+        (
+            SELECT stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+        ),
+        links_to_end_date AS (
+            SELECT a.*
+            FROM latest_open_eff AS a
+            LEFT JOIN stage_slice AS b
+            ON a.ORDER_PK = b.ORDER_PK
+                
+            WHERE b.CUSTOMER_PK IS NULL
+            OR a.CUSTOMER_PK <> b.CUSTOMER_PK
+                
+        ),
+        new_open_records AS (
+            SELECT DISTINCT
+                stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM stage_slice AS stage
+            LEFT JOIN latest_open_eff AS e
+            ON stage.CUSTOMER_ORDER_PK = e.CUSTOMER_ORDER_PK
+            WHERE e.CUSTOMER_ORDER_PK IS NULL
+            AND stage.ORDER_PK IS NOT NULL
+            AND stage.CUSTOMER_PK IS NOT NULL
+        ),
+        new_end_dated_records AS (
+            SELECT DISTINCT
+                h.CUSTOMER_ORDER_PK,
+                g.ORDER_PK, g.CUSTOMER_PK,
+                h.EFFECTIVE_FROM AS START_DATE, h.SOURCE
+            FROM latest_open_eff AS h
+            INNER JOIN links_to_end_date AS g
+            ON g.CUSTOMER_ORDER_PK = h.CUSTOMER_ORDER_PK
+        ),
+        amended_end_dated_records AS (
+            SELECT DISTINCT
+                a.CUSTOMER_ORDER_PK,
+                a.ORDER_PK, a.CUSTOMER_PK,
+                a.START_DATE,
+                stage.EFFECTIVE_FROM AS END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE,
+                a.SOURCE
+            FROM new_end_dated_records AS a
+            INNER JOIN stage_slice AS stage
+            ON stage.ORDER_PK = a.ORDER_PK
+                
+            WHERE stage.CUSTOMER_PK IS NOT NULL
+            AND stage.ORDER_PK IS NOT NULL
+        ),
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+            UNION
+            SELECT * FROM amended_end_dated_records
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+        
+    === "Without auto end-dating (existing)"   
+        
+        ```sql
+        WITH source_data AS (
+            SELECT *
+            FROM DBTVAULT_DEV.TEST.raw_stage_seed_hashed
+            -- if using vault_insert_by_period
+            WHERE __PERIOD_FILTER__ 
+        ),
+        latest_eff AS
+        (
+            SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
+                   ROW_NUMBER() OVER (
+                        PARTITION BY b.CUSTOMER_ORDER_PK
+                        ORDER BY b.LOAD_DATE DESC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.EFF_SAT AS b
+        ),
+        latest_open_eff AS
+        (
+            SELECT a.CUSTOMER_ORDER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM latest_eff AS a
+            WHERE TO_DATE(a.END_DATE) = TO_DATE('9999-12-31')
+            AND a.row_number = 1
+        ),
+        stage_slice AS
+        (
+            SELECT stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+        ),
+        new_open_records AS (
+            SELECT DISTINCT
+                stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM stage_slice AS stage
+            LEFT JOIN latest_open_eff AS e
+            ON stage.CUSTOMER_ORDER_PK = e.CUSTOMER_ORDER_PK
+            WHERE e.CUSTOMER_ORDER_PK IS NULL
+            AND stage.ORDER_PK IS NOT NULL
+            AND stage.CUSTOMER_PK IS NOT NULL
+        ),
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+        )
+        
+        SELECT * FROM records_to_insert
+        
+        ```
+    
 ___
 
 ## Staging Macros
