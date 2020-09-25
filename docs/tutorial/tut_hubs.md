@@ -1,29 +1,38 @@
-Hubs are one of the core building blocks of a Data Vault. 
+Hubs are one of the core building blocks of a Data Vault. Hubs record a unique list of all business keys for a single entity. 
+For example, a Hub may contain a list of all Customer IDs in the business. 
 
-In general, they consist of 4 columns, but may have more: 
+#### Structure
 
-1. A primary key (or surrogate key) which is usually a hashed representation of the natural key (also known as the business key).
+In general, Hubs consist of 4 columns, described below.
 
-2. The natural key. This is usually a formal identification for the record such as a customer ID or 
-order number (can be multi-column).
+##### Primary Key (src_pk)
+A primary key (or surrogate key) which is usually a hashed representation of the natural key.
 
-3. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
+##### Natural Key (src_nk)
+This is usually a formal identification for the record such as a customer ID or 
+order number.
 
-4. The source for the record, a code identifying where the data comes from. 
-(i.e. `1` from the [previous section](tut_staging.md#adding-calculated-and-derived-columns), which is the code for `stg_customer`)
+##### Load date (src_ldts)
+A load date or load date timestamp. This identifies when the record was first loaded into the database.
+
+##### Record Source (src_source)
+The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
+or a string directly naming the source system.
+(i.e. `1` from the [previous section](tut_staging.md#adding-calculated-and-derived-columns), 
+which is the code for `stg_customer`)
 
 ### Setting up hub models
 
 Create a new dbt model as before. We'll call this one `hub_customer`. 
 
 `hub_customer.sql`
-```sql
+```jinja
 {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
                 var('src_source'), var('source_model'))        }}
 ```
 
 To create a hub model, we simply copy and paste the above template into a model named after the hub we
-are creating. dbtvault will generate a hub using metadata provided in the next steps.
+are creating. dbtvault will generate a hub using parameters provided in the next steps.
 
 Hubs should use the incremental materialization, as we load and add new records to the existing data set. 
 
@@ -45,6 +54,10 @@ models:
         ...
 ```
 
+!!! tip "New in dbtvault v0.7.0"
+    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
+    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+
 [Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
 ### Adding the metadata
@@ -64,6 +77,10 @@ hub_customer:
     ...
 ```
 
+!!! info
+    This is just one way of providing metadata/parameter values to dbtvault macros, take a look at 
+    the [Metadata Reference](../metadata.md) for some alternatives
+
 #### Source columns
 
 Next, we define the columns which we would like to bring from the source.
@@ -73,7 +90,7 @@ staging layer which we will then use to form our hub:
 1. A primary key, which is a hashed natural key. The `CUSTOMER_PK` we created earlier in the [staging](tut_staging.md) 
 section will be used for `hub_customer`.
 2. The natural key, `CUSTOMER_ID` which we added using the [stage](../macros.md#stage) macro.
-3. A load date timestamp, which is present in the staging layer as `LOADDATE`
+3. A load date timestamp, which is present in the staging layer as `LOAD_DATE`
 4. A `SOURCE` column.
 
 We can now add this metadata to the `dbt_project.yml` file:
@@ -85,7 +102,7 @@ hub_customer:
     source_model: 'stg_customer_hashed'
     src_pk: 'CUSTOMER_PK'
     src_nk: 'CUSTOMER_ID'
-    src_ldts: 'LOADDATE'
+    src_ldts: 'LOAD_DATE'
     src_source: 'SOURCE'
 ```
 
@@ -101,7 +118,7 @@ With our model complete and our YAML written, we can run dbt to create our `hub_
     
 And our table will look like this:
 
-| CUSTOMER_PK  | CUSTOMER_ID  | LOADDATE   | SOURCE       |
+| CUSTOMER_PK  | CUSTOMER_ID  | LOAD_DATE   | SOURCE       |
 | ------------ | ------------ | ---------- | ------------ |
 | B8C37E...    | 1001         | 1993-01-01 | 1            |
 | .            | .            | .          | .            |
@@ -139,10 +156,15 @@ hub_nation:
       - 'v_stg_inventory'
     src_pk: 'NATION_PK'
     src_nk: 'NATION_ID'
-    src_ldts: 'LOADDATE'
+    src_ldts: 'LOAD_DATE'
     src_source: 'SOURCE'
 ```
 
 ### Next steps
 
-We have now created a staging layer and a hub. Next we will look at [links](tut_links.md), which are created in a similar way.
+We have now created:
+
+- A staging layer 
+- A Hub 
+ 
+Next we will look at [links](tut_links.md), which are created in a similar way.

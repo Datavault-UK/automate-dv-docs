@@ -5,39 +5,55 @@ their referenced hub tables. They allow us to model the more granular relationsh
 are purchases, flights or emails; there is a record in the table for every event or transaction between the entities 
 instead of just one record per relation.
 
+#### Structure
+
 Our transactional links will contain:
 
-1. A primary key. For t-links, we take the natural keys (prior to hashing) represented by the foreign key columns below and create a hash on a concatenation of them.
-2. Foreign keys holding the primary key for each hub referenced in the link (2 or more depending on the number of hubs referenced)
-3. A payload. The payload consists of concrete data for an entity, i.e. a transaction record. This could be
+##### Primary Key (src_pk)
+A primary key (or surrogate key) which is usually a hashed representation of the natural key. 
+For t-links, we take the natural keys (prior to hashing) represented by the foreign key columns below 
+and create a hash on a concatenation of them. 
+
+##### Foreign Keys (src_fk)
+Foreign keys referencing the primary key for each hub referenced in the t-link (2 or more depending on the number of hubs 
+referenced) 
+
+##### Payload (src_payload)
+A t-link payload consists of concrete data for the transaction record. This could be
 a transaction number, an amount paid, transaction type or more. The payload will contain all of the
 concrete data for a transaction. 
-4. An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
-satellite record. It records that a record is valid from a specific point in time. In the case of a transaction, this
+
+##### Effective From (src_eff)
+An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
+transaction record. It records that a record is valid from a specific point in time. For a t-link, this
 is usually the date on which the transaction occurred. 
 
-5. The load date or load date timestamp.
-6. The source for the record
+##### Load date (src_ldts)
+A load date or load date timestamp. This identifies when the record was first loaded into the database.
+
+##### Record Source (src_source)
+The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
+or a string directly naming the source system.
 
 !!! note
-    `LOADDATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
+    `LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
     different value, especially if there is a batch processing delay between when a business event happens and the 
     record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
-    and 'what happened when' using the `LOADDATE` and `EFFECTIVE_FROM` date accordingly. 
+    and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
     
 ### Setting up t-link models
 
 Create a new dbt model as before. We'll call this one `t_link_transactions`. 
 
 `t_link_transactions.sql`
-```sql
+```jinja
 {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
                    var('src_eff'), var('src_ldts'), var('src_source'),
                    var('source_model'))                                }}
 ```
 
 To create a t-link model, we simply copy and paste the above template into a model named after the t-link we
-are creating. dbtvault will generate a t-link using metadata provided in the next steps.
+are creating. dbtvault will generate a t-link using parameters provided in the next steps.
 
 Transactional links should use the incremental materialization, as we load and add new records to the existing data set. 
 
@@ -59,6 +75,10 @@ models:
         ...
 ```
 
+!!! tip "New in dbtvault v0.7.0"
+    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
+    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+
 [Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
 
 ### Adding the metadata
@@ -68,8 +88,8 @@ Let's look at the metadata we need to provide to the [t_link](../macros.md#t_lin
 #### Source table
 
 The first piece of metadata we need is the source table. For transactional links this can sometimes be a little
-trickier than other table types. We need particular columns to model the transaction or event which has occured in the 
-relationship between the hubs we are referencing, and therefore may need to create a staging layer specifically for the 
+trickier than other table types. We need particular columns to model the transaction or event which has occurred in the 
+relationship between the hubs we are referencing, and so **sometimes** may need to create a staging layer specifically for the 
 purposes of feeding the transactional link. 
 
 For this step, ensure you have the following columns present in the source table:
@@ -113,7 +133,7 @@ t_link_transactions:
       - 'TYPE'
       - 'AMOUNT'
     src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOADDATE'
+    src_ldts: 'LOAD_DATE'
     src_source: 'SOURCE'
 ```
 
@@ -125,7 +145,7 @@ With our model complete and our YAML written, we can run dbt to create our `t_li
     
 And our table will look like this:
 
-| TRANSACTION_PK  | CUSTOMER_FK | ORDER_FK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOADDATE    | SOURCE |
+| TRANSACTION_PK  | CUSTOMER_FK | ORDER_FK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATE    | SOURCE |
 | --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ----------- | ------ |
 | BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-29  | 2      |
 | .               | .           | .         | .                  | .    | .       | .              | .           | .      |
@@ -135,8 +155,11 @@ And our table will look like this:
 
 ### Next steps
 
-We have now created a staging layer and a hub, link, satellite and transactional link. We'll be bringing new
-table structures in future releases. 
+We have now created:
 
-Take a look at our [worked example](../worked_example/we_worked_example.md) for a demonstration of a realistic environment with pre-written 
-models for you to experiment with and learn from. 
+- A staging layer 
+- A Hub 
+- A Link
+- A Transactional LLnk
+ 
+Next we will explore [satellites](tut_satellites.md).

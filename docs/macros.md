@@ -19,13 +19,16 @@ Generates SQL to build a hub table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type (Single-Source) | Type (Multi-Source) | Required?                                    |
-| ------------- | --------------------------------------------------- | -------------------- | ------------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | String               | String              | <i class="fas fa-check-circle required"></i> |
-| src_nk        | Source natural key column                           | String               | String              | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | String              | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | String               | String              | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | String               | List (YAML)         | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                    |
+| ------------- | --------------------------------------------------- | -------------------- | -------------------------------------------- |
+| src_pk        | Source primary key column                           | String               | <i class="fas fa-check-circle required"></i> |
+| src_nk        | Source natural key column                           | String               | <i class="fas fa-check-circle required"></i> |
+| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
+| src_source    | Name of the column containing the source ID         | String               | <i class="fas fa-check-circle required"></i> |
+| source_model  | Staging model name                                  | String/List          | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_hubs.md) for more details
 
 #### Example Metadata
 
@@ -133,7 +136,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY PART_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_supplier_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_supplier_hashed
         ),
         stage_1 AS (
             SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
@@ -146,7 +149,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY PART_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_parts_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_parts_hashed
         ),
         stage_2 AS (
             SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
@@ -159,7 +162,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY PART_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_lineitem_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_lineitem_hashed
         ),
         stage_3 AS (
             SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
@@ -203,7 +206,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY PART_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_parts_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_parts_hashed
         ),
         stage_1 AS (
             SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
@@ -216,7 +219,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY PART_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_lineitem_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_lineitem_hashed
         ),
         stage_2 AS (
             SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
@@ -229,7 +232,7 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY PART_PK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_supplier_seed_hashed
+            FROM DBTVAULT_DEV.TEST.raw_stage_supplier_hashed
         ),
         stage_3 AS (
             SELECT DISTINCT PART_PK, PART_ID, LOAD_DATE, SOURCE
@@ -288,13 +291,16 @@ Generates sql to build a link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type (Single-Source) | Type (Union)         | Required?                                    |
-| ------------- | --------------------------------------------------- | ---------------------| ---------------------| -------------------------------------------- |
-| src_pk        | Source primary key column                           | String               | String               | <i class="fas fa-check-circle required"></i> |
-| src_fk        | Source foreign key column(s)                        | List (YAML)          | List (YAML)          | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | String               | String               | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | String               | List (YAML)          | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                    |
+| ------------- | --------------------------------------------------- | ---------------------| -------------------------------------------- |
+| src_pk        | Source primary key column                           | String               | <i class="fas fa-check-circle required"></i> |
+| src_fk        | Source foreign key column(s)                        | List                 | <i class="fas fa-check-circle required"></i> |
+| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
+| src_source    | Name of the column containing the source ID         | String               | <i class="fas fa-check-circle required"></i> |
+| source_model  | Staging model name                                  | String/List          | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_links.md) for more details
 
 #### Example Metadata
 
@@ -307,25 +313,232 @@ Generates sql to build a link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-       
+        WITH rank_1 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union
+            WHERE CUSTOMER_FK IS NOT NULL
+            AND NATION_FK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+        )
+        
+        SELECT * FROM records_to_insert
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
+        WITH rank_1 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union
+            WHERE CUSTOMER_FK IS NOT NULL
+            AND NATION_FK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK AS d
+            ON stage.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
+            WHERE d.CUSTOMER_NATION_PK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
         
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
+        WITH rank_1 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_crm_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        rank_2 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_sap_hashed
+        ),
+        stage_2 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_2
+            WHERE row_number = 1
+        ),
+        rank_3 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_web_hashed
+        ),
+        stage_3 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_3
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+            UNION ALL
+            SELECT * FROM stage_2
+            UNION ALL
+            SELECT * FROM stage_3
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union
+            WHERE CUSTOMER_FK IS NOT NULL
+            AND NATION_FK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+        )
         
+        SELECT * FROM records_to_insert
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
+        WITH rank_1 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_crm_hashed
+        ),
+        stage_1 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_1
+            WHERE row_number = 1
+        ),
+        rank_2 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_web_hashed
+        ),
+        stage_2 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_2
+            WHERE row_number = 1
+        ),
+        rank_3 AS (
+            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE ASC
+                   ) AS row_number
+            FROM DBTVAULT_DEV.TEST.raw_stage_sap_hashed
+        ),
+        stage_3 AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_3
+            WHERE row_number = 1
+        ),
+        stage_union AS (
+            SELECT * FROM stage_1
+            UNION ALL
+            SELECT * FROM stage_2
+            UNION ALL
+            SELECT * FROM stage_3
+        ),
+        rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_NATION_PK
+                       ORDER BY LOAD_DATE, SOURCE ASC
+                   ) AS row_number
+            FROM stage_union
+            WHERE CUSTOMER_FK IS NOT NULL
+            AND NATION_FK IS NOT NULL
+        ),
+        stage AS (
+            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
+            FROM rank_union
+            WHERE row_number = 1
+        ),
+        records_to_insert AS (
+            SELECT stage.* FROM stage
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK AS d
+            ON stage.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
+            WHERE d.CUSTOMER_NATION_PK IS NULL
+        )
         
+        SELECT * FROM records_to_insert
         ```
 
 ___
@@ -348,12 +561,15 @@ Generates sql to build a transactional link table using the provided parameters.
 | Parameter     | Description                                         | Type           | Required?                                    |
 | ------------- | --------------------------------------------------- | -------------- | -------------------------------------------- |
 | src_pk        | Source primary key column                           | String         | <i class="fas fa-check-circle required"></i> |
-| src_fk        | Source foreign key column(s)                        | List (YAML)    | <i class="fas fa-check-circle required"></i> |
-| src_payload   | Source payload column(s)                            | List (YAML)    | <i class="fas fa-check-circle required"></i> |
+| src_fk        | Source foreign key column(s)                        | List           | <i class="fas fa-check-circle required"></i> |
+| src_payload   | Source payload column(s)                            | List           | <i class="fas fa-check-circle required"></i> |
 | src_eff       | Source effective from column                        | String         | <i class="fas fa-check-circle required"></i> |
 | src_ldts      | Source load date timestamp column                   | String         | <i class="fas fa-check-circle required"></i> |
 | src_source    | Name of the column containing the source ID         | String         | <i class="fas fa-check-circle required"></i> |
 | source_model  | Staging model name                                  | String         | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_t_links.md) for more details
 
 #### Example Metadata
 
@@ -403,7 +619,6 @@ ___
 
 Generates sql to build a satellite table using the provided parameters.
 
-
 #### Usage
 
 ``` jinja
@@ -418,11 +633,14 @@ Generates sql to build a satellite table using the provided parameters.
 | ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
 | src_pk        | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
 | src_hashdiff  | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i> |
-| src_payload   | Source payload column(s)                            | List/Dict (YAML) | <i class="fas fa-check-circle required"></i> |
+| src_payload   | Source payload column(s)                            | List             | <i class="fas fa-check-circle required"></i> |
 | src_eff       | Source effective from column                        | String           | <i class="fas fa-check-circle required"></i> |
 | src_ldts      | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i> |
 | src_source    | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i> |
 | source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_satellites.md) for more details
 
 #### Example Metadata
 
@@ -518,6 +736,8 @@ Generates sql to build an effectivity satellite table using the provided paramet
 | src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i> |
 | source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
 
+!!! tip
+    [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
 
 #### Example Metadata
 
@@ -526,6 +746,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
 #### Example Output
 
 === "Snowflake"
+
     === "Base Load"
         
         ```sql
@@ -541,7 +762,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         SELECT * FROM records_to_insert
         ```
 
-    === "With auto end-dating (existing)"
+    === "With auto end-dating (Subsequent)"
     
         ```sql
         WITH source_data AS (
@@ -623,7 +844,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         SELECT * FROM records_to_insert
         ```
         
-    === "Without auto end-dating (existing)"   
+    === "Without auto end-dating (Subsequent)"   
         
         ```sql
         WITH source_data AS (

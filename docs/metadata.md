@@ -32,7 +32,11 @@ the models themselves. This keeps the metadata all in one place and simplifies t
 
 #### Per-model
 
-You may also provide metadata on a per-model basis. Examples for this approach will be added soon.
+You may also provide metadata on a per-model basis. 
+
+!!! info "Coming Soon"
+    Examples of this approach will be added soon
+
 #### The problem with metadata
 
 As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 

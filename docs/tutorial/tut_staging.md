@@ -5,16 +5,8 @@ from a source system or feed (the 'raw staging layer').
 
 ### Pre-conditions
 
-There are a few conditions that need to be met for the dbtvault package to work:
-
-- All records are for the same `load_datetime`
-- The table is truncated & loaded with data for each load cycle
-
-Instead of truncating and loading, you may also build a view over the table to filter out the right records and load 
-from the view.
-
-!!! tip "Good News!"
-    **We will shortly be removing this restriction**
+All records in a single load must be for the same for the same load datetime. This restriction is not applicable to Hubs and Links.
+We will soon be removing this restriction for T-Links, Satellites and Effectivity Satellites. 
 
 ### Let's Begin
 
@@ -178,6 +170,8 @@ stg_customer_hashed:
     derived_columns:
       SOURCE: "!1"
       EFFECTIVE_FROM: "BOOKING_DATE"
+      START_DATE: "BOOKING_DATE"
+      END_DATE: "TO_DATE('9999-31-12')"
 ```
 
 !!! info
@@ -191,6 +185,7 @@ In summary this model will:
 - Generate hashed columns to create primary keys and a hashdiff
 - Generate a `SOURCE` column with the constant value `1`
 - Generate an `EFFECTIVE_FROM` column derived from the `BOOKING_DATE` column present in the raw data.
+- Generate `START_DATE` and `END_DATE` columns for use in the [effectivity satellites](tut_eff_satellites.md) later on. 
 
 ### Running dbt
 
@@ -200,12 +195,12 @@ With our model complete and our YAML written, we can run dbt:
 
 And our table will look like this:
 
-| CUSTOMER_PK  | NATION_PK    | CUSTOMER_NATION_PK  | CUSTOMER_HASHDIFF   | (source table columns) | SOURCE       | EFFECTIVE_FROM |
-| ------------ | ------------ | ------------------- | ------------------- | ---------------------- | ------------ | -------------- |
-| B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1            | 1993-01-01     |
-| .            | .            | .                   | .                   | .                      | .            | .              |
-| .            | .            | .                   | .                   | .                      | .            | .              |
-| FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1            | 1993-01-01     |
+| CUSTOMER_PK  | NATION_PK    | CUSTOMER_NATION_PK  | CUSTOMER_HASHDIFF   | (source table columns) | SOURCE       | EFFECTIVE_FROM | START_DATE     | END_DATE   |
+| ------------ | ------------ | ------------------- | ------------------- | ---------------------- | ------------ | -------------- | -------------- | ---------- |
+| B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1            | 1993-01-01     | 1993-01-01     | 9998-31-12 |
+| .            | .            | .                   | .                   | .                      | .            | .              | .              | .          |
+| .            | .            | .                   | .                   | .                      | .            | .              | .              | .          |
+| FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1            | 1993-01-01     | 1993-01-01     | 9998-31-12 |
 
 ### Next steps
 

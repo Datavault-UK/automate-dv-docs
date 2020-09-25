@@ -143,33 +143,38 @@ The functionality of the hubs and links have been updated to allow for loading m
 The hub and link SQL has also been refactored to use common table expressions (CTEs) as suggested in the [Fishtown Analytics SQL style guide](https://github.com/fishtown-analytics/corp/blob/master/dbt_coding_conventions.md#example-sql),
 to improve code readability. 
 
-!!! info
-    dbtvault is moving towards adopting the dbt style guide for its SQL, for more information read [this discussion](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091).
-
 The invocation of the hub and link macros have not changed aside from the variable change stated above. 
 The old invocations of the macros were:
 
-```sql tab='Old hub invocation'
-{{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source'))               }}
-```                                                             
-                                                                
-```sql tab='Old link invocation'                                
-{{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'), 
-                 var('src_source'), var('source'))              }}
-```
+=== "Old hub invocation"
+
+    ```sql
+    {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
+                    var('src_source'), var('source'))               }}
+    ```                                                             
+    
+=== "Old link invocation"         
+                                                       
+    ```sql                          
+    {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'), 
+                     var('src_source'), var('source'))              }}
+    ```
 
 The new invocation of the macros is now:
 
-```sql tab='New hub invocation'
-{{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source_model'))         }}
-```
+=== "New hub invocation"
 
-```sql tab='New link invocation'
-{{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'),
-                 var('src_source'), var('source_model'))        }}
-```
+    ```sql
+    {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
+                    var('src_source'), var('source_model'))         }}
+    ```                                                             
+    
+=== "New link invocation"         
+                                                       
+    ```sql                          
+    {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
+                     var('src_source'), var('source_model'))        }}
+    ```
 
 !!! tip "Coming soon"
     We will soon be upgrading the remaining table macros to provide multi-date loading functionality.
@@ -178,17 +183,21 @@ The new invocation of the macros is now:
 
 The t-links have not changed, other than their invocation.
 
-```sql tab='Old t-link invocation'
-{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
-                   var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source'))                                      }}
-```
+=== "Old t-link invocation"   
 
-```sql tab='New t-link invocation'
-{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
-                   var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source_model'))                                }}
-```
+    ```sql
+    {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                       var('src_eff'), var('src_ldts'), var('src_source'),
+                       var('source'))                                      }}
+    ```
+
+=== "New t-link invocation"   
+
+    ```sql
+    {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                       var('src_eff'), var('src_ldts'), var('src_source'),
+                       var('source_model'))                                }}
+    ```
 
 
 ## Satellites
@@ -199,17 +208,21 @@ Satellites have gone through a minor change in v0.6.
 
 As with other table macros, the invocation of the macro has changed as follows:
 
-```sql tab='Old sat invocation'
-{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
-                var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source'))                                          }}
-```
+=== "Old satellite invocation"   
 
-```sql tab='New sat invocation'
-{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
-                var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source_model'))                                    }}
-```
+    ```sql
+    {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                    var('src_eff'), var('src_ldts'), var('src_source'),
+                    var('source'))                                          }}
+    ```
+
+=== "New satellite invocation"   
+
+    ```sql
+    {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                    var('src_eff'), var('src_ldts'), var('src_source'),
+                    var('source_model'))                                    }}
+    ```
 
 ### Hashdiff aliasing
 

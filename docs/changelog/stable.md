@@ -11,13 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New
 
-- Effectivity Satellites: A newly supported Data Vault 2.0 structure. [Read more](../tutorial/tut_eff_satellites.md)[Macro Reference](../macros.md#eff_sat)
+- Effectivity Satellites: A newly supported Data Vault 2.0 structure.  
+[Read more](../tutorial/tut_eff_satellites.md)   
+[Macro Reference](../macros.md#eff_sat) 
+
 - Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../macros.md#vault_insert_by_period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
 - dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/fishtown-analytics/dbt/releases/tag/v0.18.0)
 
 !!! info
-    *This is intended as quick reference and for completeness only, the online docs are still the main reference.
+    *This is intended as quick reference and for completeness only, the online documentation is still the main reference documentation.
       
 ### Improved
 
