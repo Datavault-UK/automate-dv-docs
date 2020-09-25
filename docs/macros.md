@@ -1182,7 +1182,7 @@ For dbtvault, we have created some custom materialisations which will provide as
 This materialisation is based on the [insert_by_period](https://github.com/fishtown-analytics/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql) 
 materialisation developed by Fishtown Analytics for the [dbt-utils](https://github.com/fishtown-analytics/dbt-utils) package.
 
-We have re-purposed it provided support for Snowflake, as well as added a number of convenience features. 
+We have re-purposed it and provided support for Snowflake, as well as added a number of convenience features. 
 
 Features include:
 
