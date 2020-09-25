@@ -1,27 +1,39 @@
 Links are another fundamental component in a Data Vault. 
 
-Links model an association or link, between two business keys. They commonly hold business transactions or structural 
-information.
+Links model an association or link, between two business keys.
+A good example would be a list of all Orders and the Customer associated with that order, in the business.
 
 !!! note
-    Due to the similarities in the load logic between links and hubs, most of this page will be familiar if you have already read the
+    Due to the similarities in the load logic between links and hubs, most of this page will be familiar if you have already followed the
     [hubs](tut_hubs.md) page.
+    
+#### Structure
 
 Our links will contain:
 
-1. A primary key. For links, we take the natural keys (prior to hashing) represented by the foreign key columns below 
+##### Primary Key (src_pk)
+A primary key (or surrogate key) which is usually a hashed representation of the natural key. 
+For links, we take the natural keys (prior to hashing) represented by the foreign key columns below 
 and create a hash on a concatenation of them. 
-2. Foreign keys holding the primary key for each hub referenced in the link (2 or more depending on the number of hubs 
+
+##### Foreign Keys (src_fk)
+Foreign keys referencing the primary key for each hub referenced in the link (2 or more depending on the number of hubs 
 referenced) 
-3. The load date or load date timestamp.
-4. The source for the record
+
+##### Load date (src_ldts)
+A load date or load date timestamp. This identifies when the record was first loaded into the database.
+
+##### Record Source (src_source)
+The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
+or a string directly naming the source system.
+
 
 ### Setting up link models
 
 Create a new dbt model as before. We'll call this one `link_customer_nation`. 
 
 `link_customer_nation.sql`
-```sql
+```jinja
 {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
                  var('src_source'), var('source_model'))        }}
 ```
@@ -49,7 +61,9 @@ models:
         ...
 ```
 
-[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
+!!! tip "New in dbtvault v0.7.0"
+    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
+    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
 
 ### Adding the metadata
 
@@ -58,17 +72,20 @@ Now we need to provide some metadata to the [link](../macros.md#link) macro.
 #### Source table
 
 The first piece of metadata we need is the source table. This step is easy, as we created the 
-staging layer ourselves. All we need to do is provide the name of the staging layer in the ```dbt_project.yml``` file 
+staging layer ourselves. All we need to do is provide the name of the staging layer in the `dbt_project.yml` file 
 and dbtvault will do the rest for us.
 
-```dbt_project.yml```
-
+`dbt_project.yml`
 ```yaml
 link_customer_nation:
   vars:
     source_model: 'stg_customer_hashed'
     ...
 ```
+
+!!! info
+    This is just one way of providing metadata/parameter values to dbtvault macros, take a look at 
+    the [Metadata Reference](../metadata.md) for some alternatives
 
 #### Source columns
 
@@ -80,12 +97,12 @@ staging layer which map to them:
 which we added in our staging layer.
 2. `CUSTOMER_KEY` which is one of our natural keys (we'll use the hashed column, `CUSTOMER_PK`).
 3. `NATION_KEY` the second natural key (we'll use the hashed column, `NATION_PK`).
-4. A load date timestamp, which is present in the staging layer as `LOADDATE` 
+4. A load date timestamp, which is present in the staging layer as `LOAD_DATE` 
 5. A `SOURCE` column.
 
 We can now add this metadata to the `dbt_project.yml` file:
 
-```dbt_project.yml```
+`dbt_project.yml`
 ```yaml  hl_lines="4 5 6 7 8 9"
 link_customer_nation:
   vars:
@@ -94,7 +111,7 @@ link_customer_nation:
     src_fk:
       - 'CUSTOMER_PK'
       - 'NATION_PK'
-    src_ldts: 'LOADDATE'
+    src_ldts: 'LOAD_DATE'
     src_source: 'SOURCE'
 ```
 
@@ -111,7 +128,7 @@ With our model complete and our YAML written, we can run dbt to create our `link
 
 And our table will look like this:
 
-| CUSTOMER_NATION_PK | CUSTOMER_FK  | NATION_FK    | LOADDATE   | SOURCE       |
+| CUSTOMER_NATION_PK | CUSTOMER_FK  | NATION_FK    | LOAD_DATE   | SOURCE       |
 | ------------------ | ------------ | ------------ | ---------- | ------------ |
 | 72A160...          | B8C37E...    | D89F3A...    | 1993-01-01 | 1            |
 | .                  | .            | .            | .          | .            |
@@ -129,7 +146,7 @@ So, this data can and should be combined because these records have a shared key
 We can union the tables on that key, and create a link containing a complete record set.
 
 We'll need to have a [staging model](tut_staging.md) for each of the sources involved, 
-and provide them as a list of strings in the ```dbt_project.yml``` file as shown below.
+and provide them as a list of strings in the `dbt_project.yml` file as shown below.
 
 !!! note
     If your primary key and natural key columns have different names across the different
@@ -140,7 +157,7 @@ The union link model will look exactly the same as creating a single source link
 provide a list of sources rather than a single source in the metadata, the [link](../macros.md#link) macro 
 will handle the rest. 
 
-```dbt_project.yml```
+`dbt_project.yml`
 ```yaml hl_lines="3 4 5"   
 link_nation_region:
   vars:
@@ -151,12 +168,16 @@ link_nation_region:
     src_fk:
       - 'NATION_PK'
       - 'REGION_PK'
-    src_ldts: 'LOADDATE'
+    src_ldts: 'LOAD_DATE'
     src_source: 'SOURCE'
 ```
 
 ### Next steps
 
-We have now created a staging layer, a hub and a link. Next we will look at [satellites](tut_satellites.md). 
-These are a little more complicated, but don't worry, the [sat](../macros.md#sat) macro will handle that for 
-us! 
+We have now created:
+
+- A staging layer 
+- A Hub 
+- A Link
+ 
+Next we will look at [transactional links](tut_t_links.md). 

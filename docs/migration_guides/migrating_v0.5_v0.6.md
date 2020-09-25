@@ -42,46 +42,46 @@ Previously, your staging model looked like this:
 
 In v0.6, the equivalent is now this:
 
-```yaml tab="YAML"
-# dbt_project.yml
-...
-models:
-  my_dbtvault_project:
-    staging:         
-      materialized: view      
-      schema: 'my_schema'
-      tags:
-        - 'staging'
-      my_staging_model:
-        vars:
-          source_model: 
-            raw_sources: 'customer_bookings'
-          hashed_columns:
-            CUSTOMER_PK: "CUSTOMER_ID"
-            CUST_CUSTOMER_HASHDIFF:
-              is_hashdiff: true
-              columns:
-                - "CUSTOMER_DOB"
-                - "CUSTOMER_ID"
-                - "CUSTOMER_NAME"
-            CUSTOMER_DETAILS_HASHDIFF:
-              is_hashdiff: true
-              columns:
-                - "CUSTOMER_ID"
-                - "NATIONALITY"
-                - "PHONE"
-          derived_columns:
-            SOURCE: "!STG_CUSTOMER"
-            EFFECTIVE_FROM: "BOOKING_DATE"
-```
+=== "dbt_project.yml"
+    ```yaml
+    ...
+    models:
+      my_dbtvault_project:
+        staging:         
+          materialized: view      
+          schema: 'my_schema'
+          tags:
+            - 'staging'
+          my_staging_model:
+            vars:
+              source_model: 
+                raw_sources: 'customer_bookings'
+              hashed_columns:
+                CUSTOMER_PK: "CUSTOMER_ID"
+                CUST_CUSTOMER_HASHDIFF:
+                  is_hashdiff: true
+                  columns:
+                    - "CUSTOMER_DOB"
+                    - "CUSTOMER_ID"
+                    - "CUSTOMER_NAME"
+                CUSTOMER_DETAILS_HASHDIFF:
+                  is_hashdiff: true
+                  columns:
+                    - "CUSTOMER_ID"
+                    - "NATIONALITY"
+                    - "PHONE"
+              derived_columns:
+                SOURCE: "!STG_CUSTOMER"
+                EFFECTIVE_FROM: "BOOKING_DATE"
+    ```
 
-```sql tab="dbt model"
--- my_staging_model.sql
-{{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
-                  source_model=var('source_model', none), 
-                  hashed_columns=var('hashed_columns', none), 
-                  derived_columns=var('derived_columns', none)) }}
-```
+=== "my_staging_model.sql"
+    ```sql
+    {{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
+                      source_model=var('source_model', none), 
+                      hashed_columns=var('hashed_columns', none), 
+                      derived_columns=var('derived_columns', none)) }}
+    ```
 
 No more unnecessary `from` macro, no more hard to read nested lists and no more awkward comma.
 With this new approach, staging is also more modular; if you do not need to derive or hash columns then you can simply 
@@ -143,33 +143,38 @@ The functionality of the hubs and links have been updated to allow for loading m
 The hub and link SQL has also been refactored to use common table expressions (CTEs) as suggested in the [Fishtown Analytics SQL style guide](https://github.com/fishtown-analytics/corp/blob/master/dbt_coding_conventions.md#example-sql),
 to improve code readability. 
 
-!!! info
-    dbtvault is moving towards adopting the dbt style guide for its SQL, for more information read [this discussion](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091).
-
 The invocation of the hub and link macros have not changed aside from the variable change stated above. 
 The old invocations of the macros were:
 
-```sql tab='Old hub invocation'
-{{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source'))               }}
-```                                                             
-                                                                
-```sql tab='Old link invocation'                                
-{{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'), 
-                 var('src_source'), var('source'))              }}
-```
+=== "Old hub invocation"
+
+    ```sql
+    {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
+                    var('src_source'), var('source'))               }}
+    ```                                                             
+    
+=== "Old link invocation"         
+                                                       
+    ```sql                          
+    {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'), 
+                     var('src_source'), var('source'))              }}
+    ```
 
 The new invocation of the macros is now:
 
-```sql tab='New hub invocation'
-{{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source_model'))         }}
-```
+=== "New hub invocation"
 
-```sql tab='New link invocation'
-{{ dbtvault.link(var('src_pk'), var('src_nk'), var('src_ldts'),
-                 var('src_source'), var('source_model'))        }}
-```
+    ```sql
+    {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
+                    var('src_source'), var('source_model'))         }}
+    ```                                                             
+    
+=== "New link invocation"         
+                                                       
+    ```sql                          
+    {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
+                     var('src_source'), var('source_model'))        }}
+    ```
 
 !!! tip "Coming soon"
     We will soon be upgrading the remaining table macros to provide multi-date loading functionality.
@@ -178,17 +183,21 @@ The new invocation of the macros is now:
 
 The t-links have not changed, other than their invocation.
 
-```sql tab='Old t-link invocation'
-{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
-                   var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source'))                                      }}
-```
+=== "Old t-link invocation"   
 
-```sql tab='New t-link invocation'
-{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
-                   var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source_model'))                                }}
-```
+    ```sql
+    {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                       var('src_eff'), var('src_ldts'), var('src_source'),
+                       var('source'))                                      }}
+    ```
+
+=== "New t-link invocation"   
+
+    ```sql
+    {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                       var('src_eff'), var('src_ldts'), var('src_source'),
+                       var('source_model'))                                }}
+    ```
 
 
 ## Satellites
@@ -199,17 +208,21 @@ Satellites have gone through a minor change in v0.6.
 
 As with other table macros, the invocation of the macro has changed as follows:
 
-```sql tab='Old sat invocation'
-{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
-                var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source'))                                          }}
-```
+=== "Old satellite invocation"   
 
-```sql tab='New sat invocation'
-{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
-                var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source_model'))                                    }}
-```
+    ```sql
+    {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                    var('src_eff'), var('src_ldts'), var('src_source'),
+                    var('source'))                                          }}
+    ```
+
+=== "New satellite invocation"   
+
+    ```sql
+    {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                    var('src_eff'), var('src_ldts'), var('src_source'),
+                    var('source_model'))                                    }}
+    ```
 
 ### Hashdiff aliasing
 

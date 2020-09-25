@@ -1,3 +1,8 @@
+!!! warning
+    **This guide currently uses an older version of dbtvault (v0.6.2)** 
+    
+    You may still follow it, however Effectivity Satellites are not yet included.
+
 In this section we demonstrate dbtvault by example. We guide you through developing a 
 Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbtvault models.
 

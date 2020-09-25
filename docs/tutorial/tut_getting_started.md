@@ -26,9 +26,20 @@ and [set up a project](https://docs.getdbt.com/docs/building-a-dbt-project/proje
 
 5. We assume you already have a raw staging layer.
 
-6. Our macros assume that you are only loading from one set of load dates in a single load cycle (i.e. your staging layer
-contains data for one `load_datetime` value only). **We will be removing this restriction in future releases**.
+6. Some of our macros assume that you are only loading from one set of load dates in a single load cycle (i.e. your staging layer
+contains data for one `load_datetime` value only). This currently applies to:
 
+    - Transactional Links
+    - Satellites
+    - Effectivity Satellites
+
+    **We will be removing this restriction in future releases**.
+    
+    !!! tip "New in dbtvault v0.7.0"
+        You may use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
+        included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+        This will make it easy to get around this caveat for now, and make it easier to load data at the same time. 
+        
 7. You should read our [best practices](../best_practices.md) guidance.
 
 ## Setting up sources (in dbt)
@@ -64,7 +75,7 @@ Add the following to your `packages.yml`:
 packages:
 
   - git: "https://github.com/Datavault-UK/dbtvault"
-    revision: v0.6.1
+    revision: v0.7.0
 ```
 
 And run 

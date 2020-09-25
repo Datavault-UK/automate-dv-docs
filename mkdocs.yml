@@ -3,7 +3,7 @@ site_author: Datavault
 site_dir: 'site'
 repo_name: 'Datavault-UK/dbtvault'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
-
+dev_addr: 127.0.0.1:8001
 theme:
     name: 'material'
     custom_dir: 'overrides'
@@ -23,8 +23,9 @@ nav:
       - Staging: 'tutorial/tut_staging.md'
       - Hubs: 'tutorial/tut_hubs.md'
       - Links: 'tutorial/tut_links.md'
-      - Satellites: 'tutorial/tut_satellites.md'
       - Transactional Links: 'tutorial/tut_t_links.md'
+      - Satellites: 'tutorial/tut_satellites.md'
+      - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
   - Worked example:
     - Getting Started: 'worked_example/we_worked_example.md'
     - Project setup: 'worked_example/we_setup.md'
@@ -61,10 +62,11 @@ extra:
   req_dbt_version: 0.16.x
 
 markdown_extensions:
-  - codehilite:
-      linenums: true
   - admonition
+  - pymdownx.tabbed
   - pymdownx.superfences
+  - pymdownx.highlight:
+      linenums: true
   - pymdownx.magiclink:
       repo_url_shorthand: true
       repo_url_shortener: true

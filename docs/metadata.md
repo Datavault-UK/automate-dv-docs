@@ -1,10 +1,27 @@
-dbtvault is metadata driven. YAML variables are provided to macros via the `dbt_project.yml` file instead of being specified in
-the models themselves. This keeps the metadata all in one place and simplifies the use of dbtvault.
+dbtvault is metadata driven. On this page, we provide an overview of how to provide and store that data.
 
 For further detail about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
-!!! warning 
-    In dbtvault v0.6.1, if you are using dbt v0.17.0 you must use `config-version: 1`. 
+### Approaches
+
+This page will describe just *one* way of providing metadata to the macros. There are many different ways to do it, 
+and it comes down to user and organisation preference.
+
+!!! note
+    The macros *do not care* how the metadata parameters are provided, as long as they are of the correct type.
+    Parameter data types are defined on the [macros](macros.md) page.
+
+It is worth noting that with larger projects, storing all of the metadata in the `dbt_project.yml` file can quickly 
+become unwieldy. See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
+
+
+#### dbt_project.yml
+
+Variables can be provided to macros via the `dbt_project.yml` file instead of being specified in
+the models themselves. This keeps the metadata all in one place and simplifies the use of dbtvault.
+
+!!! warning "Using variables in dbt_project.yml"
+    From dbtvault v0.6.1 onwards, if you are using dbt v0.17.0 you must use `config-version: 1`. 
     This is a temporary workaround due to removal of model-level variable scoping in dbt core functionality.
     We hope to have a permanent fix for this in future.
     
@@ -12,96 +29,106 @@ For further detail about how to use the macros in this section, see [table templ
     
     - [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377) (closed in favour of [2401](https://github.com/fishtown-analytics/dbt/issues/2401))
     - [dbt documentation on the change](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/#better-variable-scoping-semantics)
-    
+
+#### Per-model
+
+You may also provide metadata on a per-model basis. 
+
+!!! info "Coming Soon"
+    Examples of this approach will be added soon
+
+#### The problem with metadata
+
+As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
+projects. If your metadata is defined and stored in each model, it becomes harder to generate and develop with, 
+but it can be easier to manage. Whichever approach is chosen, metadata storage and retrieval is difficult without a dedicated tool. 
+To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
+Matillion, or Erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
+any feedback or ideas are welcome.    
 
 ### Staging
 
-Only the source metadata is needed to build a hub, as column types and names are inferred from the source in the target 
-table. The parameters that the [stage](macros.md#stage) macro accepts are:
+#### Parameters
 
-| Parameter     | Description                                               | 
-| ------------- | --------------------------------------------------------- | 
-| source_model | The name of the staging model that feeds the hub.         | 
-| src_pk        | The column to use for the primary key (should be hashed)  |
-| src_nk        | The natural key column that the primary key is based on.  | 
-| src_ldts      | The loaddate timestamp column of the record.              |
-| src_source    | The source column of the record.                          |
-                                                                           
-An example of the metadata structure for a stage model is:
+[stage macro parameters](macros.md#stage)
 
-```yaml tab='All variables' linenums="1"
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:
-          source_model: "raw_source"
-          hashed_columns:
-            CUSTOMER_PK: "CUSTOMER_ID"
-            CUST_CUSTOMER_HASHDIFF:
-              is_hashdiff: true
-              columns:
-                - "CUSTOMER_DOB"
-                - "CUSTOMER_ID"
-                - "CUSTOMER_NAME"
-                - "!9999-12-31"
-            CUSTOMER_HASHDIFF:
-              is_hashdiff: true
-              columns:
-                - "CUSTOMER_ID"
-                - "NATIONALITY"
-                - "PHONE"
-          derived_columns:
-            SOURCE: "!STG_BOOKING"
-            EFFECTIVE_FROM: "BOOKING_DATE"
-```
+#### Metadata
 
-```yaml tab="Only source" linenums="1"
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:
-          source_model: "raw_source"
-```
-
-```yaml tab='Only hashing' linenums="1"
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:
-          include_source_columns: false
-          source_model: "raw_source"
-          hashed_columns:
-            CUSTOMER_PK: "CUSTOMER_ID"
-            CUST_CUSTOMER_HASHDIFF:
-              is_hashdiff: true
-              columns:
-                - "CUSTOMER_DOB"
-                - "CUSTOMER_ID"
-                - "CUSTOMER_NAME"
-                - "!9999-12-31"
-            CUSTOMER_HASHDIFF:
-              is_hashdiff: true
-              columns:
-                - "CUSTOMER_ID"
-                - "NATIONALITY"
-                - "PHONE"
-```
-
-```yaml tab="Only derived" linenums="1"
-models:
-  my_dbtvault_project:
-    staging:
-      my_staging_model:
-        vars:   
-          include_source_columns: false
-          source_model: "raw_source"
-          derived_columns:
-            SOURCE: "!STG_BOOKING"
-            EFFECTIVE_FROM: "BOOKING_DATE"
-```
+=== "dbt_project.yml"
+    === "All variables"
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  source_model: "raw_source"
+                  hashed_columns:
+                    CUSTOMER_PK: "CUSTOMER_ID"
+                    CUST_CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_DOB"
+                        - "CUSTOMER_ID"
+                        - "CUSTOMER_NAME"
+                        - "!9999-12-31"
+                    CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_ID"
+                        - "NATIONALITY"
+                        - "PHONE"
+                  derived_columns:
+                    SOURCE: "!STG_BOOKING"
+                    EFFECTIVE_FROM: "BOOKING_DATE"
+        ```
+    === "Only Source"
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  source_model: "raw_source"
+        ```
+    === "Only hashing"
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  include_source_columns: false
+                  source_model: "raw_source"
+                  hashed_columns:
+                    CUSTOMER_PK: "CUSTOMER_ID"
+                    CUST_CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_DOB"
+                        - "CUSTOMER_ID"
+                        - "CUSTOMER_NAME"
+                        - "!9999-12-31"
+                    CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_ID"
+                        - "NATIONALITY"
+                        - "PHONE"
+        ```
+    === "Only derived"
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:   
+                  include_source_columns: false
+                  source_model: "raw_source"
+                  derived_columns:
+                    SOURCE: "!STG_BOOKING"
+                    EFFECTIVE_FROM: "BOOKING_DATE"
+        ```
 
 #### Constants
 
@@ -113,155 +140,140 @@ and `hashed_columns` as showcased in the provided examples.
 
 ### Hubs
 
-Only the source metadata is needed to build a hub, as column types and names are inferred from the source in the target 
-table. The parameters that the [hub](macros.md#hub) macro accepts are:
+#### Parameters
 
-| Parameter     | Description                                               | 
-| ------------- | --------------------------------------------------------- | 
-| source_model | The name of the staging model that feeds the hub.         | 
-| src_pk        | The column to use for the primary key (should be hashed)  |
-| src_nk        | The natural key column that the primary key is based on.  | 
-| src_ldts      | The loaddate timestamp column of the record.              |
-| src_source    | The source column of the record.                          |
-                                                                           
-An example of the metadata structure for a hub is:
+[hub macro parameters](macros.md#hub)
 
-`dbt_project.yml`
-```yaml linenums="1"
-hub_customer:
-  vars:
-    source_model: 'stg_customer_hashed'
-    src_pk: 'CUSTOMER_PK'
-    src_nk: 'CUSTOMER_KEY'
-    src_ldts: 'LOADDATE'
-    src_source: 'SOURCE'
-``` 
+#### Metadata
+
+=== "dbt_project.yml"
+    ```yaml
+    hub_customer:
+      vars:
+        source_model: 'stg_customer_hashed'
+        src_pk: 'CUSTOMER_PK'
+        src_nk: 'CUSTOMER_KEY'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ``` 
 
 ### Links
 
-The link metadata is very similar to the hub metadata. The parameters that the [link](macros.md#link) macro accept are:
+#### Parameters
 
-| Parameter     | Description                                              | 
-| ------------- | ---------------------------------------------------------| 
-| source_model | The staging table that feeds the link. This can be single source or a union. | 
-| src_pk        | The column to use for the primary key (should be hashed) |
-| src_fk        | The foreign key columns that the make up the primary link key. This must be entered as a list of strings. | 
-| src_ldts      | The loaddate timestamp column of the record.             |
-| src_source    | The source column of the record.                         |
+[link macro parameters](macros.md#link)
 
-An example of the metadata structure for a link is:
+#### Metadata
 
-`dbt_project.yml`
-```yaml linenums="1"
-link_customer_nation:
-  vars:
-    source_model: 'v_stg_orders'
-    src_pk: 'LINK_CUSTOMER_NATION_PK'
-    src_fk:
-      - 'CUSTOMER_PK'
-      - 'NATION_PK'
-    src_ldts: 'LOADDATE'
-    src_source: 'SOURCE'
-```
+=== "dbt_project.yml"
+    ```yaml
+    link_customer_nation:
+      vars:
+        source_model: 'v_stg_orders'
+        src_pk: 'LINK_CUSTOMER_NATION_PK'
+        src_fk:
+          - 'CUSTOMER_PK'
+          - 'NATION_PK'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
+### Transactional links
+###### (also known as non-historised links)
+
+#### Parameters
+
+[t_link macro parameters](macros.md#t_link)
+
+#### Metadata
+
+=== "dbt_project.yml"
+    ```yaml
+    t_link_transactions:
+      vars:
+        source_model: 'v_stg_transactions'
+        src_pk: 'TRANSACTION_PK'
+        src_fk:
+          - 'CUSTOMER_PK'
+          - 'ORDER_PK'
+        src_payload:
+          - 'TRANSACTION_NUMBER'
+          - 'TRANSACTION_DATE'
+          - 'TYPE'
+          - 'AMOUNT'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
 
 ### Satellites
 
-The metadata for satellites are different from that of links and hubs. The parameters the [sat](macros.md#sat) macro 
-accepts is:
+#### Parameters
 
-| Parameter     | Description                                                         | 
-| ------------- | ------------------------------------------------------------------- | 
-| source_model | The staging table that feeds the satellite (only single sources are used for satellites). |               | 
-| src_pk        | The primary key column of the table the satellite hangs off.        | 
-| src_hashdiff  | The hashdiff column of the satellite's payload.                     |
-| src_payload   | The columns that make up the payload of the satellite and are used in the hashdiff. The columns must be entered as a list of strings. |
-| src_eff       | The effective from date column.                                          |
-| src_ldts      | The loaddate timestamp column of the record.                        |
-| src_source    | The source column of the record.                                     |
+[sat macro parameters](macros.md#sat)
 
-An example of the metadata structure for a satellite is:
-
-
-```yaml tab='Standard' linenums="1"
-# dbt_project.yml
-sat_order_customer_details:
-  vars:
-    source_model: 'v_stg_orders'
-    src_pk: 'CUSTOMER_PK'
-    src_hashdiff: 'CUSTOMER_HASHDIFF'
-    src_payload:
-      - 'NAME'
-      - 'ADDRESS'
-      - 'PHONE'
-      - 'ACCBAL'
-      - 'MKTSEGMENT'
-      - 'COMMENT'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOADDATE'
-    src_source: 'SOURCE'
-```
-
-```yaml tab='Hashdiff Aliasing' linenums="1"
-# dbt_project.yml
-sat_order_customer_details:
-  vars:
-    source_model: 'v_stg_orders'
-    src_pk: 'CUSTOMER_PK'
-    src_hashdiff: 
-      source_column: "CUSTOMER_HASHDIFF"
-      alias: "HASHDIFF"
-    src_payload:
-      - 'NAME'
-      - 'ADDRESS'
-      - 'PHONE'
-      - 'ACCBAL'
-      - 'MKTSEGMENT'
-      - 'COMMENT'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOADDATE'
-    src_source: 'SOURCE'
-```
+#### Metadata
+=== "dbt_project.yml"
+    === "Standard"
+        ```yaml
+        sat_order_customer_details:
+          vars:
+            source_model: 'v_stg_orders'
+            src_pk: 'CUSTOMER_PK'
+            src_hashdiff: 'CUSTOMER_HASHDIFF'
+            src_payload:
+              - 'NAME'
+              - 'ADDRESS'
+              - 'PHONE'
+              - 'ACCBAL'
+              - 'MKTSEGMENT'
+              - 'COMMENT'
+            src_eff: 'EFFECTIVE_FROM'
+            src_ldts: 'LOADDATE'
+            src_source: 'SOURCE'
+        ```
+    === "Hashdiff Aliasing"
+        ```yaml
+        sat_order_customer_details:
+          vars:
+            source_model: 'v_stg_orders'
+            src_pk: 'CUSTOMER_PK'
+            src_hashdiff: 
+              source_column: "CUSTOMER_HASHDIFF"
+              alias: "HASHDIFF"
+            src_payload:
+              - 'NAME'
+              - 'ADDRESS'
+              - 'PHONE'
+              - 'ACCBAL'
+              - 'MKTSEGMENT'
+              - 'COMMENT'
+            src_eff: 'EFFECTIVE_FROM'
+            src_ldts: 'LOADDATE'
+            src_source: 'SOURCE'
+        ```
 
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 [Read more](migration_guides/migrating_v0.5_v0.6.md#hashdiff-aliasing)
 
-### Transactional links (non-historised links)
+### Effectivity Satellites
 
-The [t_link](macros.md#t_link) macro accepts the following parameters:
+#### Parameters
 
-| Parameter     | Description                                                         | 
-| ------------- | ------------------------------------------------------------------- | 
-| source_model | The staging table that feeds the transactional link (only single sources are used for transactional links). |   
-| src_pk        | The primary key column of the transactional link.                   | 
-| src_fk        | The foreign key columns that the make up the primary link key. This must be enter as a list of strings |
-| src_payload   | The columns that make up and payload of the transactional link. The columns must be entered as a list of strings. |
-| src_eff       | The effective from date column.                                     |
-| src_ldts      | The loaddate timestamp column of the record.                        |
-| src_source    | The source column of the record.                                    |
+[eff_sat macro parameters](macros.md#eff_sat)
 
-`dbt_project.yml`
-```yaml linenums="1"
-t_link_transactions:
-  vars:
-    source_model: 'v_stg_transactions'
-    src_pk: 'TRANSACTION_PK'
-    src_fk:
-      - 'CUSTOMER_FK'
-      - 'ORDER_FK'
-    src_payload:
-      - 'TRANSACTION_NUMBER'
-      - 'TRANSACTION_DATE'
-      - 'TYPE'
-      - 'AMOUNT'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOADDATE'
-    src_source: 'SOURCE'
-```
+#### Metadata
+=== "dbt_project.yml"
+    ```yaml
+    eff_sat_customer_nation:
+      vars:
+        source_model: 'v_stg_transactions'
+        src_pk: 'TRANSACTION_PK'
+        src_dfk: 'CUSTOMER_PK'
+        src_sfk: 'NATION_PK'
+        src_start_date: 'START_DATE'
+        src_end_date: 'END_DATE'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
 ___
-
-### The problem with metadata
-
-As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
-projects. To help manage large amounts of metadata, we recommend the use of external licence-based tools such as WhereScape, 
-Matillion, and erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
-any feedback or ideas are welcome.    
