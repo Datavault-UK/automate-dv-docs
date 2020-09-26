@@ -1255,7 +1255,7 @@ The first period load will be repeated but no duplicates should be inserted when
 
 ##### Run Output
 
-Examples of output for dbt runs using the `eff_sat` macro and this materialisation.
+Examples of output for dbt runs using the [eff_sat](#eff_sat) macro and this materialisation.
 
 === "Initial/Base load"
     ```
@@ -1286,7 +1286,7 @@ Examples of output for dbt runs using the `eff_sat` macro and this materialisati
 
 #### Configuring the load date range
 
-The start and finish date of the load can be configured in a number of different ways using the above configuration options. 
+The start and finish date of the load can be configured in a number of different ways.
 Depending on how the materialisation is configured, the start and end of the load will get defined differently, as shown in the table below.
 
 | Configuration                | Outcome                                                                                                                  | Usage                | 
@@ -1298,7 +1298,7 @@ Depending on how the materialisation is configured, the start and end of the loa
 
 Please refer to the _Usage_ section above to see examples.
 
-#### Required Configuration Options
+#### Configuration Options
 
 | Configuration      |  Description                                         | Type                 | Default | Required?                                        |
 | ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
@@ -1321,7 +1321,7 @@ The naming varies per platform, though some common examples are:
 
 See below for platform specific documentation.
 
-[Snowflake](https://docs.snowflake.com/en/sql-reference/functions-date-time.html#supported-date-and-time-parts)
+- [Snowflake](https://docs.snowflake.com/en/sql-reference/functions-date-time.html#supported-date-and-time-parts)
 
 #### Automatic load range inference
 

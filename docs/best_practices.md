@@ -4,7 +4,10 @@ We advise you follow these best practises when using dbtvault.
 
 Currently, we are only supporting one load date per load, as per the [prerequisites](tutorial/tut_getting_started.md#pre-requisites).
 
-Until a future release solves this limitation, we suggest that if the raw staging layer has a mix of load dates, 
+Until a future release solves this limitation, we advise that you use the [vault_insert_by_period](macros.md#vault_insert_by_period) materialisation.
+This materialisation is fully configurable and automatically iterates over a date range to load each time period in a separate transaction. 
+
+If a manual approach is preferred, we suggest that if the raw staging layer has a mix of load dates, 
 create a view on it and filter by the load date column to ensure only a single load date value is present.
 
 For the next load you then re-create the view with a different load date and run dbt again, or alternatively 
