@@ -71,30 +71,34 @@ Generally speaking, our source for staging will be an external raw source of dat
 a dbt source and use the `source` style.
 We will assume you have opted to use the `source` style for the remainder of the staging tutorial. 
 
-```yaml tab='source'
-# schema.yml
-version: 2
+=== "source"
 
-sources:
-  - name: my_source
-    database: MY_DATABASE
-    schema: MY_SCHEMA
-    tables:
-      - name: raw_customer
+    ```yaml
+    # schema.yml
+    version: 2
+    
+    sources:
+      - name: my_source
+        database: MY_DATABASE
+        schema: MY_SCHEMA
+        tables:
+          - name: raw_customer
+    
+    # dbt_project.yml
+    stg_customer_hashed:
+      vars:
+        source_model: 
+          my_source: "raw_customer"
+    ```
 
-# dbt_project.yml
-stg_customer_hashed:
-  vars:
-    source_model: 
-      my_source: "raw_customer"
-```
+=== "ref"
 
-```yaml tab='ref'
-# dbt_project.yml
-stg_customer_hashed:
-  vars:
-    source_model: "raw_customer"
-```
+    ```yaml
+    # dbt_project.yml
+    stg_customer_hashed:
+      vars:
+        source_model: "raw_customer"
+    ```
 
 ### Adding hashed columns
 
