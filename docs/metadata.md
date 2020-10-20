@@ -36,15 +36,7 @@ You may also provide metadata on a per-model basis.
 
 !!! info "Coming Soon"
     Examples of this approach will be added soon
-
-#### The problem with metadata
-
-As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
-projects. If your metadata is defined and stored in each model, it becomes harder to generate and develop with, 
-but it can be easier to manage. Whichever approach is chosen, metadata storage and retrieval is difficult without a dedicated tool. 
-To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
-Matillion, or Erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
-any feedback or ideas are welcome.    
+     
 
 ### Staging
 
@@ -277,3 +269,12 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
         src_source: 'SOURCE'
     ```
 ___
+
+### The problem with metadata
+
+As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
+projects. If your metadata is defined and stored in each model, it becomes harder to generate and develop with, 
+but it can be easier to manage. Whichever approach is chosen, metadata storage and retrieval is difficult without a dedicated tool. 
+To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
+Matillion, or Erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
+any feedback or ideas are welcome.
