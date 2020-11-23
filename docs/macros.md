@@ -944,88 +944,207 @@ Generates sql to build a staging area using the provided parameters.
                       hashed_columns=var('hashed_columns', none), 
                       derived_columns=var('derived_columns', none)) }}
     ```
+    
 === "Example Output (Snowflake)"
+    
     === "All variables"
         ```sql
         
-        SELECT
+        WITH stage AS (
+            SELECT
         
-        CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
-        CAST(MD5_BINARY(CONCAT(
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
-        AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-        CAST(MD5_BINARY(CONCAT(
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
-        AS BINARY(16)) AS CUSTOMER_HASHDIFF,
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_PK,
+            CUSTOMER_ID,
+            BOOKING_DATE,
+            LOAD_DATETIME,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE
         
-        'STG_BOOKING' AS SOURCE,
-        BOOKING_DATE AS EFFECTIVE_FROM,
-        BOOKING_FK,
-        ORDER_FK,
-        CUSTOMER_PK,
-        CUSTOMER_ID,   
-        BOOKING_DATE,
-        LOAD_DATETIME,
-        RECORD_SOURCE,
-        CUSTOMER_DOB,
-        CUSTOMER_NAME,
-        NATIONALITY,
-        PHONE
+            FROM MY_DATABASE.MY_SCHEMA.raw_source
+        ),
         
-        FROM MY_DATABASE.MY_SCHEMA.raw_source
+        derived_columns AS (
+            SElECT
+        
+            'STG_BOOKING' AS SOURCE,
+            BOOKING_DATE AS EFFECTIVE_FROM,
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_PK,
+            CUSTOMER_ID,
+            BOOKING_DATE,
+            LOAD_DATETIME,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE
+        
+            FROM stage
+        ),
+        
+        hashed_columns AS (
+            SELECT *,
+        
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST(MD5_BINARY(CONCAT(
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
+            AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
+            CAST(MD5_BINARY(CONCAT(
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
+            AS BINARY(16)) AS CUSTOMER_HASHDIFF
+        
+            FROM derived_columns
+        )
+        
+        SELECT * FROM hashed_columns
         ```
-    === "Only source"
+    === "Only Source"
         ```sql
         
-        SELECT
+        WITH stage AS (
+            SELECT
         
-        BOOKING_FK,
-        ORDER_FK,
-        CUSTOMER_PK,
-        CUSTOMER_ID,
-        BOOKING_DATE,
-        LOAD_DATETIME,
-        RECORD_SOURCE,
-        CUSTOMER_DOB,
-        CUSTOMER_NAME,
-        NATIONALITY,
-        PHONE
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_PK,
+            CUSTOMER_ID,
+            BOOKING_DATE,
+            LOAD_DATETIME,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE
         
-        FROM MY_DATABASE.MY_SCHEMA.raw_source
-        ```
+            FROM MY_DATABASE.MY_SCHEMA.raw_source
+        ),
+        
+        derived_columns AS (
+            SElECT *
+        
+            FROM stage
+        ),
+        
+        hashed_columns AS (
+            SELECT *
+        
+            FROM derived_columns
+        )
+        
+        SELECT * FROM hashed_columns        
+       ```
     === "Only hashing"
-        ```sql
+        ```sql        
         
         SELECT
         
-        CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
-        CAST(MD5_BINARY(CONCAT(
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
-        AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-        CAST(MD5_BINARY(CONCAT(
-            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
-            IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
-        AS BINARY(16)) AS CUSTOMER_HASHDIFF
+        WITH stage AS (
+            SELECT
         
-        FROM MY_DATABASE.MY_SCHEMA.raw_source
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_PK,
+            CUSTOMER_ID,
+            BOOKING_DATE,
+            LOAD_DATETIME,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE
+        
+            FROM MY_DATABASE.MY_SCHEMA.raw_source
+        ),
+        
+        derived_columns AS (
+            SElECT *
+        
+            FROM stage
+        ),
+        
+        hashed_columns AS (
+            SELECT *,
+        
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST(MD5_BINARY(CONCAT(
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
+            AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
+            CAST(MD5_BINARY(CONCAT(
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
+            AS BINARY(16)) AS CUSTOMER_HASHDIFF
+        
+            FROM derived_columns
+        )
+        
+        SELECT * FROM hashed_columns
         ```
     === "Only derived"
         ```sql
         
-        SELECT
+        WITH stage AS (
+            SELECT
         
-        'STG_BOOKING' AS SOURCE,
-        BOOKING_DATE AS EFFECTIVE_FROM
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_PK,
+            CUSTOMER_ID,
+            BOOKING_DATE,
+            LOAD_DATETIME,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE
         
-        FROM MY_DATABASE.MY_SCHEMA.raw_source
+            FROM MY_DATABASE.MY_SCHEMA.raw_source
+        ),
+        
+        derived_columns AS (
+            SElECT
+        
+            'STG_BOOKING' AS SOURCE,
+            BOOKING_DATE AS EFFECTIVE_FROM
+            
+            FROM stage
+        ),
+        
+        hashed_columns AS (
+            SELECT *
+
+            FROM derived_columns
+        )
+        
+        SELECT * FROM hashed_columns
         ```
+#### Usage Notes
+
+##### Derived columns are in the scope  of the Hashed columns.
+
+This allows the hashdiff to contain the value of a derived column.
+An example of this would be if you took the CUSTOMER_DOB in the above example and wanted to change it to a UK date format.
+We could do this by having a new derived column specifying CUSTOMER_DOB_UK as TO_VARCHAR(CUSTOMER_DOB::date, 'DD/MM/YYYY') inside the .yml file.
+CUSTOMER_DOB_UK can then be used in the hashdiff as we would any source column with no added complexity.
+
+
+
+#####Functions
+TODO
+#####Constants
+TODO
 #### Parameters
 
 | Parameter              | Description                                       | Type           | Default    | Required?                                        |
