@@ -6,11 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md)
 
-## [v0.7.1] - 2020-11-23
+## [v0.7.1] - 
 
-### Improved
+### New
 
-- The staging macro has now been changed to utilise CTEs which allows the derived columns to be used as a component of the hashed columns.
+#### Quality of Life
+
+- **exclude_columns** flag for hashdiffs - Inverse the columns selected for creating a hashdiff to select ALL columns except those listed in the metadata.
+This is very useful for large multi-column hashdiffs.
+  
+- Hashed columns now 'see' columns defined as derived columns. [Issue #9](https://github.com/Datavault-UK/dbtvault/issues/9)
+
+### Fixed
+
+- Fixed a bug in the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialization which caused orphaned temporary relations. [Issue #18](https://github.com/Datavault-UK/dbtvault/issues/18)
 
 ## [v0.7.0] - 2020-09-25
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.0)](https://dbtvault.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
