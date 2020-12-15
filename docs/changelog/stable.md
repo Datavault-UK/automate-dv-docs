@@ -23,9 +23,15 @@ This is very useful for large multi-column hashdiffs.
 
     See the new [stage macro configurations](../macros.md#stage-macro-configurations) section of the macro docs for more information on thw two changes above.
 
+### Improved
+
+- The stage macro now generates CTE-based SQL instead of one big block. This makes it easier to read and debug. 
+  See [here](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091) for more information.
+
 ### Fixed
 
-- Fixed a bug in the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialization which caused orphaned temporary relations. [Issue #18](https://github.com/Datavault-UK/dbtvault/issues/18)
+- Fixed a bug in the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialization which caused orphaned temporary relations 
+  under specific circumstances. [Issue #18](https://github.com/Datavault-UK/dbtvault/issues/18)
 
 ## [v0.7.0] - 2020-09-25
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.0)](https://dbtvault.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
