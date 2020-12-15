@@ -14,13 +14,13 @@ order number (can be multi-column).
 3. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
 
 4. The source for the record, a code identifying where the data comes from. 
-(i.e. ```1``` from the [previous section](../tutorial/tut_staging.md#adding-the-footer), which is the code fo stg_customer)
+(i.e. `1` from the [previous section](../tutorial/tut_staging.md#adding-the-footer), which is the code fo stg_customer)
 
 ### Loading Hubs
 
 To compile and load the provided hub models, run the following command:
 
-```dbt run --models tag:hub```
+`dbt run --models tag:hub`
 
 This will run all models with the hub tag.
 
@@ -44,7 +44,7 @@ referenced)
 
 To compile and load the provided link models, run the following command:
 
-```dbt run --models tag:link```
+`dbt run --models tag:link`
 
 This will run all models with the link tag.
 
@@ -66,26 +66,26 @@ the hashdiff will change as a result of the payload changing.
 a name, a date of birth, nationality, age, gender or more. The payload will contain some or all of the
 concrete data for an entity, depending on the purpose of the satellite. 
 
-4. An effectivity date. Usually called ```EFFECTIVE_FROM```, this column is the business effective date of a 
+4. An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
 satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no longer 
-have the most recent ```EFFECTIVE_FROM``` value. 
+have the most recent `EFFECTIVE_FROM` value. 
 
 5. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
 
 6. The source for the record.
 
 !!! note
-    ```LOADDATE``` is the time the record is loaded into the database. ```EFFECTIVE_FROM``` is different and may hold a 
+    `LOADDATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
     different value, especially if there is a batch processing delay between when a business event happens and the 
     record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
-    and 'what happened when' using the ```LOADDATE``` and ```EFFECTIVE_FROM``` date accordingly.
+    and 'what happened when' using the `LOADDATE` and `EFFECTIVE_FROM` date accordingly.
 
 ### Loading Satellites
 
 To compile and load the provided satellite models, run the following command:
 
-```dbt run --models tag:satellite``` 
+`dbt run --models tag:satellite` 
 
 This will run all models with the satellite tag.
 
@@ -103,7 +103,7 @@ then we create this by concatenating the foreign keys and hashing them.
 2. Foreign keys holding the primary key for each hub referenced in the transactional link (2 or more depending on the number of hubs 
 referenced) 
 3. A payload. This will be data about the transaction itself e.g. the amount, type, date or non-hashed transaction number.
-4. An ```EFFECTIVE_FROM``` date. This will usually be the date of the transaction.
+4. An `EFFECTIVE_FROM` date. This will usually be the date of the transaction.
 5. The load date or load date timestamp.
 6. The source for the record
 
@@ -111,7 +111,7 @@ referenced)
 
 To compile and load the provided t_link models, run the following command:
 
-```dbt run --models tag:t_link```
+`dbt run --models tag:t_link`
 
 This will run all models with the t_link tag.
 
@@ -126,25 +126,25 @@ start and end date for the period of effectivity.
 
 Our effectivity satellite will contain:
 
-1. A primary key, which is a combination of the two natural keys: In this case ```CUSTOMER_ORDER_PK``` 
+1. A primary key, which is a combination of the two natural keys: In this case `CUSTOMER_ORDER_PK` 
 which we added in our staging layer.
-2. ```CUSTOMER_FK``` which is one of the foreign keys in the link. This is the foreign key that is going to be used as the
+2. `CUSTOMER_FK` which is one of the foreign keys in the link. This is the foreign key that is going to be used as the
 driving foreign key. 
-3. ```ORDER_FK``` which is the other foreign key in the link. This is the foreign key that is going to be used as the 
+3. `ORDER_FK` which is the other foreign key in the link. This is the foreign key that is going to be used as the 
 secondary foreign key.
-4. ```EFFECTIVE_FROM``` which is the date in the staging table that states when a record becomes effective.
-5.```START_DATETIME``` which is the column in the effectivity satellite whose date defines when a link record begins its
+4. `EFFECTIVE_FROM` which is the date in the staging table that states when a record becomes effective.
+5.`START_DATETIME` which is the column in the effectivity satellite whose date defines when a link record begins its
 activity.
-6. ```END_DATETIME``` which is the column in the effectivity satellite whose date defines when a link record ends its
-activity and becomes inactive. Active link records will have a date equal to the max date ```9999-12-31```.
-7. A load date timestamp, which is present in the staging layer as ```LOADDATE``` 
-8. A ```SOURCE``` column. 
+6. `END_DATETIME` which is the column in the effectivity satellite whose date defines when a link record ends its
+activity and becomes inactive. Active link records will have a date equal to the max date `9999-12-31`.
+7. A load date timestamp, which is present in the staging layer as `LOADDATE` 
+8. A `SOURCE` column. 
 
 ### Loading effectivity satellites
 
 To compile and load the provided effectivity satellite models, run the following command:
 
-```dbt run --models tag:eff_sat```
+`dbt run --models tag:eff_sat`
 
 This will run all models with the eff_sat tag.
 
@@ -154,28 +154,29 @@ Each of the commands above load a particular type of table, however, we may want
 
 To do this, run the command below:
 
-```dbt run``` 
+`dbt run` 
 
 This will run all models in the load directory, which is where all of the provided models are located.
 
 ## Loading the next day-feed
 
-Now that we have loaded all records for the date ```1992-01-08```, we can increment the date to load the next day.
+Now that we have loaded all records for the date `1992-01-08`, we can increment the date to load the next day.
 
-Return to the ```dbt_project.yml``` file and change the date to ```1992-01-09```:
+Return to the `dbt_project.yml` file and change the date to `1992-01-09`:
 
-```dbt_project.yml```
-```yaml hl_lines="24" linenums="1"
-models:
-  snowflakeDemo:
-    [...]
-  vars:
-    load_date: '1992-01-09'
-```
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="24" linenums="1"
+    models:
+      snowflakeDemo:
+        [...]
+      vars:
+        load_date: '1992-01-09'
+    ```
 
 And run:
 
-```dbt run``` 
+`dbt run` 
 
 This will load the next day-feed into the system.
 

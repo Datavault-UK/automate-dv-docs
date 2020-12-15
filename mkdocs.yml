@@ -70,10 +70,13 @@ markdown_extensions:
   - pymdownx.magiclink:
       repo_url_shorthand: true
       repo_url_shortener: true
-  - pymdownx.emoji
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - toc:
       permalink: true
       toc_depth: 1-3
+  - attr_list
 
 plugins:
   - search

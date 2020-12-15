@@ -1,21 +1,27 @@
 # Changelog (Stable)
-All notable changes to this project will be documented in this file.
+All stable and notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[View Beta Releases](beta.md)
+!!! note
+    To view documentation for a specific version, please click the 'docs | passing' badges under the specific changelog entry. 
 
-## [v0.7.1] - 
+[View Beta Releases](beta.md){: .md-button }
+
+## [v0.7.1] -
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.1)](https://dbtvault.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
 
 ### New
 
-#### Quality of Life
-
 - **exclude_columns** flag for hashdiffs - Inverse the columns selected for creating a hashdiff to select ALL columns except those listed in the metadata.
-This is very useful for large multi-column hashdiffs.
+This is very useful for large multi-column hashdiffs. 
   
 - Hashed columns now 'see' columns defined as derived columns. [Issue #9](https://github.com/Datavault-UK/dbtvault/issues/9)
+
+!!! note
+
+    See the new [stage macro configurations](../macros.md#stage-macro-configurations) section of the macro docs for more information on thw two changes above.
 
 ### Fixed
 

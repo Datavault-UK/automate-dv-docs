@@ -5,22 +5,22 @@ We have two staging layers, as shown in the diagram above.
 ## The raw staging layer
 
 First we create a raw staging layer. This feeds in data from the source system so that we can process it
-more easily. In the ```models/raw``` folder we have provided two models which set up a raw staging layer.
+more easily. In the `models/raw` folder we have provided two models which set up a raw staging layer.
 
 ### raw_orders
 
-The ```raw_orders``` model feeds data from TPC-H, into a wide table containing all of the orders data
-for a single day-feed. The day-feed will load data from the day given in the ```date``` var. 
+The `raw_orders` model feeds data from TPC-H, into a wide table containing all the orders data
+for a single day-feed. The day-feed will load data from the day given in the `date` var. 
 
 ### raw_inventory
 
-The ```raw_inventory``` model feeds the static inventory from TPC-H. As this data does not contain any dates,
-we do not need to do any additional date processing or use the ```date``` var as we did for the raw orders data.
-The inventory consists of the ```PARTSUPP```, ```SUPPLIER```, ```PART``` and ```LINEITEM``` tables.
+The `raw_inventory` model feeds the static inventory from TPC-H. As this data does not contain any dates,
+we do not need to do any additional date processing or use the `date` var as we did for the raw orders data.
+The inventory consists of the `PARTSUPP`, `SUPPLIER`, `PART` and `LINEITEM` tables.
 
 ### raw_transactions
 
-The ```raw_inventory``` simulates transactions so that we can create transactional links. It does this by
+The `raw_inventory` simulates transactions so that we can create transactional links. It does this by
 making a number of calculations on orders made by customers and creating transaction records.
 
 [Read more](we_tpch_profile.md#transactions)
@@ -29,9 +29,9 @@ making a number of calculations on orders made by customers and creating transac
 
 To build this layer with dbtvault, run the below command:
 
-```dbt run --models tag:raw```
+`dbt run --models tag:raw`
 
-Running this command will run all models which have the ``raw`` tag. We have given the ```raw``` tag to the
+Running this command will run all models which have the `raw` tag. We have given the `raw` tag to the
 two raw staging layer models, so this will compile and run both models.
 
 The dbt output should give something like this:
@@ -158,7 +158,7 @@ simply aliases the `TRANSACTION_DATE` as `EFFECTIVE_FROM`.
 
 ### v_stg_orders and v_stg_inventory
 
-The ```v_stg_orders``` and ```v_stg_inventory``` models use the raw layer's ```raw_orders``` and ```raw_inventory``` 
+The `v_stg_orders` and `v_stg_inventory` models use the raw layer's `raw_orders` and `raw_inventory` 
 models as sources, respectively. Both are created as views on the raw staging layer, as they are intended as
 transformations on the data which already exists.
 
@@ -166,17 +166,17 @@ Each view adds a number of primary keys, hashdiffs and additional constants for 
 
 ### v_stg_transactions
 
-The ```v_stg_transactions``` model uses the raw layer's ```raw_transactions``` model as its source.
-For the load date, we add a day to the ```TRANSACTION_DATE``` to simulate the fact we are loading the data in the date 
+The `v_stg_transactions` model uses the raw layer's `raw_transactions` model as its source.
+For the load date, we add a day to the `TRANSACTION_DATE` to simulate the fact we are loading the data in the date 
 after the transaction was made.
 
 ## Building the hashed staging layer
 
 To build this layer with dbtvault, run the below command:
 
-```dbt run --models +tag:stage```
+`dbt run --models +tag:stage`
 
-Running this command will run all models which have the ``stage`` tag. We have given the ```stage``` tag to the
+Running this command will run all models which have the `stage` tag. We have given the `stage` tag to the
 two hashed staging layer models, so this will compile and run both models.
 
 The dbt output should give something like this:

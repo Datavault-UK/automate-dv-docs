@@ -39,7 +39,7 @@ be the only necessary requirements you will need to get started with the example
     You may use a corporate account or existing personal account at your own risk.
 
 !!! note
-    We have provided a complete ```requirements.txt``` to install with ```pip install -r requirements.txt```
+    We have provided a complete `requirements.txt` to install with `pip install -r requirements.txt`
     as a quick way of getting your Python environment set up. This file includes dbt and comes with the download in the 
     next section.
 
@@ -47,8 +47,8 @@ be the only necessary requirements you will need to get started with the example
 
 Please be aware that table structures are simulated from the TPC-H dataset. The TPC-H dataset is a static view of data. 
 
-Only a subset of the data contains dates which allow us to simulate daily feeds. The ```v_stg_orders``` orders view is 
-filtered by date, unfortunately the ```v_stg_inventory``` view cannot be filtered by date, so it ends up being a feed of 
+Only a subset of the data contains dates which allow us to simulate daily feeds. The `v_stg_orders` orders view is 
+filtered by date, unfortunately the `v_stg_inventory` view cannot be filtered by date, so it ends up being a feed of 
 the entire contents of the view each cycle. 
 
 This means that inventory related hubs, links and satellites are populated once during the initial load cycle with 
