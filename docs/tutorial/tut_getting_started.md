@@ -69,16 +69,4 @@ sources:
 
 ## Installation 
 
-Add the following to your `packages.yml`:
-
-```yaml
-packages:
-
-  - git: "https://github.com/Datavault-UK/dbtvault"
-    revision: v0.7.0
-```
-
-And run 
-`dbt deps`
-
-[Read more on package installation (from dbt)](https://docs.getdbt.com/docs/building-a-dbt-project/package-management)
+Read the installation instructions on [dbt hub](https://hub.getdbt.com/datavault-uk/dbtvault/latest/)

@@ -20,8 +20,6 @@ These features are currently planned for the next release.
     You can also [join our slack](https://dbtvault.slack.com/join/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA#/)
     and get involved, we have a channel specifically for it!
     
-- Removal of single-day loading restrictions ([v0.6 already adds this for Hubs and Links](migration_guides/migrating_v0.5_v0.6.md#table-macros))
-
 ## Future releases
 
 In future releases, we hope to include the following:

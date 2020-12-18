@@ -176,8 +176,10 @@ The new invocation of the macros is now:
                      var('src_source'), var('source_model'))        }}
     ```
 
-!!! tip "Coming soon"
-    We will soon be upgrading the remaining table macros to provide multi-date loading functionality.
+!!! tip "Note"
+    Hubs and Links are the only tables that can be loaded in bulk. Other table types
+    (e.g. Satellites) require iteration due to the temporal attributes, and must be loaded in order.
+    As of dbtvault v0.7.0 We now have a [new materialisation](../macros.md#vault_insert_by_period) to make this easier. 
 
 ## T-Links
 

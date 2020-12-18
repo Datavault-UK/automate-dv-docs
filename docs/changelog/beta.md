@@ -1,5 +1,5 @@
 # Changelog (Beta)
-All notable changes to this project will be documented in this file.
+All beta released for this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     
     Thank you for trying out our package, if you find any issues, please report them on our 
     [Github](https://github.com/Datavault-UK/dbtvault/issues) repo.
+
+!!! note
+    To view documentation for a specific version, please click the 'docs | passing' badges under the specific changelog entry. 
+
+[View Stable Releases](stable.md){: .md-button }
 
 ## [v0.6-b2] - 2020-04-15
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6-b2)](https://dbtvault.readthedocs.io/en/v0.6-b2/?badge=v0.6-b2)
