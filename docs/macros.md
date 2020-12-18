@@ -1,3 +1,56 @@
+## Global usage notes
+
+### source_model syntax
+
+dbt itself supports references to data via the `ref()` [function](https://docs.getdbt.com/reference/dbt-jinja-functions/ref/) for models, 
+and the `source()` function for [dbt sources](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources/). 
+
+dbtvault provides the means for specifying sources for Data Vault structures with a `source_model` argument, and supports 
+either style, shown below:
+
+##### ref style
+    
+    ```yaml
+    ...
+    stg_customer:
+      source_model: 'raw_customer'
+    ...
+    ```
+
+##### source style
+
+=== "stage configuration"
+    
+    ```yaml
+    ...
+    stg_customer:
+      source_model:
+        tpch_sample: 'LINEITEM'
+    ...
+    ```
+
+=== "source definition (schema.yml)"
+
+    ```
+    version: 2
+    
+    sources:
+      - name: tpch_sample
+        database: SNOWFLAKE_SAMPLE_DATA
+        schema: TPCH_SF10
+        tables:
+          - name: LINEITEM
+          - name: CUSTOMER
+          - name: ORDERS
+          - name: PARTSUPP
+          - name: SUPPLIER
+          - name: PART
+          - name: NATION
+          - name: REGION
+    ```
+
+The mapping provided for the source style, is in the form `source_name: table_name` which mimics the syntax for the `source()` macro.
+
 ## Table templates
 
 ###### (macros/tables)
