@@ -49,7 +49,7 @@ stg_customer:
 The mapping provided for the source style, is in the form `source_name: table_name` which mimics the syntax for the `source()` macro.
 
 For all other structures (hub, link, satellite, etc.) the `source_model` argument must be a string to denote a single staging source,
-or a list of strings to denote multiple staging sources. 
+or a list of strings to denote multiple staging sources, which must be names of models (minus the `.sql`). 
 
 ## Table templates
 
