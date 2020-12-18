@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
-## [v0.7.1] -
+## [v0.7.1] - 2020-12-18
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.1)](https://dbtvault.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
 
 ### New
@@ -17,21 +17,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **exclude_columns** flag for hashdiffs - Inverse the columns selected for creating a hashdiff to select ALL columns except those listed in the metadata.
 This is very useful for large multi-column hashdiffs. 
   
-- Hashed columns now 'see' columns defined as derived columns. [Issue #9](https://github.com/Datavault-UK/dbtvault/issues/9)
-
 !!! note
 
-    See the new [stage macro configurations](../macros.md#stage-macro-configurations) section of the macro docs for more information on thw two changes above.
+    See the new [stage macro configurations](../macros.md#stage-macro-configurations) section of the macro docs for more information on the two changes above.
 
 ### Improved
 
 - The stage macro now generates CTE-based SQL instead of one big block. This makes it easier to read and debug. 
-  See [here](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091) for more information.
+  See [here](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091) for more information on why we've moved to CTEs.
+  
+- Multi-dispatch implementation now supports a package override variable, providing a smoother experience for 
+users wishing to override macro implementations. Documentation will be made available in due course.
+  See [Issue #14](https://github.com/Datavault-UK/dbtvault/issues/14) for more details.
+
+- Hashed columns now 'see' columns defined as derived columns. Allowing you to use them in your hashed column definitions.
+  [Issue #9](https://github.com/Datavault-UK/dbtvault/issues/9)
 
 ### Fixed
 
 - Fixed a bug in the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialization which caused orphaned temporary relations 
   under specific circumstances. [Issue #18](https://github.com/Datavault-UK/dbtvault/issues/18)
+  
+- Stage macro conversion to CTE fixes [Issue #17](https://github.com/Datavault-UK/dbtvault/issues/17)
+
+- dbt_utils dependency is now explicit [Issue #15](https://github.com/Datavault-UK/dbtvault/issues/15)
 
 ## [v0.7.0] - 2020-09-25
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.0)](https://dbtvault.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
