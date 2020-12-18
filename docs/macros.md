@@ -9,29 +9,25 @@ dbtvault provides the means for specifying sources for Data Vault structures wit
 either style, shown below:
 
 ##### ref style
-    
-    ```yaml
-    ...
-    stg_customer:
-      source_model: 'raw_customer'
-    ...
-    ```
+
+```yaml
+stg_customer:
+  source_model: 'raw_customer'
+```
 
 ##### source style
 
 === "stage configuration"
-    
+
     ```yaml
-    ...
     stg_customer:
       source_model:
         tpch_sample: 'LINEITEM'
-    ...
     ```
 
 === "source definition (schema.yml)"
 
-    ```
+    ```yaml
     version: 2
     
     sources:
