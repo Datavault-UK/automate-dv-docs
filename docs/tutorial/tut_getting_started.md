@@ -69,4 +69,4 @@ sources:
 
 ## Installation 
 
-Read the installation instruction on [dbt hub](https://hub.getdbt.com/datavault-uk/dbtvault/latest/)
+Read the installation instructions on [dbt hub](https://hub.getdbt.com/datavault-uk/dbtvault/latest/)
