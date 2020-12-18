@@ -5,8 +5,9 @@
 dbt itself supports references to data via the `ref()` [function](https://docs.getdbt.com/reference/dbt-jinja-functions/ref/) for models, 
 and the `source()` function for [dbt sources](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources/). 
 
-dbtvault provides the means for specifying sources for Data Vault structures with a `source_model` argument, and supports 
-either style, shown below:
+dbtvault provides the means for specifying sources for Data Vault structures with a `source_model` argument.
+
+This behaves differently for the [stage](#stage) macro, which supports either style, shown below:
 
 ##### ref style
 
@@ -46,6 +47,9 @@ stg_customer:
     ```
 
 The mapping provided for the source style, is in the form `source_name: table_name` which mimics the syntax for the `source()` macro.
+
+For all other structures (hub, link, satellite, etc.) the `source_model` argument must be a string to denote a single staging source,
+or a list of strings to denote multiple staging sources. 
 
 ## Table templates
 
