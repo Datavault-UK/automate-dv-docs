@@ -5,8 +5,7 @@ demonstration project from the repository.
 
 Using the button below, find the latest release and download the zip file, listed under assets.
 
-[View Downloads](https://github.com/Datavault-UK/snowflakeDemo/releases){: .md-button .md-button--primary .btn }
-
+[View Downloads :fontawesome-solid-download:](https://github.com/Datavault-UK/snowflakeDemo/releases){: .md-button .md-button--primary .btn }
 
 Once downloaded, unzip the project.
 
