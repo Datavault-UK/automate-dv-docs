@@ -1,23 +1,17 @@
 We advise you follow these best practises when using dbtvault.
 
-## Staging
+## Single record per load period
 
-Currently, we are only supporting one load date per load, as per the [prerequisites](tutorial/tut_getting_started.md#pre-requisites).
+At the current time, dbtvault will load discrete records with the same primary key (hash key) simultaneously. 
+This means that any deltas formed by loading these records in individual cycles are lost. For hubs and links this is not 
+a problem, as there are no temporal attributes, but for satellites this will cause inaccuracies in loaded data.
 
 Until a future release solves this limitation, we advise that you use the [vault_insert_by_period](macros.md#vault_insert_by_period) materialisation.
-This materialisation is fully configurable and automatically iterates over a date range to load each time period in a separate transaction. 
+This materialisation is fully configurable and automatically iterates over period of time in a date range, to load each time period in a separate transaction. 
 
-If a manual approach is preferred, we suggest that if the raw staging layer has a mix of load dates, 
-create a view on it and filter by the load date column to ensure only a single load date value is present.
+This materialisation can be configured to load in milliseconds to get around this limitation, however we do not advise this for large data sets.
 
-For the next load you then re-create the view with a different load date and run dbt again, or alternatively 
-manage a 'water-level' table which tracks the last load date for each source, and is incremented each load cycle.
-Join to the table to soft-select the next load date.
-
-The staging layer must include all columns which are required in the raw vault.
-
-This is an opinionated design feature which dramatically simplifies the mapping of data into 
-the raw vault. This means that everything is derived from the staging layer. 
+We are working on removing this limitation and implementing 'intra-period' loading. If you have any questions, please get in touch. 
 
 ## Record source table code
 
