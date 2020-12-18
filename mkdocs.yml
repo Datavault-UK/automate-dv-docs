@@ -58,8 +58,6 @@ extra:
       link: 'https://www.linkedin.com/company/business-thinking-limited'
     - icon: 'fontawesome/brands/facebook'
       link: 'https://www.facebook.com/DataVaultUK/'
-  version: 0.6
-  req_dbt_version: 0.16.x
 
 markdown_extensions:
   - admonition
@@ -70,9 +68,6 @@ markdown_extensions:
   - pymdownx.magiclink:
       repo_url_shorthand: true
       repo_url_shortener: true
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
   - toc:
       permalink: true
       toc_depth: 1-3
