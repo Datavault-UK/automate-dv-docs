@@ -76,10 +76,10 @@ Generates SQL to build a hub table using the provided parameters.
 
 | Parameter     | Description                                         | Type                 | Required?                                    |
 | ------------- | --------------------------------------------------- | -------------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | String               | <i class="fas fa-check-circle required"></i> |
-| src_nk        | Source natural key column                           | String               | <i class="fas fa-check-circle required"></i> |
+| src_pk        | Source primary key column                           | String/List          | <i class="fas fa-check-circle required"></i> |
+| src_nk        | Source natural key column                           | String/List          | <i class="fas fa-check-circle required"></i> |
 | src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | String               | <i class="fas fa-check-circle required"></i> |
+| src_source    | Name of the column containing the source ID         | String/List          | <i class="fas fa-check-circle required"></i> |
 | source_model  | Staging model name                                  | String/List          | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
@@ -350,10 +350,10 @@ Generates sql to build a link table using the provided parameters.
 
 | Parameter     | Description                                         | Type                 | Required?                                    |
 | ------------- | --------------------------------------------------- | ---------------------| -------------------------------------------- |
-| src_pk        | Source primary key column                           | String               | <i class="fas fa-check-circle required"></i> |
+| src_pk        | Source primary key column                           | String/List               | <i class="fas fa-check-circle required"></i> |
 | src_fk        | Source foreign key column(s)                        | List                 | <i class="fas fa-check-circle required"></i> |
 | src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | String               | <i class="fas fa-check-circle required"></i> |
+| src_source    | Name of the column containing the source ID         | String/List               | <i class="fas fa-check-circle required"></i> |
 | source_model  | Staging model name                                  | String/List          | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
@@ -618,7 +618,7 @@ Generates sql to build a transactional link table using the provided parameters.
 
 | Parameter     | Description                                         | Type           | Required?                                    |
 | ------------- | --------------------------------------------------- | -------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | String         | <i class="fas fa-check-circle required"></i> |
+| src_pk        | Source primary key column                           | String/List         | <i class="fas fa-check-circle required"></i> |
 | src_fk        | Source foreign key column(s)                        | List           | <i class="fas fa-check-circle required"></i> |
 | src_payload   | Source payload column(s)                            | List           | <i class="fas fa-check-circle required"></i> |
 | src_eff       | Source effective from column                        | String         | <i class="fas fa-check-circle required"></i> |
