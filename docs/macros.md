@@ -1320,8 +1320,7 @@ In the above example we can see the use of a function to convert the date format
 new column `CUSTOMER_DOB_UK`. Functions are incredibly useful for calculating values for new columns in derived column
 configurations.
 
-As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like 
-the following:
+In the highlighted derived column configuration in the snippet above, the generated SQL would be the following:
 
 ```sql
 SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
@@ -1342,13 +1341,47 @@ stg_customer:
 ```
 
 In the above example we define a constant value for our new `SOURCE` column. We do this by prefixing our 
-string with an exclamation mark: `!`. This is syntactic sugar to avoid having to escape quotes and other characters.
+string with an exclamation mark: `!`. This is syntactic sugar provided by dbtvault to avoid having to escape quotes and other characters.
 
 As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like 
 the following:
 
 ```sql
 SELECT "RAW_CUSTOMER" AS SOURCE
+```
+
+#### Composite columns (Derived Columns)
+
+!!! tip "New in dbtvault 0.7.2"
+
+```yaml hl_lines="6 7"
+stg_customer:
+  vars:
+    source_model: "raw_source"
+    derived_columns:
+      CUSTOMER_NK:
+        - "CUSTOMER_ID"
+        - "CUSTOMER_NAME"
+        - "!DEV"
+      SOURCE: "!RAW_CUSTOMER"
+      EFFECTIVE_FROM: "BOOKING_DATE"
+```
+
+You can create new columns, given a list of columns to extract values from,  using derived columns.
+
+Given the following values in the above example:
+
+- `CUSTOMER_ID` = 0011
+- `CUSTOMER_NAME` = Alex
+  
+Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values are joined in the order provided, using a double pipe `||`. 
+Currently, this `||` join string is hard-coded, but in future it will be user-configurable. 
+
+The values provided in the list can use any of the previously described syntax (including functions and constants) to generate new values, as the concatenation is made in pure SQL as follows:
+
+```sql
+SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV')
+FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
 ___
