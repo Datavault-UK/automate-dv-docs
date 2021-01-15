@@ -1040,6 +1040,12 @@ Description
 === "Snowflake"
     <SQL HERE>
 
+
+
+#### As Of Date Structures
+
+As of Date tables are...
+
 ___
 
 ## Staging Macros
