@@ -138,7 +138,7 @@ and `hashed_columns` as showcased in the provided examples.
 
 #### Metadata
 
-=== "dbt_project.yml"
+=== "Single Source - dbt_project.yml"
     ```yaml
     hub_customer:
       vars:
@@ -147,7 +147,33 @@ and `hashed_columns` as showcased in the provided examples.
         src_nk: 'CUSTOMER_KEY'
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
+    ```
+
+=== "Multi Source - dbt_project.yml"
+    ```yaml
+    hub_customer:
+      vars:
+        source_model:
+          - 'stg_web_customer_hashed'
+          - 'stg_crm_customer_hashed'
+        src_pk: 'CUSTOMER_PK'
+        src_nk: 'CUSTOMER_KEY'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
     ``` 
+
+=== "Composite NK - dbt_project.yml"
+    ```yaml
+    hub_customer:
+      vars:
+        source_model: 'stg_customer_hashed'
+        src_pk: 'CUSTOMER_PK'
+        src_nk:
+          - 'CUSTOMER_KEY'
+          - 'CUSTOMER_DOB'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
 
 ### Links
 
@@ -157,7 +183,7 @@ and `hashed_columns` as showcased in the provided examples.
 
 #### Metadata
 
-=== "dbt_project.yml"
+=== "Single Source - dbt_project.yml"
     ```yaml
     link_customer_nation:
       vars:
@@ -169,6 +195,22 @@ and `hashed_columns` as showcased in the provided examples.
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
     ```
+
+=== "Multi Source - dbt_project.yml"
+    ```yaml
+    link_customer_nation:
+      vars:
+        source_model:
+          - 'v_stg_orders'
+          - 'v_stg_transactions'
+        src_pk: 'LINK_CUSTOMER_NATION_PK'
+        src_fk:
+          - 'CUSTOMER_PK'
+          - 'NATION_PK'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
+
 ### Transactional links
 ###### (also known as non-historised links)
 
@@ -245,7 +287,7 @@ and `hashed_columns` as showcased in the provided examples.
         ```
 
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
-[Read more](migration_guides/migrating_v0.5_v0.6.md#hashdiff-aliasing)
+[Read more](best_practices.md#hashdiff-aliasing)
 
 ### Effectivity Satellites
 

@@ -114,11 +114,11 @@ This will not necessarily use `MD5_BINARY` if you have chosen to use `SHA`, in w
 When we hash multiple columns, we take the following approach:
 
 ```sql 
-CAST(MD5_BINARY(CONCAT(
-    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
+CAST(MD5_BINARY(CONCAT_WS('||',
+    IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
     IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
-    IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
-AS BINARY(16)) AS HASHDIFF
+    IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+)) AS BINARY(16)) AS HASHDIFF
 ```
 
 This is similar to single-column hashing aside from the use of `IFNULL` and `CONCAT`, the step-by-step process
@@ -131,7 +131,7 @@ which comprises the multi-column hash.
 then we output a double-hat string, `^^`. This ensures that we can detect changes in columns between `NULL` 
 and non-NULL values. This is particularly important for `HASHDIFFS`.
 
-6\. `CONCAT` Next, we concatenate the column values using a double-pipe string, `||`. This ensures we have
+6\. `CONCAT_WS` Next, we concatenate the column values using a double-pipe string, `||`. This ensures we have
 consistent concatenation, using a string which is unlikely to be contained in the columns we are concatenating.
 Concatenating in this way means that we can be more confident that a combination of columns will always generate the same
 hash value, particularly where `NULLS` are concerned. 
