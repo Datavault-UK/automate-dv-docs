@@ -973,7 +973,7 @@ Example Output section above. The result of this will be additional effectivity 
 will aid business logic and creation of presentation layer structures downstream.
 
 In most cases where Effectivity Satellites are recording 1-1 or 1-M relationships, this feature can be safely enabled.
-In situation where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This feature
+In situations where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This feature
 is disabled by default because it could be considered an application of a business rule:
 The definition of the 'end' of a relationship is considered business logic which should happen in the business vault.
 
@@ -982,6 +982,63 @@ The definition of the 'end' of a relationship is considered business logic which
 !!! warning
     We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
     exercised if you are unsure.
+
+___
+
+### xts
+
+([view source]())
+
+Description
+
+#### Usage
+
+``` jinja
+{{ dbtvault.xts() }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                         | Type             | Required?                                    |
+| -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|                |                                                     |                  |                                              |
+
+#### Example Metadata
+
+[See examples](metadata.md#extended-tracking-satellites-xts)
+
+#### Example Output
+
+=== "Snowflake"
+    <SQL HERE>
+
+___
+### pit
+
+([view source]())
+
+Description
+
+#### Usage
+
+``` jinja
+{{ dbtvault.pit() }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                         | Type             | Required?                                    |
+| -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|                |                                                     |                  |                                              |
+
+#### Example Metadata
+
+[See examples](metadata.md#point-in-time-pits)
+
+#### Example Output
+
+=== "Snowflake"
+    <SQL HERE>
 
 ___
 

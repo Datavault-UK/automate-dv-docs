@@ -79,7 +79,7 @@ models:
     You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
     included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
 
-[Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
+[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
 ### Adding the metadata
 
@@ -160,6 +160,6 @@ We have now created:
 - A staging layer 
 - A Hub 
 - A Link
-- A Transactional LLnk
+- A Transactional Link
  
 Next we will explore [satellites](tut_satellites.md).

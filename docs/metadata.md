@@ -270,6 +270,36 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```
 ___
 
+### Extended Tracking Satellites (XTS)
+
+#### Parameters
+
+[xts macro parameters](macros.md#xts)
+
+#### Metadata
+=== "dbt_project.yml"
+    ```yaml
+    <example_name>:
+      vars:
+        
+    ```
+___
+
+### Point-in-Time (PITs)
+
+#### Parameters
+
+[pit macro parameters](macros.md#pit)
+
+#### Metadata
+=== "dbt_project.yml"
+    ```yaml
+    <example_name>:
+      vars:
+        
+    ```
+___
+
 ### The problem with metadata
 
 As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 

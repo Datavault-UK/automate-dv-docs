@@ -24,7 +24,7 @@ The load will create a new `EFF_SAT_A_B` record. The old record now needs to be 
 Link records. Ideally, we should end-date the original link relationship inside the same transaction to avoid 2 SQL queries
 and possibly de-syncing. 
 
-In any Link there are two FK columns, one will change over tme and the other will remain constant. The one that does not change
+In any Link there are two FK columns, one will change over time and the other will remain constant. The one that does not change
 is called the **driving key** and the one that does change is called the **driven key** (or secondary key).
 
 ### Structure
@@ -206,10 +206,8 @@ We have now created:
 - A staging layer 
 - A Hub 
 - A Link
-- A Transactional LLnk
+- A Transactional Link
 - A Satellite
 - An Effectivity Satellite
 
-That is all for now. More table types will be coming in future! See our [roadmap](../roadmap.md) for more details.
-
-If you want a more realistic real-world example, with real data to work with, take a look at our [worked example](../worked_example/we_worked_example.md).
+Next we will look at [extended tracking satellites](tut_xts.md).
