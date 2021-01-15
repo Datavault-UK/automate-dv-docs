@@ -714,9 +714,29 @@ ___
 #### Metadata
 === "dbt_project.yml"
     ```yaml
-    <example_name>:
+    PIT_CUSTOMER:
       vars:
-        
+        source_model: HUB_CUSTOMER
+        src_pk: CUSTOMER_PK
+        as_of_date_table: AS_OF_DATES
+        satellites: 
+            - SAT_CUSTOMER_DETAILS
+                -pk
+                    PK: CUSTOMER_PK
+                -ldts
+                    LDTS: LOAD_DATE
+             - SAT_CUSTOMER_LOGIN
+                -pk
+                    PK: CUSTOMER_PK
+                -ldts
+                    LDTS: LOAD_DATE
+            - SAT_CUSTOMER_PROFILE
+                -pk
+                    PK: CUSTOMER_PK
+                -ldts
+                    LDTS: LOAD_DATE
+                    
+            
     ```
 ___
 

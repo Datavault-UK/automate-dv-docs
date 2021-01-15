@@ -1010,26 +1010,31 @@ Description
 #### Example Output
 
 === "Snowflake"
-    <SQL HERE>
+<SQL HERE>
 
 ___
+
 ### pit
 
 ([view source]())
 
-Description
+Generates SQL to build a point-in-time table (PIT).
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.pit() }}
+{{ {{ dbtvault.pit({src_pk}, {as_of_dates_table}, {satellites}, 
+    {source_model})                                       }} }}
 ```
 
 #### Parameters
 
-| Parameter      | Description                                         | Type             | Required?                                    |
-| -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-|                |                                                     |                  |                                              |
+| Parameter         | Description                                         | Type             | Required?                                    |
+| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table| Name for the AS OF table                            |  String          | <i class="fas fa-check-circle required"></i> |
+|  satellites       | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
 
 #### Example Metadata
 
@@ -1038,13 +1043,50 @@ Description
 #### Example Output
 
 === "Snowflake"
-    <SQL HERE>
+
+        SELECT
+                h.CUSTOMER_PK,
+                x.AS_OF_DATE,
+            
+                COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_DETAILS_PK,
+                COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS,
+                COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_LOGIN_PK,
+                COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_LOGIN_LDTS,
+                COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_PROFILE_PK,
+                COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_PROFILE_LDTS
+        
+        FROM DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.HUB_CUSTOMER AS h
+        
+        INNER JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.AS_OF_DATE AS x
+            ON (1=1)
+        
+        LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_DETAILS AS SAT_CUSTOMER_DETAILS_SRC
+                ON  h.CUSTOMER_PK = SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK
+            AND SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE <= x.AS_OF_DATE
+        
+        LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_LOGIN AS SAT_CUSTOMER_LOGIN_SRC
+                ON  h.CUSTOMER_PK = SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK
+            AND SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE <= x.AS_OF_DATE
+        
+        LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_PROFILE AS SAT_CUSTOMER_PROFILE_SRC
+                ON  h.CUSTOMER_PK = SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK
+            AND SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE <= x.AS_OF_DATE
+        
+        
+        
+        GROUP BY
+         h.CUSTOMER_PK, x.AS_OF_DATE
+        ORDER BY (1, 2)
 
 
 
 #### As Of Date Structures
 
-As of Date tables are...
+An As of Date table contains a single column of dates used to construct the history in the PIT. A Typical structure will 
+be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
+time after where the date intervals are slightly larger. At the current release of dbtvault there is no functionality that
+auto generates this table for you, so you will have to supply this your self. Another caveat is even though the As of 
+Date table can take any name, as long as it is called correctly in the .yml, the column name must be called AS_OF_DATES.
 
 ___
 
