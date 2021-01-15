@@ -22,12 +22,14 @@ become unwieldy. See [the problem with metadata](#the-problem-with-metadata) for
 #### dbt_project.yml
 
 Variables can be provided to macros via the `dbt_project.yml` file instead of being specified in
-the models themselves. This keeps the metadata all in one place and simplifies the use of dbtvault.
+the models themselves. This keeps the metadata all in one place and simplifies the use of dbtvault by reducing model
+creation to a copy and paste process of the model file, and just providing different metadata in the `dbt_project.yml`
+file.
 
 !!! warning "Using variables in dbt_project.yml"
-    From dbtvault v0.6.1 onwards, if you are using dbt v0.17.0 you must use `config-version: 1`. 
+    From dbt v0.17.0 onwards, you must add `config-version: 1` to your `dbt_project.yml`. 
     This is a temporary workaround due to removal of model-level variable scoping in dbt core functionality.
-    We hope to have a permanent fix for this in the future.
+    We hope to have a permanent solution for this in the future.
     
     Read more:
     
