@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.2] - 20201-01-
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.2)](https://dbtvault.readthedocs.io/en/v0.7.2/?badge=v0.7.2)
+
+### New
+
+- 
+
+### Improved
+
+- 
+
+### Fixed
+
+- 
+
 ## [v0.7.1] - 2020-12-18
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.1)](https://dbtvault.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
 
