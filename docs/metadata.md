@@ -618,6 +618,37 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+=== "Per-Model - Variables"
+    === "Standard"
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_hashdiff = "CUSTOMER_HASHDIFF" -%}
+        {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
+        {%- set src_eff = "EFFECTIVE_FROM" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+                        src_payload=src_payload, src_eff=src_eff,
+                        src_ldts=src_ldts, src_source=src_source, 
+                        source_model=source_model) }}
+        ```
+    === "Hashdiff Aliasing"
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
+        {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
+        {%- set src_eff = "EFFECTIVE_FROM" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+                        src_payload=src_payload, src_eff=src_eff,
+                        src_ldts=src_ldts, src_source=src_source, 
+                        source_model=source_model) }}
+        ```
 
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 [Read more](best_practices.md#hashdiff-aliasing)
@@ -643,13 +674,31 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
     ```
+=== "Per-Model - Variables"
+    ```jinja
+    {%- set source_model = "v_stg_orders" -%}
+    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
+    {%- set src_eff = "EFFECTIVE_FROM" -%}
+    {%- set src_ldts = "LOADDATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                        src_start_date=src_start_date, src_end_date=src_end_date, 
+                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source, 
+                        source_model=source_model) }}
+    ```
 ___
 
 ### The problem with metadata
 
 As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
 projects. If your metadata is defined and stored in each model, it becomes harder to generate and develop with, 
-but it can be easier to manage. Whichever approach is chosen, metadata storage and retrieval is difficult without a dedicated tool. 
+but it can be easier to manage. Model-level metadata alleviates the issue, but will not completely solve it.
+
+Whichever approach is chosen, metadata storage and retrieval is difficult without a dedicated tool. 
 To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
-Matillion, or Erwin Data Modeller. We have future plans to improve metadata handling but in the meantime 
-any feedback or ideas are welcome.
+Matillion, or Erwin Data Modeller. 
+
+In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a 
+little longer. Discussions are [already ongoing](https://github.com/fishtown-analytics/dbt/issues/2401).
