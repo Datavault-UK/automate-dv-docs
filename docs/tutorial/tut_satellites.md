@@ -155,7 +155,7 @@ We have now created:
 - A staging layer 
 - A Hub 
 - A Link
-- A Transactional LLnk
+- A Transactional Link
 - A Satellite
 
 Next we will look at [effectivity satellites](tut_eff_satellites.md).

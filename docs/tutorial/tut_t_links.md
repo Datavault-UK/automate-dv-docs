@@ -160,6 +160,6 @@ We have now created:
 - A staging layer 
 - A Hub 
 - A Link
-- A Transactional LLnk
+- A Transactional Link
  
 Next we will explore [satellites](tut_satellites.md).

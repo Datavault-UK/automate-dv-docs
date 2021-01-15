@@ -206,7 +206,7 @@ We have now created:
 - A staging layer 
 - A Hub 
 - A Link
-- A Transactional LLnk
+- A Transactional Link
 - A Satellite
 - An Effectivity Satellite
 

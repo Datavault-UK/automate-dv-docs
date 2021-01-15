@@ -4,14 +4,18 @@ For further detail about how to use the macros in this section, see [table templ
 
 ### Approaches
 
-This page will describe just *one* way of providing metadata to the macros. There are many different ways to do it, 
+This page will describe just *one* way of providing metadata to the macros. There are many ways to do it, 
 and it comes down to user and organisation preference.
 
-!!! note
-    The macros *do not care* how the metadata parameters are provided, as long as they are of the correct type.
-    Parameter data types are defined on the [macros](macros.md) page.
 
-It is worth noting that with larger projects, storing all of the metadata in the `dbt_project.yml` file can quickly 
+!!! note
+    The macros **do not care** how the metadata parameters are provided, as long as they are of the correct type.
+    Parameter data types are defined on the [macros](macros.md) page.
+    
+    **All examples in the following sections will produce the same hub structure, the only difference is how the metadata is provided.**
+    
+
+It is worth noting that with larger projects, storing all the metadata in the `dbt_project.yml` file can quickly 
 become unwieldy. See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
 
 
@@ -23,20 +27,120 @@ the models themselves. This keeps the metadata all in one place and simplifies t
 !!! warning "Using variables in dbt_project.yml"
     From dbtvault v0.6.1 onwards, if you are using dbt v0.17.0 you must use `config-version: 1`. 
     This is a temporary workaround due to removal of model-level variable scoping in dbt core functionality.
-    We hope to have a permanent fix for this in future.
+    We hope to have a permanent fix for this in the future.
     
     Read more:
     
     - [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377) (closed in favour of [2401](https://github.com/fishtown-analytics/dbt/issues/2401))
     - [dbt documentation on the change](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/#better-variable-scoping-semantics)
 
-#### Per-model
 
-You may also provide metadata on a per-model basis. 
+##### Example
 
-!!! info "Coming Soon"
-    Examples of this approach will be added soon
-     
+=== "dbt_project.yml"
+    ```yaml
+    models:
+      hubs:
+        hub_customer:
+          vars:
+            source_model: 'stg_web_customer_hashed'
+            src_pk: 'CUSTOMER_PK'
+            src_nk: 'CUSTOMER_KEY'
+            src_ldts: 'LOAD_DATETIME'
+            src_source: 'RECORD_SOURCE'
+    ``` 
+
+#### Per-model - Variables 
+
+You may also provide metadata on a per-model basis. This is useful if you have a large amount of structures, and you
+are quickly filling up your `dbt_project.yml` file, or for a specific model you have a large amount of metadata
+and would like to reduce the clutter in the `dbt_project.yml` file.
+
+##### Example
+
+=== "hub_customer.sql"
+    ```jinja
+    
+    {%- set source_model = "stg_web_customer_hashed" -%}
+    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_nk = "CUSTOMER_KEY" -%}
+    {%- set src_ldts = "LOAD_DATETIME" -%}
+    {%- set src_source = "RECORD_SOURCE" -%}
+    
+    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
+    ```
+
+#### Per-Model - YAML strings 
+
+If you want to provide metadata inside the model itself, but find yourself disliking the format for 
+larger collections of metadata or certain data types (e.g. dict literals), then providing a YAML String is a good 
+alternative to using `set`. This method takes advantage of the `fromyml()` built-in jinja function provided by dbt, 
+which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
+
+The below example for a hub is a little excessive for the small amount of metadata provided, so there is also a stage 
+example provided to help better convey the difference.
+
+##### Example
+
+=== "hub_customer.sql"
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: 'stg_web_customer_hashed'
+    src_pk: 'CUSTOMER_PK'
+    src_nk: 'CUSTOMER_KEY'
+    src_ldts: 'LOAD_DATETIME'
+    src_source: 'RECORD_SOURCE'
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
+                    src_nk=metadata_dict["src_nk"], 
+                    src_ldts=metadata_dict["src_ldts"],
+                    src_source=metadata_dict["src_ldts"],
+                    source_model=metadata_dict["source_model"]) }}
+    ```
+
+=== "stg_customer.sql"
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "raw_source"
+    hashed_columns:
+      CUSTOMER_PK: "CUSTOMER_ID"
+      CUST_CUSTOMER_HASHDIFF:
+        is_hashdiff: true
+        columns:
+          - "CUSTOMER_DOB"
+          - "CUSTOMER_ID"
+          - "CUSTOMER_NAME"
+          - "!9999-12-31"
+      CUSTOMER_HASHDIFF:
+        is_hashdiff: true
+        columns:
+          - "CUSTOMER_ID"
+          - "NATIONALITY"
+          - "PHONE"
+    derived_columns:
+      SOURCE: "!STG_BOOKING"
+      EFFECTIVE_FROM: "BOOKING_DATE"
+    {%- endset -%}
+    
+    {%- set metadata_dict = fromyaml(yaml_metadata) -%}
+    
+    {%- set source_model = metadata_dict['source_model'] -%}
+    
+    {%- set derived_columns = metadata_dict['derived_columns'] -%}
+    
+    {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+    
+    {{ dbtvault.stage(include_source_columns=true,
+                      source_model=source_model,
+                      derived_columns=derived_columns,
+                      hashed_columns=hashed_columns) }}
+    ```
+
+
 
 ### Staging
 
@@ -47,7 +151,7 @@ You may also provide metadata on a per-model basis.
 #### Metadata
 
 === "dbt_project.yml"
-    === "All variables"
+    === "All components"
         ```yaml
         models:
           my_dbtvault_project:
@@ -121,7 +225,29 @@ You may also provide metadata on a per-model basis.
                     SOURCE: "!STG_BOOKING"
                     EFFECTIVE_FROM: "BOOKING_DATE"
         ```
-
+    === "Exclude Columns flag"
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  include_source_columns: false
+                  source_model: "raw_source"
+                  hashed_columns:
+                    CUSTOMER_PK: "CUSTOMER_ID"
+                    CUSTOMER_DETAILS_HASHDIFF:
+                      is_hashdiff: true
+                      exclude_columns: true
+                      columns:
+                        - "PRICE"
+                    CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_ID"
+                        - "NATIONALITY"
+                        - "PHONE"
+        ```
 #### Constants
 
 In the above examples, there are strings prefixed with `!`. This is syntactical sugar provided in dbtvault which 
@@ -138,42 +264,41 @@ and `hashed_columns` as showcased in the provided examples.
 
 #### Metadata
 
-=== "Single Source - dbt_project.yml"
-    ```yaml
-    hub_customer:
-      vars:
-        source_model: 'stg_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
-        src_nk: 'CUSTOMER_KEY'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
-
-=== "Multi Source - dbt_project.yml"
-    ```yaml
-    hub_customer:
-      vars:
-        source_model:
-          - 'stg_web_customer_hashed'
-          - 'stg_crm_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
-        src_nk: 'CUSTOMER_KEY'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ``` 
-
-=== "Composite NK - dbt_project.yml"
-    ```yaml
-    hub_customer:
-      vars:
-        source_model: 'stg_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
-        src_nk:
-          - 'CUSTOMER_KEY'
-          - 'CUSTOMER_DOB'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
+=== "dbt_project.yml"
+    === "Single Source"
+        ```yaml
+        hub_customer:
+          vars:
+            source_model: 'stg_customer_hashed'
+            src_pk: 'CUSTOMER_PK'
+            src_nk: 'CUSTOMER_KEY'
+            src_ldts: 'LOADDATE'
+            src_source: 'SOURCE'
+        ```
+    === "Multi Source"
+        ```yaml
+        hub_customer:
+          vars:
+            source_model:
+              - 'stg_web_customer_hashed'
+              - 'stg_crm_customer_hashed'
+            src_pk: 'CUSTOMER_PK'
+            src_nk: 'CUSTOMER_KEY'
+            src_ldts: 'LOADDATE'
+            src_source: 'SOURCE'
+        ```
+    === "Composite NK"
+        ```yaml
+        hub_customer:
+          vars:
+            source_model: 'stg_customer_hashed'
+            src_pk: 'CUSTOMER_PK'
+            src_nk:
+              - 'CUSTOMER_KEY'
+              - 'CUSTOMER_DOB'
+            src_ldts: 'LOADDATE'
+            src_source: 'SOURCE'
+        ```
 
 ### Links
 
@@ -183,33 +308,33 @@ and `hashed_columns` as showcased in the provided examples.
 
 #### Metadata
 
-=== "Single Source - dbt_project.yml"
-    ```yaml
-    link_customer_nation:
-      vars:
-        source_model: 'v_stg_orders'
-        src_pk: 'LINK_CUSTOMER_NATION_PK'
-        src_fk:
-          - 'CUSTOMER_PK'
-          - 'NATION_PK'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
-
-=== "Multi Source - dbt_project.yml"
-    ```yaml
-    link_customer_nation:
-      vars:
-        source_model:
-          - 'v_stg_orders'
-          - 'v_stg_transactions'
-        src_pk: 'LINK_CUSTOMER_NATION_PK'
-        src_fk:
-          - 'CUSTOMER_PK'
-          - 'NATION_PK'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
+=== "dbt_project.yml"
+    === "Single Source"
+        ```yaml
+        link_customer_nation:
+          vars:
+            source_model: 'v_stg_orders'
+            src_pk: 'LINK_CUSTOMER_NATION_PK'
+            src_fk:
+              - 'CUSTOMER_PK'
+              - 'NATION_PK'
+            src_ldts: 'LOADDATE'
+            src_source: 'SOURCE'
+        ```
+    === "Multi Source"
+        ```yaml
+        link_customer_nation:
+          vars:
+            source_model:
+              - 'v_stg_orders'
+              - 'v_stg_transactions'
+            src_pk: 'LINK_CUSTOMER_NATION_PK'
+            src_fk:
+              - 'CUSTOMER_PK'
+              - 'NATION_PK'
+            src_ldts: 'LOADDATE'
+            src_source: 'SOURCE'
+        ```
 
 ### Transactional links
 ###### (also known as non-historised links)
