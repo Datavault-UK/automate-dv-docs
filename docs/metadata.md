@@ -62,7 +62,6 @@ and would like to reduce the clutter in the `dbt_project.yml` file.
 
 === "hub_customer.sql"
     ```jinja
-    
     {%- set source_model = "stg_web_customer_hashed" -%}
     {%- set src_pk = "CUSTOMER_PK" -%}
     {%- set src_nk = "CUSTOMER_KEY" -%}
@@ -250,6 +249,142 @@ example provided to help better convey the difference.
                         - "NATIONALITY"
                         - "PHONE"
         ```
+=== "Per-model - YAML strings"
+    === "All components"
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: "raw_source"
+        hashed_columns:
+        CUSTOMER_PK: "CUSTOMER_ID"
+        CUST_CUSTOMER_HASHDIFF:
+          is_hashdiff: true
+          columns:
+            - "CUSTOMER_DOB"
+            - "CUSTOMER_ID"
+            - "CUSTOMER_NAME"
+            - "!9999-12-31"
+        CUSTOMER_HASHDIFF:
+          is_hashdiff: true
+          columns:
+            - "CUSTOMER_ID"
+            - "NATIONALITY"
+            - "PHONE"
+        derived_columns:
+        SOURCE: "!STG_BOOKING"
+        EFFECTIVE_FROM: "BOOKING_DATE"
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict['source_model'] %}
+        
+        {%- set derived_columns = metadata_dict['derived_columns'] -%}
+        
+        {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+        
+        {{ dbtvault.stage(include_source_columns=true,
+                          source_model=source_model,
+                          derived_columns=derived_columns,
+                          hashed_columns=hashed_columns) }}
+        ```
+    === "Only Source"
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: "raw_source"
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict['source_model'] %}
+        
+        {{ dbtvault.stage(include_source_columns=true,
+                          source_model=source_model,
+                          derived_columns=none,
+                          hashed_columns=none) }}
+        ```
+    === "Only hashing"
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: "raw_source"
+        hashed_columns:
+        CUSTOMER_PK: "CUSTOMER_ID"
+        CUST_CUSTOMER_HASHDIFF:
+          is_hashdiff: true
+          columns:
+            - "CUSTOMER_DOB"
+            - "CUSTOMER_ID"
+            - "CUSTOMER_NAME"
+            - "!9999-12-31"
+        CUSTOMER_HASHDIFF:
+          is_hashdiff: true
+          columns:
+            - "CUSTOMER_ID"
+            - "NATIONALITY"
+            - "PHONE"
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict['source_model'] %}
+        
+        {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+        
+        {{ dbtvault.stage(include_source_columns=false,
+                          source_model=source_model,
+                          derived_columns=none,
+                          hashed_columns=hashed_columns) }}
+        ```
+    === "Only derived"
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: "raw_source"
+        derived_columns:
+            SOURCE: "!STG_BOOKING"
+            EFFECTIVE_FROM: "BOOKING_DATE"
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict['source_model'] %}
+        
+        {%- set derived_columns = metadata_dict['derived_columns'] -%}
+        
+        {{ dbtvault.stage(include_source_columns=false,
+                          source_model=source_model,
+                          derived_columns=derived_columns,
+                          hashed_columns=none) }}
+        ```
+    === "Exclude Columns flag"
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: "raw_source"
+        hashed_columns:
+          CUSTOMER_PK: "CUSTOMER_ID"
+          CUSTOMER_DETAILS_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+            columns:
+              - "PRICE"
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - "CUSTOMER_ID"
+              - "NATIONALITY"
+              - "PHONE"
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict['source_model'] %}
+        
+        {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+        
+        {{ dbtvault.stage(include_source_columns=false,
+                          source_model=source_model,
+                          derived_columns=none,
+                          hashed_columns=hashed_columns) }}
+        ```
+
 #### Constants
 
 In the above examples, there are strings prefixed with `!`. This is syntactical sugar provided in dbtvault which 
@@ -301,6 +436,40 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+=== "Per-Model - Variables"
+    === "Single Source"
+        ```jinja
+        {%- set source_model = "stg_customer_hashed" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_nk = "CUSTOMER_KEY" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
+    === "Multi Source"
+        ```jinja
+        {%- set source_model = ["stg_web_customer_hashed", "stg_crm_customer_hashed"] -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_nk = "CUSTOMER_KEY" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
+    === "Composite NK"
+        ```jinja
+        {%- set source_model = "stg_customer_hashed" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_nk = ["CUSTOMER_KEY", "CUSTOMER_DOB"] -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
 
 ### Links
 
@@ -337,6 +506,29 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+=== "Per-Model - Variables"
+    === "Single Source"
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
+        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                         src_source=src_source, source_model=source_model) }}
+        ```
+    === "Multi Source"
+        ```jinja
+        {%- set source_model = ["v_stg_orders", "v_stg_transactions"] -%}
+        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
+        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                         src_source=src_source, source_model=source_model) }}
+        ```
 
 ### Transactional links
 ###### (also known as non-historised links)
@@ -364,6 +556,20 @@ and `hashed_columns` as showcased in the provided examples.
         src_eff: 'EFFECTIVE_FROM'
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
+    ```
+=== "Per-Model - Variables"
+    ```jinja
+    {%- set source_model = "v_stg_transactions" -%}
+    {%- set src_pk = "TRANSACTION_PK" -%}
+    {%- set src_fk = ["CUSTOMER_PK", "ORDER_PK"] -%}
+    {%- set src_payload = ["TRANSACTION_NUMBER", "TRANSACTION_DATE", "TYPE", "AMOUNT"] -%}
+    {%- set src_eff = "EFFECTIVE_FROM" -%}
+    {%- set src_ldts = "LOADDATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                       src_payload=src_payload, src_eff=src_eff,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 ### Satellites
