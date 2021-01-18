@@ -19,7 +19,7 @@ The as_of_dates_table describes the history needed to construct the PIT table as
 supply the name of your as of date table.
 
 ##### Satellites
-This is a dictionary of the satellites that is used to define their metadata. Each satellite entry will be its name exatly and will contain
+This is a dictionary of the satellites that is used to define their metadata. Each satellite entry will be its name exactly and will contain
 two nested dictionaries pk and ldts. which will define the satellite key and the date column used to compare to the as of table. 
 These will contain a key pair described below.
 
@@ -54,18 +54,68 @@ PITS should use the table materialization, as the pit is remade with every new a
 We recommend setting the `table` materialization on all of your pits using the `dbt_project.yml` file:
 
 
+`dbt_project.yml`
+```yaml
+models:
+  my_dbtvault_project:
+   pit:
+    materialized: table
+    tags:
+      - pit
+    pit_customer:
+      vars:
+        ...
+```
+
 ### Adding the metadata
 
 Let's look at the metadata we need to provide to the [pit](../macros.md#pit) macro.
 
 #### Source table
+Here we will define the metadata for the source_model and the auxiliary as of dates table. As we have made the 'HUB_CUSTOMER' 
+Before 
+we would simply need to call it here as the source model. The trickier
 
-
+ ```yaml 
+PIT_CUSTOMER:
+    vars:
+        source_model: HUB_CUSTOMER
+ ```
 #### Source columns
 
+The other source columns are 
+1. The primary key of the parent hub,  which is a hashed natural key. 
+The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be used for `PIT_CUSTOMER`.
+2. `AS_OF_DATE` column which represents the date the row is valid for. This is obtained by giving the source information of the as of dates table.
+3. `satellite_key` is the `src_pk` taken from the satellite and aliased as  the satellite name_ the type of key it is (eg: PK, HK, FK)
+there is a column for each satellite included in the PIT
+4. `satellite_LDTS` is the column chosen from the satellite to denote the date column that is being used as to determine when the enetry is
+valid from and is aliased as satellite name_ type of date column, usually load date but can also be the effective from (LDTS or EF). This will be paired 
+with  its respective `satellite_key` 
+   
+The dbt_project.yml below only defines one satellite but to add others you would follow the same method inside of satellites.
+   
+
+`dbt_project.yml`
+```yaml hl_lines="5 6 7 8 9 10 11 12"
+    PIT_CUSTOMER:
+      vars:
+        source_model: HUB_CUSTOMER
+        as_of_date_table: AS_OF_DATES
+        src_pk: CUSTOMER_PK
+        satellites: 
+            - SAT_CUSTOMER_DETAILS
+                -pk
+                    'PK': 'CUSTOMER_PK'
+                -ldts
+                    'LDTS': 'LOAD_DATE'
+            - SAT_ORDER_LOGIN
+            ...
+```
 
 ### Running dbt
 
+`dbt run -m +pit_customer`
 
 ### Next steps
 

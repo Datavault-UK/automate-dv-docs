@@ -1152,42 +1152,42 @@ Generates SQL to build a point-in-time table (PIT).
 #### Example Output
 
 === "Snowflake"
+```sql
+ SELECT
+         h.CUSTOMER_PK,
+         x.AS_OF_DATE,
+     
+         COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_DETAILS_PK,
+         COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS,
+         COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_LOGIN_PK,
+         COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_LOGIN_LDTS,
+         COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_PROFILE_PK,
+         COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_PROFILE_LDTS
+ 
+ FROM DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.HUB_CUSTOMER AS h
+ 
+ INNER JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.AS_OF_DATE AS x
+     ON (1=1)
+ 
+ LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_DETAILS AS SAT_CUSTOMER_DETAILS_SRC
+         ON  h.CUSTOMER_PK = SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK
+     AND SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE <= x.AS_OF_DATE
+ 
+ LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_LOGIN AS SAT_CUSTOMER_LOGIN_SRC
+         ON  h.CUSTOMER_PK = SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK
+     AND SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE <= x.AS_OF_DATE
+ 
+ LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_PROFILE AS SAT_CUSTOMER_PROFILE_SRC
+         ON  h.CUSTOMER_PK = SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK
+     AND SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE <= x.AS_OF_DATE
+ 
+ 
+ 
+ GROUP BY
+  h.CUSTOMER_PK, x.AS_OF_DATE
+ ORDER BY (1, 2)
 
-        SELECT
-                h.CUSTOMER_PK,
-                x.AS_OF_DATE,
-            
-                COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_PROFILE_LDTS
-        
-        FROM DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.HUB_CUSTOMER AS h
-        
-        INNER JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.AS_OF_DATE AS x
-            ON (1=1)
-        
-        LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_DETAILS AS SAT_CUSTOMER_DETAILS_SRC
-                ON  h.CUSTOMER_PK = SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE <= x.AS_OF_DATE
-        
-        LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_LOGIN AS SAT_CUSTOMER_LOGIN_SRC
-                ON  h.CUSTOMER_PK = SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE <= x.AS_OF_DATE
-        
-        LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_PROFILE AS SAT_CUSTOMER_PROFILE_SRC
-                ON  h.CUSTOMER_PK = SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE <= x.AS_OF_DATE
-        
-        
-        
-        GROUP BY
-         h.CUSTOMER_PK, x.AS_OF_DATE
-        ORDER BY (1, 2)
-
-
+```
 
 #### As Of Date Structures
 
@@ -1195,8 +1195,8 @@ An As of Date table contains a single column of dates used to construct the hist
 be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
 time after where the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
 3 months of end of week values. So the as of dates table would contain a datetime for each entry to mach this. 
-As the days past however the as of dates table should change to reflect this with dates falling of the end of the table to keep
-the original parameters set. Using the exmaple history before if a week had passed since when we had created the as of dates table
+As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
+Using the example history before if a week had passed since when we had created the as of dates table
 it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
 
 !!! warning 
