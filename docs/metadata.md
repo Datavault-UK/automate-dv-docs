@@ -699,9 +699,15 @@ ___
 #### Metadata
 === "dbt_project.yml"
     ```yaml
-    <example_name>:
+    xts_customer:
       vars:
-        
+        source_model: 'stg_customer'
+        src_pk: 'CUSTOMER_PK'
+        src_satellite: 
+            'SATELLITE_NAME': ['SATELLITE_1', 'SATELLITE_2']
+            'HASHDIFF': ['HASHDIFF_1', 'HASHDIFF_2']
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
     ```
 ___
 
