@@ -2,9 +2,9 @@
 
 A Point-In-Time table is not needed for actually loading the data vault but is instead built with accordance to business needs.
 The PIT table will the bolster the query performance of the raw vault when the satellites are not loaded with cadence of each other.
-As it will act as a pointer reference for the valid data entry's of the satellites for a given history described in an 
-as of dates table. A PIT tables benefits become more apparent the greater the number of satellites its reference's, although 
-two is technically the minimum amount it needs even if it will not be utilised to its full effect.
+It will act as a pointer reference for the valid data entry's of the satellites for a given history described in an 
+[as of dates table](../macros.md#As Of Date Structures) . To create a PIT table only two satellites are needed but this is not suggested, and a PIT table has more 
+benefit when it references a greater number of satellites. 
 
 #### Structure
 
@@ -25,7 +25,7 @@ These will contain a key pair described below.
 
 The satellite_key is the hashed key in the satellite that directly corresponds to the Hub_PK. These should be the exact same.
 The only difference being the key may not be defined as the primary_key in the satellite it could be defined as a foreign key
-or a hashed key. It will be defined by 'the suffix desired for this key (eg:PK, FK, HK)' : 'name of the key in the satellite'
+or a hashed key. It is described by a key pair, 'the suffix desired for this key (eg:PK, FK, HK)' : 'name of the key in the satellite'
 
 The satellite_date_column. This is the column used to compare to the as of dates column when deciding what is the valid entry.
 Typically, the Load_date is used, but the effective_from can also be used. You must keep in mind however when using effective from
@@ -38,7 +38,7 @@ This is the name of the Hub that contains the primary key (src_pk) and that the 
 
 ### Setting up PIT models
 
-Create a new dbt model as before. We'll call this one `example_name_pit`. 
+Create a new dbt model as before. We'll call this one `pit_cstomer`. 
 
 `example_name_pit.sql`
 ```jinja
@@ -72,28 +72,32 @@ models:
 Let's look at the metadata we need to provide to the [pit](../macros.md#pit) macro.
 
 #### Source table
-Here we will define the metadata for the source_model and the auxiliary as of dates table. As we have made the 'HUB_CUSTOMER' 
-Before 
-we would simply need to call it here as the source model. The trickier
+Here we will define the metadata for the source_model. We will use the HUB_CUSTOMER that we built before.
 
- ```yaml 
+`dbt_project.yml`
+```yaml
 PIT_CUSTOMER:
     vars:
         source_model: HUB_CUSTOMER
- ```
+```
 #### Source columns
 
-The other source columns are 
+Next we need to choose which  source columns we will use but also what satellites to encoperate in our `PIT_CUSTOMER` :
+
 1. The primary key of the parent hub,  which is a hashed natural key. 
 The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be used for `PIT_CUSTOMER`.
-2. `AS_OF_DATE` column which represents the date the row is valid for. This is obtained by giving the source information of the as of dates table.
+
+2. `AS_OF_DATE` column which represents the date the row is valid for. This is obtained by giving the source information of the [as of dates table](../macros.md#As Of Date Structures).
+
 3. `satellite_key` is the `src_pk` taken from the satellite and aliased as  the satellite name_ the type of key it is (eg: PK, HK, FK)
-there is a column for each satellite included in the PIT
-4. `satellite_LDTS` is the column chosen from the satellite to denote the date column that is being used as to determine when the enetry is
-valid from and is aliased as satellite name_ type of date column, usually load date but can also be the effective from (LDTS or EF). This will be paired 
+there is a column for each satellite included in the PIT.
+
+4. `satellite_LDTS` is the column chosen from the satellite to denote the date column that is being used as to determine when the entry is
+valid from and is aliased as satellite name suffixed with an identifier of the date column, usually load date but can also be the effective from (LDTS or EF). This will be paired 
 with  its respective `satellite_key` 
    
 The dbt_project.yml below only defines one satellite but to add others you would follow the same method inside of satellites.
+It can be seen where the SAT_ORDERS_LOGIN would begin.
    
 
 `dbt_project.yml`
