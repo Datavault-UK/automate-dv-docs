@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Improved
 
 - Optimised Satellite SQL for larger loads (billions) seen in the wild. 
+- For non-hashdiff composite hashed_columns: If all components of the key are NULL, then the whole key will evaluate as NULL. 
+  [Read more](../best_practices.md#how-do-we-hash)
 
 ### Fixed
 
