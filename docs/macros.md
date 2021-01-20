@@ -1248,50 +1248,99 @@ component of the `HASHDIFF` column in our `hashed_columns` configuration.
 
 A flag can be provided for hashdiff columns which will invert the selection of columns provided in the list of columns.
 
-=== "Snowflake"
+The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
+listed under the `columns` key, instead of using them to create the hashdiff. You may also omit the `columns` key to
+hash every column.
 
-```yaml hl_lines="5"
-hashed_columns:
-  CUSTOMER_PK: CUSTOMER_ID
-  CUSTOMER_HASHDIFF:
-    is_hashdiff: true
-    exclude_columns: true
-    columns:
-      - BOOKING_FK
-      - ORDER_FK
-      - CUSTOMER_PK
-      - LOADDATE
-      - RECORD_SOURCE
-```
+##### Examples:
 
-The snippet above demonstrates the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
-listed under the `columns` key, instead of using them to create the hashdiff. 
+=== "Columns provided"
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_PK
+        LOADDATE
+        RECORD_SOURCE
+        ```
+    
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+            columns:
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_PK
+              - LOADDATE
+              - RECORD_SOURCE
+        ```
 
-Imagine your raw stage table has the following columns:
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+        ```
 
-```text
-TRANSACTION_NUMBER
-CUSTOMER_DOB
-PHONE_NUMBER
-BOOKING_FK
-ORDER_FK
-CUSTOMER_PK
-LOADDATE
-RECORD_SOURCE
-```
+=== "Columns not provided"
 
-Using the exclude flag in the YAML snippet above would be equivalent to the following:
+    !!! tip "New in dbtvault 0.7.2"
 
-```yaml
-hashed_columns:
-  CUSTOMER_PK: CUSTOMER_ID
-  CUSTOMER_HASHDIFF:
-    is_hashdiff: true
-    columns:
-      - TRANSACTION_NUMBER
-      - CUSTOMER_DOB
-      - PHONE_NUMBER
-```
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_PK
+        LOADDATE
+        RECORD_SOURCE
+        ```
+
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+        ```
+    
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_PK
+              - LOADDATE
+              - RECORD_SOURCE
+        ```
 
 This is extremely useful when a hashdiff composed of many columns needs to be generated, and you do not wish to 
 individually provide all the columns. 
@@ -1443,24 +1492,23 @@ A macro for generating hashing SQL for columns.
     {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_PK') }},
     {{ dbtvault.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
     ```
+
 === "Output (Snowflake)"
     === "MD5"
-        ```sql
-        CAST(MD5_BINARY(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR)))) AS BINARY(16)) AS CUSTOMER_PK,
-        CAST(MD5_BINARY(CONCAT(IFNULL(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR))), '^^'), '||',
-                               IFNULL(UPPER(TRIM(CAST(DOB AS VARCHAR))), '^^'), '||',
-                               IFNULL(UPPER(TRIM(CAST(NAME AS VARCHAR))), '^^'), '||',
-                               IFNULL(UPPER(TRIM(CAST(PHONE AS VARCHAR))), '^^') )) 
-                               AS BINARY(16)) AS HASHDIFF
+        ```sql 
+        CAST(MD5_BINARY(CONCAT_WS('||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+        )) AS BINARY(16)) AS HASHDIFF
         ```
-    === "SHA"
-        ```sql
-        CAST(SHA2_BINARY(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR)))) AS BINARY(32)) AS CUSTOMER_PK,
-        CAST(SHA2_BINARY(CONCAT(IFNULL(UPPER(TRIM(CAST(CUSTOMERKEY AS VARCHAR))), '^^'), '||',
-                                IFNULL(UPPER(TRIM(CAST(DOB AS VARCHAR))), '^^'), '||',
-                                IFNULL(UPPER(TRIM(CAST(NAME AS VARCHAR))), '^^'), '||',
-                                IFNULL(UPPER(TRIM(CAST(PHONE AS VARCHAR))), '^^') )) 
-                                AS BINARY(32)) AS HASHDIFF
+    === "SHA
+        ```sql 
+        CAST(SHA2_BINARY(CONCAT_WS('||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+        )) AS BINARY(32)) AS HASHDIFF
         ```
 
 !!! tip
@@ -1737,3 +1785,8 @@ duplicate loads will not have any effect (if using dbtvault macros).
 
 If you wish support idempotent loads in your own models using this materialisation, the best approach is to
 use `LEFT OUTER JOINS` to ensure duplicate records are not loaded.
+
+
+### vault_insert_by_rank
+
+TODO
