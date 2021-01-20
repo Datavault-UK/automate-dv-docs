@@ -8,13 +8,13 @@ For example,
 Our extended tracking satellites structures will contain:
 
 ##### Primary Key (src_pk)
-A primary key (or surrogate key) which is usually a hashed representation of the natural key.
+A primary key (or surrogate key) which is usually a hashed representation of the natural key. For an XTS we would expect this to be the same as the corresponding link or hub PK.
 
 ##### Hashdiff (src_satellite['HASHDIFF'])
-A hashed representation of the record's payload.
+A hashed representation of the record's payload. Since the XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
 
 ##### Satellite name (src_satellite['SATELLITE_NAME'])
-The name of the satellite that the payload is being staged to.
+The name of the satellite that the payload is being staged to. This allows us to use one XTS table to track records for many satellites and accurately maintain their timelines.
 
 ##### Load date (src_ldts)
 A load date or load date timestamp. this identifies when the record was first loaded into the database.
@@ -27,9 +27,9 @@ which is the code for `stg_customer`)
     
 ### Setting up XTS models
 
-Create a new dbt model as before. We'll call this one `example_name_xts`. 
+Create a new dbt model as before. We'll call this one `XTS_Customer.sql`. 
 
-`example_name_xts.sql`
+`XTS_Customer``````.sql`
 ```jinja
 {{ dbtvault.xts(var('src_pk'), var('src_satellite'), var('src_ldts'), 
                 var('src_source'), var('source_model'))                 }}

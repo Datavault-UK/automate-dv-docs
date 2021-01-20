@@ -704,8 +704,16 @@ ___
         source_model: 'stg_customer'
         src_pk: 'CUSTOMER_PK'
         src_satellite: 
-            'SATELLITE_NAME': ['SATELLITE_1', 'SATELLITE_2']
-            'HASHDIFF': ['HASHDIFF_1', 'HASHDIFF_2']
+            'SATELLITE_CUSTOMER':
+                'sat_name': 
+                    'SATELLITE_NAME': 'SATELLITE_1'
+                'hashdiff':
+                    'HASHDIFF': 'HASHDIFF_1'
+            'SATELLITE_CUSTOMER_DETAILS':
+                'sat_name':
+                    'SATELLITE_NAME': 'SATELLITE_2'
+                'hashdiff': 
+                    'HASHDIFF': 'HASHDIFF_2'
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
     ```
@@ -720,7 +728,6 @@ ___
 #### Metadata
 === "dbt_project.yml"
     ```yaml
-
     PIT_CUSTOMER:
       vars:
         source_model: HUB_CUSTOMER
@@ -742,8 +749,6 @@ ___
                     'PK': 'CUSTOMER_PK'
                 -ldts
                     'LDTS': 'LOAD_DATE'
-                    
-            
       ```
 ___
 
