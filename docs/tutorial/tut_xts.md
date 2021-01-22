@@ -1,25 +1,25 @@
 # Extended Tracking Satellites (XTS)
 
 XTS tables are an integral part of incorporating out of sequence loads. An XTS will link to numerous satellites and keep track of all records loaded to the satellite. This is particularly useful for correcting the timeline of an out of sequence satellite.
-For example, 
+For example, when an unexpected record is loaded late it can cause an inaccuracy in the satellite's history. By tracking all record updates for that satellite, we can discern the correct timeline to reconstruct to incorporate the unexpected record.
 
 #### Structure
 
 Our extended tracking satellites structures will contain:
 
-##### Primary Key (src_pk)
+##### Primary Key ( src_pk )
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. For an XTS we would expect this to be the same as the corresponding link or hub PK.
 
-##### Hashdiff (src_satellite['HASHDIFF'])
+##### Hashdiff ( src_satellite [ ' ... ' ] [ ' hashdiff ' ] )
 A hashed representation of the record's payload. Since the XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
 
-##### Satellite name (src_satellite['SATELLITE_NAME'])
+##### Satellite name ( src_satellite [ ' ... ' ] [ ' sat_name ' ] )
 The name of the satellite that the payload is being staged to. This allows us to use one XTS table to track records for many satellites and accurately maintain their timelines.
 
-##### Load date (src_ldts)
+##### Load date ( src_ldts )
 A load date or load date timestamp. this identifies when the record was first loaded into the database.
 
-##### Record Source (src_source)
+##### Record Source ( src_source )
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
 (i.e. `1` from the [staging tutorial](tut_staging.md#adding-calculated-and-derived-columns), 
