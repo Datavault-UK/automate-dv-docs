@@ -270,8 +270,8 @@ example provided to help better convey the difference.
             - "NATIONALITY"
             - "PHONE"
         derived_columns:
-        SOURCE: "!STG_BOOKING"
-        EFFECTIVE_FROM: "BOOKING_DATE"
+          SOURCE: "!STG_BOOKING"
+          EFFECTIVE_FROM: "BOOKING_DATE"
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
