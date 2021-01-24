@@ -40,6 +40,7 @@ file.
 ##### Example
 
 === "dbt_project.yml"
+
     ```yaml
     models:
       hubs:
@@ -61,6 +62,7 @@ and would like to reduce the clutter in the `dbt_project.yml` file.
 ##### Example
 
 === "hub_customer.sql"
+
     ```jinja
     {%- set source_model = "stg_web_customer_hashed" -%}
     {%- set src_pk = "CUSTOMER_PK" -%}
@@ -85,6 +87,7 @@ example provided to help better convey the difference.
 ##### Example
 
 === "hub_customer.sql"
+
     ```jinja
     {%- set yaml_metadata -%}
     source_model: 'stg_web_customer_hashed'
@@ -104,6 +107,7 @@ example provided to help better convey the difference.
     ```
 
 === "stg_customer.sql"
+
     ```jinja
     {%- set yaml_metadata -%}
     source_model: "raw_source"
@@ -125,23 +129,28 @@ example provided to help better convey the difference.
     derived_columns:
       SOURCE: "!STG_BOOKING"
       EFFECTIVE_FROM: "BOOKING_DATE"
-    {%- endset -%}
-    
-    {%- set metadata_dict = fromyaml(yaml_metadata) -%}
-    
-    {%- set source_model = metadata_dict['source_model'] -%}
-    
-    {%- set derived_columns = metadata_dict['derived_columns'] -%}
-    
-    {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+    ranked_columns:
+      DBTVAULT_RANK:
+        partitioned_by: "CUSTOMER_ID"
+        ordered_by: "BOOKING_DATE"
+    {% endset %}
+       
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+       
+    {% set source_model = metadata_dict['source_model'] %}
+       
+    {% set derived_columns = metadata_dict['derived_columns'] %}
+       
+    {% set hashed_columns = metadata_dict['hashed_columns'] %}
+       
+    {% set ranked_columns = metadata_dict['ranked_columns'] %}
     
     {{ dbtvault.stage(include_source_columns=true,
                       source_model=source_model,
                       derived_columns=derived_columns,
-                      hashed_columns=hashed_columns) }}
+                      hashed_columns=hashed_columns,
+                      ranked_columns=ranked_columns) }}
     ```
-
-
 
 ### Staging
 
@@ -152,7 +161,11 @@ example provided to help better convey the difference.
 #### Metadata
 
 === "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
     === "All components"
+
         ```yaml
         models:
           my_dbtvault_project:
@@ -178,8 +191,14 @@ example provided to help better convey the difference.
                   derived_columns:
                     SOURCE: "!STG_BOOKING"
                     EFFECTIVE_FROM: "BOOKING_DATE"
+                  ranked_columns:
+                    DBTVAULT_RANK:
+                      partitioned_by: "CUSTOMER_ID"
+                      ordered_by: "BOOKING_DATE"
         ```
+
     === "Only Source"
+
         ```yaml
         models:
           my_dbtvault_project:
@@ -188,7 +207,9 @@ example provided to help better convey the difference.
                 vars:
                   source_model: "raw_source"
         ```
+
     === "Only hashing"
+
         ```yaml
         models:
           my_dbtvault_project:
@@ -213,7 +234,9 @@ example provided to help better convey the difference.
                         - "NATIONALITY"
                         - "PHONE"
         ```
+
     === "Only derived"
+
         ```yaml
         models:
           my_dbtvault_project:
@@ -226,7 +249,24 @@ example provided to help better convey the difference.
                     SOURCE: "!STG_BOOKING"
                     EFFECTIVE_FROM: "BOOKING_DATE"
         ```
+
+    === "Only ranked"
+
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:   
+                  source_model: "raw_source"
+                  ranked_columns:
+                    DBTVAULT_RANK:
+                      partitioned_by: "CUSTOMER_ID"
+                      ordered_by: "BOOKING_DATE"
+        ```
+
     === "Exclude Columns flag"
+
         ```yaml
         models:
           my_dbtvault_project:
@@ -249,8 +289,10 @@ example provided to help better convey the difference.
                         - "NATIONALITY"
                         - "PHONE"
         ```
+
 === "Per-model - YAML strings"
     === "All components"
+
         ```jinja
         {%- set yaml_metadata -%}
         source_model: "raw_source"
@@ -272,22 +314,29 @@ example provided to help better convey the difference.
         derived_columns:
           SOURCE: "!STG_BOOKING"
           EFFECTIVE_FROM: "BOOKING_DATE"
+        ranked_columns:
+          DBTVAULT_RANK:
+            partitioned_by: "CUSTOMER_ID"
+            ordered_by: "BOOKING_DATE"
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
         {% set source_model = metadata_dict['source_model'] %}
         
-        {%- set derived_columns = metadata_dict['derived_columns'] -%}
+        {%- set derived_columns = metadata_dict['derived_columns'] %}
         
-        {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+        {% set hashed_columns = metadata_dict['hashed_columns'] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=derived_columns,
-                          hashed_columns=hashed_columns) }}
+                          hashed_columns=hashed_columns,
+                          ranked_columns=ranked_columns) }}
         ```
+
     === "Only Source"
+
         ```jinja
         {%- set yaml_metadata -%}
         source_model: "raw_source"
@@ -300,9 +349,12 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=none,
-                          hashed_columns=none) }}
+                          hashed_columns=none,
+                          ranked_columns=none) }}
         ```
+
     === "Only hashing"
+
         ```jinja
         {%- set yaml_metadata -%}
         source_model: "raw_source"
@@ -327,14 +379,17 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict['source_model'] %}
         
-        {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+        {% set hashed_columns = metadata_dict['hashed_columns'] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
-                          hashed_columns=hashed_columns) }}
+                          hashed_columns=hashed_columns,
+                          ranked_columns=none) }}
         ```
+
     === "Only derived"
+
         ```jinja
         {%- set yaml_metadata -%}
         source_model: "raw_source"
@@ -347,14 +402,41 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict['source_model'] %}
         
-        {%- set derived_columns = metadata_dict['derived_columns'] -%}
+        {% set derived_columns = metadata_dict['derived_columns'] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=derived_columns,
-                          hashed_columns=none) }}
+                          hashed_columns=none,
+                          ranked_columns=none) }}
         ```
+
+    === "Only ranked"
+
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: "raw_source"
+        ranked_columns:
+          DBTVAULT_RANK:
+            partitioned_by: "CUSTOMER_ID"
+            ordered_by: "BOOKING_DATE"
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict['source_model'] %}
+        
+        {% set derived_columns = metadata_dict['derived_columns'] %}
+        
+        {{ dbtvault.stage(include_source_columns=false,
+                          source_model=source_model,
+                          derived_columns=none,
+                          hashed_columns=none,
+                          ranked_columns=ranked_columns) }}
+        ```
+
     === "Exclude Columns flag"
+
         ```jinja
         {%- set yaml_metadata -%}
         source_model: "raw_source"
@@ -377,21 +459,14 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict['source_model'] %}
         
-        {%- set hashed_columns = metadata_dict['hashed_columns'] -%}
+        {% set hashed_columns = metadata_dict['hashed_columns'] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
-                          hashed_columns=hashed_columns) }}
+                          hashed_columns=hashed_columns,
+                          ranked_columns=none) }}
         ```
-
-#### Constants
-
-In the above examples, there are strings prefixed with `!`. This is syntactical sugar provided in dbtvault which 
-makes it easier and cleaner to specify constant values when creating a staging layer. 
-These constants can be provided as values of columns specified under `derived_columns` 
-and `hashed_columns` as showcased in the provided examples.
-
 
 ### Hubs
 
@@ -403,6 +478,7 @@ and `hashed_columns` as showcased in the provided examples.
 
 === "dbt_project.yml"
     === "Single Source"
+
         ```yaml
         hub_customer:
           vars:
@@ -412,7 +488,9 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+
     === "Multi Source"
+
         ```yaml
         hub_customer:
           vars:
@@ -424,7 +502,9 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+
     === "Composite NK"
+
         ```yaml
         hub_customer:
           vars:
@@ -436,8 +516,11 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+
 === "Per-Model - Variables"
+
     === "Single Source"
+
         ```jinja
         {%- set source_model = "stg_customer_hashed" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
@@ -448,7 +531,9 @@ and `hashed_columns` as showcased in the provided examples.
         {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
+
     === "Multi Source"
+
         ```jinja
         {%- set source_model = ["stg_web_customer_hashed", "stg_crm_customer_hashed"] -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
@@ -459,7 +544,9 @@ and `hashed_columns` as showcased in the provided examples.
         {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
+
     === "Composite NK"
+
         ```jinja
         {%- set source_model = "stg_customer_hashed" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
@@ -480,7 +567,9 @@ and `hashed_columns` as showcased in the provided examples.
 #### Metadata
 
 === "dbt_project.yml"
+
     === "Single Source"
+
         ```yaml
         link_customer_nation:
           vars:
@@ -492,7 +581,9 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+
     === "Multi Source"
+
         ```yaml
         link_customer_nation:
           vars:
@@ -506,8 +597,11 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+
 === "Per-Model - Variables"
+
     === "Single Source"
+
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
         {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
@@ -519,6 +613,7 @@ and `hashed_columns` as showcased in the provided examples.
                          src_source=src_source, source_model=source_model) }}
         ```
     === "Multi Source"
+
         ```jinja
         {%- set source_model = ["v_stg_orders", "v_stg_transactions"] -%}
         {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
@@ -540,6 +635,7 @@ and `hashed_columns` as showcased in the provided examples.
 #### Metadata
 
 === "dbt_project.yml"
+
     ```yaml
     t_link_transactions:
       vars:
@@ -557,7 +653,9 @@ and `hashed_columns` as showcased in the provided examples.
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
     ```
+
 === "Per-Model - Variables"
+
     ```jinja
     {%- set source_model = "v_stg_transactions" -%}
     {%- set src_pk = "TRANSACTION_PK" -%}
@@ -579,8 +677,11 @@ and `hashed_columns` as showcased in the provided examples.
 [sat macro parameters](macros.md#sat)
 
 #### Metadata
+
 === "dbt_project.yml"
+
     === "Standard"
+
         ```yaml
         sat_order_customer_details:
           vars:
@@ -598,7 +699,9 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+
     === "Hashdiff Aliasing"
+
         ```yaml
         sat_order_customer_details:
           vars:
@@ -618,8 +721,11 @@ and `hashed_columns` as showcased in the provided examples.
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'
         ```
+
 === "Per-Model - Variables"
+
     === "Standard"
+
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
@@ -634,7 +740,9 @@ and `hashed_columns` as showcased in the provided examples.
                         src_ldts=src_ldts, src_source=src_source, 
                         source_model=source_model) }}
         ```
+
     === "Hashdiff Aliasing"
+
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
@@ -651,6 +759,7 @@ and `hashed_columns` as showcased in the provided examples.
         ```
 
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
+
 [Read more](best_practices.md#hashdiff-aliasing)
 
 ### Effectivity Satellites
@@ -660,7 +769,9 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 [eff_sat macro parameters](macros.md#eff_sat)
 
 #### Metadata
+
 === "dbt_project.yml"
+
     ```yaml
     eff_sat_customer_nation:
       vars:
@@ -674,7 +785,9 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'
     ```
+
 === "Per-Model - Variables"
+
     ```jinja
     {%- set source_model = "v_stg_orders" -%}
     {%- set src_pk = "CUSTOMER_PK" -%}
