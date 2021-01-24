@@ -21,11 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../macros.md#vault_insert_by_rank)
 
+- The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros.md#stage-macro-configurations)
+
 ### Improved
 
 - Optimised Satellite SQL for larger loads (billions) seen in the wild. 
 - For non-hashdiff composite hashed_columns: If all components of the key are NULL, then the whole key will evaluate as NULL. 
   [Read more](../best_practices.md#how-do-we-hash)
+- Hashing concatenation now uses `CONCAT_WS` instead of `CONCAT`; this is more concise.
+- The stage macro has received a big overhaul, and the SQL should now be more efficient and easier to read.
 
 ### Fixed
 
