@@ -1003,193 +1003,295 @@ Generates sql to build a staging area using the provided parameters.
 #### Usage
 
 === "Input"
-``` jinja {{ dbtvault.stage(include_source_columns=var('include_source_columns', none), source_model=var('source_model', none), hashed_columns=var('hashed_columns', none), derived_columns=var('derived_columns', none)) }}
-```
+
+    ``` jinja 
+    {{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
+                      source_model=var('source_model', none), 
+                      hashed_columns=var('hashed_columns', none), 
+                      derived_columns=var('derived_columns', none),
+                      ranked_columns=var('ranked_columns', none)) }}
+    ```
 
 === "Example Output (Snowflake)"
-
     === "All variables"
         ```sql
+        WITH source_data AS (
         
-        WITH stage AS (
             SELECT
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
             CUSTOMER_ID,
-            BOOKING_DATE,
-            LOAD_DATETIME,
+            LOADDATE,
             RECORD_SOURCE,
             CUSTOMER_DOB,
             CUSTOMER_NAME,
             NATIONALITY,
-            PHONE
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE
         
-            FROM MY_DATABASE.MY_SCHEMA.raw_source
+            FROM DBTVAULT_DEV.TEST_ALEX_HIGGS.raw_source
         ),
         
         derived_columns AS (
-            SElECT
         
-            'STG_BOOKING' AS SOURCE,
-            BOOKING_DATE AS EFFECTIVE_FROM,
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_PK,
-            CUSTOMER_ID,
-            BOOKING_DATE,
-            LOAD_DATETIME,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE
-        
-            FROM stage
-        ),
-        
-        hashed_columns AS (
             SELECT *,
-        
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
-            CAST(MD5_BINARY(CONCAT(
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
-            AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(MD5_BINARY(CONCAT(
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
-            AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM derived_columns
-        )
-        
-        SELECT * FROM hashed_columns
-        ```
-    === "Only Source"
-        ```sql
-        
-        WITH stage AS (
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_PK,
-            CUSTOMER_ID,
-            BOOKING_DATE,
-            LOAD_DATETIME,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE
-        
-            FROM MY_DATABASE.MY_SCHEMA.raw_source
-        ),
-        
-        derived_columns AS (
-            SElECT *
-        
-            FROM stage
-        ),
-        
-        hashed_columns AS (
-            SELECT *
-        
-            FROM derived_columns
-        )
-        
-        SELECT * FROM hashed_columns
-       ```
-    === "Only hashing"
-        ```sql
-        
-        SELECT
-        
-        WITH stage AS (
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_PK,
-            CUSTOMER_ID,
-            BOOKING_DATE,
-            LOAD_DATETIME,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE
-        
-            FROM MY_DATABASE.MY_SCHEMA.raw_source
-        ),
-        
-        derived_columns AS (
-            SElECT *
-        
-            FROM stage
-        ),
-        
-        hashed_columns AS (
-            SELECT *,
-        
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
-            CAST(MD5_BINARY(CONCAT(
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^') ))
-            AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(MD5_BINARY(CONCAT(
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'), '||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^') ))
-            AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM derived_columns
-        )
-        
-        SELECT * FROM hashed_columns
-        ```
-    === "Only derived"
-        ```sql
-        
-        WITH stage AS (
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_PK,
-            CUSTOMER_ID,
-            BOOKING_DATE,
-            LOAD_DATETIME,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE
-        
-            FROM MY_DATABASE.MY_SCHEMA.raw_source
-        ),
-        
-        derived_columns AS (
-            SElECT
         
             'STG_BOOKING' AS SOURCE,
             BOOKING_DATE AS EFFECTIVE_FROM
-            
-            FROM stage
+        
+            FROM source_data
         ),
         
         hashed_columns AS (
+        
+            SELECT *,
+        
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST(MD5_BINARY(CONCAT_WS('||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^')
+            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
+            CAST(MD5_BINARY(CONCAT_WS('||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
+        
+            FROM derived_columns
+        ),
+        
+        ranked_columns AS (
+        
+            SELECT *,
+        
+            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOADDATE) AS DBTVAULT_RANK
+        
+            FROM hashed_columns
+        ),
+        
+        columns_to_select AS (
+        
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_ID,
+            LOADDATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE,
+            SOURCE,
+            EFFECTIVE_FROM,
+            CUSTOMER_PK,
+            CUST_CUSTOMER_HASHDIFF,
+            CUSTOMER_HASHDIFF,
+            DBTVAULT_RANK
+        
+            FROM ranked_columns
+        )
+        
+        SELECT * FROM columns_to_select
+        ```
+    === "Only source"
+        ```sql
+        WITH source_data AS (
+        
             SELECT *
+            
+            FROM DBTVAULT_DEV.TEST_ALEX_HIGGS.raw_source
+        ),
+        
+        columns_to_select AS (
+        
+            SELECT
+            
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_PK,
+            CUSTOMER_ID,
+            LOADDATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE
+            
+            FROM source_data
+        )
+        
+        SELECT * FROM columns_to_select
+        ```
+    === "Only derived"
+        ```sql
+        WITH source_data AS (
 
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_PK,
+            CUSTOMER_ID,
+            LOADDATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE
+        
+            FROM DBTVAULT_DEV.TEST_ALEX_HIGGS.raw_source
+        ),
+        
+        derived_columns AS (
+        
+            SELECT *,
+        
+            'STG_BOOKING' AS SOURCE,
+            LOADDATE AS EFFECTIVE_FROM
+        
+            FROM source_data
+        ),
+        
+        columns_to_select AS (
+        
+            SELECT
+        
+            SOURCE,
+            EFFECTIVE_FROM
+        
             FROM derived_columns
         )
         
-        SELECT * FROM hashed_columns
+        SELECT * FROM columns_to_select
+        ```
+    === "Only hashing"
+        ```sql
+        WITH source_data AS (
+    
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_ID,
+            LOADDATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE
+        
+            FROM DBTVAULT_DEV.TEST_ALEX_HIGGS.raw_source
+        ),
+    
+        hashed_columns AS (
+        
+            SELECT *,
+        
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST(MD5_BINARY(CONCAT_WS('||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^')
+            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
+            CAST(MD5_BINARY(CONCAT_WS('||',
+                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'),
+                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
+        
+            FROM source_data
+        ),
+        
+        columns_to_select AS (
+        
+            SELECT
+        
+            CUSTOMER_PK,
+            CUST_CUSTOMER_HASHDIFF,
+            CUSTOMER_HASHDIFF
+        
+            FROM hashed_columns
+        )
+        
+        SELECT * FROM columns_to_select
+        ```
+    === "Only ranked"
+        ```sql
+        WITH source_data AS (
+        
+            SELECT *
+        
+            FROM DBTVAULT_DEV.TEST_ALEX_HIGGS.raw_source
+        ),
+        
+        ranked_columns AS (
+        
+            SELECT *,
+        
+            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOADDATE) AS DBTVAULT_RANK,
+            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOADDATE) AS SAT_LOAD_RANK
+        
+            FROM source_data
+        ),
+        
+        columns_to_select AS (
+        
+            SELECT
+        
+            DBTVAULT_RANK,
+            SAT_LOAD_RANK
+        
+            FROM ranked_columns
+        )
+        
+        SELECT * FROM columns_to_select
         ```
 
 #### Parameters
