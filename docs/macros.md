@@ -100,39 +100,20 @@ Generates SQL to build a hub table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
                        PARTITION BY CUSTOMER_PK
-                       ORDER BY LOAD_DATE ASC
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
+            QUALIFY row_number = 1
         ),
-        stage_1 AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE
-            FROM row_rank_1
-            WHERE row_number = 1
-        ),
-        stage_union AS (
-            SELECT * FROM stage_1
-        ),
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        stage AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE
-            FROM row_rank_union
-            WHERE row_rank_number = 1
-        ),
-        records_to_insert AS (
-            SELECT stage.* FROM stage
-        )
         
+        records_to_insert AS (
+            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOADDATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+        )
+
         SELECT * FROM records_to_insert
         ```
     
@@ -145,40 +126,15 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY CUSTOMER_PK
                        ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
+            QUALIFY row_number = 1
         ),
-        stage_1 AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-            FROM row_rank_1
-            WHERE row_number = 1
-        ),
-        stage_union AS (
-            SELECT * FROM stage_1
-        ),
-        -- include this CTE if using vault_insert_by_period materialisation
-        stage_period_filter AS (
-            SELECT *
-            FROM stage_union
-            WHERE __PERIOD_FILTER__
-        ),
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
-                       ORDER BY LOADDATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        stage AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-            FROM row_rank_union
-            WHERE row_rank_number = 1
-        ),
+        
         records_to_insert AS (
-            SELECT stage.* FROM stage
-            LEFT JOIN DBTVAULT_DEV.TEST.test_hub_macro_correctly_generates_sql_for_incremental_single_source AS d
-            ON stage.CUSTOMER_PK = d.CUSTOMER_PK
+            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOADDATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+            LEFT JOIN DBTVAULT.TEST.hub AS d
+            ON a.CUSTOMER_PK = d.CUSTOMER_PK
             WHERE d.CUSTOMER_PK IS NULL
         )
         
@@ -194,37 +150,26 @@ Generates SQL to build a hub table using the provided parameters.
                        PARTITION BY CUSTOMER_PK
                        ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
+            QUALIFY row_number = 1
         ),
-        stage_1 AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-            FROM row_rank_1
-            WHERE row_number = 1
-        ),
+        
         row_rank_2 AS (
             SELECT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
                        PARTITION BY CUSTOMER_PK
                        ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_source_2
+            FROM DBTVAULT.TEST.my_stage_2
+            QUALIFY row_number = 1
         ),
-        stage_2 AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-            FROM row_rank_2
-            WHERE row_number = 1
-        ),
+        
         stage_union AS (
-            SELECT * FROM stage_1
+            SELECT * FROM row_rank_1
             UNION ALL
-            SELECT * FROM stage_2
+            SELECT * FROM row_rank_2
         ),
-        -- include this CTE if using vault_insert_by_period materialisation
-        stage_period_filter AS (
-            SELECT *
-            FROM stage_union
-            WHERE __PERIOD_FILTER__
-        ),
+        
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
@@ -233,14 +178,12 @@ Generates SQL to build a hub table using the provided parameters.
                    ) AS row_rank_number
             FROM stage_union
             WHERE CUSTOMER_PK IS NOT NULL
+            QUALIFY row_rank_number = 1
         ),
-        stage AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE
-            FROM row_rank_union
-            WHERE row_rank_number = 1
-        ),
+        
         records_to_insert AS (
-            SELECT stage.* FROM stage
+            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOADDATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
         )
         
         SELECT * FROM records_to_insert
@@ -250,60 +193,47 @@ Generates SQL to build a hub table using the provided parameters.
  
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
                        PARTITION BY CUSTOMER_PK
-                       ORDER BY LOAD_DATE ASC
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
+            QUALIFY row_number = 1
         ),
-        stage_1 AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE
-            FROM row_rank_1
-            WHERE row_number = 1
-        ),
+        
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_PK, CUSTOMER_ID, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
                        PARTITION BY CUSTOMER_PK
-                       ORDER BY LOAD_DATE ASC
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_source_2
+            FROM DBTVAULT.TEST.my_stage_2
+            QUALIFY row_number = 1
         ),
-        stage_2 AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE
-            FROM row_rank_2
-            WHERE row_number = 1
-        ),
+        
         stage_union AS (
-            SELECT * FROM stage_1
+            SELECT * FROM row_rank_1
             UNION ALL
-            SELECT * FROM stage_2
+            SELECT * FROM row_rank_2
         ),
-        -- include this CTE if using vault_insert_by_period materialisation
-        stage_period_filter AS (
-            SELECT *
-            FROM stage_union
-            WHERE __PERIOD_FILTER__
-        ),
+        
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
                        PARTITION BY CUSTOMER_PK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
+                       ORDER BY LOADDATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
             WHERE CUSTOMER_PK IS NOT NULL
+            QUALIFY row_rank_number = 1
         ),
-        stage AS (
-            SELECT DISTINCT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE
-            FROM row_rank_union
-            WHERE row_rank_number = 1
-        ),
+        
         records_to_insert AS (
-            SELECT stage.* FROM stage
-            LEFT JOIN DBTVAULT_DEV.TEST.test_hub_macro_correctly_generates_sql_for_incremental_multi_source AS d
-            ON stage.CUSTOMER_PK = d.CUSTOMER_PK
+            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOADDATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
+            LEFT JOIN DBTVAULT.TEST.hub AS d
+            ON a.CUSTOMER_PK = d.CUSTOMER_PK
             WHERE d.CUSTOMER_PK IS NULL
         )
         
@@ -349,39 +279,19 @@ Generates sql to build a link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH rank_1 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            FROM DBTVAULT.TEST.my_stage
+            QUALIFY row_number = 1
         ),
-        stage_1 AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_1
-            WHERE row_number = 1
-        ),
-        stage_union AS (
-            SELECT * FROM stage_1
-        ),
-        rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE, SOURCE ASC
-                   ) AS row_number
-            FROM stage_union
-            WHERE CUSTOMER_FK IS NOT NULL
-            AND NATION_FK IS NOT NULL
-        ),
-        stage AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_union
-            WHERE row_number = 1
-        ),
+        
         records_to_insert AS (
-            SELECT stage.* FROM stage
+            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOADDATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
         )
         
         SELECT * FROM records_to_insert
@@ -390,114 +300,72 @@ Generates sql to build a link table using the provided parameters.
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        WITH rank_1 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            FROM DBTVAULT.TEST.my_stage
+            QUALIFY row_number = 1
         ),
-        stage_1 AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_1
-            WHERE row_number = 1
-        ),
-        stage_union AS (
-            SELECT * FROM stage_1
-        ),
-        rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE, SOURCE ASC
-                   ) AS row_number
-            FROM stage_union
-            WHERE CUSTOMER_FK IS NOT NULL
-            AND NATION_FK IS NOT NULL
-        ),
-        stage AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_union
-            WHERE row_number = 1
-        ),
+        
         records_to_insert AS (
-            SELECT stage.* FROM stage
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK AS d
-            ON stage.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
-            WHERE d.CUSTOMER_NATION_PK IS NULL
+            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOADDATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+            LEFT JOIN DBTVAULT.TEST.link AS d
+            ON a.CUSTOMER_PK = d.CUSTOMER_PK
+            WHERE d.CUSTOMER_PK IS NULL
         )
         
         SELECT * FROM records_to_insert
-        
+                
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH rank_1 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_crm_hashed
+            FROM DBTVAULT.TEST.my_stage
+            QUALIFY row_number = 1
         ),
-        stage_1 AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_1
-            WHERE row_number = 1
-        ),
-        rank_2 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+        
+        row_rank_2 AS (
+            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_sap_hashed
+            FROM DBTVAULT.TEST.my_stage_2
+            QUALIFY row_number = 1
         ),
-        stage_2 AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_2
-            WHERE row_number = 1
-        ),
-        rank_3 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT_DEV.TEST.raw_stage_web_hashed
-        ),
-        stage_3 AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_3
-            WHERE row_number = 1
-        ),
+        
         stage_union AS (
-            SELECT * FROM stage_1
+            SELECT * FROM row_rank_1
             UNION ALL
-            SELECT * FROM stage_2
-            UNION ALL
-            SELECT * FROM stage_3
+            SELECT * FROM row_rank_2
         ),
-        rank_union AS (
+        
+        row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE, SOURCE ASC
-                   ) AS row_number
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE, RECORD_SOURCE ASC
+                   ) AS row_rank_number
             FROM stage_union
-            WHERE CUSTOMER_FK IS NOT NULL
-            AND NATION_FK IS NOT NULL
+            WHERE ORDER_FK IS NOT NULL
+            AND BOOKING_FK IS NOT NULL
+            QUALIFY row_rank_number = 1
         ),
-        stage AS (
-            SELECT DISTINCT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE
-            FROM rank_union
-            WHERE row_number = 1
-        ),
+        
         records_to_insert AS (
-            SELECT stage.* FROM stage
+            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOADDATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
         )
         
         SELECT * FROM records_to_insert
@@ -507,32 +375,22 @@ Generates sql to build a link table using the provided parameters.
  
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.STG_SAP
+            FROM DBTVAULT.TEST.my_stage
             QUALIFY row_number = 1
         ),
-
+        
         row_rank_2 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
+            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOADDATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE ASC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.STG_CRM
-            QUALIFY row_number = 1
-        ),
-
-        row_rank_3 AS (
-            SELECT CUSTOMER_NATION_PK, CUSTOMER_FK, NATION_FK, LOAD_DATE, SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT_DEV.TEST.STG_WEB
+            FROM DBTVAULT.TEST.my_stage_2
             QUALIFY row_number = 1
         ),
         
@@ -540,28 +398,26 @@ Generates sql to build a link table using the provided parameters.
             SELECT * FROM row_rank_1
             UNION ALL
             SELECT * FROM row_rank_2
-            UNION ALL
-            SELECT * FROM row_rank_3
         ),
-
+        
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_NATION_PK
-                       ORDER BY LOAD_DATE, SOURCE ASC
+                       PARTITION BY CUSTOMER_PK
+                       ORDER BY LOADDATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
-            WHERE CUSTOMER_FK IS NOT NULL
-            AND NATION_FK IS NOT NULL
+            WHERE ORDER_FK IS NOT NULL
+            AND BOOKING_FK IS NOT NULL
             QUALIFY row_rank_number = 1
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_NATION_PK, a.CUSTOMER_FK, a.NATION_FK, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOADDATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK AS d
-            ON a.CUSTOMER_NATION_PK = d.CUSTOMER_NATION_PK
-            WHERE d.CUSTOMER_NATION_PK IS NULL
+            LEFT JOIN DBTVAULT.TEST.link AS d
+            ON a.CUSTOMER_PK = d.CUSTOMER_PK
+            WHERE d.CUSTOMER_PK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -611,10 +467,10 @@ Generates sql to build a transactional link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            FROM DBTVAULT.TEST.my_stage
         ),
         records_to_insert AS (
-            SELECT DISTINCzT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
         )
         
@@ -626,13 +482,12 @@ Generates sql to build a transactional link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
-            WHERE __PERIOD_FILTER__
+            FROM DBTVAULT.TEST.raw_stage_hashed
         ),
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
-            LEFT JOIN DBTVAULT_DEV.TEST.T_LINK AS tgt
+            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
             ON stg.TRANSACTION_PK = tgt.TRANSACTION_PK
             WHERE tgt.TRANSACTION_PK IS NULL
         )
@@ -683,13 +538,13 @@ Generates sql to build a satellite table using the provided parameters.
     
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.my_stage AS a
         ),
+        
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
-            
         )
         
         SELECT * FROM records_to_insert
@@ -699,37 +554,33 @@ Generates sql to build a satellite table using the provided parameters.
         
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
-            -- if using vault_insert_by_period
-            WHERE __PERIOD_FILTER__ 
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.my_stage AS a
         ),
+
         update_records AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT_DEV.TEST.SATELLITE as a
+            FROM DBTVAULT.TEST.satellite as a
             JOIN source_data as b
             ON a.CUSTOMER_PK = b.CUSTOMER_PK
         ),
-        rank AS (
-            SELECT c.CUSTOMER_PK, c.HASHDIFF, c.CUSTOMER_NAME, c.CUSTOMER_PHONE, c.CUSTOMER_DOB, c.EFFECTIVE_FROM, c.LOAD_DATE, c.SOURCE,
+
+        latest_records AS (
+            SELECT c.CUSTOMER_PK, c.HASHDIFF, c.LOAD_DATE,
                    CASE WHEN RANK()
                    OVER (PARTITION BY c.CUSTOMER_PK
                    ORDER BY c.LOAD_DATE DESC) = 1
             THEN 'Y' ELSE 'N' END AS latest
             FROM update_records as c
+            QUALIFY latest = 'Y'
         ),
-        stage AS (
-            SELECT d.CUSTOMER_PK, d.HASHDIFF, d.CUSTOMER_NAME, d.CUSTOMER_PHONE, d.CUSTOMER_DOB, d.EFFECTIVE_FROM, d.LOAD_DATE, d.SOURCE
-            FROM rank AS d
-            WHERE d.latest = 'Y'
-        ),
+        
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
-            LEFT JOIN stage
-            ON stage.HASHDIFF = e.HASHDIFF
-            WHERE stage.HASHDIFF IS NULL
-
+            LEFT JOIN latest_records
+            ON latest_records.HASHDIFF = e.HASHDIFF
+            WHERE latest_records.HASHDIFF IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -782,7 +633,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            FROM DBTVAULT.TEST.raw_stage_hashed
         ),
         records_to_insert AS (
             SELECT e.CUSTOMER_ORDER_PK, e.ORDER_PK, e.CUSTOMER_PK, e.START_DATE, e.END_DATE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
@@ -797,7 +648,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            FROM DBTVAULT.TEST.raw_stage_hashed
             -- if using vault_insert_by_period
             WHERE __PERIOD_FILTER__  
         ),
@@ -808,7 +659,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
                         PARTITION BY b.CUSTOMER_ORDER_PK
                         ORDER BY b.LOAD_DATE DESC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.EFF_SAT AS b
+            FROM DBTVAULT.TEST.EFF_SAT AS b
         ),
         latest_open_eff AS
         (
@@ -879,7 +730,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT *
-            FROM DBTVAULT_DEV.TEST.raw_stage_hashed
+            FROM DBTVAULT.TEST.raw_stage_hashed
             -- if using vault_insert_by_period
             WHERE __PERIOD_FILTER__ 
         ),
@@ -890,7 +741,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
                         PARTITION BY b.CUSTOMER_ORDER_PK
                         ORDER BY b.LOAD_DATE DESC
                    ) AS row_number
-            FROM DBTVAULT_DEV.TEST.EFF_SAT AS b
+            FROM DBTVAULT.TEST.EFF_SAT AS b
         ),
         latest_open_eff AS
         (
@@ -1004,7 +855,7 @@ Generates sql to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
         ),
         
         derived_columns AS (
@@ -1085,7 +936,7 @@ Generates sql to build a staging area using the provided parameters.
         
             SELECT *
             
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
         ),
         
         columns_to_select AS (
@@ -1143,7 +994,7 @@ Generates sql to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
         ),
         
         derived_columns AS (
@@ -1193,7 +1044,7 @@ Generates sql to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
         ),
     
         hashed_columns AS (
@@ -1234,7 +1085,7 @@ Generates sql to build a staging area using the provided parameters.
         
             SELECT *
         
-            FROM DBTVAULT_DEV.TEST.raw_source
+            FROM DBTVAULT.TEST.my_stage
         ),
         
         ranked_columns AS (
@@ -1313,6 +1164,25 @@ component of the `HASHDIFF` column in our `hashed_columns` configuration.
 
 For the `ranked_columns` configuration, the derived and hashed columns are in scope, in the same way as above for the 
 `hashed_columns` configuration.
+
+#### Overriding column names
+
+It is possible to re-use column names present in the source, for **derived and hashed columns**. This is useful if you wish to
+replace the value of a source column with a new value. For example, if you wish to cast a value:
+
+```yaml
+stg_customer:
+  vars:
+    source_model: "raw_source"
+    derived_columns:
+      CUSTOMER_DOB: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
+```
+
+The above snippet, which includes a `derived_columns` configuration, will re-format the date in the `CUSTOMER_DOB` column,
+and alias it to `CUSTOMER_DOB`, effectively replacing the value present in that column in this staging layer. 
+
+There should not be a common need for this functionality, and it is advisable to keep the old column value around for auditability
+purposes, however this could be useful in some scenarios. 
 
 #### Exclude Flag (Hashed Columns)
 
