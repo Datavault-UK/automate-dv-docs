@@ -131,8 +131,8 @@ example provided to help better convey the difference.
       EFFECTIVE_FROM: "BOOKING_DATE"
     ranked_columns:
       DBTVAULT_RANK:
-        partitioned_by: "CUSTOMER_ID"
-        ordered_by: "BOOKING_DATE"
+        partition_by: "CUSTOMER_ID"
+        order_by: "BOOKING_DATE"
     {% endset %}
        
     {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -193,8 +193,8 @@ example provided to help better convey the difference.
                     EFFECTIVE_FROM: "BOOKING_DATE"
                   ranked_columns:
                     DBTVAULT_RANK:
-                      partitioned_by: "CUSTOMER_ID"
-                      ordered_by: "BOOKING_DATE"
+                      partition_by: "CUSTOMER_ID"
+                      order_by: "BOOKING_DATE"
         ```
 
     === "Only Source"
@@ -261,8 +261,8 @@ example provided to help better convey the difference.
                   source_model: "raw_source"
                   ranked_columns:
                     DBTVAULT_RANK:
-                      partitioned_by: "CUSTOMER_ID"
-                      ordered_by: "BOOKING_DATE"
+                      partition_by: "CUSTOMER_ID"
+                      order_by: "BOOKING_DATE"
         ```
 
     === "Exclude Columns flag"
@@ -316,8 +316,8 @@ example provided to help better convey the difference.
           EFFECTIVE_FROM: "BOOKING_DATE"
         ranked_columns:
           DBTVAULT_RANK:
-            partitioned_by: "CUSTOMER_ID"
-            ordered_by: "BOOKING_DATE"
+            partition_by: "CUSTOMER_ID"
+            order_by: "BOOKING_DATE"
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -418,8 +418,8 @@ example provided to help better convey the difference.
         source_model: "raw_source"
         ranked_columns:
           DBTVAULT_RANK:
-            partitioned_by: "CUSTOMER_ID"
-            ordered_by: "BOOKING_DATE"
+            partition_by: "CUSTOMER_ID"
+            order_by: "BOOKING_DATE"
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -477,6 +477,9 @@ example provided to help better convey the difference.
 #### Metadata
 
 === "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
     === "Single Source"
 
         ```yaml
@@ -568,6 +571,8 @@ example provided to help better convey the difference.
 
 === "dbt_project.yml"
 
+    !!! warning "Only available with dbt config-version: 1"
+
     === "Single Source"
 
         ```yaml
@@ -636,6 +641,8 @@ example provided to help better convey the difference.
 
 === "dbt_project.yml"
 
+    !!! warning "Only available with dbt config-version: 1"
+
     ```yaml
     t_link_transactions:
       vars:
@@ -679,6 +686,8 @@ example provided to help better convey the difference.
 #### Metadata
 
 === "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
 
     === "Standard"
 
@@ -772,6 +781,8 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 === "dbt_project.yml"
 
+    !!! warning "Only available with dbt config-version: 1"
+
     ```yaml
     eff_sat_customer_nation:
       vars:
@@ -790,8 +801,12 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
     ```jinja
     {%- set source_model = "v_stg_orders" -%}
-    {%- set src_pk = "CUSTOMER_PK" -%}
-    {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
+    {%- set src_pk = "TRANSACTION_PK" -%}
+    {%- set src_dfk = "CUSTOMER_PK" -%}
+    {%- set src_sfk = "NATION_PK" -%}
+    {%- set src_start_date = "START_DATE" -%}
+    {%- set src_end_date = "END_DATE" -%}
+
     {%- set src_eff = "EFFECTIVE_FROM" -%}
     {%- set src_ldts = "LOADDATE" -%}
     {%- set src_source = "SOURCE" -%}
@@ -805,7 +820,7 @@ ___
 
 ### The problem with metadata
 
-As metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
+If metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
 projects. If your metadata is defined and stored in each model, it becomes harder to generate and develop with, 
 but it can be easier to manage. Model-level metadata alleviates the issue, but will not completely solve it.
 
@@ -814,4 +829,5 @@ To help manage large amounts of metadata, we recommend the use of external corpo
 Matillion, or Erwin Data Modeller. 
 
 In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a 
-little longer. Discussions are [already ongoing](https://github.com/fishtown-analytics/dbt/issues/2401).
+little longer. Discussions are [already ongoing](https://github.com/fishtown-analytics/dbt/issues/2401), and we hope
+to be able to advise on better ways to manage metadata in future. 
