@@ -167,4 +167,4 @@ We have now created:
 - A staging layer 
 - A Hub 
  
-Next we will look at [links](tut_links.md), which are created in a similar way.
+Next we will look at [links](tut_links.md), which are created similarly.
