@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [Read more](../best_practices.md#how-do-we-hash)
 - Hashing concatenation now uses `CONCAT_WS` instead of `CONCAT`; this is more concise.
 - The stage macro has received a big overhaul, and the SQL should now be more efficient and easier to read.
+- Optimised table macro SQL across to board by reducing the number of CTEs
 
 ### Fixed
 
