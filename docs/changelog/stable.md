@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.2] - 2021-01-
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.2)](https://dbtvault.readthedocs.io/en/v0.7.2/?badge=v0.7.2)
+
+### New
+
+- Derived columns can now be provided lists, for creating composite column values. [(#20)](https://github.com/Datavault-UK/dbtvault/issues/20)
+  [Docs](../macros.md#stage-macro-configurations)
+  
+- The hashed_columns exclude flag in staging can now be provided without a list of columns, and dbtvault will hash everything. [Docs](../macros.md#stage-macro-configurations)
+
+- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../macros.md#vault_insert_by_rank)
+
+- The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros.md#stage-macro-configurations)
+
+### Improved
+
+- Optimised Satellite SQL for larger loads (billions) seen in the wild. 
+- For non-hashdiff composite hashed_columns: If all components of the key are NULL, then the whole key will evaluate as NULL. 
+  [Read more](../best_practices.md#how-do-we-hash)
+- Hashing concatenation now uses `CONCAT_WS` instead of `CONCAT`; this is more concise.
+- The stage macro has received a big overhaul, and the SQL should now be more efficient and easier to read.
+- Optimised table macro SQL across to board by reducing the number of CTEs
+
+### Fixed
+
+- Fixed multiple (minor) bugs in the stage macro [(#21)](https://github.com/Datavault-UK/dbtvault/issues/21)
+- Fixed and improved the `adapter.dispatch` implementation [(#22)](https://github.com/Datavault-UK/dbtvault/issues/22)
+- Fixed a bug in the vault_insert_by_period materialisation [(#19)](https://github.com/Datavault-UK/dbtvault/issues/19)
+
+### Docs
+
+- Added examples of different ways to provide metadata to the [metadata reference](../metadata.md)
+- Added a short guide on [extending dbtvault](../extending.md)
+- Updated all SQL snippets to reflect changes
+
 ## [v0.7.1] - 2020-12-18
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.1)](https://dbtvault.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
 
@@ -19,7 +54,7 @@ This is very useful for large multi-column hashdiffs.
   
 !!! note
 
-    See the new [stage macro configurations](../macros.md#stage-macro-configurations) section of the macro docs for more information on the two changes above.
+    See the new [stage macro configurations](../macros.md#stage-macro-configurations) section of the macro docs for more information on the change above.
 
 ### Improved
 

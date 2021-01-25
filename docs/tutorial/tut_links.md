@@ -32,11 +32,12 @@ or a string directly naming the source system.
 
 Create a new dbt model as before. We'll call this one `link_customer_nation`. 
 
-`link_customer_nation.sql`
-```jinja
-{{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
-                 var('src_source'), var('source_model'))        }}
-```
+=== "link_customer_nation.sql"
+
+    ```jinja
+    {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
+                     var('src_source'), var('source_model'))        }}
+    ```
 
 To create a link model, we simply copy and paste the above template into a model named after the link we
 are creating. dbtvault will generate a link using metadata provided in the next steps.
@@ -45,47 +46,44 @@ Links should use the incremental materialization, as we load and add new records
 
 We recommend setting the `incremental` materialization on all of your links using the `dbt_project.yml` file:
 
-`dbt_project.yml`
-```yaml
-models:
-  my_dbtvault_project:
-   links:
-    materialized: incremental
-    tags:
-      - link
-    link_customer_nation:
-      vars:
-        ...
-    link_booking_order:
-      vars:
-        ...
-```
+=== "dbt_project.yml"
 
-!!! tip "New in dbtvault v0.7.0"
-    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+    ```yaml
+    models:
+      my_dbtvault_project:
+       links:
+        materialized: incremental
+        tags:
+          - link
+        link_customer_nation:
+          vars:
+            ...
+        link_booking_order:
+          vars:
+            ...
+    ```
 
 ### Adding the metadata
 
 Now we need to provide some metadata to the [link](../macros.md#link) macro.
 
-#### Source table
+#### Source model
 
-The first piece of metadata we need is the source table. This step is easy, as we created the 
+The first piece of metadata we need is the source model. This step is easy, as we created the 
 staging layer ourselves. All we need to do is provide the name of the staging layer in the `dbt_project.yml` file 
 and dbtvault will do the rest for us.
 
-`dbt_project.yml`
-```yaml
-link_customer_nation:
-  vars:
-    source_model: 'stg_customer_hashed'
-    ...
-```
+=== "dbt_project.yml"
 
-!!! info
-    This is just one way of providing metadata/parameter values to dbtvault macros, take a look at 
-    the [Metadata Reference](../metadata.md) for some alternatives
+    ```yaml
+    link_customer_nation:
+      vars:
+        source_model: 'stg_customer_hashed'
+        ...
+    ```
+
+!!! tip
+    See our [metadata reference](../metadata.md#links) for more ways to provide metadata
 
 #### Source columns
 
@@ -102,18 +100,19 @@ which we added in our staging layer.
 
 We can now add this metadata to the `dbt_project.yml` file:
 
-`dbt_project.yml`
-```yaml  hl_lines="4 5 6 7 8 9"
-link_customer_nation:
-  vars:
-    source_model: 'stg_customer_hashed'
-    src_pk: 'LINK_CUSTOMER_NATION_PK'
-    src_fk:
-      - 'CUSTOMER_PK'
-      - 'NATION_PK'
-    src_ldts: 'LOAD_DATE'
-    src_source: 'SOURCE'
-```
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="4 5 6 7 8 9"
+    link_customer_nation:
+      vars:
+        source_model: 'stg_customer_hashed'
+        src_pk: 'LINK_CUSTOMER_NATION_PK'
+        src_fk:
+          - 'CUSTOMER_PK'
+          - 'NATION_PK'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
 
 !!! note 
     We are using `src_fk`, a list of the foreign keys. This is instead of the `src_nk` 
