@@ -94,13 +94,14 @@ or a string directly naming the source system.
 
 Create a new dbt model as before. We'll call this one `eff_sat_customer_order`. 
 
-`eff_sat_customer_nation.sql`
-```jinja
-{{ dbtvault.eff_sat(var('src_pk'), var('src_dfk'), var('src_sfk'),
-                    var('src_start_date'), var('src_end_date'),
-                    var('src_eff'), var('src_ldts'), var('src_source'),
-                    var('source_model')) }}
-```
+=== "eff_sat_customer_nation.sql"
+
+    ```jinja
+    {{ dbtvault.eff_sat(var('src_pk'), var('src_dfk'), var('src_sfk'),
+                        var('src_start_date'), var('src_end_date'),
+                        var('src_eff'), var('src_ldts'), var('src_source'),
+                        var('source_model')) }}
+    ```
 
 To create an effectivity satellite model, we simply copy and paste the above template into a model named after the effectivity
 satellite we are creating. dbtvault will generate an effectivity satellite using parameters provided in the next steps.
@@ -109,47 +110,50 @@ Effectivity Satellites should use the incremental materialization, as we load an
 
 We recommend setting the `incremental` materialization on all of your satellites using the `dbt_project.yml` file:
 
-`dbt_project.yml`
-```yaml
-models:
-  my_dbtvault_project:
-   satellites:
-    materialized: incremental
-    tags:
-      - sat
-    sat_customer_details:
-      vars:
-        ...
-    sat_booking_details:
-      vars:
-        ...
-```
+=== "dbt_project.yml"
 
-!!! tip "New in dbtvault v0.7.0"
-    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+    ```yaml
+    models:
+      my_dbtvault_project:
+       satellites:
+        materialized: incremental
+        tags:
+          - sat
+        sat_customer_details:
+          vars:
+            ...
+        sat_booking_details:
+          vars:
+            ...
+    ```
+
+!!! tip "Loading Effectivity Satellites correctly"
+    dbtvault provides custom materialisations, designed to load effectivity satellites (among other structures) in the correct way:
+    
+    - [vault_insert_by_period](../macros.md#vault_insert_by_period)
+    - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
 
 ### Adding the metadata
 
 Let's look at the metadata we need to provide to the [eff_sat](../macros.md#eff_sat) macro.
 
-#### Source table
+#### Source model
 
-The first piece of metadata we need is the source table. This step is easy, as in this example we created the 
+The first piece of metadata we need is the source model. This step is easy, as in this example we created the 
 staging layer ourselves.  All we need to do is provide the name of stage table as a string in our metadata 
 as follows.
 
-`dbt_project.yml`
-```yaml
-eff_sat_customer_nation:
-  vars:
-    source_model: 'stg_customer_hashed'
-```
+=== "dbt_project.yml"
 
-!!! info
-    This is just one way of providing metadata/parameter values to dbtvault macros, take a look at 
-    the [Metadata Reference](../metadata.md) for some alternatives
-    
+    ```yaml
+    eff_sat_customer_nation:
+      vars:
+        source_model: 'stg_customer_hashed'
+    ```
+
+!!! tip
+    See our [metadata reference](../metadata.md#effectivity-satellites) for more ways to provide metadata
+
 #### Source columns
 
 Next, we define the columns which we would like to bring from the source.
@@ -168,20 +172,21 @@ The `CUSTOMER_NATION_PK` we created earlier in the [staging](tut_staging.md) sec
 
 We can now add this metadata to the `dbt_project.yml`:
 
-`dbt_project.yml`
-```yaml hl_lines="4 5 6 7 8 9 10 11 12"
-eff_sat_customer_nation:
-  vars:
-    source_model: 'stg_customer_hashed'
-    src_pk: 'CUSTOMER_NATION_PK'
-    src_dfk: 'CUSTOMER_PK'
-    src_sfk: 'NATION_PK'
-    src_start_date: 'START_DATE'
-    src_end_date: 'END_DATE'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOAD_DATE'
-    src_source: 'SOURCE'
-```
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="4 5 6 7 8 9 10 11 12"
+    eff_sat_customer_nation:
+      vars:
+        source_model: 'stg_customer_hashed'
+        src_pk: 'CUSTOMER_NATION_PK'
+        src_dfk: 'CUSTOMER_PK'
+        src_sfk: 'NATION_PK'
+        src_start_date: 'START_DATE'
+        src_end_date: 'END_DATE'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
 
 ### Running dbt
 

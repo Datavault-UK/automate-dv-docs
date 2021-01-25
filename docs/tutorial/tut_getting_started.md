@@ -24,21 +24,21 @@ and [set up a project](https://docs.getdbt.com/docs/building-a-dbt-project/proje
 
 4. Sources should be set up in dbt [(see below)](tut_getting_started.md#setting-up-sources-in-dbt).
 
-5. We assume you already have a raw staging layer.
+5. We assume you already have a raw staging layer, PSA (Persistent Staging Area) or Data Lake.
 
-6. Some of our macros assume that you are only loading from one set of load dates in a single load cycle (i.e. your staging layer
-contains data for one `load_datetime` value only). This currently applies to:
+6. Some raw vault structures need to be loaded iteratively to ensure record deltas (changes) over time are correctly processed.
+    Currently, these are the following structures:
 
     - Transactional Links
     - Satellites
     - Effectivity Satellites
-
-    **We will be removing this restriction in future releases**.
     
-    !!! tip "New in dbtvault v0.7.0"
-        You may use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-        included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
-        This will make it easy to get around this caveat for now, and make it easier to load data at the same time. 
+    To correctly load these structures, we have developed custom materialisations which iteratively load data:
+    
+    - [vault_insert_by_period](../macros.md#vault_insert_by_period)
+    - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
+    
+    These macros are described in mre depth in their respective sections
         
 7. You should read our [best practices](../best_practices.md) guidance.
 

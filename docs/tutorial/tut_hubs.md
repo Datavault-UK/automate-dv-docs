@@ -25,11 +25,12 @@ which is the code for `stg_customer`)
 
 Create a new dbt model as before. We'll call this one `hub_customer`. 
 
-`hub_customer.sql`
-```jinja
-{{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                var('src_source'), var('source_model'))        }}
-```
+=== "hub_customer.sql"
+
+    ```jinja
+    {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
+                    var('src_source'), var('source_model'))        }}
+    ```
 
 To create a hub model, we simply copy and paste the above template into a model named after the hub we
 are creating. dbtvault will generate a hub using parameters provided in the next steps.
@@ -38,27 +39,24 @@ Hubs should use the incremental materialization, as we load and add new records 
 
 We recommend setting the `incremental` materialization on all of your hubs using the `dbt_project.yml` file:
 
-`dbt_project.yml`
-```yaml
-models:
-  my_dbtvault_project:
-   hubs:
-    materialized: incremental
-    tags:
-      - hub
-    hub_customer:
-      vars:
-        ...
-    hub_booking:
-      vars:
-        ...
-```
 
-!!! tip "New in dbtvault v0.7.0"
-    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+=== "dbt_project.yml"
 
-[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
+    ```yaml
+    models:
+      my_dbtvault_project:
+       hubs:
+        materialized: incremental
+        tags:
+          - hub
+        hub_customer:
+          vars:
+            ...
+        hub_booking:
+          vars:
+            ...
+    ```
+
 
 ### Adding the metadata
 
@@ -69,17 +67,17 @@ Let's look at the metadata we need to provide to the [hub](../macros.md#hub) mac
 The first piece of metadata we need is the source model. This step is simple, 
 all we need to do is provide the name of the model for the stage table as a string in our metadata as follows:
 
-`dbt_project.yml`
-```yaml
-hub_customer:
-  vars:
-    source_model: 'stg_customer_hashed'
-    ...
-```
+=== "dbt_project.yml"
 
-!!! info
-    This is just one way of providing metadata/parameter values to dbtvault macros, take a look at 
-    the [Metadata Reference](../metadata.md) for some alternatives
+    ```yaml
+    hub_customer:
+      vars:
+        source_model: 'stg_customer_hashed'
+        ...
+    ```
+
+!!! tip
+    See our [metadata reference](../metadata.md#hubs) for more ways to provide metadata
 
 #### Source columns
 
@@ -95,16 +93,17 @@ section will be used for `hub_customer`.
 
 We can now add this metadata to the `dbt_project.yml` file:
 
-`dbt_project.yml`
-```yaml hl_lines="4 5 6 7"
-hub_customer:
-  vars:
-    source_model: 'stg_customer_hashed'
-    src_pk: 'CUSTOMER_PK'
-    src_nk: 'CUSTOMER_ID'
-    src_ldts: 'LOAD_DATE'
-    src_source: 'SOURCE'
-```
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="4 5 6 7"
+    hub_customer:
+      vars:
+        source_model: 'stg_customer_hashed'
+        src_pk: 'CUSTOMER_PK'
+        src_nk: 'CUSTOMER_ID'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
 
 ### Running dbt
 
@@ -147,18 +146,19 @@ The macro needed to create a union hub is identical to a single-source hub, we j
 list of sources rather than a single source in the metadata, the [hub](../macros.md#hub) macro 
 will handle the rest. 
 
-`dbt_project.yml`
-```yaml hl_lines="3 4 5"
-hub_nation:
-  vars:
-    source_model:
-      - 'stg_customer_hashed'
-      - 'v_stg_inventory'
-    src_pk: 'NATION_PK'
-    src_nk: 'NATION_ID'
-    src_ldts: 'LOAD_DATE'
-    src_source: 'SOURCE'
-```
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="3 4 5"
+    hub_nation:
+      vars:
+        source_model:
+          - 'stg_customer_hashed'
+          - 'v_stg_inventory'
+        src_pk: 'NATION_PK'
+        src_nk: 'NATION_ID'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
 
 ### Next steps
 
