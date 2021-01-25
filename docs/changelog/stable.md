@@ -38,6 +38,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed and improved the `adapter.dispatch` implementation [(#22)](https://github.com/Datavault-UK/dbtvault/issues/22)
 - Fixed a bug in the vault_insert_by_period materialisation [(#19)](https://github.com/Datavault-UK/dbtvault/issues/19)
 
+### Docs
+
+- Added examples of different ways to provide metadata to the [metadata reference](../metadata.md)
+- Added a short guide on [extending dbtvault](../extending.md)
+- Updated all SQL snippets to reflect changes
+
 ## [v0.7.1] - 2020-12-18
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.1)](https://dbtvault.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
 
