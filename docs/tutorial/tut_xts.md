@@ -10,10 +10,10 @@ Our extended tracking satellites structures will contain:
 ##### Primary Key ( src_pk )
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. For an XTS we would expect this to be the same as the corresponding link or hub PK.
 
-##### Hashdiff ( src_satellite [ ' ... ' ] [ ' hashdiff ' ] )
+##### Hashdiff ( src_satellite.hashdiff)
 A hashed representation of the record's payload. Since the XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
 
-##### Satellite name ( src_satellite [ ' ... ' ] [ ' sat_name ' ] )
+##### Satellite name ( src_satellite.sat_name )
 The name of the satellite that the payload is being staged to. This allows us to use one XTS table to track records for many satellites and accurately maintain their timelines.
 
 ##### Load date ( src_ldts )
