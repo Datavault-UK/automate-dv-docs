@@ -113,7 +113,7 @@ This will not necessarily use `MD5_BINARY` if you have chosen to use `SHA`, in w
 
 When we hash multiple columns, we take the following approach:
 
-=== Multi-column (NON-HASHDIFF)
+=== "Multi-column (NON-HASHDIFF)"
     
     !!! tip "Added in dbtvault 0.7.2"
 
@@ -125,7 +125,8 @@ When we hash multiple columns, we take the following approach:
     ), '^^||^^||^^')) AS BINARY(16)) AS HASHDIFF
     ```
 
-=== Multi-column (HASHDIFF)
+=== "Multi-column (HASHDIFF)"
+
     ```sql 
     CAST(MD5_BINARY(CONCAT_WS('||',
         IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
