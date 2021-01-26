@@ -1745,7 +1745,7 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.2/macros/staging/ranked_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.2/macros/staging/rank_columns.sql))
 
 !!! note 
     This is a helper macro used within the stage macro, but can be used independently.
