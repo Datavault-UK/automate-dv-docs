@@ -44,12 +44,13 @@ or a string directly naming the source system.
 
 Create a new dbt model as before. We'll call this one `sat_customer_details`. 
 
-`sat_customer_details.sql`
-```jinja
-{{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
-                var('src_eff'), var('src_ldts'), var('src_source'),
-                var('source_model'))                                   }}
-```
+=== "sat_customer_details.sql"
+
+    ```jinja
+    {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
+                    var('src_eff'), var('src_ldts'), var('src_source'),
+                    var('source_model'))                                   }}
+    ```
 
 To create a satellite model, we simply copy and paste the above template into a model named after the satellite we
 are creating. dbtvault will generate a satellite using parameters provided in the next steps.
@@ -58,47 +59,50 @@ Satellites should use the incremental materialization, as we load and add new re
 
 We recommend setting the `incremental` materialization on all of your satellites using the `dbt_project.yml` file:
 
-`dbt_project.yml`
-```yaml
-models:
-  my_dbtvault_project:
-   satellites:
-    materialized: incremental
-    tags:
-      - sat
-    sat_customer_details:
-      vars:
-        ...
-    sat_booking_details:
-      vars:
-        ...
-```
+=== "dbt_project.yml"
 
-!!! tip "New in dbtvault v0.7.0"
-    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+    ```yaml
+    models:
+      my_dbtvault_project:
+       satellites:
+        materialized: incremental # See tip below
+        tags:
+          - sat
+        sat_customer_details:
+          vars:
+            ...
+        sat_booking_details:
+          vars:
+            ...
+    ```
+
+!!! tip "Loading Satellites correctly"
+    dbtvault provides custom materialisations, designed to load satellites (among other structures) in the correct way:
+    
+    - [vault_insert_by_period](../macros.md#vault_insert_by_period)
+    - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
 
 ### Adding the metadata
 
 Let's look at the metadata we need to provide to the [sat](../macros.md#sat) macro.
 
-#### Source table
+#### Source model
 
-The first piece of metadata we need is the source table. This step is easy, as in this example we created the 
+The first piece of metadata we need is the source model. This step is easy, as in this example we created the 
 staging layer ourselves.  All we need to do is provide the name of stage table as a string in our metadata 
 as follows.
 
-`dbt_project.yml`
-```yaml
-sat_customer_details:
-  vars:
-    source_model: 'stg_customer_hashed'
-```
+=== "dbt_project.yml"
 
-!!! info
-    This is just one way of providing metadata/parameter values to dbtvault macros, take a look at 
-    the [Metadata Reference](../metadata.md) for some alternatives
-    
+    ```yaml
+    sat_customer_details:
+      vars:
+        source_model: 'stg_customer_hashed'
+    ```
+
+!!! tip
+    See our [metadata reference](../metadata.md#satellites) for more ways to provide metadata
+
 #### Source columns
 
 Next, we define the columns which we would like to bring from the source.
@@ -114,23 +118,25 @@ raw staging layer via an [stage](../macros.md#stage) macro call.
 5. A load date timestamp, which is present in the staging layer as `LOAD_DATE`. 
 6. A `SOURCE` column.
 
-We can now add this metadata to the ```dbt_project```:
+We can now add this metadata to the `dbt_project`:
 
-`dbt_project.yml`
-```yaml hl_lines="4 5 6 7 8 9 10 11 12"
-sat_order_customer_details:
-  vars:
-    source_model: 'stg_customer_hashed'
-    src_pk: 'CUSTOMER_PK'
-    src_hashdiff: 'CUSTOMER_HASHDIFF'
-    src_payload:
-      - 'CUSTOMER_NAME'
-      - 'CUSTOMER_DOB'
-      - 'CUSTOMER_PHONE'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOAD_DATE'
-    src_source: 'SOURCE'
-```
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="4 5 6 7 8 9 10 11 12"
+    sat_order_customer_details:
+      vars:
+        source_model: 'stg_customer_hashed'
+        src_pk: 'CUSTOMER_PK'
+        src_hashdiff: 'CUSTOMER_HASHDIFF'
+        src_payload:
+          - 'CUSTOMER_NAME'
+          - 'CUSTOMER_DOB'
+          - 'CUSTOMER_PHONE'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
+
 
 ### Running dbt
 
@@ -155,7 +161,7 @@ We have now created:
 - A staging layer 
 - A Hub 
 - A Link
-- A Transactional LLnk
+- A Transactional Link
 - A Satellite
 
 Next we will look at [effectivity satellites](tut_eff_satellites.md).

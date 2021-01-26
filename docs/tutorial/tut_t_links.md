@@ -45,12 +45,13 @@ or a string directly naming the source system.
 
 Create a new dbt model as before. We'll call this one `t_link_transactions`. 
 
-`t_link_transactions.sql`
-```jinja
-{{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
-                   var('src_eff'), var('src_ldts'), var('src_source'),
-                   var('source_model'))                                }}
-```
+=== "t_link_transactions.sql"
+
+    ```jinja
+    {{ dbtvault.t_link(var('src_pk'), var('src_fk'), var('src_payload'),
+                       var('src_eff'), var('src_ldts'), var('src_source'),
+                       var('source_model'))                                }}
+    ```
 
 To create a t-link model, we simply copy and paste the above template into a model named after the t-link we
 are creating. dbtvault will generate a t-link using parameters provided in the next steps.
@@ -59,25 +60,22 @@ Transactional links should use the incremental materialization, as we load and a
 
 We recommend setting the `incremental` materialization on all of your t-links using the `dbt_project.yml` file:
 
-`dbt_project.yml`
-```yaml
-models:
-  my_dbtvault_project:
-   t_links:
-    materialized: incremental
-    tags:
-      - t_link
-    t_link_transactions:
-      vars:
-        ...
-    t_link_call_feed:
-      vars:
-        ...
-```
+=== "dbt_project.yml"
 
-!!! tip "New in dbtvault v0.7.0"
-    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
+    ```yaml
+    models:
+      my_dbtvault_project:
+       t_links:
+        materialized: incremental
+        tags:
+          - t_link
+        t_link_transactions:
+          vars:
+            ...
+        t_link_call_feed:
+          vars:
+            ...
+    ```
 
 [Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
 
@@ -85,14 +83,14 @@ models:
 
 Let's look at the metadata we need to provide to the [t_link](../macros.md#t_link) macro.
 
-#### Source table
+#### Source model
 
-The first piece of metadata we need is the source table. For transactional links this can sometimes be a little
+The first piece of metadata we need is the source model. For transactional links this can sometimes be a little
 trickier than other table types. We need particular columns to model the transaction or event which has occurred in the 
 relationship between the hubs we are referencing, and so **sometimes** may need to create a staging layer specifically for the 
 purposes of feeding the transactional link. 
 
-For this step, ensure you have the following columns present in the source table:
+For this step, ensure you have the following columns present in the source model:
 
 1. A hashed transaction number as the primary key
 2. Hashed foreign keys, one for each of the referenced hubs.
@@ -102,40 +100,46 @@ For this step, ensure you have the following columns present in the source table
 6. A source
 
 Assuming you have a raw source table with these required columns, we can create a hashed staging table
-using a dbt model, (let's call it `stg_transactions_hashed.sql`) and this is the table we reference in the 
+using a dbt model, (let's call it `stg_transactions_hashed.sql`) and this is the model we reference in the 
 `dbt_project.yml` file as a string.
 
-`dbt_project.yml`
-```yaml
-t_link_transactions:
-  vars:
-    source_model: 'stg_transactions_hashed'
-    ...
-```   
+=== "dbt_project.yml"
+
+    ```yaml
+    t_link_transactions:
+      vars:
+        source_model: 'stg_transactions_hashed'
+        ...
+    ```   
+
+!!! tip
+    See our [metadata reference](../metadata.md#hubs) for more ways to provide metadata
+
 
 #### Source columns
 
 Next, we define the columns which we would like to bring from the source.
 We can use the columns we identified in the `Source table` section, above. 
 
-`dbt_project.yml`
-```yaml hl_lines="4 5 6 7 8 9 10 11 12 13 14 15"
-t_link_transactions:
-  vars:
-    source_model: 'stg_transactions_hashed'
-    src_pk: 'TRANSACTION_PK'
-    src_fk:
-      - 'CUSTOMER_FK'
-      - 'ORDER_FK'
-    src_payload:
-      - 'TRANSACTION_NUMBER'
-      - 'TRANSACTION_DATE'
-      - 'TYPE'
-      - 'AMOUNT'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOAD_DATE'
-    src_source: 'SOURCE'
-```
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="4 5 6 7 8 9 10 11 12 13 14 15"
+    t_link_transactions:
+      vars:
+        source_model: 'stg_transactions_hashed'
+        src_pk: 'TRANSACTION_PK'
+        src_fk:
+          - 'CUSTOMER_FK'
+          - 'ORDER_FK'
+        src_payload:
+          - 'TRANSACTION_NUMBER'
+          - 'TRANSACTION_DATE'
+          - 'TYPE'
+          - 'AMOUNT'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
 
 ### Running dbt
 
@@ -160,6 +164,6 @@ We have now created:
 - A staging layer 
 - A Hub 
 - A Link
-- A Transactional LLnk
+- A Transactional Link
  
 Next we will explore [satellites](tut_satellites.md).
