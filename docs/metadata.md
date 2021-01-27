@@ -606,7 +606,6 @@ example provided to help better convey the difference.
 === "Per-Model - Variables"
 
     === "Single Source"
-
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
         {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
@@ -617,8 +616,8 @@ example provided to help better convey the difference.
         {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                          src_source=src_source, source_model=source_model) }}
         ```
-    === "Multi Source"
 
+    === "Multi Source"
         ```jinja
         {%- set source_model = ["v_stg_orders", "v_stg_transactions"] -%}
         {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
