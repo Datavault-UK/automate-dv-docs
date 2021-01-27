@@ -324,9 +324,11 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict['source_model'] %}
         
-        {%- set derived_columns = metadata_dict['derived_columns'] %}
+        {% set derived_columns = metadata_dict['derived_columns'] %}
         
         {% set hashed_columns = metadata_dict['hashed_columns'] %}
+
+        {% set ranked_columns = metadata_dict['ranked_columns'] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
