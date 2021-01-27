@@ -5,7 +5,7 @@ demonstration project from the repository.
 
 Using the button below, find the latest release and download the zip file, listed under assets.
 
-[View Downloads](https://github.com/Datavault-UK/snowflakeDemo/releases){: .md-button .md-button--primary .btn }
+[View Downloads](https://github.com/Datavault-UK/dbtvault-snowflakeDemo/releases){: .md-button .md-button--primary .btn }
 
 Once downloaded, unzip the project.
 
@@ -34,7 +34,7 @@ In your dbt profiles, you must create a connection with this name and provide th
 account details so that dbt can connect to your Snowflake databases. 
 
 dbt provides their own documentation on how to configure profiles, so we suggest reading that
-[here](https://docs.getdbt.com/v0.15.0/docs/configure-your-profile).
+[here](https://docs.getdbt.com/dbt-cli/configure-your-profile/).
 
 A sample profile configuration is provided below which will get you started:
 
