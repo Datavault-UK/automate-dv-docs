@@ -113,26 +113,29 @@ This will not necessarily use `MD5_BINARY` if you have chosen to use `SHA`, in w
 
 When we hash multiple columns, we take the following approach:
 
-=== Multi-column (NON-HASHDIFF)
+=== "Multi Column Hashing"
+
+    === "Non-Hashdiff"
+        
+        !!! tip "Added in dbtvault 0.7.2"
     
-    !!! tip "Added in dbtvault 0.7.2"
+        ```sql 
+        CAST(MD5_BINARY(NULLIF(CONCAT_WS('||', 
+            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+        ), '^^||^^||^^')) AS BINARY(16)) AS HASHDIFF
+        ```
 
-    ```sql 
-    CAST(MD5_BINARY(NULLIF(CONCAT_WS('||', 
-        IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-        IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
-        IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-    ), '^^||^^||^^')) AS BINARY(16)) AS HASHDIFF
-    ```
-
-=== Multi-column (HASHDIFF)
-    ```sql 
-    CAST(MD5_BINARY(CONCAT_WS('||',
-        IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-        IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
-        IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-    )) AS BINARY(16)) AS HASHDIFF
-    ```
+    === "Hashdiff"
+    
+        ```sql 
+        CAST(MD5_BINARY(CONCAT_WS('||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
+            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+        )) AS BINARY(16)) AS HASHDIFF
+        ```
 
 This is similar to single-column hashing aside from the use of `IFNULL` and `CONCAT`, the step-by-step process
 is described below.
