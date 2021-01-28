@@ -31,6 +31,7 @@ file.
     
     Read more:
     
+    - [Permanent removal](https://github.com/fishtown-analytics/dbt/releases/tag/v0.19.0)
     - [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377) (closed in favour of [2401](https://github.com/fishtown-analytics/dbt/issues/2401))
     - [dbt documentation on the change](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/#better-variable-scoping-semantics)
 
