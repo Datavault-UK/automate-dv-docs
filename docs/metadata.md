@@ -18,7 +18,6 @@ and it comes down to user and organisation preference.
 It is worth noting that with larger projects, storing all the metadata in the `dbt_project.yml` file can quickly 
 become unwieldy. See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
 
-
 #### dbt_project.yml
 
 Variables can be provided to macros via the `dbt_project.yml` file instead of being specified in
@@ -27,12 +26,12 @@ creation to a copy and paste process of the model file, and just providing diffe
 file.
 
 !!! warning "Using variables in dbt_project.yml"
-    From dbt v0.17.0 onwards, you must add `config-version: 1` to your `dbt_project.yml`. 
-    This is a temporary workaround due to removal of model-level variable scoping in dbt core functionality.
-    We hope to have a permanent solution for this in the future.
+    Prior to dbt v0.19.0, you must add `config-version: 1` to your `dbt_project.yml`. 
+    From dbt v0.19.0 onwards, this feature is now **permanently removed**.
     
     Read more:
     
+    - [Permanent removal](https://github.com/fishtown-analytics/dbt/releases/tag/v0.19.0)
     - [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377) (closed in favour of [2401](https://github.com/fishtown-analytics/dbt/issues/2401))
     - [dbt documentation on the change](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/#better-variable-scoping-semantics)
 
@@ -160,136 +159,6 @@ example provided to help better convey the difference.
 
 #### Metadata
 
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1"
-
-    === "All components"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  source_model: "raw_source"
-                  hashed_columns:
-                    CUSTOMER_PK: "CUSTOMER_ID"
-                    CUST_CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_DOB"
-                        - "CUSTOMER_ID"
-                        - "CUSTOMER_NAME"
-                        - "!9999-12-31"
-                    CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_ID"
-                        - "NATIONALITY"
-                        - "PHONE"
-                  derived_columns:
-                    SOURCE: "!STG_BOOKING"
-                    EFFECTIVE_FROM: "BOOKING_DATE"
-                  ranked_columns:
-                    DBTVAULT_RANK:
-                      partition_by: "CUSTOMER_ID"
-                      order_by: "BOOKING_DATE"
-        ```
-
-    === "Only Source"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  source_model: "raw_source"
-        ```
-
-    === "Only hashing"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  include_source_columns: false
-                  source_model: "raw_source"
-                  hashed_columns:
-                    CUSTOMER_PK: "CUSTOMER_ID"
-                    CUST_CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_DOB"
-                        - "CUSTOMER_ID"
-                        - "CUSTOMER_NAME"
-                        - "!9999-12-31"
-                    CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_ID"
-                        - "NATIONALITY"
-                        - "PHONE"
-        ```
-
-    === "Only derived"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:   
-                  include_source_columns: false
-                  source_model: "raw_source"
-                  derived_columns:
-                    SOURCE: "!STG_BOOKING"
-                    EFFECTIVE_FROM: "BOOKING_DATE"
-        ```
-
-    === "Only ranked"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:   
-                  source_model: "raw_source"
-                  ranked_columns:
-                    DBTVAULT_RANK:
-                      partition_by: "CUSTOMER_ID"
-                      order_by: "BOOKING_DATE"
-        ```
-
-    === "Exclude Columns flag"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  include_source_columns: false
-                  source_model: "raw_source"
-                  hashed_columns:
-                    CUSTOMER_PK: "CUSTOMER_ID"
-                    CUSTOMER_DETAILS_HASHDIFF:
-                      is_hashdiff: true
-                      exclude_columns: true
-                      columns:
-                        - "PRICE"
-                    CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_ID"
-                        - "NATIONALITY"
-                        - "PHONE"
-        ```
-
 === "Per-model - YAML strings"
     === "All components"
 
@@ -324,9 +193,11 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict['source_model'] %}
         
-        {%- set derived_columns = metadata_dict['derived_columns'] %}
+        {% set derived_columns = metadata_dict['derived_columns'] %}
         
         {% set hashed_columns = metadata_dict['hashed_columns'] %}
+
+        {% set ranked_columns = metadata_dict['ranked_columns'] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
@@ -468,6 +339,136 @@ example provided to help better convey the difference.
                           ranked_columns=none) }}
         ```
 
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    === "All components"
+
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  source_model: "raw_source"
+                  hashed_columns:
+                    CUSTOMER_PK: "CUSTOMER_ID"
+                    CUST_CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_DOB"
+                        - "CUSTOMER_ID"
+                        - "CUSTOMER_NAME"
+                        - "!9999-12-31"
+                    CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_ID"
+                        - "NATIONALITY"
+                        - "PHONE"
+                  derived_columns:
+                    SOURCE: "!STG_BOOKING"
+                    EFFECTIVE_FROM: "BOOKING_DATE"
+                  ranked_columns:
+                    DBTVAULT_RANK:
+                      partition_by: "CUSTOMER_ID"
+                      order_by: "BOOKING_DATE"
+        ```
+
+    === "Only Source"
+
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  source_model: "raw_source"
+        ```
+
+    === "Only hashing"
+
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  include_source_columns: false
+                  source_model: "raw_source"
+                  hashed_columns:
+                    CUSTOMER_PK: "CUSTOMER_ID"
+                    CUST_CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_DOB"
+                        - "CUSTOMER_ID"
+                        - "CUSTOMER_NAME"
+                        - "!9999-12-31"
+                    CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_ID"
+                        - "NATIONALITY"
+                        - "PHONE"
+        ```
+
+    === "Only derived"
+
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:   
+                  include_source_columns: false
+                  source_model: "raw_source"
+                  derived_columns:
+                    SOURCE: "!STG_BOOKING"
+                    EFFECTIVE_FROM: "BOOKING_DATE"
+        ```
+
+    === "Only ranked"
+
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:   
+                  source_model: "raw_source"
+                  ranked_columns:
+                    DBTVAULT_RANK:
+                      partition_by: "CUSTOMER_ID"
+                      order_by: "BOOKING_DATE"
+        ```
+
+    === "Exclude Columns flag"
+
+        ```yaml
+        models:
+          my_dbtvault_project:
+            staging:
+              my_staging_model:
+                vars:
+                  include_source_columns: false
+                  source_model: "raw_source"
+                  hashed_columns:
+                    CUSTOMER_PK: "CUSTOMER_ID"
+                    CUSTOMER_DETAILS_HASHDIFF:
+                      is_hashdiff: true
+                      exclude_columns: true
+                      columns:
+                        - "PRICE"
+                    CUSTOMER_HASHDIFF:
+                      is_hashdiff: true
+                      columns:
+                        - "CUSTOMER_ID"
+                        - "NATIONALITY"
+                        - "PHONE"
+        ```
+
 ### Hubs
 
 #### Parameters
@@ -475,6 +476,47 @@ example provided to help better convey the difference.
 [hub macro parameters](macros.md#hub)
 
 #### Metadata
+
+=== "Per-Model - Variables"
+
+    === "Single Source"
+
+        ```jinja
+        {%- set source_model = "stg_customer_hashed" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_nk = "CUSTOMER_KEY" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
+
+    === "Multi Source"
+
+        ```jinja
+        {%- set source_model = ["stg_web_customer_hashed", "stg_crm_customer_hashed"] -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_nk = "CUSTOMER_KEY" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
+
+    === "Composite NK"
+
+        ```jinja
+        {%- set source_model = "stg_customer_hashed" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_nk = ["CUSTOMER_KEY", "CUSTOMER_DOB"] -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
 
 === "dbt_project.yml"
 
@@ -520,47 +562,6 @@ example provided to help better convey the difference.
             src_source: 'SOURCE'
         ```
 
-=== "Per-Model - Variables"
-
-    === "Single Source"
-
-        ```jinja
-        {%- set source_model = "stg_customer_hashed" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_nk = "CUSTOMER_KEY" -%}
-        {%- set src_ldts = "LOADDATE" -%}
-        {%- set src_source = "SOURCE" -%}
-        
-        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                        src_source=src_source, source_model=source_model) }}
-        ```
-
-    === "Multi Source"
-
-        ```jinja
-        {%- set source_model = ["stg_web_customer_hashed", "stg_crm_customer_hashed"] -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_nk = "CUSTOMER_KEY" -%}
-        {%- set src_ldts = "LOADDATE" -%}
-        {%- set src_source = "SOURCE" -%}
-        
-        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                        src_source=src_source, source_model=source_model) }}
-        ```
-
-    === "Composite NK"
-
-        ```jinja
-        {%- set source_model = "stg_customer_hashed" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_nk = ["CUSTOMER_KEY", "CUSTOMER_DOB"] -%}
-        {%- set src_ldts = "LOADDATE" -%}
-        {%- set src_source = "SOURCE" -%}
-        
-        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                        src_source=src_source, source_model=source_model) }}
-        ```
-
 ### Links
 
 #### Parameters
@@ -568,6 +569,32 @@ example provided to help better convey the difference.
 [link macro parameters](macros.md#link)
 
 #### Metadata
+
+=== "Per-Model - Variables"
+
+    === "Single Source"
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
+        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                         src_source=src_source, source_model=source_model) }}
+        ```
+
+    === "Multi Source"
+        ```jinja
+        {%- set source_model = ["v_stg_orders", "v_stg_transactions"] -%}
+        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
+        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                         src_source=src_source, source_model=source_model) }}
+        ```
 
 === "dbt_project.yml"
 
@@ -603,33 +630,6 @@ example provided to help better convey the difference.
             src_source: 'SOURCE'
         ```
 
-=== "Per-Model - Variables"
-
-    === "Single Source"
-
-        ```jinja
-        {%- set source_model = "v_stg_orders" -%}
-        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
-        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
-        {%- set src_ldts = "LOADDATE" -%}
-        {%- set src_source = "SOURCE" -%}
-        
-        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                         src_source=src_source, source_model=source_model) }}
-        ```
-    === "Multi Source"
-
-        ```jinja
-        {%- set source_model = ["v_stg_orders", "v_stg_transactions"] -%}
-        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
-        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
-        {%- set src_ldts = "LOADDATE" -%}
-        {%- set src_source = "SOURCE" -%}
-        
-        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                         src_source=src_source, source_model=source_model) }}
-        ```
-
 ### Transactional links
 ###### (also known as non-historised links)
 
@@ -638,6 +638,23 @@ example provided to help better convey the difference.
 [t_link macro parameters](macros.md#t_link)
 
 #### Metadata
+
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_transactions" -%}
+    {%- set src_pk = "TRANSACTION_PK" -%}
+    {%- set src_fk = ["CUSTOMER_PK", "ORDER_PK"] -%}
+    {%- set src_payload = ["TRANSACTION_NUMBER", "TRANSACTION_DATE", "TYPE", "AMOUNT"] -%}
+    {%- set src_eff = "EFFECTIVE_FROM" -%}
+    {%- set src_ldts = "LOADDATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                       src_payload=src_payload, src_eff=src_eff,
+                       src_source=src_source, source_model=source_model) }}
+    ```
 
 === "dbt_project.yml"
 
@@ -661,22 +678,6 @@ example provided to help better convey the difference.
         src_source: 'SOURCE'
     ```
 
-=== "Per-Model - Variables"
-
-    ```jinja
-    {%- set source_model = "v_stg_transactions" -%}
-    {%- set src_pk = "TRANSACTION_PK" -%}
-    {%- set src_fk = ["CUSTOMER_PK", "ORDER_PK"] -%}
-    {%- set src_payload = ["TRANSACTION_NUMBER", "TRANSACTION_DATE", "TYPE", "AMOUNT"] -%}
-    {%- set src_eff = "EFFECTIVE_FROM" -%}
-    {%- set src_ldts = "LOADDATE" -%}
-    {%- set src_source = "SOURCE" -%}
-    
-    {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                       src_payload=src_payload, src_eff=src_eff,
-                       src_source=src_source, source_model=source_model) }}
-    ```
-
 ### Satellites
 
 #### Parameters
@@ -684,6 +685,42 @@ example provided to help better convey the difference.
 [sat macro parameters](macros.md#sat)
 
 #### Metadata
+
+=== "Per-Model - Variables"
+
+    === "Standard"
+
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_hashdiff = "CUSTOMER_HASHDIFF" -%}
+        {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
+        {%- set src_eff = "EFFECTIVE_FROM" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+                        src_payload=src_payload, src_eff=src_eff,
+                        src_ldts=src_ldts, src_source=src_source, 
+                        source_model=source_model) }}
+        ```
+
+    === "Hashdiff Aliasing"
+
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
+        {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
+        {%- set src_eff = "EFFECTIVE_FROM" -%}
+        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_source = "SOURCE" -%}
+        
+        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+                        src_payload=src_payload, src_eff=src_eff,
+                        src_ldts=src_ldts, src_source=src_source, 
+                        source_model=source_model) }}
+        ```
 
 === "dbt_project.yml"
 
@@ -731,44 +768,7 @@ example provided to help better convey the difference.
             src_source: 'SOURCE'
         ```
 
-=== "Per-Model - Variables"
-
-    === "Standard"
-
-        ```jinja
-        {%- set source_model = "v_stg_orders" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_hashdiff = "CUSTOMER_HASHDIFF" -%}
-        {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
-        {%- set src_eff = "EFFECTIVE_FROM" -%}
-        {%- set src_ldts = "LOADDATE" -%}
-        {%- set src_source = "SOURCE" -%}
-        
-        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
-                        src_payload=src_payload, src_eff=src_eff,
-                        src_ldts=src_ldts, src_source=src_source, 
-                        source_model=source_model) }}
-        ```
-
-    === "Hashdiff Aliasing"
-
-        ```jinja
-        {%- set source_model = "v_stg_orders" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
-        {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
-        {%- set src_eff = "EFFECTIVE_FROM" -%}
-        {%- set src_ldts = "LOADDATE" -%}
-        {%- set src_source = "SOURCE" -%}
-        
-        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
-                        src_payload=src_payload, src_eff=src_eff,
-                        src_ldts=src_ldts, src_source=src_source, 
-                        source_model=source_model) }}
-        ```
-
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
-
 [Read more](best_practices.md#hashdiff-aliasing)
 
 ### Effectivity Satellites
@@ -778,24 +778,6 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 [eff_sat macro parameters](macros.md#eff_sat)
 
 #### Metadata
-
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1"
-
-    ```yaml
-    eff_sat_customer_nation:
-      vars:
-        source_model: 'v_stg_transactions'
-        src_pk: 'TRANSACTION_PK'
-        src_dfk: 'CUSTOMER_PK'
-        src_sfk: 'NATION_PK'
-        src_start_date: 'START_DATE'
-        src_end_date: 'END_DATE'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
 
 === "Per-Model - Variables"
 
@@ -815,6 +797,24 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
                         src_start_date=src_start_date, src_end_date=src_end_date, 
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source, 
                         source_model=source_model) }}
+    ```
+
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    ```yaml
+    eff_sat_customer_nation:
+      vars:
+        source_model: 'v_stg_transactions'
+        src_pk: 'TRANSACTION_PK'
+        src_dfk: 'CUSTOMER_PK'
+        src_sfk: 'NATION_PK'
+        src_start_date: 'START_DATE'
+        src_end_date: 'END_DATE'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
     ```
 ___
 

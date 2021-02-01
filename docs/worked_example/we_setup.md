@@ -5,7 +5,7 @@ demonstration project from the repository.
 
 Using the button below, find the latest release and download the zip file, listed under assets.
 
-[View Downloads](https://github.com/Datavault-UK/snowflakeDemo/releases){: .md-button .md-button--primary .btn }
+[View Downloads](https://github.com/Datavault-UK/dbtvault-snowflakeDemo/releases){: .md-button .md-button--primary .btn }
 
 Once downloaded, unzip the project.
 
@@ -34,7 +34,7 @@ In your dbt profiles, you must create a connection with this name and provide th
 account details so that dbt can connect to your Snowflake databases. 
 
 dbt provides their own documentation on how to configure profiles, so we suggest reading that
-[here](https://docs.getdbt.com/v0.15.0/docs/configure-your-profile).
+[here](https://docs.getdbt.com/dbt-cli/configure-your-profile/).
 
 A sample profile configuration is provided below which will get you started:
 
@@ -65,12 +65,8 @@ Key points:
 
 - You must also create a `DV_PROTOTYPE_DB` database and `DV_PROTOTYPE_WH` warehouse.
 
-
-
 - Your `DV_PROTOTYPE_WH` warehouse should be X-Small in size and have a 5 minute auto-suspend, as we will
 not be coming close to the limits of what Snowflake can process.
-
-
 
 - The role can be anything as long as it has full rights to the above schema and database, so we suggest the
 default `SYSADMIN`.
@@ -84,190 +80,105 @@ reasonable time-frame, however, you may run with as many threads as required.
 
 ## The project file
 
-As of v0.5, the `dbt_project.yml` file is now used as a metadata store. Below is an example file showing the
-metadata for a single instance of each of the current table types. 
+The `dbt_project.yml` file is used to tag and configure groups of models and set global variables for the project.
 
 === "dbt_project.yml"
 
     ```yaml linenums="1"
+    name: dbtvault_snowflake_demo
+    profile: dbtvault_snowflake_demo
+    version: '5.0.0'
+    require-dbt-version: ['>=0.18.0', '<0.19.0']
+    config-version: 2
+    
+    analysis-paths:
+      - analysis
+    clean-targets:
+      - target
+    data-paths:
+      - data
+    macro-paths:
+      - macros
+    source-paths:
+      - models
+    test-paths:
+      - tests
+    target-path: target
+    
+    vars:
+      load_date: '1992-01-08'
+      tpch_size: 10 #1, 10, 100, 1000, 10000
     
     models:
-      snowflakeDemo:
+      dbtvault_snowflake_demo:
         raw_stage:
-          schema: 'RAW'
           tags:
             - 'raw'
           materialized: view
         stage:
-          schema: 'STG'
           tags:
             - 'stage'
           enabled: true
           materialized: view
-          v_stg_inventory:
-            vars:
-              [...]
-          v_stg_orders:
-            vars:
-              [...]
-          v_stg_transactions:
-            vars:
-              source_model: 'raw_transactions'
-              hashed_columns:
-                TRANSACTION_PK:
-                  - 'CUSTOMER_ID'
-                  - 'TRANSACTION_NUMBER'
-                CUSTOMER_FK: 'CUSTOMER_ID'
-                ORDER_FK: 'ORDER_ID'
-              derived_columns:
-                SOURCE: '!RAW_TRANSACTIONS'
-                LOADDATE: DATEADD(DAY, 1, TRANSACTION_DATE)
-                EFFECTIVE_FROM: 'TRANSACTION_DATE'
         raw_vault:
-          schema: 'VLT'
           tags:
             - 'raw_vault'
           materialized: incremental
           hubs:
             tags:
               - 'hub'
-            hub_customer:
-              vars:
-                source_model: 'v_stg_orders'
-                src_pk: 'CUSTOMER_PK'
-                src_nk: 'CUSTOMERKEY'
-                src_ldts: 'LOADDATE'
-                src_source: 'SOURCE'
-            hub_lineitem:
-              vars:
-                [...]
-            hub_nation:
-              vars:
-                [...]
-            hub_order:
-              vars:
-                [...]
-            hub_part:
-              vars:
-                [...]
-            hub_region:
-              vars:
-                [...]
-            hub_supplier:
-              vars:
-                [...]
           links:
             tags:
               - 'link'
-            link_customer_nation:
-              vars:
-                source_model: 'v_stg_orders'
-                src_pk: 'LINK_CUSTOMER_NATION_PK'
-                src_fk:
-                  - 'CUSTOMER_PK'
-                  - 'NATION_PK'
-                src_ldts: 'LOADDATE'
-                src_source: 'SOURCE'
-            link_customer_order:
-              vars:
-                [...]
-            link_inventory:
-              vars:
-                [...]
-            link_inventory_allocation:
-              vars:
-                [...]
-            link_nation_region:
-              vars:
-                [...]
-            link_order_lineitem:
-              vars:
-                [...]
-            link_supplier_nation:
-              vars:
-                [...]
           sats:
             tags:
               - 'satellite'
-            sat_inv_inventory_details:
-              vars:
-                source_model: 'v_stg_inventory'
-                src_pk: 'INVENTORY_PK'
-                src_hashdiff: 'INVENTORY_HASHDIFF'
-                src_payload:
-                  - 'AVAILQTY'
-                  - 'SUPPLYCOST'
-                  - 'PART_SUPPLY_COMMENT'
-                src_eff: 'EFFECTIVE_FROM'
-                src_ldts: 'LOADDATE'
-                src_source: 'SOURCE'
-            sat_inv_part_details:
-              vars:
-                [...]
-            sat_inv_supp_nation_details:
-              vars:
-                [...]
-            sat_inv_supp_region_details:
-              vars:
-                [...]
-            sat_inv_supplier_details:
-              vars:
-                [...]
-            sat_order_cust_nation_details:
-              vars:
-                [...]
-            sat_order_cust_region_details:
-              vars:
-                [...]
-            sat_order_customer_details:
-              vars:
-                [...]
-            sat_order_lineitem_details:
-              vars:
-                [...]
-            sat_order_order_details:
-              vars:
-                [...]
           t_links:
             tags:
               - 't_link'
-            t_link_transactions:
-              vars:
-                source_model: 'v_stg_transactions'
-                src_pk: 'TRANSACTION_PK'
-                src_fk:
-                  - 'CUSTOMER_FK'
-                  - 'ORDER_FK'
-                src_payload:
-                  - 'TRANSACTION_NUMBER'
-                  - 'TRANSACTION_DATE'
-                  - 'TYPE'
-                  - 'AMOUNT'
-                src_eff: 'EFFECTIVE_FROM'
-                src_ldts: 'LOADDATE'
-                src_source: 'SOURCE'
-      vars:
-        load_date: '1992-01-08'
-        hash: 'MD5'
+
     ```
+#### global vars
+
+Before the models section of the file, we have vars that will be globally scoped to all resources in the project.
+
+##### load_date
+To simulate day-feeds, we use a variable we have named `load_date` which is used in the `RAW` models to
+load for a specific date. This is described in more detail in the [Profiling TPC-H](we_tpch_profile.md) section.
+
+##### tpch_size
+
+The default TPCH dataset size used by the demo project is 10, which means the volume of data is in the 10s of millions of rows. 
+
+This can be modified by changing the `tpch_size` variable. This can be one of `1, 10, 100, 1000, 10000`. 
+
+More details on these sizes can be found [here](https://docs.snowflake.com/en/user-guide/sample-data-tpch.html#database-and-schemas). 
 
 #### models
 
-Here we are specifying that models in the `raw_vault` directory should be loaded in to the `VLT` schema, 
-and models in the directories `stage` and `raw_stage` should have the schemas `STG` and `RAW` respectively.
+In the models section we are providing tags for each sub-folder of the models folder, and specifying appropriate 
+materialisations for each type of vault structure. 
 
 We have also specified that they are all enabled, as well as their materialization. Many of these attributes 
-are also provided in the files themselves and take precedence over these settings anyway, this is just a design choice. 
+can also be provided in the files themselves.
 
-#### table metadata
 
-The table metadata is now provided, as of v0.5, in the `dbt_project.yml` file as seen in the above example. 
-For each of your table models you must specify the metadata using the correct hierarchy.
+#### Metadata 
 
-Take a look at our [metadata reference](../metadata.md) for a full reference and description.
+Metadata for each structure is provided in each file, for example:
 
-#### global vars
+=== "hub_customer.sql"
 
-At the end of the file, we have vars that will apply to all models. 
-To simulate day-feeds, we use a variable we have named `load_date` which is used in the `RAW` models to
-load for a specific date. This is described in more detail in the [Profiling TPC-H](we_tpch_profile.md) section.
+    ```jinja
+    {%- set source_model = "v_stg_orders" -%}
+    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_nk = "CUSTOMERKEY" -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
+    {%- set src_source = "RECORD_SOURCE" -%}
+    
+    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model) }}
+    ```
+
+Take a look at our [metadata reference](../metadata.md) for a full reference and recommendations for providing metadata.
+
