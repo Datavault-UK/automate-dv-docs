@@ -23,7 +23,7 @@ We also have plans to extend this tool to:
 Development is still in the early phases, but we're very excited to eventually release this tool to the public. 
 If you have any ideas, or are interested in hearing more, contact Datavault directly via slack or email.
 
-## Coming soon in v0.7.3
+## Coming soon in v0.7.4
 
 - Point-in-time tables (PITs)
 - Extended Record Tracking Satellites (XTS)
