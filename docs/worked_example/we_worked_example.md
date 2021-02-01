@@ -1,10 +1,5 @@
-!!! warning
-    **This guide currently uses an older version of dbtvault (v0.6.2)** 
-    
-    You may still follow it, however Effectivity Satellites are not yet included.
-
 In this section we demonstrate dbtvault by example. We guide you through developing a 
-Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbtvault models.
+Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbt models using dbtvault macros.
 
 This demonstration was developed to give users a further understanding of how dbt and dbtvault could be used to build
 a Data Vault using an actual data set.  
@@ -43,7 +38,8 @@ be the only necessary requirements you will need to get started with the example
     as a quick way of getting your Python environment set up. This file includes dbt and comes with the download in the 
     next section.
 
-## Performance note
+
+## Performance
 
 Please be aware that table structures are simulated from the TPC-H dataset. The TPC-H dataset is a static view of data. 
 
@@ -54,7 +50,7 @@ the entire contents of the view each cycle.
 This means that inventory related hubs, links and satellites are populated once during the initial load cycle with 
 everything and later cycles insert 0 new records in their left outer joins. 
 
-As the dataset increases in size, e.g if you run with a larger TPC-H dataset (100, 1000 etc.) then be aware you are 
+As the dataset increases in size, e.g. if you run with a larger TPC-H dataset (100, 1000 etc.) then be aware you are 
 processing the entire inventory dataset each cycle, which results in unrepresentative load cycle times.
 
 We have minimised the impact of this by adding a join in the raw inventory table on the raw orders table to ensure only 

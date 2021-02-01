@@ -8,7 +8,7 @@ Each component of a satellite is described below.
 
 ##### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key.
-For a satellite, this should be the same as the corresponding link or hub PK.
+For a satellite, this should be the same as the corresponding link or hub PK, concatenated with the load timestamp. 
 
 ##### Hashdiff (src_hashdiff)
 This is a concatenation of the payload (below) and the primary key. This allows us to 
