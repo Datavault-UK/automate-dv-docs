@@ -1894,23 +1894,19 @@ A rank column can be created one of three ways:
 2. Using the `ranked_columns` configuration of the [stage](#stage) macro
    
     ```yaml
-    stg_customer:
-      vars:
-        source_model: "MY_STAGE"
-        ranked_columns:
-          DBTVAULT_RANK:
-            parition_by: "CUSTOMER_PK"
-            order_by: "LOAD_DATETIME"
+    source_model: "MY_STAGE"
+    ranked_columns:
+      DBTVAULT_RANK:
+        parition_by: "CUSTOMER_PK"
+        order_by: "LOAD_DATETIME"
     ```
 
 3. Using the `derived_columns` configuration of the [stage](#stage) macro
 
     ```yaml
-    stg_customer:
-      vars:
-        source_model: "MY_STAGE"
-        derived_columns:
-          DBTVAULT_RANK: "RANK() OVER(PARITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
+    source_model: "MY_STAGE"
+    derived_columns:
+      DBTVAULT_RANK: "RANK() OVER(PARITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
 
 
