@@ -206,11 +206,30 @@ example provided to help better convey the difference.
                           ranked_columns=ranked_columns) }}
         ```
 
-    === "Only Source"
+    === "Only Source (ref style)"
 
         ```jinja
         {%- set yaml_metadata -%}
         source_model: "raw_source"
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict['source_model'] %}
+        
+        {{ dbtvault.stage(include_source_columns=true,
+                          source_model=source_model,
+                          derived_columns=none,
+                          hashed_columns=none,
+                          ranked_columns=none) }}
+        ```
+    
+    === "Only Source (source style)"
+
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: 
+            raw_source_name: "source_table_name"
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
