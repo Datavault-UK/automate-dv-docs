@@ -866,6 +866,19 @@ ___
     ```
 ___
 
+### Multi Active Satellites (MAS)
+
+#### Parameters
+
+[ma_sat macro parameters](macros.md#ma_sat)
+
+#### Metadata
+=== "dbt_project.yml"
+    ```yaml
+      ```
+
+___
+
 ### Point-in-Time (PITs)
 
 #### Parameters

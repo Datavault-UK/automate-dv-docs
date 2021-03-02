@@ -802,6 +802,36 @@ The definition of the 'end' of a relationship is considered business logic which
 
 ___
 
+### ma_sat
+
+([view source]())
+
+Generates SQL to build a multi-active satellite table (MAS).
+
+#### Usage
+
+``` jinja
+
+```
+
+#### Parameters
+
+| Parameter         | Description                                         | Type             | Required?                                    |
+| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+
+#### Example Metadata
+
+[See examples](metadata.md#multi-active-satellites-mas)
+
+#### Example Output
+
+=== "Snowflake"
+```sql
+
+```
+
+___
+
 ### xts
 
 ([view source]())
