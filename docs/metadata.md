@@ -873,9 +873,23 @@ ___
 [ma_sat macro parameters](macros.md#ma_sat)
 
 #### Metadata
+
 === "dbt_project.yml"
+
     ```yaml
-      ```
+    ma_sat_customer_details:
+      vars:
+        source_model: 'v_stg_orders'
+        src_pk: 'CUSTOMER_PK'
+        src_dk: 'CUSTOMER_PHONE'
+        src_hashdiff: 'HASHDIFF'
+        src_payload:
+          - 'CUSTOMER_NAME'
+          - 'CUSTOMER_PHONE'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
 
 ___
 

@@ -804,31 +804,113 @@ ___
 
 ### ma_sat
 
-([view source]())
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
 #### Usage
 
+[comment]: <> (NEW)
 ``` jinja
-
+{{ dbtvault.ma_sat(src_pk=src_pk, src_dk=src_dk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                src_eff=src_eff, src_ldts=src_ldts, 
+                src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter         | Description                                         | Type             | Required?                                    |
-| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+[comment]: <> (NEW)
+| Parameter      | Description                                         | Type             | Required?                                    |
+| -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
+| src_dk         | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i> |
+| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i> |
+| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i> |
+| src_eff        | Source effective from column                        | String           | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
+
+[comment]: <> (NEW)
+!!! tip
+    [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
 
 #### Example Metadata
 
+[comment]: <> (NEW)
 [See examples](metadata.md#multi-active-satellites-mas)
 
 #### Example Output
 
+[comment]: <> (NEW)
 === "Snowflake"
-```sql
+    
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+        ),
 
-```
+        update_records AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE as a
+            JOIN source_data as b
+            ON a.CUSTOMER_PK = b.CUSTOMER_PK
+        ),
+
+        latest_records AS (
+            SELECT c.CUSTOMER_PK, c.CUSTOMER_PHONE, c.HASHDIFF, c.LOAD_DATE,
+                   CASE WHEN RANK()
+                   OVER (PARTITION BY c.CUSTOMER_PK
+                   ORDER BY c.LOAD_DATE DESC) = 1
+            THEN 'Y' ELSE 'N' END AS latest
+            FROM update_records as c
+            QUALIFY latest = 'Y'
+        ),
+        changes AS (
+            SELECT DISTINCT
+             COALESCE(ls.CUSTOMER_PK, stg.CUSTOMER_PK) AS "CUSTOMER_PK"
+            FROM source_data AS stg
+            FULL OUTER JOIN latest_records AS ls
+            ON stg.CUSTOMER_PK = ls.CUSTOMER_PK
+            AND stg.CUSTOMER_PHONE = ls.CUSTOMER_PHONE
+            WHERE stg.HASHDIFF IS NULL -- existent entry in MAS not found in stage
+            OR ls.HASHDIFF IS NULL -- new entry in stage not found in latest set of MAS
+            OR stg.HASHDIFF != ls.HASHDIFF -- entry is modified
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS stg
+            LEFT JOIN latest_records
+            ON latest_records.CUSTOMER_PK = stg.CUSTOMER_PK
+            AND latest_records.LOAD_DATE = stg.LOAD_DATE
+            AND latest_records.CUSTOMER_PHONE = stg.CUSTOMER_PHONE
+            LEFT JOIN changes
+            ON changes.CUSTOMER_PK = stg.CUSTOMER_PK
+            WHERE changes.CUSTOMER_PK = stg.CUSTOMER_PK
+            OR changes.CUSTOMER_PK IS NULL AND stg.CUSTOMER_PK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 
 ___
 
