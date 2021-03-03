@@ -25,7 +25,7 @@ A primary key (or surrogate key) which is usually a hashed representation of the
 For a multi active satellite, this should be the same as the corresponding link or hub PK, concatenated with the load timestamp.
 
 [comment]: <> (NEW)
-##### Child Dependent Key(s) (src_dk)
+##### Child Dependent Key(s) (src_cdk)
 The child dependent keys are a subset of the payload (below) that helps with identifying the different valid records 
 for each entity inside the multi active satellite. For example, a customer will have different valid phone number valid
 at the same time, the phone number attribute will be selected as a child dependent key that helps the natural key keep 
@@ -71,7 +71,7 @@ Create a new dbt model as before. We'll call this one `ma_sat_customer_details`.
 === "ma_sat_customer_details.sql"
 
     ```jinja
-    {{ dbtvault.ma_sat(var('src_pk'), var('src_dk'), var('src_hashdiff'), var('src_payload'),
+    {{ dbtvault.ma_sat(var('src_pk'), var('src_cdk'), var('src_hashdiff'), var('src_payload'),
                     var('src_eff'), var('src_ldts'), var('src_source'),
                     var('source_model'))                                   }}
     ```
@@ -165,7 +165,7 @@ We can now add this metadata to the `dbt_project`:
       vars:
         source_model: 'stg_customer'
         src_pk: 'CUSTOMER_PK'
-        src_dk: 'CUSTOMER_PHONE'
+        src_cdk: 'CUSTOMER_PHONE'
         src_hashdiff: 'HASHDIFF'
         src_payload:
           - 'CUSTOMER_NAME'

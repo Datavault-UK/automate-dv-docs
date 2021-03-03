@@ -812,7 +812,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 [comment]: <> (NEW)
 ``` jinja
-{{ dbtvault.ma_sat(src_pk=src_pk, src_dk=src_dk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, src_payload=src_payload,
                 src_eff=src_eff, src_ldts=src_ldts, 
                 src_source=src_source, source_model=source_model) }}
 ```
@@ -823,7 +823,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 | Parameter      | Description                                         | Type             | Required?                                    |
 | -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
 | src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
-| src_dk         | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i> |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i> |
 | src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i> |
 | src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i> |
 | src_eff        | Source effective from column                        | String           | <i class="fas fa-check-circle required"></i> |

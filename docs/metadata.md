@@ -881,7 +881,7 @@ ___
       vars:
         source_model: 'v_stg_orders'
         src_pk: 'CUSTOMER_PK'
-        src_dk: 'CUSTOMER_PHONE'
+        src_cdk: 'CUSTOMER_PHONE'
         src_hashdiff: 'HASHDIFF'
         src_payload:
           - 'CUSTOMER_NAME'
