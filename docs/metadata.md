@@ -881,11 +881,11 @@ ___
       vars:
         source_model: 'v_stg_orders'
         src_pk: 'CUSTOMER_PK'
-        src_cdk: 'CUSTOMER_PHONE'
-        src_hashdiff: 'HASHDIFF'
+        src_cdk: 
+          - 'CUSTOMER_PHONE'
         src_payload:
           - 'CUSTOMER_NAME'
-          - 'CUSTOMER_PHONE'
+        src_hashdiff: 'HASHDIFF'
         src_eff: 'EFFECTIVE_FROM'
         src_ldts: 'LOADDATE'
         src_source: 'SOURCE'

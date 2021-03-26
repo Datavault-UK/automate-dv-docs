@@ -97,8 +97,6 @@ We recommend setting the `incremental` materialization on all of your MAS using 
         ma_sat_customer_details:
           vars:
             ...
-        ma_sat_booking_details:
-          vars:
             ...
     ```
 [comment]: <> (MAY NEED TO BE DELETED)
@@ -131,7 +129,7 @@ as follows.
     ```yaml
     ma_sat_customer_details:
       vars:
-        source_model: 'stg_customer'
+        source_model: 'stg_customer_hashed'
     ```
 [comment]: <> (NEW; not sure whether the "multi-active-satellites-mas" tag is the right one)
 !!! tip
@@ -161,15 +159,15 @@ We can now add this metadata to the `dbt_project`:
 === "dbt_project.yml"
 
     ```yaml hl_lines="4 5 6 7 8 9 10 11 12"
-    sat_order_customer_details:
+    ma_sat_customer_details:
       vars:
-        source_model: 'stg_customer'
+        source_model: 'stg_customer_hashed'
         src_pk: 'CUSTOMER_PK'
-        src_cdk: 'CUSTOMER_PHONE'
-        src_hashdiff: 'HASHDIFF'
+        src_cdk: 
+          - 'CUSTOMER_PHONE'
         src_payload:
           - 'CUSTOMER_NAME'
-          - 'CUSTOMER_PHONE'
+        src_hashdiff: 'HASHDIFF'
         src_eff: 'EFFECTIVE_FROM'
         src_ldts: 'LOAD_DATE'
         src_source: 'SOURCE'
@@ -177,7 +175,7 @@ We can now add this metadata to the `dbt_project`:
 
 ### Running dbt
 
-With our model complete and our YAML written, we can run dbt to create our `sat_customer_details` satellite.
+With our model complete and our YAML written, we can run dbt to create our `ma_sat_customer_details` multi active satellite.
 
 `dbt run -m +ma_sat_customer_details`
 

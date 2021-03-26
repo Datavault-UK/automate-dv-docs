@@ -854,8 +854,8 @@ Generates SQL to build a multi-active satellite table (MAS).
         ),
         
         records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
         )
         
         SELECT * FROM records_to_insert
@@ -865,50 +865,84 @@ Generates SQL to build a multi-active satellite table (MAS).
         
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            ,COUNT(DISTINCT a.HASHDIFF )
+                OVER (PARTITION BY a.CUSTOMER_PK) AS source_count
             FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE a.CUSTOMER_PK IS NOT NULL
+                AND a.CUSTOMER_PHONE IS NOT NULL
+                AND a.EXTENSION IS NOT NULL
         ),
-
         update_records AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE as a
             JOIN source_data as b
             ON a.CUSTOMER_PK = b.CUSTOMER_PK
         ),
-
         latest_records AS (
-            SELECT c.CUSTOMER_PK, c.CUSTOMER_PHONE, c.HASHDIFF, c.LOAD_DATE,
-                   CASE WHEN RANK()
-                   OVER (PARTITION BY c.CUSTOMER_PK
-                   ORDER BY c.LOAD_DATE DESC) = 1
-            THEN 'Y' ELSE 'N' END AS latest
-            FROM update_records as c
+            SELECT update_records.CUSTOMER_PHONE, update_records.CUSTOMER_PK, update_records.HASHDIFF, update_records.LOAD_DATE
+                ,COUNT(DISTINCT update_records.HASHDIFF )
+                    OVER (PARTITION BY update_records.CUSTOMER_PK) AS target_count
+                ,CASE WHEN RANK()
+                    OVER (PARTITION BY update_records.CUSTOMER_PK
+                    ORDER BY update_records.LOAD_DATE DESC) = 1
+                THEN 'Y' ELSE 'N' END AS latest
+            FROM update_records
             QUALIFY latest = 'Y'
         ),
-        changes AS (
-            SELECT DISTINCT
-             COALESCE(ls.CUSTOMER_PK, stg.CUSTOMER_PK) AS "CUSTOMER_PK"
-            FROM source_data AS stg
-            FULL OUTER JOIN latest_records AS ls
-            ON stg.CUSTOMER_PK = ls.CUSTOMER_PK
-            AND stg.CUSTOMER_PHONE = ls.CUSTOMER_PHONE
-            WHERE stg.HASHDIFF IS NULL -- existent entry in MAS not found in stage
-            OR ls.HASHDIFF IS NULL -- new entry in stage not found in latest set of MAS
-            OR stg.HASHDIFF != ls.HASHDIFF -- entry is modified
+        matching_records AS (
+            SELECT stage.CUSTOMER_PK
+                ,COUNT(DISTINCT stage.HASHDIFF) AS match_count
+            FROM source_data AS stage
+            INNER JOIN latest_records
+                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
+                AND stage.HASHDIFF = latest_records.HASHDIFF
+                AND stage.CUSTOMER_PHONE IS NOT NULL = latest_records.CUSTOMER_PHONE IS NOT NULL
+            GROUP BY stage.CUSTOMER_PK
+        ),
+        satellite_update AS (
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF
+            FROM source_data AS stage
+            INNER JOIN latest_records
+                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                AND latest_records.HASHDIFF != stage.HASHDIFF
+            LEFT OUTER JOIN matching_records
+                ON matching_records.CUSTOMER_PK = latest_records.CUSTOMER_PK
+            WHERE
+                (
+                    (
+                    stage.source_count != latest_records.target_count
+                    AND
+                    COALESCE(matching_records.match_count, 0) = latest_records.target_count
+                    )
+                    OR
+                    (
+                    COALESCE(matching_records.match_count, 0) != latest_records.target_count
+                    )
+                )
+        ),
+        satellite_insert AS (
+            SELECT stage.CUSTOMER_PK
+            FROM source_data AS stage
+            LEFT OUTER JOIN latest_records
+                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
+            WHERE latest_records.CUSTOMER_PK IS NULL
         ),
         records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS stg
-            LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_PK = stg.CUSTOMER_PK
-            AND latest_records.LOAD_DATE = stg.LOAD_DATE
-            AND latest_records.CUSTOMER_PHONE = stg.CUSTOMER_PHONE
-            LEFT JOIN changes
-            ON changes.CUSTOMER_PK = stg.CUSTOMER_PK
-            WHERE changes.CUSTOMER_PK = stg.CUSTOMER_PK
-            OR changes.CUSTOMER_PK IS NULL AND stg.CUSTOMER_PK IS NULL
-        )
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+            INNER JOIN satellite_update
+                ON satellite_update.CUSTOMER_PK = stage.CUSTOMER_PK
+                AND satellite_update.HASHDIFF = stage.HASHDIFF
         
+            UNION
+        
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+            INNER JOIN satellite_insert
+                ON satellite_insert.CUSTOMER_PK = stage.CUSTOMER_PK
+        )
+
         SELECT * FROM records_to_insert
         ```
 
