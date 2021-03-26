@@ -656,7 +656,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         (
             SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.CUSTOMER_ORDER_PK
+                        PARTITION BY b.ORDER_PK
                         ORDER BY b.LOAD_DATE DESC
                    ) AS row_number
             FROM DBTVAULT.TEST.EFF_SAT AS b
@@ -1696,18 +1696,18 @@ allows you to define ranked columns to generate, as follows:
 source_model: "MY_STAGE"
 ranked_columns:
   DBTVAULT_RANK:
-    parition_by: "CUSTOMER_PK"
+    partition_by: "CUSTOMER_PK"
     order_by: "LOAD_DATETIME"
   SAT_BOOKING_RANK:
-    parition_by: "BOOKING_PK"
+    partition_by: "BOOKING_PK"
     order_by: "LOAD_DATETIME"
 ```
 
 This will create columns like so:
 
 ```
-RANK() OVER(PARITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-RANK() OVER(PARITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
 ```
 
 ___
@@ -2118,7 +2118,7 @@ A rank column can be created one of three ways:
     source_model: "MY_STAGE"
     ranked_columns:
       DBTVAULT_RANK:
-        parition_by: "CUSTOMER_PK"
+        partition_by: "CUSTOMER_PK"
         order_by: "LOAD_DATETIME"
     ```
 
@@ -2127,7 +2127,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
+      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
 
 
