@@ -26,7 +26,53 @@ If there is already a source in the raw staging layer, you may keep this or over
 
 ## NULL Handling
 
-[//]: # (TODO: This section)
+The handling of nulls is important in Data Vault 2.0 because as a general rule, nulls represent a lack of something,
+and therefore do not mean anything to the business. This means we do not want records or keys containing nulls ending
+up in our raw vault.
+
+Nulls are also handled in the built-in hashing processes in dbtvault. 
+
+- Nulls are replaced with a placeholder, `^^` 
+- If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL. 
+- If all components of a hashdiff hashed column are NULL, then the hashdiff will be a hash of `^^` multiplied 
+  by how many components the hashdiff comprise and separated by the concat string `||`.
+  e.g.
+  ```text
+    ^^||^^||^^ = 3C92E664B39D90428DBC94975B5DDA58
+  ```
+
+This is described in more depth below (with code examples).
+
+
+dbtvault has built-in support for ensuring nulls do not get loaded into the raw vault. Null handling is described below for each structure:
+
+### Staging
+
+All records are loaded and hashes evaluated as null according to the descriptions above and details in the hashing sections below.
+
+### Hubs
+
+If the primary key is NULL, then the record is not loaded. 
+
+### Links
+
+If the primary or ANY of the foreign keys are null, then the record is not loaded.
+
+### Satellites
+
+If the primary key is NULL, then the record is not loaded. 
+
+### Transactional Links
+
+If the primary or ANY of the foreign keys are null, then the record is not loaded.
+
+### Effectivity Satellites
+
+If the driving key column(s) or secondary foreign key (sfk) column(s) are null then the record is not loaded.
+
+!!! note
+    There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all 
+    the SFK and DFK columns (so the PK will evaluate as null if they are all null). 
 
 ## Hashing
 
@@ -60,7 +106,7 @@ This salt **must** be a constant, as we still need to ensure that the same value
 so that we may reliably look-up and reference the hashed values. The salt could be an (initially) randomly generated 128-bit string, for example, which is then
 never changed and stored securely in a secrets manager. 
 
-In future, we plan to develop a helper macro for achieving these salted hashes, to cater to this use case.
+In the future, we plan to develop a helper macro for achieving these salted hashes, to cater to this use case.
 
 ### Why do we hash?
 
@@ -120,15 +166,13 @@ When we hash multiple columns, we take the following approach:
 === "Multi Column Hashing"
 
     === "Non-Hashdiff"
-        
-        !!! tip "Added in dbtvault 0.7.2"
-    
+
         ```sql 
         CAST(MD5_BINARY(NULLIF(CONCAT_WS('||', 
             IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
             IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
             IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-        ), '^^||^^||^^')) AS BINARY(16)) AS HASHDIFF
+        ), '^^||^^||^^')) AS BINARY(16)) AS CUSTOMER_PK
         ```
 
     === "Hashdiff"
@@ -162,21 +206,16 @@ hash value, particularly where `NULLS` are concerned.
 
 7\. Steps 7 and 8 are identical to steps 5 and 6 described in single-column hashing.
 
+### Hashdiff components
 
-#### Hashdiff components
+As per Data Vault 2.0 Standards, `HASHDIFF` columns should contain the natural key (the column(s) a PK/HK is calculated from) 
+of the record, and the payload of the record (all the concrete data for the record).
 
-[//]: # (TODO: Talk about what goes into a hashdiff, especially NK)
-
-#### The future of hashing in dbtvault
-
-[We plan to make hashing more configurable in the future](https://github.com/Datavault-UK/dbtvault/pull/4), meaning that
-the concatenation string (`||`), `NULL` string (`^^`) and trimming, casing and `NULL` handling in general will be fully configurable. 
-
-As mentioned elsewhere in the documentation, we will also add functionality to allow hashing to be disabled entirely. 
-
-In summary, the intent behind our hashing approach is to provide a robust method of ensuring consistent hashing (same input gives same output).
-Until we provide more configuration options, feel free to modify our macros for your needs, as long as you stick to a standard that makes sense to you or your organisation.
-If you need advice, [feel free to join our slack and ask our developers](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA)!.
+!!! note
+    
+    Prior to dbtvault v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
+    In dbtvault v0.7.4, macros have been updated to include logic to ensure the primary key is checked
+    in addition to the hashdiff when detecting new records. It is still best practise to include the natural keys, however. 
 
 ### Hashing best practices
 
@@ -269,6 +308,17 @@ We recommend you keep the hashing algorithm consistent across all tables, howeve
 Read the [dbt documentation](https://docs.getdbt.com/v0.15.0/docs/var) for further information on variable scoping.
 
 !!! warning
-    Stick with your chosen algorithm unless you can afford to full-refresh and you still have access to source data.
+    Stick with your chosen algorithm unless you can afford to full-refresh, and you still have access to source data.
     Changing between hashing configurations when data has already been loaded will require a full-refresh 
     of your models in order to re-calculate all hashes.
+
+### The future of hashing in dbtvault
+
+[We plan to make hashing more configurable in the future](https://github.com/Datavault-UK/dbtvault/pull/4), meaning that
+the concatenation string (`||`), `NULL` string (`^^`) and trimming, casing and `NULL` handling in general will be fully configurable. 
+
+As mentioned elsewhere in the documentation, we will also add functionality to allow hashing to be disabled entirely. 
+
+In summary, the intent behind our hashing approach is to provide a robust method of ensuring consistent hashing (same input gives same output).
+Until we provide more configuration options, feel free to modify our macros for your needs, as long as you stick to a standard that makes sense to you or your organisation.
+If you need advice, [feel free to join our slack and ask our developers](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA)!.

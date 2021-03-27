@@ -439,19 +439,17 @@ Generates sql to build a transactional link table using the provided parameters.
                    src_source=src_source, source_model=source_model) }}
 ```
 
-[//]: # (TODO: src_payload now optional)
-
 #### Parameters
 
-| Parameter     | Description                                         | Type                | Required?                                    |
-| ------------- | --------------------------------------------------- | ------------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String | <i class="fas fa-check-circle required"></i> |
-| src_fk        | Source foreign key column(s)                        | List[String]        | <i class="fas fa-check-circle required"></i> |
-| src_payload   | Source payload column(s)                            | List[String]        | <i class="fas fa-check-circle required"></i> |
-| src_eff       | Source effective from column                        | String              | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String              | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | String              | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | String              | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                | Required?                                        |
+| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------ |
+| src_pk        | Source primary key column                           | List[String]/String | <i class="fas fa-check-circle required"></i>     |
+| src_fk        | Source foreign key column(s)                        | List[String]        | <i class="fas fa-check-circle required"></i>     |
+| src_payload   | Source payload column(s)                            | List[String]        | <i class="fas fa-minus-circle not-required"></i> |
+| src_eff       | Source effective from column                        | String              | <i class="fas fa-check-circle required"></i>     |
+| src_ldts      | Source load date timestamp column                   | String              | <i class="fas fa-check-circle required"></i>     |
+| src_source    | Name of the column containing the source ID         | String              | <i class="fas fa-check-circle required"></i>     |
+| source_model  | Staging model name                                  | String              | <i class="fas fa-check-circle required"></i>     |
 
 !!! tip
 [Read the tutorial](tutorial/tut_t_links.md) for more details
@@ -513,19 +511,17 @@ Generates sql to build a satellite table using the provided parameters.
                 src_source=src_source, source_model=source_model) }}
 ```
 
-[//]: # (TODO: src_eff now optional)
-
 #### Parameters
 
-| Parameter     | Description                                         | Type             | Required?                                    |
-| ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
-| src_hashdiff  | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i> |
-| src_payload   | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i> |
-| src_eff       | Source effective from column                        | String           | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type             | Required?                                        |
+| ------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------ |
+| src_pk        | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>     |
+| src_hashdiff  | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>     |
+| src_payload   | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>     |
+| src_eff       | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i> |
+| src_ldts      | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>     |
+| src_source    | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>     |
+| source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>     |
 
 !!! tip
 [Read the tutorial](tutorial/tut_satellites.md) for more details
@@ -592,7 +588,7 @@ Generates sql to build a satellite table using the provided parameters.
 
 #### Hashdiff Aliasing
 
-[//]: # (TODO: Write about hashdiff aliasing or link)
+If you have multiple satellites using a single stage as its data source, then you will need to use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
 
 ___
 

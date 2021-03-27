@@ -18,11 +18,15 @@ and create a hash on a concatenation of them.
 Foreign keys referencing the primary key for each hub referenced in the t-link (2 or more depending on the number of hubs 
 referenced) 
 
-[//]: # (TODO: Note about being optional)
 ##### Payload (src_payload)
 A t-link payload consists of concrete data for the transaction record. This could be
 a transaction number, an amount paid, transaction type or more. The payload will contain all the
-concrete data for a transaction. 
+concrete data for a transaction. This field is optional because you may want to model your transactions as a T-Link, and multiple satellites (off of the T-Link).
+This modelling approach can be useful if there are many fields, and these fields comprise multiple rates of change or types of data.
+
+!!! tip
+    
+    Now optional in dbtvault 0.7.4
 
 ##### Effective From (src_eff)
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
