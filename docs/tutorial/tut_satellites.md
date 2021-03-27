@@ -27,6 +27,9 @@ satellite record. It records that a record is valid from a specific point in tim
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
 longer have the most recent `EFFECTIVE_FROM` value. 
 
+!!! tip
+    
+
 ##### Load date (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
