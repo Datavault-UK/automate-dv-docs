@@ -810,7 +810,6 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 #### Usage
 
-[comment]: <> (NEW)
 ``` jinja
 {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, src_payload=src_payload,
                 src_eff=src_eff, src_ldts=src_ldts, 
@@ -819,7 +818,6 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 #### Parameters
 
-[comment]: <> (NEW)
 | Parameter      | Description                                         | Type             | Required?                                    |
 | -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
 | src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
@@ -831,18 +829,15 @@ Generates SQL to build a multi-active satellite table (MAS).
 | src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i> |
 | source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
 
-[comment]: <> (NEW)
 !!! tip
     [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
 
 #### Example Metadata
 
-[comment]: <> (NEW)
 [See examples](metadata.md#multi-active-satellites-mas)
 
 #### Example Output
 
-[comment]: <> (NEW)
 === "Snowflake"
     
     === "Base Load"

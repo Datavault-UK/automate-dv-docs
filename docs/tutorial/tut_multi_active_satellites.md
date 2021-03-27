@@ -1,11 +1,9 @@
-[comment]: <> (The "NEW" comments below showcase the paragraphs that are either new or have been changed 
-- from the base satellite paragraph info)
-
-
 # Multi Active Satellites (MAS)
-[comment]: <> (NEW)
-Multi Active Satellites (MAS) contain point-in-time payload data related to their parent hub or link records that 
-allow for multiple records to be valid at the same time. 
+
+Multi Active Satellites (MAS) contain point-in-time payload data related to their parent hub or link records that
+allow for multiple records to be valid at the same time. Use cases include when customers have multiple active 
+phone numbers or addresses. 
+
 In order to accommodate for multiple records of the same entity at a point-in-time, one or more Child-Dependent Keys 
 will be included in the Primary Key. 
 
@@ -13,24 +11,16 @@ will be included in the Primary Key.
 
 Our multi active satellite structures will contain:
 
-[comment]: <> (These lines below have been commented out as I'm not sure what I should input here)
-[comment]: <> (##### English-readable name of column/metadata attribute &#40;attribute name&#41;)
-
-[comment]: <> (< DESCRIPTION >)
-
-[comment]: <> (##### source_model)
-
 ##### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key.
 For a multi active satellite, this should be the same as the corresponding link or hub PK, concatenated with the load timestamp.
 
-[comment]: <> (NEW)
 ##### Child Dependent Key(s) (src_cdk)
 The child dependent keys are a subset of the payload (below) that helps with identifying the different valid records 
 for each entity inside the multi active satellite. For example, a customer will have different valid phone number valid
 at the same time, the phone number attribute will be selected as a child dependent key that helps the natural key keep 
 records unique and identifiable. If the customer has only one phone number, but multiple extensions associated with that 
-phone number, then both the phone number and the extension attribute will be considered child dependent keys. 
+phone number, then both the phone number, and the extension attribute will be considered a child dependent key. 
 
 ##### Hashdiff (src_hashdiff)
 This is a concatenation of the payload (below) and the primary key. This allows us to 
@@ -64,10 +54,8 @@ or a string directly naming the source system.
 
 ### Setting up MAS models
 
-[comment]: <> (NEW)
 Create a new dbt model as before. We'll call this one `ma_sat_customer_details`.
 
-[comment]: <> (NEW)
 === "ma_sat_customer_details.sql"
 
     ```jinja
@@ -76,7 +64,6 @@ Create a new dbt model as before. We'll call this one `ma_sat_customer_details`.
                     var('source_model'))                                   }}
     ```
 
-[comment]: <> (NEW)
 To create a MAS model, we simply copy and paste the above template into a model named after the MAS we
 are creating. dbtvault will generate a MAS using parameters provided in the next steps.
 
@@ -84,7 +71,6 @@ MAS should use the incremental materialization, as we load and add new records t
 
 We recommend setting the `incremental` materialization on all of your MAS using the `dbt_project.yml` file:
 
-[comment]: <> (NEW)
 === "dbt_project.yml"
 
     ```yaml
@@ -99,17 +85,13 @@ We recommend setting the `incremental` materialization on all of your MAS using 
             ...
             ...
     ```
-[comment]: <> (MAY NEED TO BE DELETED)
+
 !!! tip "Loading Multi Active Satellites correctly"
-    dbtvault provides custom materialisations, designed to load multi active satellites (among other structures) in the correct way:
+    dbtvault provides custom materialisations, designed to load structures which contain deltas (such as multi active satellites, among other structures) 
+    in the correct way:
     
     - [vault_insert_by_period](../macros.md#vault_insert_by_period)
     - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
-
-[comment]: <> (MAY NEED TO BE DELETED)
-!!! tip "New in dbtvault v0.7.0"
-    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
 
 [Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
@@ -123,7 +105,6 @@ The first piece of metadata we need is the source model. This step is easy, as i
 staging layer ourselves.  All we need to do is provide the name of stage table as a string in our metadata 
 as follows.
 
-[comment]: <> (NEW)
 === "dbt_project.yml"
 
     ```yaml
@@ -131,7 +112,7 @@ as follows.
       vars:
         source_model: 'stg_customer_hashed'
     ```
-[comment]: <> (NEW; not sure whether the "multi-active-satellites-mas" tag is the right one)
+
 !!! tip
     See our [metadata reference](../metadata.md#multi-active-satellites-mas) for more ways to provide metadata
 
@@ -144,7 +125,6 @@ staging layer which map to them:
 1. The primary key of the parent hub or link table,  which is a hashed natural key. 
 The `CUSTOMER_PK` we created earlier in the [staging](tut_staging.md) section will be used for `sat_customer_details`.
 
-[comment]: <> (NEW)
 2. The child dependent key, `CUSTOMER_PHONE`, that is part of the payload inside the raw [staging](../macros.md#stage) layer.  
 3. A hashdiff. We created `HASHDIFF` in [staging](tut_staging.md) earlier, which we will use here.
 4. Some payload columns: `CUSTOMER_NAME`, `CUSTOMER_PHONE` which should be present in the 
@@ -155,7 +135,6 @@ raw staging layer via an [stage](../macros.md#stage) macro call.
 
 We can now add this metadata to the `dbt_project`:
 
-[comment]: <> (NEW)
 === "dbt_project.yml"
 
     ```yaml hl_lines="4 5 6 7 8 9 10 11 12"

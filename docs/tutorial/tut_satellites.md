@@ -77,7 +77,8 @@ We recommend setting the `incremental` materialization on all of your satellites
     ```
 
 !!! tip "Loading Satellites correctly"
-    dbtvault provides custom materialisations, designed to load satellites (among other structures) in the correct way:
+    dbtvault provides custom materialisations, designed to load structures which contain deltas (such as satellites, among other structures) 
+    in the correct way:
     
     - [vault_insert_by_period](../macros.md#vault_insert_by_period)
     - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
