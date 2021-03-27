@@ -837,35 +837,6 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```
 ___
 
-### Extended Tracking Satellites (XTS)
-
-#### Parameters
-
-[xts macro parameters](macros.md#xts)
-
-#### Metadata
-=== "dbt_project.yml"
-    ```yaml
-    xts_customer:
-      vars:
-        source_model: 'stg_customer'
-        src_pk: 'CUSTOMER_PK'
-        src_satellite: 
-            'SATELLITE_CUSTOMER':
-                'sat_name': 
-                    'SATELLITE_NAME': 'SATELLITE_1'
-                'hashdiff':
-                    'HASHDIFF': 'HASHDIFF_1'
-            'SATELLITE_CUSTOMER_DETAILS':
-                'sat_name':
-                    'SATELLITE_NAME': 'SATELLITE_2'
-                'hashdiff': 
-                    'HASHDIFF': 'HASHDIFF_2'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
-___
-
 ### Multi Active Satellites (MAS)
 
 #### Parameters
@@ -891,39 +862,6 @@ ___
         src_source: 'SOURCE'
     ```
 
-___
-
-### Point-in-Time (PITs)
-
-#### Parameters
-
-[pit macro parameters](macros.md#pit)
-
-#### Metadata
-=== "dbt_project.yml"
-    ```yaml
-    PIT_CUSTOMER:
-      vars:
-        source_model: HUB_CUSTOMER
-        src_pk: CUSTOMER_PK
-        as_of_date_table: AS_OF_DATES
-        satellites: 
-            - SAT_CUSTOMER_DETAILS
-                -pk
-                    'PK': 'CUSTOMER_PK'
-                -ldts
-                    'LDTS': 'LOAD_DATE'
-             - SAT_CUSTOMER_LOGIN
-                -pk
-                    'PK': 'CUSTOMER_PK'
-                -ldts
-                    'LDTS': 'LOAD_DATE'
-            - SAT_CUSTOMER_PROFILE
-                -pk
-                    'PK': 'CUSTOMER_PK'
-                -ldts
-                    'LDTS': 'LOAD_DATE'
-      ```
 ___
 
 ### The problem with metadata
