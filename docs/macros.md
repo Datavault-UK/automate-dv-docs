@@ -811,23 +811,23 @@ Generates SQL to build a multi-active satellite table (MAS).
 #### Usage
 
 ``` jinja
-{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, src_payload=src_payload,
-                src_eff=src_eff, src_ldts=src_ldts, 
-                src_source=src_source, source_model=source_model) }}
+{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                   src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
+                   src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter      | Description                                         | Type             | Required?                                    |
-| -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
-| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i> |
-| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i> |
-| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i> |
-| src_eff        | Source effective from column                        | String           | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
+| Parameter      | Description                                         | Type             | Required?                                         |
+| -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
+| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>      |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i>      |
+| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>      |
+| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>      |
+| src_eff        | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i>  |
+| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>      |
+| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>      |
+| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>      |
 
 !!! tip
     [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
