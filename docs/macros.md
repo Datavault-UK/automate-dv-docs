@@ -656,7 +656,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
         (
             SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.CUSTOMER_ORDER_PK
+                        PARTITION BY b.ORDER_PK
                         ORDER BY b.LOAD_DATE DESC
                    ) AS row_number
             FROM DBTVAULT.TEST.EFF_SAT AS b
@@ -790,7 +790,7 @@ Example Output section above. The result of this will be additional effectivity 
 will aid business logic and creation of presentation layer structures downstream.
 
 In most cases where Effectivity Satellites are recording 1-1 or 1-M relationships, this feature can be safely enabled.
-In situation where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This feature
+In situations where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This feature
 is disabled by default because it could be considered an application of a business rule:
 The definition of the 'end' of a relationship is considered business logic which should happen in the business vault.
 
@@ -799,6 +799,227 @@ The definition of the 'end' of a relationship is considered business logic which
 !!! warning 
     We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
     exercised if you are unsure.
+
+___
+
+### xts
+
+([view source]())
+
+Generates SQL to build a Extended Tracking Satellite table using the provided parameters
+
+#### Usage
+
+``` jinja
+{{ dbtvault.xts(var('src_pk'), var('src_satellite'), var('src_ldts'),
+                var('src_source'), var('source_model'))                 }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                                    | Type             | Required?                                    |
+| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
+| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load dat timestamp column                               | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+
+#### Example Metadata
+
+[See examples](metadata.md#extended-tracking-satellites-xts)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Single-Source"
+
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE_1 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE_1 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_1_from_PRIMED_STAGE_2 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE_2 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE_1
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_1
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+___
+
+### pit
+
+([view source]())
+
+Generates SQL to build a point-in-time table (PIT).
+
+#### Usage
+
+``` jinja
+{{ {{ dbtvault.pit({src_pk}, {as_of_dates_table}, {satellites}, 
+    {source_model})                                       }} }}
+```
+
+#### Parameters
+
+| Parameter         | Description                                         | Type             | Required?                                    |
+| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table| Name for the AS OF table                            |  String          | <i class="fas fa-check-circle required"></i> |
+|  satellites       | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
+
+#### Example Metadata
+
+[See examples](metadata.md#point-in-time-pits)
+
+#### Example Output
+
+=== "Snowflake"
+```sql
+ SELECT
+         h.CUSTOMER_PK,
+         x.AS_OF_DATE,
+     
+         COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_DETAILS_PK,
+         COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS,
+         COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_LOGIN_PK,
+         COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_LOGIN_LDTS,
+         COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK), CAST( '0000000000000000' AS BINARY)) AS SAT_CUSTOMER_PROFILE_PK,
+         COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE),TO_TIMESTAMP('0000-01-01 00:00:00.000000')) AS SAT_CUSTOMER_PROFILE_LDTS
+ 
+ FROM DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.HUB_CUSTOMER AS h
+ 
+ INNER JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.AS_OF_DATE AS x
+     ON (1=1)
+ 
+ LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_DETAILS AS SAT_CUSTOMER_DETAILS_SRC
+         ON  h.CUSTOMER_PK = SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK
+     AND SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE <= x.AS_OF_DATE
+ 
+ LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_LOGIN AS SAT_CUSTOMER_LOGIN_SRC
+         ON  h.CUSTOMER_PK = SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK
+     AND SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE <= x.AS_OF_DATE
+ 
+ LEFT JOIN DBTVAULT_DEV.TEST_FLYNN_SHERIDAN.SAT_CUSTOMER_PROFILE AS SAT_CUSTOMER_PROFILE_SRC
+         ON  h.CUSTOMER_PK = SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK
+     AND SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE <= x.AS_OF_DATE
+ 
+ 
+ 
+ GROUP BY
+  h.CUSTOMER_PK, x.AS_OF_DATE
+ ORDER BY (1, 2)
+
+```
+
+#### As Of Date Structures
+
+An As of Date table contains a single column of dates used to construct the history in the PIT. A Typical structure will 
+be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
+time after where the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
+3 months of end of week values. So the as of dates table would contain a datetime for each entry to mach this. 
+As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
+Using the example history before if a week had passed since when we had created the as of dates table
+it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
+
+!!! warning 
+    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    have to supply this your self. Another caveat is even though the As of Date table can take any name, as long as it 
+    is called correctly in the .yml, the column name must be called AS_OF_DATE.
 
 ___
 
@@ -1475,18 +1696,18 @@ allows you to define ranked columns to generate, as follows:
 source_model: "MY_STAGE"
 ranked_columns:
   DBTVAULT_RANK:
-    parition_by: "CUSTOMER_PK"
+    partition_by: "CUSTOMER_PK"
     order_by: "LOAD_DATETIME"
   SAT_BOOKING_RANK:
-    parition_by: "BOOKING_PK"
+    partition_by: "BOOKING_PK"
     order_by: "LOAD_DATETIME"
 ```
 
 This will create columns like so:
 
 ```
-RANK() OVER(PARITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-RANK() OVER(PARITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
 ```
 
 ___
@@ -1897,7 +2118,7 @@ A rank column can be created one of three ways:
     source_model: "MY_STAGE"
     ranked_columns:
       DBTVAULT_RANK:
-        parition_by: "CUSTOMER_PK"
+        partition_by: "CUSTOMER_PK"
         order_by: "LOAD_DATETIME"
     ```
 
@@ -1906,7 +2127,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
+      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
 
 

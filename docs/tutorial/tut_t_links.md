@@ -77,7 +77,7 @@ We recommend setting the `incremental` materialization on all of your t-links us
             ...
     ```
 
-[Read more about incremental models](https://docs.getdbt.com/v0.15.0/docs/configuring-incremental-models)
+[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
 ### Adding the metadata
 
