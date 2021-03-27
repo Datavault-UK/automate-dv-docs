@@ -24,6 +24,10 @@ use-case in the code examples.
 
 If there is already a source in the raw staging layer, you may keep this or override it using the [stage](macros.md#stage) macro.
 
+## NULL Handling
+
+[//]: # (TODO: This section)
+
 ## Hashing
 
 !!! seealso "See Also"
@@ -69,8 +73,8 @@ as it is a single column, same data type, it supports pattern-based loading.
 
 #### Hashdiffs
 
-Used to finger-print the payload of a satellite (similar to a checksum) so it is easier to detect if there has been a 
-change in payload, to trigger the load of a new satellite record. This simplifies the SQL as otherwise we'd have to 
+Used to finger-print the payload of a satellite (similar to a checksum), so that it is easier to detect if there has been a 
+change in the payload, to trigger the load of a new satellite record. This simplifies the SQL as otherwise we'd have to 
 compare each column in turn and handle nulls to see if a change had occurred. 
 
 Hashing is sensitive to column ordering. If you provide the `is_hashdiff: true` flag to your column specification 
@@ -157,6 +161,11 @@ Concatenating in this way means that we can be more confident that a combination
 hash value, particularly where `NULLS` are concerned. 
 
 7\. Steps 7 and 8 are identical to steps 5 and 6 described in single-column hashing.
+
+
+#### Hashdiff components
+
+[//]: # (TODO: Talk about what goes into a hashdiff, especially NK)
 
 #### The future of hashing in dbtvault
 

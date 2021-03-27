@@ -86,7 +86,7 @@ Generates SQL to build a hub table using the provided parameters.
 | source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_hubs.md) for more details
+[Read the tutorial](tutorial/tut_hubs.md) for more details
 
 #### Example Metadata
 
@@ -266,7 +266,7 @@ Generates sql to build a link table using the provided parameters.
 | source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_links.md) for more details
+[Read the tutorial](tutorial/tut_links.md) for more details
 
 #### Example Metadata
 
@@ -439,6 +439,8 @@ Generates sql to build a transactional link table using the provided parameters.
                    src_source=src_source, source_model=source_model) }}
 ```
 
+[//]: # (TODO: src_payload now optional)
+
 #### Parameters
 
 | Parameter     | Description                                         | Type                | Required?                                    |
@@ -452,7 +454,7 @@ Generates sql to build a transactional link table using the provided parameters.
 | source_model  | Staging model name                                  | String              | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_t_links.md) for more details
+[Read the tutorial](tutorial/tut_t_links.md) for more details
 
 #### Example Metadata
 
@@ -511,6 +513,8 @@ Generates sql to build a satellite table using the provided parameters.
                 src_source=src_source, source_model=source_model) }}
 ```
 
+[//]: # (TODO: src_eff now optional)
+
 #### Parameters
 
 | Parameter     | Description                                         | Type             | Required?                                    |
@@ -524,7 +528,7 @@ Generates sql to build a satellite table using the provided parameters.
 | source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_satellites.md) for more details
+[Read the tutorial](tutorial/tut_satellites.md) for more details
 
 #### Example Metadata
 
@@ -586,6 +590,10 @@ Generates sql to build a satellite table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+#### Hashdiff Aliasing
+
+[//]: # (TODO: Write about hashdiff aliasing or link)
+
 ___
 
 ### eff_sat
@@ -618,7 +626,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
 | source_model   | Staging model name                                  | String                  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
+[Read the tutorial](tutorial/tut_eff_satellites.md) for more details
 
 #### Example Metadata
 
@@ -790,15 +798,14 @@ Example Output section above. The result of this will be additional effectivity 
 will aid business logic and creation of presentation layer structures downstream.
 
 In most cases where Effectivity Satellites are recording 1-1 or 1-M relationships, this feature can be safely enabled.
-In situations where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This feature
-is disabled by default because it could be considered an application of a business rule:
+In situations where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This
+feature is disabled by default because it could be considered an application of a business rule:
 The definition of the 'end' of a relationship is considered business logic which should happen in the business vault.
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
-!!! warning 
-    We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
-    exercised if you are unsure.
+!!! warning We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
+exercised if you are unsure.
 
 ___
 
@@ -810,6 +817,8 @@ Generates SQL to build a Extended Tracking Satellite table using the provided pa
 
 #### Usage
 
+[comment]: <> (NEW)
+
 ``` jinja
 {{ dbtvault.xts(var('src_pk'), var('src_satellite'), var('src_ldts'),
                 var('src_source'), var('source_model'))                 }}
@@ -817,13 +826,22 @@ Generates SQL to build a Extended Tracking Satellite table using the provided pa
 
 #### Parameters
 
-| Parameter      | Description                                                    | Type             | Required?                                    |
-| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
-| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load dat timestamp column                               | String           | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+[comment]: <> (NEW)
+
+| Parameter      | Description                                         | Type             | Required?                                    |
+| -------------- | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i> |
+| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i> |
+| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i> |
+| src_eff        | Source effective from column                        | String           | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i> |
+
+[comment]: <> (NEW)
+!!! tip
+[Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
 
 #### Example Metadata
 
@@ -833,8 +851,8 @@ Generates SQL to build a Extended Tracking Satellite table using the provided pa
 
 === "Snowflake"
 
-    === "Single-Source"
-
+    === "Base Load"
+    
         ```sql
         WITH 
         satellite_SATELLITE_1_from_PRIMED_STAGE AS (
@@ -1479,13 +1497,13 @@ Here, we create a new derived column called `CUSTOMER_DOB_UK` which formats the 
 (contained in our source) to use the UK date format, using a function. We then use the new `CUSTOMER_DOB_UK` as a
 component of the `HASHDIFF` column in our `hashed_columns` configuration.
 
-For the `ranked_columns` configuration, the derived and hashed columns are in scope, in the same way as above for the 
+For the `ranked_columns` configuration, the derived and hashed columns are in scope, in the same way as above for the
 `hashed_columns` configuration.
 
 #### Overriding column names
 
-It is possible to re-use column names present in the source, for **derived and hashed columns**. This is useful if you wish to
-replace the value of a source column with a new value. For example, if you wish to cast a value:
+It is possible to re-use column names present in the source, for **derived and hashed columns**. This is useful if you
+wish to replace the value of a source column with a new value. For example, if you wish to cast a value:
 
 ```yaml
 source_model: "MY_STAGE"
@@ -1493,11 +1511,11 @@ derived_columns:
   CUSTOMER_DOB: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
 ```
 
-The above snippet, which includes a `derived_columns` configuration, will re-format the date in the `CUSTOMER_DOB` column,
-and alias it to `CUSTOMER_DOB`, effectively replacing the value present in that column in this staging layer. 
+The above snippet, which includes a `derived_columns` configuration, will re-format the date in the `CUSTOMER_DOB`
+column, and alias it to `CUSTOMER_DOB`, effectively replacing the value present in that column in this staging layer.
 
-There should not be a common need for this functionality, and it is advisable to keep the old column value around for auditability
-purposes, however this could be useful in some scenarios. 
+There should not be a common need for this functionality, and it is advisable to keep the old column value around for
+auditability purposes, however this could be useful in some scenarios.
 
 #### Exclude Flag (Hashed Columns)
 
@@ -1689,8 +1707,8 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 !!! tip "New in dbtvault 0.7.2"
 
-To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns` configuration 
-allows you to define ranked columns to generate, as follows:
+To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
+configuration allows you to define ranked columns to generate, as follows:
 
 ```yaml
 source_model: "MY_STAGE"
@@ -1716,8 +1734,7 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/staging/hash_columns.sql))
 
-!!! note
-    This is a helper macro used within the stage macro, but can be used independently.
+!!! note This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
@@ -1725,8 +1742,7 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/staging/derive_columns.sql))
 
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
+!!! note This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
 column value.
@@ -1735,10 +1751,9 @@ column value.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/staging/rank_columns.sql))
 
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
+!!! note This is a helper macro used within the stage macro, but can be used independently.
 
-Generates SQL to create columns using the `RANK()` window function. 
+Generates SQL to create columns using the `RANK()` window function.
 
 ___
 
@@ -1756,18 +1771,17 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/supporting/hash.sql))
 
-!!! warning 
-    This macro ***should not be*** used for cryptographic purposes.
+!!! warning This macro ***should not be*** used for cryptographic purposes.
 
     The intended use is for creating checksum-like values only, so that we may compare records accurately.
     
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-    - [hash_columns](#hash_columns)
-    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
-    for more detailed information on the purposes of this macro and what it does.
-    
+- [hash_columns](#hash_columns)
+- Read [Hashing best practises and why we hash](best_practices.md#hashing)
+for more detailed information on the purposes of this macro and what it does.
+
     - You may choose between ```MD5``` and ```SHA-256``` hashing.
       [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
@@ -1805,7 +1819,7 @@ A macro for generating hashing SQL for columns.
         ```
 
 !!! tip
-    [hash_columns](#hash_columns) may be used to simplify the hashing process and generate multiple hashes with one macro.
+[hash_columns](#hash_columns) may be used to simplify the hashing process and generate multiple hashes with one macro.
 
 #### Parameters
 
@@ -1833,19 +1847,14 @@ A macro for quickly prefixing a list of columns with a string.
 #### Usage
 
 === "Input"
-    ```sql 
-    {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }}
-    {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
-    ```
+```sql {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
+```
 
 === "Output"
-    ```sql 
-    a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE 
-    a.CUSTOMERKEY
-    ```
+```sql a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
+```
 
-!!! Note 
-    Single columns must be provided as a 1-item list, as in the second example above.
+!!! Note Single columns must be provided as a 1-item list, as in the second example above.
 
 ___
 
@@ -1900,9 +1909,8 @@ range. More detail on how this works is below.
 #### Usage
 
 === "Manual Load range #1"
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-                       start_date='2020-01-30') }}
+```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+start_date='2020-01-30') }}
 
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
@@ -1911,9 +1919,8 @@ range. More detail on how this works is below.
     ```
 
 === "Manual Load range #2"
-    ```jinja
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-                       start_date='2020-01-30', stop_date='2020-04-30') }}
+```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+start_date='2020-01-30', stop_date='2020-04-30') }}
 
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
@@ -1922,9 +1929,8 @@ range. More detail on how this works is below.
     ```
 
 === "Manual Load range #3"
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-              start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
+```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
 
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
@@ -1933,9 +1939,8 @@ range. More detail on how this works is below.
     ```
 
 === "Inferred Load range"
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-              date_source_models=var('source_model')) }}
+```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+date_source_models=var('source_model')) }}
 
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
@@ -1968,20 +1973,19 @@ Examples of output for dbt runs using the [eff_sat](#eff_sat) macro and this mat
     ```
 
 === "Incremental load"
-    ```text
-    15:24:16 | Concurrency: 4 threads (target='snowflake')
-    15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
-    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
-    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
-    15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
-    ```
+```text 15:24:16 | Concurrency: 4 threads (target='snowflake')
+15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
+15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
+15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
+15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
+15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
+15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
+15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
+15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
+15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
+15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
+15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
+```
 
 #### Configuring the load date range
 
@@ -1990,7 +1994,8 @@ materialisation is configured, the start and end of the load will get defined di
 
 | Configuration                | Outcome                                                                                                                  | Usage                | 
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current date**.                           | Manual Load range #1 |
+| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current
+date**.                           | Manual Load range #1 |
 | `start_date` and `stop_date` |  The load will start at `start_date`, and stop at `stop_date`                                                            | Manual Load range #2 |                  
 | `date_source_models`         |  The models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field` | Inferred Load range  |                 
 | All three config options     |  Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    
@@ -2105,7 +2110,7 @@ column.
 | ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
 | rank_column        |  The column name containing the rank values          | String               | None    | <i class="fas fa-check-circle required"></i>     |
 | rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
-                                                                                                                                                                    
+
 #### Creating a rank column
 
 A rank column can be created one of three ways:
@@ -2113,7 +2118,7 @@ A rank column can be created one of three ways:
 1. Manually creating it in a model prior to the staging layer, and using this model as the stage `source_model`.
 
 2. Using the `ranked_columns` configuration of the [stage](#stage) macro
-   
+
     ```yaml
     source_model: "MY_STAGE"
     ranked_columns:
@@ -2130,10 +2135,10 @@ A rank column can be created one of three ways:
       DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
 
-
 #### Which option?
 
-- Method #2 is recommended, as it allows ranked columns to use user-defined derived or hashed columns created in the same staging layer.
+- Method #2 is recommended, as it allows ranked columns to use user-defined derived or hashed columns created in the
+  same staging layer.
 - Method #3 is similar, except it will not have hashed or derived column definitions available to it.
 
 !!! warning "Check your rank"

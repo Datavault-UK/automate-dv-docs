@@ -20,6 +20,7 @@ The payload consists of concrete data for an entity (e.g. A customer). This coul
 a name, a date of birth, nationality, age, gender or more. The payload will contain some or all of the
 concrete data for an entity, depending on the purpose of the satellite. 
 
+[//]: # (TODO: Note about being optional)
 ##### Effective From (src_eff)
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
 satellite record. It records that a record is valid from a specific point in time.

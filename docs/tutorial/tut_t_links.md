@@ -18,9 +18,10 @@ and create a hash on a concatenation of them.
 Foreign keys referencing the primary key for each hub referenced in the t-link (2 or more depending on the number of hubs 
 referenced) 
 
+[//]: # (TODO: Note about being optional)
 ##### Payload (src_payload)
 A t-link payload consists of concrete data for the transaction record. This could be
-a transaction number, an amount paid, transaction type or more. The payload will contain all of the
+a transaction number, an amount paid, transaction type or more. The payload will contain all the
 concrete data for a transaction. 
 
 ##### Effective From (src_eff)
