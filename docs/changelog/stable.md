@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.4] - 2021-03-27
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.4)](https://dbtvault.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
+
+### Bug Fixes
+- Fixed NULL handling bugs in Hubs, Links and Satellites [(#26)](https://github.com/Datavault-UK/dbtvault/issues/26)
+- Fixed a bug where Effectivity Satellites would incorrectly end-date (with auto-end-dating enabled) records other than the
+  latest, resulting in duplicate end-date records for previously end-dated records.
+
+### Quality of Life
+- Payload in Transactional (Non-Historised) links now optional
+- Effective From in Satellites now optional
+
+
 ## [v0.7.3] - 2021-01-28
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.3)](https://dbtvault.readthedocs.io/en/v0.7.3/?badge=v0.7.3)
 

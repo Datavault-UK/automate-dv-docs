@@ -63,7 +63,7 @@ for your Data Vault.
 
 ### hub
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/hub.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/hub.sql))
 
 Generates SQL to build a hub table using the provided parameters.
 
@@ -244,7 +244,7 @@ ___
 
 ### link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/link.sql))
 
 Generates sql to build a link table using the provided parameters.
 
@@ -427,7 +427,7 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/t_link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/t_link.sql))
 
 Generates sql to build a transactional link table using the provided parameters.
 
@@ -499,7 +499,7 @@ ___
 
 ### sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/sat.sql))
 
 Generates sql to build a satellite table using the provided parameters.
 
@@ -594,7 +594,7 @@ ___
 
 ### eff_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/eff_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/eff_sat.sql))
 
 Generates sql to build an effectivity satellite table using the provided parameters.
 
@@ -814,7 +814,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/stage.sql))
 
 Generates sql to build a staging area using the provided parameters.
 
@@ -1496,7 +1496,7 @@ ___
 
 ### hash_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/staging/hash_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/hash_columns.sql))
 
 !!! note This is a helper macro used within the stage macro, but can be used independently.
 
@@ -1504,7 +1504,7 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ### derive_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/staging/derive_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/derive_columns.sql))
 
 !!! note This is a helper macro used within the stage macro, but can be used independently.
 
@@ -1513,7 +1513,7 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/staging/rank_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/rank_columns.sql))
 
 !!! note This is a helper macro used within the stage macro, but can be used independently.
 
@@ -1533,7 +1533,7 @@ ___
 
 ### hash
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/supporting/hash.sql))
 
 !!! warning This macro ***should not be*** used for cryptographic purposes.
 
@@ -1597,7 +1597,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
@@ -1651,7 +1651,7 @@ cases
 
 ### vault_insert_by_period
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/materialisations/vault_insert_by_period_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/materialisations/vault_insert_by_period_materialization.sql))
 
 This materialisation is based on
 the [insert_by_period](https://github.com/fishtown-analytics/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
@@ -1825,7 +1825,7 @@ a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/hub.sql) source code for further
+See the [hub](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/hub.sql) source code for further
 understanding.
 
 #### Idempotent loads
@@ -1841,7 +1841,7 @@ use `LEFT OUTER JOINS` to ensure duplicate records are not loaded.
 
 ### vault_insert_by_rank
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/materialisations/vault_insert_by_rank_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/materialisations/vault_insert_by_rank_materialization.sql))
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
 arbitrary rank column, created in the staging layer.
