@@ -24,7 +24,7 @@ The load will create a new `EFF_SAT_A_B` record. The old record now needs to be 
 Link records. Ideally, we should end-date the original link relationship inside the same transaction to avoid 2 SQL queries
 and possibly de-syncing. 
 
-In any Link there are two FK columns, one will change over tme and the other will remain constant. The one that does not change
+In any Link there are two FK columns, one will change over time and the other will remain constant. The one that does not change
 is called the **driving key** and the one that does change is called the **driven key** (or secondary key).
 
 ### Structure
