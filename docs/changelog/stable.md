@@ -20,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Improvements
 - Added check for matching primary key when inserting new satellite records in the sat macro. This removes the requirement to
 add the natural key to the hashdiff, but it is still recommended. [Read More](../best_practices.md#hashdiff-components)
-  
 
 ### Quality of Life
 - Payload in Transactional (Non-Historised) links now optional
