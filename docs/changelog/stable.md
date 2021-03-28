@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a bug where Effectivity Satellites would incorrectly end-date (with auto-end-dating enabled) records other than the
   latest, resulting in duplicate end-date records for previously end-dated records.
 
+### Improvements
+- Added check for matching primary key when inserting new satellite records in the sat macro. This removes the requirement to
+add the natural key to the hashdiff, but it is still recommended. [Read More](../best_practices.md#hashdiff-components)
+  
+
 ### Quality of Life
 - Payload in Transactional (Non-Historised) links now optional
 - Effective From in Satellites now optional
