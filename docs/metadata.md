@@ -879,14 +879,14 @@ ___
       vars:
         source_model: HUB_CUSTOMER
         src_pk: CUSTOMER_PK
-        as_of_date_table: AS_OF_DATES
+        as_of_date_table: AS_OF_DATE
         satellites: 
             - SAT_CUSTOMER_DETAILS
                 -pk
                     'PK': 'CUSTOMER_PK'
                 -ldts
                     'LDTS': 'LOAD_DATE'
-             - SAT_CUSTOMER_LOGIN
+            - SAT_CUSTOMER_LOGIN
                 -pk
                     'PK': 'CUSTOMER_PK'
                 -ldts
@@ -896,6 +896,11 @@ ___
                     'PK': 'CUSTOMER_PK'
                 -ldts
                     'LDTS': 'LOAD_DATE'
+        stage_tables:
+            'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
+            'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
+            'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
+        src_ldts: 'LOAD_DATE'
       ```
 ___
 
