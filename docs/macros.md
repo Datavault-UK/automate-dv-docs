@@ -805,6 +805,54 @@ exercised if you are unsure.
 
 ___
 
+### bridge
+
+([view source]())
+
+Generates SQL to build a bridge table.
+
+#### Usage
+
+``` jinja
+{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+                        bridge_walk=bridge_walk,
+                        as_of_dates_table=as_of_dates_table) }}
+```
+
+#### Parameters
+
+| Parameter         | Description                                         | Type             | Required?                                    |
+| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table| Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
+|  bridge_walk      | Dictionary of bridge reference mappings             |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  source_model     | ?????                                               |  String          | <i class="fas fa-check-circle required"></i> |
+
+#### Example Metadata
+
+[See examples](metadata.md#bridge)
+
+#### Example Output
+
+# TODO: Copy in compiled SQL example below
+
+=== "Snowflake"
+```sql
+-- compiled SQL example here...
+```
+
+#### As Of Date Table Structures
+
+An As of Date table contains a single column of dates used to construct the history in the bridge table. A typical structure will 
+contain a date range and date intervals appropriate to the data mart or reporting requirement(s).
+
+!!! Warning 
+    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
+    is called correctly in the .yml, the column name must be called AS_OF_DATE.
+
+___
+
 ## Staging Macros
 
 ###### (macros/staging)

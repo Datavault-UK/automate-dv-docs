@@ -837,6 +837,54 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```
 ___
 
+### Bridge tables
+
+#### Parameters
+
+[bridge macro parameters](macros.md#bridge)
+
+#### Metadata
+
+# TODO: Update the details below with bridge parameter data
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_orders" -%}
+    {%- set src_pk = "TRANSACTION_PK" -%}
+    {%- set src_dfk = "CUSTOMER_PK" -%}
+    {%- set src_sfk = "NATION_PK" -%}
+    {%- set src_start_date = "START_DATE" -%}
+    {%- set src_end_date = "END_DATE" -%}
+
+    {%- set src_eff = "EFFECTIVE_FROM" -%}
+    {%- set src_ldts = "LOADDATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+                        bridge_walk=bridge_walk,
+                        as_of_dates_table=as_of_dates_table) }}
+    ```
+
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    ```yaml
+    eff_sat_customer_nation:
+      vars:
+        source_model: 'v_stg_transactions'
+        src_pk: 'TRANSACTION_PK'
+        src_dfk: 'CUSTOMER_PK'
+        src_sfk: 'NATION_PK'
+        src_start_date: 'START_DATE'
+        src_end_date: 'END_DATE'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
+___
+
 ### The problem with metadata
 
 If metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
