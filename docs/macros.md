@@ -949,8 +949,11 @@ Generates SQL to build a point-in-time table (PIT).
 #### Usage
 
 ``` jinja
-{{ {{ dbtvault.pit({src_pk}, {as_of_dates_table}, {satellites}, 
-    stage_tables, src_ldts, source_model)                                       }} }}
+{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+                as_of_dates_table=as_of_dates_table,
+                satellites=satellites,
+                stage_tables=stage_tables,
+                src_ldts=src_ldts) }}
 ```
 
 #### Parameters
@@ -966,7 +969,7 @@ Generates SQL to build a point-in-time table (PIT).
 
 #### Example Metadata
 
-[See examples](metadata.md#point-in-time-pits)
+[See examples](metadata.md#pit)
 
 #### Example Output
 

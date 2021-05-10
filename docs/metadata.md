@@ -866,7 +866,7 @@ ___
     ```
 ___
 
-### Point-in-Time (PITs)
+### Point-in-Time Tables (PITs)
 
 #### Parameters
 
