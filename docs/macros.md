@@ -827,7 +827,7 @@ using the provided parameters.
 |  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
 |  as_of_dates_table| Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
 |  bridge_walk      | Dictionary of bridge reference mappings             |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  source_model     | Hub model                                           |  String          | <i class="fas fa-check-circle required"></i> |
+|  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
 [Read the tutorial](tutorial/tut_bridges.md) for more details
