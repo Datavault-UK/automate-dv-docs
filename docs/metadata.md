@@ -845,22 +845,40 @@ ___
 
 #### Metadata
 
-# TODO: Update the details below with bridge parameter data
-
 === "Per-Model - Variables"
 
-    ```jinja
-    {%- set source_model = "v_stg_orders" -%}
-    {%- set src_pk = "TRANSACTION_PK" -%}
-    {%- set src_dfk = "CUSTOMER_PK" -%}
-    {%- set src_sfk = "NATION_PK" -%}
-    {%- set src_start_date = "START_DATE" -%}
-    {%- set src_end_date = "END_DATE" -%}
+    === Example bridge table with hub and two links
 
-    {%- set src_eff = "EFFECTIVE_FROM" -%}
-    {%- set src_ldts = "LOADDATE" -%}
-    {%- set src_source = "SOURCE" -%}
-    
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    as_of_dates_table: "AS_OF_DATE"
+    bridge_walk:
+        CUSTOMER_ORDER:
+            bridge_link_pk_col: "LINK_CUSTOMER_ORDER_PK"
+            bridge_end_date_col: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+            link_table: "LINK_CUSTOMER_ORDER"
+            link_pk: "CUSTOMER_ORDER_PK"
+            link_fk1: "CUSTOMER_FK"
+            link_fk2: "ORDER_FK"
+            eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+            eff_sat_pk: "CUSTOMER_ORDER_PK"
+            eff_sat_end_date: "END_DATE"
+            eff_sat_ldts: "LOAD_DATE"
+        ORDER_PRODUCT:
+            bridge_link_pk_col: "LINK_ORDER_PRODUCT_PK"
+            bridge_end_date_col: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+            link_table: "LINK_ORDER_PRODUCT"
+            link_pk: "ORDER_PRODUCT_PK"
+            link_fk1: "ORDER_FK"
+            link_fk2: "PRODUCT_FK"
+            eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+            eff_sat_pk: "ORDER_PRODUCT_PK"
+            eff_sat_end_date: "END_DATE"
+            eff_sat_ldts: "LOAD_DATE"
+    {%- endset -%}
+
     {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
                         bridge_walk=bridge_walk,
                         as_of_dates_table=as_of_dates_table) }}
@@ -870,18 +888,37 @@ ___
 
     !!! warning "Only available with dbt config-version: 1"
 
+    === Example bridge table with hub and two links
+
     ```yaml
-    eff_sat_customer_nation:
+    bridge_customer_order:
       vars:
-        source_model: 'v_stg_transactions'
-        src_pk: 'TRANSACTION_PK'
-        src_dfk: 'CUSTOMER_PK'
-        src_sfk: 'NATION_PK'
-        src_start_date: 'START_DATE'
-        src_end_date: 'END_DATE'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
+        source_model: "HUB_CUSTOMER"
+        src_pk: "CUSTOMER_PK"
+        as_of_dates_table: "AS_OF_DATE"
+        bridge_walk:
+            CUSTOMER_ORDER:
+                bridge_link_pk_col: "LINK_CUSTOMER_ORDER_PK"
+                bridge_end_date_col: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+                link_table: "LINK_CUSTOMER_ORDER"
+                link_pk: "CUSTOMER_ORDER_PK"
+                link_fk1: "CUSTOMER_FK"
+                link_fk2: "ORDER_FK"
+                eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+                eff_sat_pk: "CUSTOMER_ORDER_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_ldts: "LOAD_DATE"
+            ORDER_PRODUCT:
+                bridge_link_pk_col: "LINK_ORDER_PRODUCT_PK"
+                bridge_end_date_col: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+                link_table: "LINK_ORDER_PRODUCT"
+                link_pk: "ORDER_PRODUCT_PK"
+                link_fk1: "ORDER_FK"
+                link_fk2: "PRODUCT_FK"
+                eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+                eff_sat_pk: "ORDER_PRODUCT_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_ldts: "LOAD_DATE"
     ```
 ___
 

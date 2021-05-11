@@ -807,9 +807,10 @@ ___
 
 ### bridge
 
-([view source]())
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/bridge.sql)))
 
-Generates SQL to build a bridge table.
+Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links,
+using the provided parameters.
 
 #### Usage
 
@@ -826,7 +827,10 @@ Generates SQL to build a bridge table.
 |  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
 |  as_of_dates_table| Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
 |  bridge_walk      | Dictionary of bridge reference mappings             |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  source_model     | ?????                                               |  String          | <i class="fas fa-check-circle required"></i> |
+|  source_model     | Hub model                                           |  String          | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+[Read the tutorial](tutorial/tut_bridges.md) for more details
 
 #### Example Metadata
 
@@ -834,11 +838,44 @@ Generates SQL to build a bridge table.
 
 #### Example Output
 
-# TODO: Copy in compiled SQL example below
-
 === "Snowflake"
 ```sql
--- compiled SQL example here...
+WITH AS_OF_DATES_FOR_BRIDGE AS (
+     SELECT a.AS_OF_DATE
+     FROM DBTVAULT_DEV.TEST_TIM_WILSON.AS_OF_DATE AS a
+     WHERE a.AS_OF_DATE <= CURRENT_DATE()
+),
+
+BRIDGE_WALK AS (
+    SELECT
+        a.CUSTOMER_PK
+        ,b.AS_OF_DATE
+        ,COALESCE(MAX(LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK), CAST('0000000000000000' AS BINARY(16))) AS LINK_CUSTOMER_ORDER_PK
+        ,COALESCE(MAX(EFF_SAT_CUSTOMER_ORDER.END_DATE), CAST('9999-12-31 23:59:59.999' AS TIMESTAMP_NTZ)) AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
+        ,COALESCE(MAX(LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK), CAST('0000000000000000' AS BINARY(16))) AS LINK_ORDER_PRODUCT_PK
+        ,COALESCE(MAX(EFF_SAT_ORDER_PRODUCT.END_DATE), CAST('9999-12-31 23:59:59.999' AS TIMESTAMP_NTZ)) AS EFF_SAT_ORDER_PRODUCT_ENDDATE
+    FROM DBTVAULT_DEV.TEST_TIM_WILSON.HUB_CUSTOMER AS a
+    INNER JOIN AS_OF_DATES_FOR_BRIDGE AS b
+        ON (1=1)
+    LEFT JOIN DBTVAULT_DEV.TEST_TIM_WILSON.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+        ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
+    INNER JOIN DBTVAULT_DEV.TEST_TIM_WILSON.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+        ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
+        AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATE <= b.AS_OF_DATE
+    LEFT JOIN DBTVAULT_DEV.TEST_TIM_WILSON.LINK_ORDER_PRODUCT AS LINK_ORDER_PRODUCT
+        ON LINK_CUSTOMER_ORDER.ORDER_FK = LINK_ORDER_PRODUCT.ORDER_FK
+    INNER JOIN DBTVAULT_DEV.TEST_TIM_WILSON.EFF_SAT_ORDER_PRODUCT AS EFF_SAT_ORDER_PRODUCT
+        ON EFF_SAT_ORDER_PRODUCT.ORDER_PRODUCT_PK = LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK
+        AND EFF_SAT_ORDER_PRODUCT.LOAD_DATE <= b.AS_OF_DATE
+    GROUP BY b.AS_OF_DATE
+            ,a.CUSTOMER_PK
+            ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK,LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK
+    ORDER BY 1,2
+)
+
+SELECT * FROM BRIDGE_WALK
+WHERE EFF_SAT_CUSTOMER_ORDER_ENDDATE = '9999-12-31 23:59:59.999'
+    AND EFF_SAT_ORDER_PRODUCT_ENDDATE = '9999-12-31 23:59:59.999'
 ```
 
 #### As Of Date Table Structures
