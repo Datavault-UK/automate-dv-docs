@@ -967,6 +967,9 @@ Generates SQL to build a point-in-time table (PIT).
 |  src_ldts         | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
 |  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
 
+!!! tip
+    [Read the tutorial](tutorial/tut_point_in_time.md) for more details
+
 #### Example Metadata
 
 [See examples](metadata.md#pit)
