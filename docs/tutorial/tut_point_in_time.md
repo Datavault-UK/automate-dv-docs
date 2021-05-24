@@ -1,4 +1,4 @@
-# Point In Time (PITs)
+# Point In Time (PITs) tables
 
 A Point-In-Time table is not needed for actually loading the data vault but is instead built with accordance to business needs.
 The PIT table will the bolster the query performance of the raw vault when the satellites are not loaded with cadence of each other.
@@ -40,19 +40,18 @@ This is the name of the Hub that contains the primary key (src_pk) and that the 
 
 Create a new dbt model as before. We'll call this one `pit_customer`. 
 
-`example_name_pit.sql`
+`pit_customer.sql`
 ```jinja
 {{ {{ dbtvault.pit({src_pk}, {as_of_dates_table}, {satellites}, 
-    {source_model})                                       }} }}
+    {source_model}) }} }}
 ```
 
 To create a PIT model, we simply copy and paste the above template into a model named after the PIT we
 are creating. dbtvault will generate a PIT using parameters provided in the next steps.
 
-PITS should use the table materialization, as the pit is remade with every new as of dates table. 
+PITS should use the pit_incremental materialization, as the pit is remade with every new as of dates table. 
 
-We recommend setting the `table` materialization on all of your pits using the `dbt_project.yml` file:
-
+We recommend setting the `pit_incremental` materialization on all of your pits using the `dbt_project.yml` file:
 
 `dbt_project.yml`
 ```yaml
@@ -98,7 +97,6 @@ with  its respective `satellite_key`
    
 The dbt_project.yml below only defines one satellite but to add others you would follow the same method inside of satellites.
 It can be seen where the SAT_ORDERS_LOGIN would begin.
-   
 
 `dbt_project.yml`
 ```yaml hl_lines="5 6 7 8 9 10 11 12"
