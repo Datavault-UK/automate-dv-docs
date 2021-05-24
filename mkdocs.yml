@@ -26,6 +26,7 @@ nav:
       - Transactional Links: 'tutorial/tut_t_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
+      - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
     - Getting Started: 'worked_example/we_worked_example.md'
     - Project setup: 'worked_example/we_setup.md'
@@ -83,4 +84,4 @@ extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2020 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics
+copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics

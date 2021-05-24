@@ -1,5 +1,3 @@
-# Bridge Tables
-
 Bridge tables are query assistant tables that form part of the Business Vault. Similar to PIT tables, their purpose is
 to improve performance of queries on the Raw Data Vault by reducing the number of required joins for such queries to 
 simple equi-joins. A bridge table spans across a hub and one or more associated links. This means that it is essentially 
@@ -12,7 +10,7 @@ A basic bridge table model for a hub and two links:
 
 ![alt text](../assets/images/bridge_diagram.png "A basic bridge table model for a hub and two links")
 
-#### Structure
+### Structure
 
 Our bridge structures will contain:
 
@@ -89,15 +87,17 @@ Next we need to choose which source columns we will use but also what links to i
 1. The primary key of the parent hub, which is a hashed natural key. 
 The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be used for `BRIDGE_CUSTOMER_ORDER`.
 
-2. `AS_OF_DATE` column which represents the date the row is valid for. This is obtained by giving the source information of the [as of dates table](../macros.md#As-Of-Date-Table-Structures).
+2. `AS_OF_DATES_TABLE` is the source information of the [as of dates table](../macros.md#As-Of-Date-Table-Structures).
+This will provide the dates for which to generate the bridge table.
 
-3. `bridge_walk`
+3. `LOAD_DATETIME` column which represents the load date timestamp the row is valid for
+
+4. `bridge_walk`
 
 The dbt_project.yml below only defines two link relationships but to add others you would follow the same method inside 
-of bridge_walk. To add further links you would follow the same method inside of bridge_walk.
-
+the bridge_walk metadata.:
 `dbt_project.yml`
-```yaml hl_lines="5 6 7 8 9 10 11 12"
+```yaml
     BRIDGE_CUSTOMER_ORDER:
       vars:
         source_model: "HUB_CUSTOMER"
