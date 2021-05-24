@@ -825,21 +825,21 @@ For the current version effectivity satellite auto end dating must be enabled.
 
 #### Parameters
 
-| Parameter         | Description                                         | Type             | Required?                                    |
-| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-|  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
-|  as_of_dates_table| Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
-|  bridge_walk      | Dictionary of bridge reference mappings             |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
-|  stage_tables     | List of stage table load date timestamps            |  String          | <i class="fas fa-check-circle required"></i> |
-|  src_ldts         | Source load date timestamp                          | String           | <i class="fas fa-check-circle required"></i> |
+| Parameter          | Description                                         | Type             | Required?                                    |
+| ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk             | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
+| as_of_dates_table  | Name for the AS OF DATE table                       | String           | <i class="fas fa-check-circle required"></i> |
+| bridge_walk        | Dictionary of bridge reference mappings             | Mapping          | <i class="fas fa-check-circle required"></i> |
+| source_model       | Hub model name                                      | String           | <i class="fas fa-check-circle required"></i> |
+| stage_tables       | List of stage table load date timestamps            | String           | <i class="fas fa-check-circle required"></i> |
+| src_ldts           | Source load date timestamp                          | String           | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
 [Read the tutorial](tutorial/tut_bridges.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#bridge)
+[See examples](metadata.md#bridge-tables)
 
 #### Example Output
 
@@ -910,7 +910,7 @@ For the current version effectivity satellite auto end dating must be enabled.
                 AND EFF_SAT_ORDER_PRODUCT_ENDDATE = '9999-12-31 23:59:59.999'
         )
 
-        SELECT * FROM bridge    ```
+        SELECT * FROM bridge    
         ```
 
     === "Incremental Load"
