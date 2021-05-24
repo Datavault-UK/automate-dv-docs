@@ -853,6 +853,7 @@ ___
     {%- set yaml_metadata -%}
     source_model: "HUB_CUSTOMER"
     src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATETIME"
     as_of_dates_table: "AS_OF_DATE"
     bridge_walk:
         CUSTOMER_ORDER:
@@ -883,10 +884,9 @@ ___
             eff_sat_start_date: "START_DATE"
             eff_sat_end_date: "END_DATE"
             eff_sat_load_date: "LOAD_DATETIME"
-    stage_tables:
+    stage_tables_ldts:
         STG_CUSTOMER_ORDER: "LOAD_DATETIME"
         STG_ORDER_PRODUCT: "LOAD_DATETIME"
-    src_ldts: "LOAD_DATETIME"
     {%- endset -%}
 
     {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
@@ -905,6 +905,7 @@ ___
       vars:
         source_model: "HUB_CUSTOMER"
         src_pk: "CUSTOMER_PK"
+        src_ldts: "LOAD_DATETIME"
         as_of_dates_table: "AS_OF_DATE"
         bridge_walk:
             CUSTOMER_ORDER:
@@ -935,10 +936,9 @@ ___
                 eff_sat_start_date: "START_DATE"
                 eff_sat_end_date: "END_DATE"
                 eff_sat_load_date: "LOAD_DATETIME"
-        stage_tables:
+        stage_tables_ldts:
             STG_CUSTOMER_ORDER: "LOAD_DATETIME"
             STG_ORDER_PRODUCT: "LOAD_DATETIME"
-        src_ldts: "LOAD_DATETIME"
     ```
 ___
 

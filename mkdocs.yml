@@ -28,11 +28,11 @@ nav:
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
-    - Getting Started: 'worked_example/we_worked_example.md'
-    - Project setup: 'worked_example/we_setup.md'
-    - Profiling TPC-H: 'worked_example/we_tpch_profile.md'
-    - Creating the stage layers: 'worked_example/we_staging.md'
-    - Loading the vault: 'worked_example/we_loading.md'
+      - Getting Started: 'worked_example/we_worked_example.md'
+      - Project setup: 'worked_example/we_setup.md'
+      - Profiling TPC-H: 'worked_example/we_tpch_profile.md'
+      - Creating the stage layers: 'worked_example/we_staging.md'
+      - Loading the vault: 'worked_example/we_loading.md'
   - Migration Guides:
       - Migrating from v0.5 to v0.6: 'migration_guides/migrating_v0.5_v0.6.md'
       - Migrating from v0.4 to v0.5: 'migration_guides/migrating_v0.4_v0.5.md'
@@ -42,8 +42,8 @@ nav:
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
   - Changelog:
-    - Stable Releases: 'changelog/stable.md'
-    - Beta Releases: 'changelog/beta.md'
+      - Stable Releases: 'changelog/stable.md'
+      - Beta Releases: 'changelog/beta.md'
   - Contributing: 'contributing.md'
   - Licence: 'LICENSE.md'
 

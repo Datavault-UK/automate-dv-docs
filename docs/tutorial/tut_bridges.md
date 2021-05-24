@@ -18,23 +18,23 @@ Our bridge structures will contain:
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. This will be the primary 
 key used by the hub.
 
-##### as_of_dates_table 
+##### AS_OF Table (as_of_dates_table) 
 The as_of_dates_table describes the history needed to construct the bridge table as a list of dates. This is where you 
 would supply the name of your as of date table.
 
-##### bridge_walk
-This is a dictionary of bridge table metadata divided into dictionaries for each link relationship. The metadata for each 
-link relationship includes bridge table column aliases, link table name and foreign key column names, and the related 
-effectivity satellite table details.
+##### Bridge Table Parameters (bridge_walk)
+This is a dictionary of bridge table metadata subdivided into dictionaries for each link relationship. The metadata for 
+each link relationship includes bridge table column aliases (bridge_xxxxx), link table name and foreign key column names 
+(link_xxxxx), and the related effectivity satellite table details (eff_sat_xxxxx).
 
-##### source_model
+##### Hub Table Name (source_model)
 This is the name of the hub that contains the primary key (src_pk) and that the links are connected to. 
 
-##### stage_tables
+##### Stage Load Date Timestamps (stage_tables_ldts)
 List of stage table load date timestamp columns. These are used to find the waterlevel, i.e. the latest date that hasn't 
 yet been impacted by the stage table.
 
-##### src_ldts
+##### Hub Load Date Timestamp (src_ldts)
 Hub load date timestamp column. This is used to distinguish new key relationships when compared to the waterlevel.
 
 ### Setting up bridge models
@@ -58,7 +58,7 @@ We recommend setting the `bridge_incremental` materialization on all of your bri
 ```yaml
 models:
   my_dbtvault_project:
-   bridge:
+    bridge:
     materialized: bridge_incremental
     tags:
       - bridge
@@ -76,13 +76,15 @@ Here we will define the metadata for the source_model. We will use the HUB_CUSTO
 
 `dbt_project.yml`
 ```yaml
-BRIDGE_CUSTOMER_ORDER:
-    vars:
+    BRIDGE_CUSTOMER_ORDER:
+      vars:
         source_model: HUB_CUSTOMER
+        ...
 ```
+
 #### Source columns
 
-Next we need to choose which source columns we will use but also what links to incorporate in our `BRIDGE_CUSTOMER_ORDER`:
+Next we need to choose which source columns we will use in our `BRIDGE_CUSTOMER_ORDER`:
 
 1. The primary key of the parent hub, which is a hashed natural key. 
 The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be used for `BRIDGE_CUSTOMER_ORDER`.
@@ -92,16 +94,31 @@ This will provide the dates for which to generate the bridge table.
 
 3. `LOAD_DATETIME` column which represents the load date timestamp the row is valid for
 
-4. `bridge_walk`
+`dbt_project.yml`
+```yaml
+    BRIDGE_CUSTOMER_ORDER:
+      vars:
+        source_model: HUB_CUSTOMER
+        src_pk: "CUSTOMER_PK"
+        src_ldts: "LOAD_DATETIME"
+        as_of_dates_table: "AS_OF_DATE"
+        ...
+```
+
+#### Bridge table parameters (`bridge_walk`)
+
+Finally we need to choose which links to incorporate in our `BRIDGE_CUSTOMER_ORDER`.
 
 The dbt_project.yml below only defines two link relationships but to add others you would follow the same method inside 
-the bridge_walk metadata.:
+the bridge_walk metadata. For instance, it can be seen where the PRODUCT_COMPONENT relationship metadata would begin.
+
 `dbt_project.yml`
 ```yaml
     BRIDGE_CUSTOMER_ORDER:
       vars:
         source_model: "HUB_CUSTOMER"
         src_pk: "CUSTOMER_PK"
+        src_ldts: "LOAD_DATETIME"
         as_of_dates_table: "AS_OF_DATE"
         bridge_walk:
             CUSTOMER_ORDER:
@@ -132,14 +149,14 @@ the bridge_walk metadata.:
                 eff_sat_start_date: "START_DATE"
                 eff_sat_end_date: "END_DATE"
                 eff_sat_load_date: "LOAD_DATETIME"
-        stage_tables:
+            PRODUCT_COMPONENT:
+                ...
+        stage_tables_ldts:
             STG_CUSTOMER_ORDER: "LOAD_DATETIME"
             STG_ORDER_PRODUCT: "LOAD_DATETIME"
-        src_ldts: "LOAD_DATETIME"
-            ...
+        ...
 ```
 
 ### Running dbt
 
 `dbt run -m +bridge_customer_order`
-
