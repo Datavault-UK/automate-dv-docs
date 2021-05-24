@@ -1,5 +1,3 @@
-# Point In Time (PITs) tables
-
 A Point-In-Time table is not needed for actually loading the data vault but is instead built with accordance to business needs.
 The PIT table will the bolster the query performance of the raw vault when the satellites are not loaded with cadence of each other.
 It will act as a pointer reference for the valid data entry's of the satellites for a given history described in an 
@@ -99,7 +97,7 @@ The dbt_project.yml below only defines one satellite but to add others you would
 It can be seen where the SAT_ORDERS_LOGIN would begin.
 
 `dbt_project.yml`
-```yaml hl_lines="5 6 7 8 9 10 11 12"
+```yaml hl_lines="6 7 8 9 10 11 12"
     PIT_CUSTOMER:
       vars:
         source_model: HUB_CUSTOMER
