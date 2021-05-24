@@ -81,7 +81,7 @@ PIT_CUSTOMER:
 ```
 #### Source columns
 
-Next we need to choose which  source columns we will use but also what satellites to encoperate in our `PIT_CUSTOMER` :
+Next we need to choose which  source columns we will use but also what satellites to incorporate in our `PIT_CUSTOMER` :
 
 1. The primary key of the parent hub,  which is a hashed natural key. 
 The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be used for `PIT_CUSTOMER`.
