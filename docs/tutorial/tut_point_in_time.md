@@ -3,7 +3,7 @@
 A Point-In-Time table is not needed for actually loading the data vault but is instead built with accordance to business needs.
 The PIT table will the bolster the query performance of the raw vault when the satellites are not loaded with cadence of each other.
 It will act as a pointer reference for the valid data entry's of the satellites for a given history described in an 
-[as of dates table](../macros.md#As Of Date Structures) . To create a PIT table only two satellites are needed but this is not suggested, and a PIT table has more 
+[as of dates table](../macros.md#As-Of-Date-Table-Structures). To create a PIT table only two satellites are needed but this is not suggested, and a PIT table has more 
 benefit when it references a greater number of satellites. 
 
 #### Structure
@@ -58,7 +58,7 @@ We recommend setting the `pit_incremental` materialization on all of your pits u
 models:
   my_dbtvault_project:
    pit:
-    materialized: table
+    materialized: pit_incremental
     tags:
       - pit
     pit_customer:
@@ -81,19 +81,19 @@ PIT_CUSTOMER:
 ```
 #### Source columns
 
-Next we need to choose which  source columns we will use but also what satellites to incorporate in our `PIT_CUSTOMER` :
+Next we need to choose which source columns we will use but also what satellites to incorporate in our `PIT_CUSTOMER` :
 
-1. The primary key of the parent hub,  which is a hashed natural key. 
+1. The primary key of the parent hub, which is a hashed natural key. 
 The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be used for `PIT_CUSTOMER`.
 
-2. `AS_OF_DATE` column which represents the date the row is valid for. This is obtained by giving the source information of the [as of dates table](../macros.md#As Of Date Structures).
+2. `AS_OF_DATE` column which represents the date the row is valid for. This is obtained by giving the source information of the [as of dates table](../macros.md#As-Of-Date-Table-Structures).
 
-3. `satellite_key` is the `src_pk` taken from the satellite and aliased as  the satellite name_ the type of key it is (eg: PK, HK, FK)
+3. `satellite_key` is the `src_pk` taken from the satellite and aliased as the satellite name_ the type of key it is (eg: PK, HK, FK)
 there is a column for each satellite included in the PIT.
 
 4. `satellite_LDTS` is the column chosen from the satellite to denote the date column that is being used as to determine when the entry is
 valid from and is aliased as satellite name suffixed with an identifier of the date column, usually load date but can also be the effective from (LDTS or EF). This will be paired 
-with  its respective `satellite_key` 
+with its respective `satellite_key` 
    
 The dbt_project.yml below only defines one satellite but to add others you would follow the same method inside of satellites.
 It can be seen where the SAT_ORDERS_LOGIN would begin.
