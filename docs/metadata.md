@@ -887,9 +887,8 @@ ___
         STG_ORDER_PRODUCT: "LOAD_DATETIME"
     {%- endset -%}
 
-    {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                        bridge_walk=bridge_walk,
-                        as_of_dates_table=as_of_dates_table) }}
+    {{ dbtvault.bridge({src_pk}, {as_of_dates_table}, {bridge_walk}, 
+        {source_model}, {stage_tables}, {src_ldts}) }}
     ```
 
 === "dbt_project.yml"
