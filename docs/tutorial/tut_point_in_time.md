@@ -38,7 +38,7 @@ This is the name of the Hub that contains the primary key (src_pk) and that the 
 
 ### Setting up PIT models
 
-Create a new dbt model as before. We'll call this one `pit_cstomer`. 
+Create a new dbt model as before. We'll call this one `pit_customer`. 
 
 `example_name_pit.sql`
 ```jinja
