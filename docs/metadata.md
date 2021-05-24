@@ -867,7 +867,6 @@ ___
             link_fk2: "ORDER_FK"
             eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
             eff_sat_pk: "CUSTOMER_ORDER_PK"
-            eff_sat_start_date: "START_DATE"
             eff_sat_end_date: "END_DATE"
             eff_sat_load_date: "LOAD_DATETIME"
         ORDER_PRODUCT:
@@ -881,7 +880,6 @@ ___
             link_fk2: "PRODUCT_FK"
             eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
             eff_sat_pk: "ORDER_PRODUCT_PK"
-            eff_sat_start_date: "START_DATE"
             eff_sat_end_date: "END_DATE"
             eff_sat_load_date: "LOAD_DATETIME"
     stage_tables_ldts:
@@ -919,7 +917,6 @@ ___
                 link_fk2: "ORDER_FK"
                 eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
                 eff_sat_pk: "CUSTOMER_ORDER_PK"
-                eff_sat_start_date: "START_DATE"
                 eff_sat_end_date: "END_DATE"
                 eff_sat_load_date: "LOAD_DATETIME"
             ORDER_PRODUCT:
@@ -933,7 +930,6 @@ ___
                 link_fk2: "PRODUCT_FK"
                 eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
                 eff_sat_pk: "ORDER_PRODUCT_PK"
-                eff_sat_start_date: "START_DATE"
                 eff_sat_end_date: "END_DATE"
                 eff_sat_load_date: "LOAD_DATETIME"
         stage_tables_ldts:

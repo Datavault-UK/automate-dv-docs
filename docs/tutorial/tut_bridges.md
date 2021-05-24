@@ -76,7 +76,7 @@ Here we will define the metadata for the source_model. We will use the HUB_CUSTO
 
 `dbt_project.yml`
 ```yaml
-    BRIDGE_CUSTOMER_ORDER:
+    bridge_customer_order:
       vars:
         source_model: HUB_CUSTOMER
         ...
@@ -96,7 +96,7 @@ This will provide the dates for which to generate the bridge table.
 
 `dbt_project.yml`
 ```yaml
-    BRIDGE_CUSTOMER_ORDER:
+    bridge_customer_order:
       vars:
         source_model: HUB_CUSTOMER
         src_pk: "CUSTOMER_PK"
@@ -114,7 +114,7 @@ the bridge_walk metadata. For instance, it can be seen where the PRODUCT_COMPONE
 
 `dbt_project.yml`
 ```yaml
-    BRIDGE_CUSTOMER_ORDER:
+    bridge_customer_order:
       vars:
         source_model: "HUB_CUSTOMER"
         src_pk: "CUSTOMER_PK"
@@ -132,7 +132,6 @@ the bridge_walk metadata. For instance, it can be seen where the PRODUCT_COMPONE
                 link_fk2: "ORDER_FK"
                 eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
                 eff_sat_pk: "CUSTOMER_ORDER_PK"
-                eff_sat_start_date: "START_DATE"
                 eff_sat_end_date: "END_DATE"
                 eff_sat_load_date: "LOAD_DATETIME"
             ORDER_PRODUCT:
@@ -146,7 +145,6 @@ the bridge_walk metadata. For instance, it can be seen where the PRODUCT_COMPONE
                 link_fk2: "PRODUCT_FK"
                 eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
                 eff_sat_pk: "ORDER_PRODUCT_PK"
-                eff_sat_start_date: "START_DATE"
                 eff_sat_end_date: "END_DATE"
                 eff_sat_load_date: "LOAD_DATETIME"
             PRODUCT_COMPONENT:
@@ -160,3 +158,9 @@ the bridge_walk metadata. For instance, it can be seen where the PRODUCT_COMPONE
 ### Running dbt
 
 `dbt run -m +bridge_customer_order`
+
+### Next steps
+
+That is all for now. More table types will be coming in future! See our [roadmap](../roadmap.md) for more details.
+
+If you want a more realistic real-world example, with real data to work with, take a look at our [worked example](../worked_example/we_worked_example.md).
