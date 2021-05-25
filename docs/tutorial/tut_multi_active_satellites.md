@@ -1,10 +1,10 @@
 # Multi Active Satellites (MAS)
 
 Multi Active Satellites (MAS) contain point-in-time payload data related to their parent hub or link records that
-allow for multiple records to be valid at the same time. Use cases include when customers have multiple active 
+allow for multiple records to be valid at the same time. Some example use cases could be when customers have multiple active 
 phone numbers or addresses. 
 
-In order to accommodate for multiple records of the same entity at a point-in-time, one or more Child-Dependent Keys 
+In order to accommodate for multiple records of the same entity at a point-in-time, one or more Child Dependent Keys 
 will be included in the Primary Key. 
 
 #### Structure
@@ -99,7 +99,7 @@ We recommend setting the `incremental` materialization on all of your MAS using 
 
 Let's look at the metadata we need to provide to the [ma_sat](../macros.md#ma_sat) macro.
 
-#### Source table
+#### Source model
 
 The first piece of metadata we need is the source model. This step is easy, as in this example we created the 
 staging layer ourselves.  All we need to do is provide the name of stage table as a string in our metadata 
@@ -163,9 +163,11 @@ And our table will look like this:
 | CUSTOMER_PK  | HASHDIFF     | CUSTOMER_NAME | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATE   | SOURCE |
 | ------------ | ------------ | ----------    | --------------- | -------------- | ----------- | ------ |
 | B8C37E...    | 3C5984...    | Alice         | 17-214-233-1214 | 1993-01-01     | 1993-01-01  | 1      |
+| B8C37E...    | A11VT9...    | Alice         | 17-214-233-1224 | 1993-01-01     | 1993-01-01  | 1      |
 | .            | .            | .             | .               | .              | .           | 1      |
 | .            | .            | .             | .               | .              | .           | 1      |
-| FED333...    | D8CB1F...    | Dom           | 17-214-233-1217 | 1993-01-01     | 1993-01-01  | 1      |
+| FED333...    | 7YT890...    | Dom           | 17-214-233-1217 | 1993-01-01     | 1993-01-01  | 1      |
+| FED333...    | D8CB1F...    | Dom           | 17-214-233-1227 | 1993-01-01     | 1993-01-01  | 1      |
 
 ### Next steps
 
