@@ -504,7 +504,7 @@ example provided to help better convey the difference.
         {%- set source_model = "stg_customer_hashed" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
         {%- set src_nk = "CUSTOMER_KEY" -%}
-        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_ldts = "LOAD_DATE" -%}
         {%- set src_source = "SOURCE" -%}
         
         {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
@@ -517,7 +517,7 @@ example provided to help better convey the difference.
         {%- set source_model = ["stg_web_customer_hashed", "stg_crm_customer_hashed"] -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
         {%- set src_nk = "CUSTOMER_KEY" -%}
-        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_ldts = "LOAD_DATE" -%}
         {%- set src_source = "SOURCE" -%}
         
         {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
@@ -530,7 +530,7 @@ example provided to help better convey the difference.
         {%- set source_model = "stg_customer_hashed" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
         {%- set src_nk = ["CUSTOMER_KEY", "CUSTOMER_DOB"] -%}
-        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_ldts = "LOAD_DATE" -%}
         {%- set src_source = "SOURCE" -%}
         
         {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
@@ -549,7 +549,7 @@ example provided to help better convey the difference.
             source_model: 'stg_customer_hashed'
             src_pk: 'CUSTOMER_PK'
             src_nk: 'CUSTOMER_KEY'
-            src_ldts: 'LOADDATE'
+            src_ldts: 'LOAD_DATE'
             src_source: 'SOURCE'
         ```
 
@@ -563,7 +563,7 @@ example provided to help better convey the difference.
               - 'stg_crm_customer_hashed'
             src_pk: 'CUSTOMER_PK'
             src_nk: 'CUSTOMER_KEY'
-            src_ldts: 'LOADDATE'
+            src_ldts: 'LOAD_DATE'
             src_source: 'SOURCE'
         ```
 
@@ -577,7 +577,7 @@ example provided to help better convey the difference.
             src_nk:
               - 'CUSTOMER_KEY'
               - 'CUSTOMER_DOB'
-            src_ldts: 'LOADDATE'
+            src_ldts: 'LOAD_DATE'
             src_source: 'SOURCE'
         ```
 
@@ -596,7 +596,7 @@ example provided to help better convey the difference.
         {%- set source_model = "v_stg_orders" -%}
         {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
         {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
-        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_ldts = "LOAD_DATE" -%}
         {%- set src_source = "SOURCE" -%}
         
         {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
@@ -608,7 +608,7 @@ example provided to help better convey the difference.
         {%- set source_model = ["v_stg_orders", "v_stg_transactions"] -%}
         {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
         {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
-        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_ldts = "LOAD_DATE" -%}
         {%- set src_source = "SOURCE" -%}
         
         {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
@@ -629,7 +629,7 @@ example provided to help better convey the difference.
             src_fk:
               - 'CUSTOMER_PK'
               - 'NATION_PK'
-            src_ldts: 'LOADDATE'
+            src_ldts: 'LOAD_DATE'
             src_source: 'SOURCE'
         ```
 
@@ -645,7 +645,7 @@ example provided to help better convey the difference.
             src_fk:
               - 'CUSTOMER_PK'
               - 'NATION_PK'
-            src_ldts: 'LOADDATE'
+            src_ldts: 'LOAD_DATE'
             src_source: 'SOURCE'
         ```
 
@@ -667,7 +667,7 @@ example provided to help better convey the difference.
     {%- set src_fk = ["CUSTOMER_PK", "ORDER_PK"] -%}
     {%- set src_payload = ["TRANSACTION_NUMBER", "TRANSACTION_DATE", "TYPE", "AMOUNT"] -%}
     {%- set src_eff = "EFFECTIVE_FROM" -%}
-    {%- set src_ldts = "LOADDATE" -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
     {%- set src_source = "SOURCE" -%}
     
     {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
@@ -693,7 +693,7 @@ example provided to help better convey the difference.
           - 'TYPE'
           - 'AMOUNT'
         src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOADDATE'
+        src_ldts: 'LOAD_DATE'
         src_source: 'SOURCE'
     ```
 
@@ -715,7 +715,7 @@ example provided to help better convey the difference.
         {%- set src_hashdiff = "CUSTOMER_HASHDIFF" -%}
         {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
         {%- set src_eff = "EFFECTIVE_FROM" -%}
-        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_ldts = "LOAD_DATE" -%}
         {%- set src_source = "SOURCE" -%}
         
         {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
@@ -732,7 +732,7 @@ example provided to help better convey the difference.
         {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
         {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
         {%- set src_eff = "EFFECTIVE_FROM" -%}
-        {%- set src_ldts = "LOADDATE" -%}
+        {%- set src_ldts = "LOAD_DATE" -%}
         {%- set src_source = "SOURCE" -%}
         
         {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
@@ -761,7 +761,7 @@ example provided to help better convey the difference.
               - 'MKTSEGMENT'
               - 'COMMENT'
             src_eff: 'EFFECTIVE_FROM'
-            src_ldts: 'LOADDATE'
+            src_ldts: 'LOAD_DATE'
             src_source: 'SOURCE'
         ```
 
@@ -783,7 +783,7 @@ example provided to help better convey the difference.
               - 'MKTSEGMENT'
               - 'COMMENT'
             src_eff: 'EFFECTIVE_FROM'
-            src_ldts: 'LOADDATE'
+            src_ldts: 'LOAD_DATE'
             src_source: 'SOURCE'
         ```
 
@@ -809,7 +809,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     {%- set src_end_date = "END_DATE" -%}
 
     {%- set src_eff = "EFFECTIVE_FROM" -%}
-    {%- set src_ldts = "LOADDATE" -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
     {%- set src_source = "SOURCE" -%}
     
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
@@ -832,7 +832,50 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
         src_start_date: 'START_DATE'
         src_end_date: 'END_DATE'
         src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOADDATE'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
+___
+
+### Multi Active Satellites (MAS)
+
+#### Parameters
+
+[ma_sat macro parameters](macros.md#ma_sat)
+
+#### Metadata
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_customer" -%}
+    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_cdk = ["CUSTOMER_PHONE", "EXTENSION"] -%}
+    {%- set src_hashdiff = "HASHDIFF" -%}
+    {%- set src_payload = ["CUSTOMER_NAME"] -%}
+    {%- set src_eff = "EFFECTIVE_FROM" -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                       src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
+                       src_source=src_source, source_model=source_model) }}
+    ```
+
+=== "dbt_project.yml"
+
+    ```yaml
+    ma_sat_customer_details:
+      vars:
+        source_model: 'v_stg_orders'
+        src_pk: 'CUSTOMER_PK'
+        src_cdk: 
+          - 'CUSTOMER_PHONE'
+        src_payload:
+          - 'CUSTOMER_NAME'
+        src_hashdiff: 'HASHDIFF'
+        src_eff: 'EFFECTIVE_FROM'
+        src_ldts: 'LOAD_DATE'
         src_source: 'SOURCE'
     ```
 ___

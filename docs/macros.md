@@ -556,6 +556,7 @@ Generates sql to build a satellite table using the provided parameters.
         WITH source_data AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE a.CUSTOMER_PK IS NOT NULL
         ),
 
         update_records AS (
@@ -566,23 +567,24 @@ Generates sql to build a satellite table using the provided parameters.
         ),
 
         latest_records AS (
-            SELECT c.CUSTOMER_PK, c.HASHDIFF, c.LOAD_DATE,
-                   CASE WHEN RANK()
-                   OVER (PARTITION BY c.CUSTOMER_PK
-                   ORDER BY c.LOAD_DATE DESC) = 1
-            THEN 'Y' ELSE 'N' END AS latest
-            FROM update_records as c
-            QUALIFY latest = 'Y'
+            SELECT target.CUSTOMER_PK, target.HASHDIFF, target.LOAD_DATE
+                ,RANK() OVER (
+                    PARTITION BY target.CUSTOMER_PK
+                    ORDER BY target.LOAD_DATE DESC
+                ) AS rank
+            FROM update_records AS target
+            QUALIFY rank = 1
         ),
-        
+
         records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_NAME, stage.CUSTOMER_PHONE, stage.CUSTOMER_DOB, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
             LEFT JOIN latest_records
-            ON latest_records.HASHDIFF = e.HASHDIFF
-            WHERE latest_records.HASHDIFF IS NULL
+                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+            WHERE latest_records.HASHDIFF != stage.HASHDIFF
+                OR latest_records.HASHDIFF IS NULL
         )
-        
+                
         SELECT * FROM records_to_insert
         ```
 
@@ -802,6 +804,132 @@ The definition of the 'end' of a relationship is considered business logic which
 
 !!! warning We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
 exercised if you are unsure.
+
+___
+
+### ma_sat
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/ma_sat.sql))
+
+Generates SQL to build a multi-active satellite table (MAS).
+
+#### Usage
+
+``` jinja
+{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                   src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
+                   src_source=src_source, source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                         | Type             | Required?                                         |
+| -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
+| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>      |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i>      |
+| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>      |
+| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>      |
+| src_eff        | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i>  |
+| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>      |
+| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>      |
+| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>      |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#multi-active-satellites-mas)
+
+#### Example Output
+
+=== "Snowflake"
+    
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+        ),
+        
+        records_to_insert AS (
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            ,COUNT(DISTINCT a.HASHDIFF, a.CUSTOMER_PHONE )
+                OVER (PARTITION BY a.CUSTOMER_PK) AS source_count
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE a.CUSTOMER_PK IS NOT NULL
+                AND a.CUSTOMER_PHONE IS NOT NULL
+        ),
+        latest_records AS (
+            SELECT *, COUNT(DISTINCT latest_selection.HASHDIFF, latest_selection.CUSTOMER_PHONE )
+                    OVER (PARTITION BY latest_selection.CUSTOMER_PK) AS target_count
+            FROM (
+                SELECT target_records.CUSTOMER_PHONE, target_records.CUSTOMER_PK, target_records.HASHDIFF, target_records.LOAD_DATE
+                    ,RANK() OVER (PARTITION BY target_records.CUSTOMER_PK
+                            ORDER BY target_records.LOAD_DATE DESC) AS rank_value
+                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS target_records
+                INNER JOIN
+                    (SELECT DISTINCT source_pks.CUSTOMER_PK
+                    FROM source_data AS source_pks) AS source_records
+                        ON target_records.CUSTOMER_PK = source_records.CUSTOMER_PK
+                QUALIFY rank_value = 1
+                ) AS latest_selection
+        ),
+        matching_records AS (
+            SELECT stage.CUSTOMER_PK
+                ,COUNT(DISTINCT stage.HASHDIFF, stage.CUSTOMER_PHONE) AS match_count
+            FROM source_data AS stage
+            INNER JOIN latest_records
+                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
+                AND stage.HASHDIFF = latest_records.HASHDIFF
+                AND stage.CUSTOMER_PHONE = latest_records.CUSTOMER_PHONE
+            GROUP BY stage.CUSTOMER_PK
+        ),
+        satellite_update AS (
+            SELECT DISTINCT stage.CUSTOMER_PK
+            FROM source_data AS stage
+            INNER JOIN latest_records
+                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+            LEFT OUTER JOIN matching_records
+                ON matching_records.CUSTOMER_PK = latest_records.CUSTOMER_PK
+            WHERE (stage.source_count != latest_records.target_count
+                OR COALESCE(matching_records.match_count, 0) != latest_records.target_count)
+        ),
+        satellite_insert AS (
+            SELECT DISTINCT stage.CUSTOMER_PK
+            FROM source_data AS stage
+            LEFT OUTER JOIN latest_records
+                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
+            WHERE latest_records.CUSTOMER_PK IS NULL
+        ),
+        records_to_insert AS (
+            SELECT  stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+            INNER JOIN satellite_update
+                ON satellite_update.CUSTOMER_PK = stage.CUSTOMER_PK
+        
+            UNION
+        
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+            INNER JOIN satellite_insert
+                ON satellite_insert.CUSTOMER_PK = stage.CUSTOMER_PK
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 
 ___
 

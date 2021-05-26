@@ -26,6 +26,7 @@ nav:
       - Transactional Links: 'tutorial/tut_t_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
+      - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
   - Worked example:
     - Getting Started: 'worked_example/we_worked_example.md'
     - Project setup: 'worked_example/we_setup.md'
