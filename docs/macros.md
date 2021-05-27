@@ -540,13 +540,14 @@ Generates sql to build a satellite table using the provided parameters.
         WITH source_data AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_PK IS NOT NULL
         ),
-        
+
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
         )
-        
+
         SELECT * FROM records_to_insert
         ```
     
@@ -556,37 +557,37 @@ Generates sql to build a satellite table using the provided parameters.
         WITH source_data AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE a.CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_PK IS NOT NULL
         ),
-
+        
         update_records AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.satellite as a
+            FROM DBTVAULT.TEST.SATELLITE as a
             JOIN source_data as b
             ON a.CUSTOMER_PK = b.CUSTOMER_PK
         ),
-
+        
         latest_records AS (
-            SELECT target.CUSTOMER_PK, target.HASHDIFF, target.LOAD_DATE
-                ,RANK() OVER (
-                    PARTITION BY target.CUSTOMER_PK
-                    ORDER BY target.LOAD_DATE DESC
-                ) AS rank
-            FROM update_records AS target
+            SELECT c.CUSTOMER_PK, c.HASHDIFF, c.LOAD_DATE,
+                RANK() OVER (
+                   PARTITION BY c.CUSTOMER_PK
+                   ORDER BY c.LOAD_DATE DESC
+                   ) AS rank
+            FROM update_records as c
             QUALIFY rank = 1
         ),
-
+        
         records_to_insert AS (
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_NAME, stage.CUSTOMER_PHONE, stage.CUSTOMER_DOB, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
+            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
             LEFT JOIN latest_records
-                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
-            WHERE latest_records.HASHDIFF != stage.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
+            ON latest_records.CUSTOMER_PK = e.CUSTOMER_PK
+            WHERE latest_records.HASHDIFF != e.HASHDIFF
+            OR latest_records.HASHDIFF IS NULL
         )
-                
+        
         SELECT * FROM records_to_insert
-        ```
+```
 
 #### Hashdiff Aliasing
 
