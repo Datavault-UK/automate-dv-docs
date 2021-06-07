@@ -1,8 +1,8 @@
-A Point-In-Time table is not needed for actually loading the data vault but is instead built with accordance to business needs.
-The PIT table will the bolster the query performance of the raw vault when the satellites are not loaded with cadence of each other.
-It will act as a pointer reference for the valid data entry's of the satellites for a given history described in an 
-[as of dates table](../macros.md#As-Of-Date-Table-Structures). To create a PIT table only two satellites are needed but this is not suggested, and a PIT table has more 
-benefit when it references a greater number of satellites. 
+A Point-In-Time table is one of two business-vault query-helper tables (the other being Bridge tables) designed for loading and creating the presentation marts.
+The PIT table will the bolster the query performance of the raw vault when the satellites do not have the same cadence.
+It will act as 'window in time' which references data valid at a specific point in time in history listed in an 
+[as of dates table](../macros.md#as-of-date-table-structures). To create a PIT table, a minimum of two satellites will be required, though PIT table are more 
+beneficial when it references a greater number of satellites. 
 
 #### Structure
 
