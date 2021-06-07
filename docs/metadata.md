@@ -825,14 +825,14 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```yaml
     eff_sat_customer_nation:
       vars:
-        source_model: 'v_stg_transactions'
-        src_pk: 'TRANSACTION_PK'
-        src_dfk: 'CUSTOMER_PK'
-        src_sfk: 'NATION_PK'
+        source_model: 'v_stg_order_customer'
+        src_pk: 'CUSTOMER_ORDER_PK'
+        src_dfk: '["ORDER_PK"]'
+        src_sfk: 'CUSTOMER_PK'
         src_start_date: 'START_DATE'
         src_end_date: 'END_DATE'
         src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOADDATE'
+        src_ldts: 'LOAD_DATETIME'
         src_source: 'SOURCE'
     ```
 ___
