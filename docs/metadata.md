@@ -837,35 +837,6 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```
 ___
 
-### Extended Tracking Satellites (XTS)
-
-#### Parameters
-
-[xts macro parameters](macros.md#xts)
-
-#### Metadata
-=== "dbt_project.yml"
-    ```yaml
-    xts_customer:
-      vars:
-        source_model: 'stg_customer'
-        src_pk: 'CUSTOMER_PK'
-        src_satellite: 
-            'SATELLITE_CUSTOMER':
-                'sat_name': 
-                    'SATELLITE_NAME': 'SATELLITE_1'
-                'hashdiff':
-                    'HASHDIFF': 'HASHDIFF_1'
-            'SATELLITE_CUSTOMER_DETAILS':
-                'sat_name':
-                    'SATELLITE_NAME': 'SATELLITE_2'
-                'hashdiff': 
-                    'HASHDIFF': 'HASHDIFF_2'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
-___
-
 ### Point-in-Time Tables (PITs)
 
 #### Parameters
