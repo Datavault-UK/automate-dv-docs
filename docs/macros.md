@@ -802,8 +802,10 @@ The definition of the 'end' of a relationship is considered business logic which
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
-!!! warning We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
-exercised if you are unsure.
+!!! warning 
+
+    We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
+    exercised if you are unsure.
 
 ___
 
@@ -1465,8 +1467,6 @@ hash every column.
 
 === "Columns not provided"
 
-    !!! tip "New in dbtvault 0.7.2"
-
     === "Columns in source model"
     
         ```text
@@ -1547,7 +1547,7 @@ Please ensure that your function has valid SQL syntax on your platform, for use 
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-  SOURCE: "!RAW_CUSTOMER"
+  RECORD_SOURCE: "!RAW_CUSTOMER"
   EFFECTIVE_FROM: "BOOKING_DATE"
 ```
 
@@ -1558,13 +1558,23 @@ characters.
 As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like
 the following:
 
-```sql
-SELECT "RAW_CUSTOMER" AS SOURCE
+```sql hl_lines="3"
+SELECT 
+    TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK,
+    'RAW_CUSTOMER' AS RECORD_SOURCE,
+    BOOKING_DATE AS EFFECTIVE_FROM
 ```
 
-#### Composite columns (Derived Columns)
+And the data would look like:
 
-!!! tip "New in dbtvault 0.7.2"
+| CUSTOMER_DOB_UK  | RECORD_SOURCE  | EFFECTIVE_FROM  |
+| ---------------- | -------------- | --------------- |
+| 09-06-1994       | RAW_CUSTOMER   | 01-01-2021      |
+| .                | RAW_CUSTOMER   | .               |
+| .                | RAW_CUSTOMER   | .               |
+| 02-01-1986       | RAW_CUSTOMER   | 07-03-2021      |
+
+#### Composite columns (Derived Columns)
 
 ```yaml hl_lines="6 7"
 source_model: "MY_STAGE"
@@ -1597,8 +1607,6 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 #### Ranked columns
 
-!!! tip "New in dbtvault 0.7.2"
-
 To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
@@ -1626,7 +1634,8 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/hash_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
@@ -1634,7 +1643,8 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/derive_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
 column value.
@@ -1643,7 +1653,8 @@ column value.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/rank_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns using the `RANK()` window function.
 
@@ -1663,19 +1674,21 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/supporting/hash.sql))
 
-!!! warning This macro ***should not be*** used for cryptographic purposes.
+!!! warning 
+    
+    This macro ***should not be*** used for cryptographic purposes.
 
     The intended use is for creating checksum-like values only, so that we may compare records accurately.
     
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-- [hash_columns](#hash_columns)
-- Read [Hashing best practises and why we hash](best_practices.md#hashing)
-for more detailed information on the purposes of this macro and what it does.
-
-    - You may choose between ```MD5``` and ```SHA-256``` hashing.
-      [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    - [hash_columns](#hash_columns)
+    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
+    for more detailed information on the purposes of this macro and what it does.
+    
+        - You may choose between `MD5` and `SHA-256` hashing.
+          [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
 A macro for generating hashing SQL for columns.
 
@@ -1711,7 +1724,7 @@ A macro for generating hashing SQL for columns.
         ```
 
 !!! tip
-[hash_columns](#hash_columns) may be used to simplify the hashing process and generate multiple hashes with one macro.
+    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes with one macro.
 
 #### Parameters
 
@@ -1739,14 +1752,19 @@ A macro for quickly prefixing a list of columns with a string.
 #### Usage
 
 === "Input"
-```sql {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
-```
+    
+    ```sql 
+    {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
+    ```
 
 === "Output"
-```sql a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
-```
 
-!!! Note Single columns must be provided as a 1-item list, as in the second example above.
+    ```sql 
+    a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
+    ```
+
+!!! Note 
+    Single columns must be provided as a 1-item list, as in the second example above.
 
 ___
 
@@ -1801,9 +1819,11 @@ range. More detail on how this works is below.
 #### Usage
 
 === "Manual Load range #1"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30') }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30') }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1811,9 +1831,11 @@ start_date='2020-01-30') }}
     ```
 
 === "Manual Load range #2"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30', stop_date='2020-04-30') }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30', stop_date='2020-04-30') }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1821,9 +1843,11 @@ start_date='2020-01-30', stop_date='2020-04-30') }}
     ```
 
 === "Manual Load range #3"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1831,9 +1855,11 @@ start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_
     ```
 
 === "Inferred Load range"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-date_source_models=var('source_model')) }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    date_source_models=var('source_model')) }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1865,19 +1891,21 @@ Examples of output for dbt runs using the [eff_sat](#eff_sat) macro and this mat
     ```
 
 === "Incremental load"
-```text 15:24:16 | Concurrency: 4 threads (target='snowflake')
-15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
-15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
-15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
-15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
-15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
-15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
-```
+
+    ```text 
+    15:24:16 | Concurrency: 4 threads (target='snowflake')
+    15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
+    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
+    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
+    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
+    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
+    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
+    15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
+    ```
 
 #### Configuring the load date range
 
