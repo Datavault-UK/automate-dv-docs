@@ -1371,7 +1371,7 @@ For example:
 
 === "Snowflake"
 
-```yaml hl_lines="5 14"
+```yaml hl_lines="3 12"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
@@ -1627,6 +1627,24 @@ This will create columns like so:
 RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
 RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
 ```
+
+You may also provide multiple columns to the `partition_by` and `order_by` parameters, as follows:
+
+```yaml
+source_model: "MY_STAGE"
+ranked_columns:
+  DBTVAULT_RANK:
+    partition_by: "CUSTOMER_PK"
+    order_by: "LOAD_DATETIME"
+  SAT_BOOKING_RANK:
+    partition_by: 
+      - "BOOKING_PK"
+      - "BOOKING_DATE"
+    order_by: 
+      - "LOAD_DATETIME"
+      - "BOOKING_DATE"
+```
+
 
 ___
 
