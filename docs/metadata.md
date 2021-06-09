@@ -880,6 +880,35 @@ ___
     ```
 ___
 
+### Extended Tracking Satellites (XTS)
+
+#### Parameters
+
+[xts macro parameters](macros.md#xts)
+
+#### Metadata
+=== "dbt_project.yml"
+    ```yaml
+    xts_customer:
+      vars:
+        source_model: 'stg_customer'
+        src_pk: 'CUSTOMER_PK'
+        src_satellite: 
+            'SATELLITE_CUSTOMER':
+                'sat_name': 
+                    'SATELLITE_NAME': 'SATELLITE_1'
+                'hashdiff':
+                    'HASHDIFF': 'HASHDIFF_1'
+            'SATELLITE_CUSTOMER_DETAILS':
+                'sat_name':
+                    'SATELLITE_NAME': 'SATELLITE_2'
+                'hashdiff': 
+                    'HASHDIFF': 'HASHDIFF_2'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
+___
+
 ### The problem with metadata
 
 If metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
