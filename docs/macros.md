@@ -1598,7 +1598,7 @@ And the data would look like:
 
 #### Composite columns (Derived Columns)
 
-```yaml hl_lines="6 7"
+```yaml hl_lines="3 4 5 6"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_NK:
@@ -1623,7 +1623,7 @@ The values provided in the list can use any of the previously described syntax (
 generate new values, as the concatenation is made in pure SQL as follows:
 
 ```sql
-SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV')
+SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
@@ -1632,41 +1632,51 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
-```yaml
-source_model: "MY_STAGE"
-ranked_columns:
-  DBTVAULT_RANK:
-    partition_by: "CUSTOMER_PK"
-    order_by: "LOAD_DATETIME"
-  SAT_BOOKING_RANK:
-    partition_by: "BOOKING_PK"
-    order_by: "LOAD_DATETIME"
-```
+=== "Single item parameters"
+
+    ```yaml
+    source_model: "MY_STAGE"
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: "CUSTOMER_PK"
+        order_by: "LOAD_DATETIME"
+      SAT_BOOKING_RANK:
+        partition_by: "BOOKING_PK"
+        order_by: "LOAD_DATETIME"
+    ```
+
+=== "Multi-item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_PK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE'
+            - 'LOAD_DATETIME'
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_PK'
+        order_by: 'LOAD_DATETIME'
+    ```
 
 This will create columns like so:
 
-```
-RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-```
+=== "Single item parameters"
 
-You may also provide multiple columns to the `partition_by` and `order_by` parameters, as follows:
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
 
-```yaml
-source_model: "MY_STAGE"
-ranked_columns:
-  DBTVAULT_RANK:
-    partition_by: "CUSTOMER_PK"
-    order_by: "LOAD_DATETIME"
-  SAT_BOOKING_RANK:
-    partition_by: 
-      - "BOOKING_PK"
-      - "BOOKING_DATE"
-    order_by: 
-      - "LOAD_DATETIME"
-      - "BOOKING_DATE"
-```
+=== "Multi-item parameters"
 
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_PK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
 
 ___
 
