@@ -587,7 +587,7 @@ Generates sql to build a satellite table using the provided parameters.
         )
         
         SELECT * FROM records_to_insert
-```
+    ```
 
 #### Hashdiff Aliasing
 
@@ -833,7 +833,7 @@ ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
@@ -959,7 +959,7 @@ ___
 
 ### xts
 
-([view source]())
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/xts.sql))
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters
 
