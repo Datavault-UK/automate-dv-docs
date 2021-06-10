@@ -186,7 +186,7 @@ When we hash multiple columns, we take the following approach:
         ```
 
 This is similar to single-column hashing aside from the use of `IFNULL` and `CONCAT`, the step-by-step process
-is described below.
+has been described below.
 
 1\. Steps 1-4 are described in single-column hashing above and are performed on each column 
 which comprises the multi-column hash.
@@ -240,27 +240,26 @@ The order must also be the same as each hub.
 staging layer for the raw vault, we cannot have multiple columns sharing the same name. This means we have to name each 
 of our `HASHDIFF` columns differently.
 
-Below is an example satellite YAML config from a `dbt_project.yml` file:
+Below is an example satellite YAML config from a satellite model:
 
-```yaml hl_lines="9 10 11"
-sat_customer_details:
-  materialized: incremental
-  schema: "vlt"
-  tags:
-    - sat
-  vars:
-    source_model: "stg_customer_details_hashed"
-    src_pk: "CUSTOMER_PK"
-    src_hashdiff: 
-      source_column: "CUSTOMER_HASHDIFF"
-      alias: "HASHDIFF"
-    src_payload:
-      - "CUSTOMER_NAME"
-      - "CUSTOMER_DOB"
-      - "CUSTOMER_PHONE"
-    src_eff: "EFFECTIVE_FROM"
-    src_ldts: "LOADDATE"
-    src_source: "SOURCE"
+```yaml hl_lines="4 5 6"
+{%- set yaml_metadata -%}
+source_model: 'stg_customer_details_hashed'
+src_pk: 'CUSTOMER_PK'
+src_hashdiff: 
+  source_column: "CUSTOMER_HASHDIFF"
+  alias: "HASHDIFF"
+src_payload:
+  - 'NAME'
+  - 'ADDRESS'
+  - 'PHONE'
+  - 'ACCBAL'
+  - 'MKTSEGMENT'
+  - 'COMMENT'
+src_eff: 'EFFECTIVE_FROM'
+src_ldts: 'LOAD_DATETIME'
+src_source: 'RECORD_SOURCE'
+{%- endset -%}
 ```
 
 The highlighted lines show the syntax required to alias a column named `CUSTOMER_HASHDIFF` (present in the
@@ -268,12 +267,12 @@ The highlighted lines show the syntax required to alias a column named `CUSTOMER
 
 ### Choosing a hashing algorithm in dbtvault
 
-You may choose between ```MD5``` and ```SHA-256``` hashing. ```SHA-256``` is an option for users who wish to reduce 
+You may choose between `MD5` and `SHA-256` hashing. `SHA-256` is an option for users who wish to reduce 
 the hashing collision rates in larger data sets.
 
 !!! note
 
-    If a hashing algorithm configuration is missing or invalid, dbtvault will use ```MD5``` by default. 
+    If a hashing algorithm configuration is missing or invalid, dbtvault will use `MD5` by default. 
 
 Configuring the hashing algorithm which will be used by dbtvault is simple: add a global variable to your 
 `dbt_project.yml` as follows:
@@ -302,10 +301,10 @@ models:
     hash: SHA # or MD5
 ```
 
-It is possible to configure a hashing algorithm on a model-by-model basis using the hierarchical structure of the ```yaml``` file.
+It is possible to configure a hashing algorithm on a model-by-model basis using the hierarchical structure of the `yaml` file.
 We recommend you keep the hashing algorithm consistent across all tables, however, as per best practise.
 
-Read the [dbt documentation](https://docs.getdbt.com/v0.15.0/docs/var) for further information on variable scoping.
+Read the [dbt documentation](https://docs.getdbt.com/reference/dbt-jinja-functions/var) for further information on variable scoping.
 
 !!! warning
     Stick with your chosen algorithm unless you can afford to full-refresh, and you still have access to source data.
