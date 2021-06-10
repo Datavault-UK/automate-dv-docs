@@ -827,7 +827,8 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
       vars:
         source_model: 'v_stg_order_customer'
         src_pk: 'CUSTOMER_ORDER_PK'
-        src_dfk: '["ORDER_PK"]'
+        src_dfk: 
+          - 'ORDER_PK'
         src_sfk: 'CUSTOMER_PK'
         src_start_date: 'START_DATE'
         src_end_date: 'END_DATE'
