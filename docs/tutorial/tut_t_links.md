@@ -37,7 +37,7 @@ The source for the record. This can be a code which is assigned to a source name
 or a string directly naming the source system.
 
 !!! note
-    `LOAD_DATE` is the time the record that a gets loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
+    `LOAD_DATE` is the time the record that gets loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
     different value, especially if there is a batch processing delay between when a business event happens, and the 
     record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
     and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
