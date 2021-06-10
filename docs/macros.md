@@ -1616,11 +1616,11 @@ Given the following values in the above example:
 - `CUSTOMER_ID` = 0011
 - `CUSTOMER_NAME` = Alex
 
-Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values are joined in the order provided, using a
-double pipe `||`. Currently, this `||` join string is hard-coded, but in future it will be user-configurable.
+Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
+double pipe `||`. Currently, this `||` join string has been hard-coded, but in future it will be user-configurable.
 
 The values provided in the list can use any of the previously described syntax (including functions and constants) to
-generate new values, as the concatenation is made in pure SQL as follows:
+generate new values, as the concatenation happens in pure SQL, as follows:
 
 ```sql
 SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
