@@ -17,8 +17,8 @@ For a multi active satellite, this should be the same as the corresponding link 
 
 ##### Child Dependent Key(s) (src_cdk)
 The child dependent keys are a subset of the payload (below) that helps with identifying the different valid records 
-for each entity inside the multi active satellite. For example, a customer will have different valid phone number valid
-at the same time, the phone number attribute will be selected as a child dependent key that helps the natural key keep 
+for each entity inside the multi active satellite. For example, a customer could have different valid phone number valid
+at the same time. The phone number attribute will be selected as a child dependent key that helps the natural key keep 
 records unique and identifiable. If the customer has only one phone number, but multiple extensions associated with that 
 phone number, then both the phone number, and the extension attribute will be considered a child dependent key. 
 
@@ -39,7 +39,7 @@ If a customer changes their name, then the record with their 'old' name should n
 longer have the most recent `EFFECTIVE_FROM` value. 
 
 ##### Load date (src_ldts)
-A load date or load date timestamp. This identifies when the record was first loaded into the database.
+A load date or load date timestamp. This identifies when the record first gets loaded into the database.
 
 ##### Record Source (src_source)
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
@@ -168,9 +168,3 @@ And our table will look like this:
 | .            | .            | .             | .               | .              | .           | 1      |
 | FED333...    | 7YT890...    | Dom           | 17-214-233-1217 | 1993-01-01     | 1993-01-01  | 1      |
 | FED333...    | D8CB1F...    | Dom           | 17-214-233-1227 | 1993-01-01     | 1993-01-01  | 1      |
-
-### Next steps
-
-That is all for now. More table types will be coming in future! See our [roadmap](../roadmap.md) for more details.
-
-If you want a more realistic real-world example, with real data to work with, take a look at our [worked example](../worked_example/we_worked_example.md).

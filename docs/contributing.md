@@ -9,8 +9,8 @@ new table types regularly.
 
 Rest assured we’re working on future releases – [our roadmap contains information on what’s coming](https://dbtvault.readthedocs.io/en/latest/roadmap/).
  
-If you spot anything you’d like to bring to our attention, have a request for new features, have spotted an improvement we could make, 
-or want to tell us about a typo or bug, then please don’t hesitate to let us know via [github](https://github.com/Datavault-UK/dbtvault/issues). 
+If you spot anything you’d like to bring something to our attention, have a request for new features, have spotted an improvement we could make, 
+or want to tell us about an issue, then please don’t hesitate to let us know via [github](https://github.com/Datavault-UK/dbtvault/issues). 
 
 We’d rather know you are making active use of this package than hearing nothing from all of you out there! 
 
@@ -20,7 +20,7 @@ Happy Data Vaulting! :smile:
 
 ### If it's a bug
 We've tested the package rigorously, but if you think you've found a bug please provide the following 
-at a minimum (or use the issue templates) so we can fix it as quickly as possible:
+at a minimum (or use the issue templates), so we can fix it faster:
 
 - The version of dbt being used
 - The version of dbtvault being used.
