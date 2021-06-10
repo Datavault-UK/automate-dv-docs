@@ -638,15 +638,17 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT.TEST.MY_STAGE
-        ),
-        
+            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_PK IS NOT NULL
+            AND a.CUSTOMER_PK IS NOT NULL
+    ),
+    
         records_to_insert AS (
-            SELECT e.CUSTOMER_ORDER_PK, e.ORDER_PK, e.CUSTOMER_PK, e.START_DATE, e.END_DATE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-        
+            SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+            FROM source_data AS i
+    )
+    
         SELECT * FROM records_to_insert
         ```
 
@@ -654,79 +656,78 @@ Generates sql to build an effectivity satellite table using the provided paramet
     
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT.TEST.MY_STAGE
+            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_PK IS NOT NULL
+            AND a.CUSTOMER_PK IS NOT NULL
         ),
         
-        latest_open_eff AS
-        (
-            SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_PK
-                        ORDER BY b.LOAD_DATE DESC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.EFF_SAT AS b
-            WHERE TO_DATE(b.END_DATE) = TO_DATE('9999-12-31')
-            QUALIFY row_number = 1
+                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        ORDER BY b.LOAD_DATETIME DESC
+                   ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            QUALIFY row_num = 1
         ),
         
-        stage_slice AS
-        (
-            SELECT stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM stage_slice AS stage
-            LEFT JOIN latest_open_eff AS e
-            ON stage.CUSTOMER_ORDER_PK = e.CUSTOMER_ORDER_PK
-            WHERE e.CUSTOMER_ORDER_PK IS NULL
-            AND stage.ORDER_PK IS NOT NULL
-            AND stage.CUSTOMER_PK IS NOT NULL
+                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
+            WHERE lr.ORDER_CUSTOMER_PK IS NULL
         ),
         
-        links_to_end_date AS (
-            SELECT a.*
-            FROM latest_open_eff AS a
-            LEFT JOIN stage_slice AS b
-            ON a.ORDER_PK = b.ORDER_PK
-                
-            WHERE b.CUSTOMER_PK IS NULL
-            OR a.CUSTOMER_PK <> b.CUSTOMER_PK
-                
-        ),
-        
-        new_end_dated_records AS (
+        new_reopened_records AS (
             SELECT DISTINCT
-                h.CUSTOMER_ORDER_PK,
-                g.ORDER_PK, g.CUSTOMER_PK,
-                h.EFFECTIVE_FROM AS START_DATE, h.SOURCE
-            FROM latest_open_eff AS h
-            INNER JOIN links_to_end_date AS g
-            ON g.CUSTOMER_ORDER_PK = h.CUSTOMER_ORDER_PK
+                lc.ORDER_CUSTOMER_PK,
+                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
         ),
         
-        amended_end_dated_records AS (
+        new_closed_records AS (
             SELECT DISTINCT
-                a.CUSTOMER_ORDER_PK,
-                a.ORDER_PK, a.CUSTOMER_PK,
-                a.START_DATE,
-                stage.EFFECTIVE_FROM AS END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE,
-                a.SOURCE
-            FROM new_end_dated_records AS a
-            INNER JOIN stage_slice AS stage
-            ON stage.ORDER_PK = a.ORDER_PK
-                
-            WHERE stage.CUSTOMER_PK IS NOT NULL
-            AND stage.ORDER_PK IS NOT NULL
+                lo.ORDER_CUSTOMER_PK,
+                lo.ORDER_PK, lo.CUSTOMER_PK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            INNER JOIN latest_open AS lo
+            ON lo.ORDER_PK = h.ORDER_PK
+            WHERE (lo.CUSTOMER_PK <> h.CUSTOMER_PK)
         ),
         
         records_to_insert AS (
             SELECT * FROM new_open_records
             UNION
-            SELECT * FROM amended_end_dated_records
+            SELECT * FROM new_reopened_records
+            UNION
+            SELECT * FROM new_closed_records
         )
         
         SELECT * FROM records_to_insert
@@ -736,41 +737,61 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT.TEST.MY_STAGE
+            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_PK IS NOT NULL
+            AND a.CUSTOMER_PK IS NOT NULL
         ),
         
-        latest_open_eff AS
-        (
-            SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.CUSTOMER_ORDER_PK
-                        ORDER BY b.LOAD_DATE DESC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.EFF_SAT AS b
-            WHERE TO_DATE(b.END_DATE) = TO_DATE('9999-12-31')
-            QUALIFY row_number = 1
+                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        ORDER BY b.LOAD_DATETIME DESC
+                   ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            QUALIFY row_num = 1
         ),
         
-        stage_slice AS
-        (
-            SELECT stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM stage_slice AS stage
-            LEFT JOIN latest_open_eff AS e
-            ON stage.CUSTOMER_ORDER_PK = e.CUSTOMER_ORDER_PK
-            WHERE e.CUSTOMER_ORDER_PK IS NULL
-            AND stage.ORDER_PK IS NOT NULL
-            AND stage.CUSTOMER_PK IS NOT NULL
+                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
+            WHERE lr.ORDER_CUSTOMER_PK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_PK,
+                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
         ),
         
         records_to_insert AS (
             SELECT * FROM new_open_records
+            UNION
+            SELECT * FROM new_reopened_records
         )
         
         SELECT * FROM records_to_insert
