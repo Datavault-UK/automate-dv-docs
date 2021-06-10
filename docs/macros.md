@@ -955,6 +955,106 @@ Generates SQL to build a multi-active satellite table (MAS).
         SELECT * FROM records_to_insert
         ```
 
+### pit
+
+([view source]())
+
+Generates SQL to build a point-in-time table (PIT).
+
+#### Usage
+
+``` jinja
+{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+                as_of_dates_table=as_of_dates_table,
+                satellites=satellites,
+                stage_tables=stage_tables,
+                src_ldts=src_ldts) }}
+```
+
+#### Parameters
+
+| Parameter         | Description                                         | Type             | Required?                                    |
+| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table| Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
+|  satellites       | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  stage_tables     | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  src_ldts         | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
+|  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_point_in_time.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#pit)
+
+#### Example Output
+
+=== "Snowflake"
+```sql
+WITH as_of AS (
+    SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+),
+
+new_rows_as_of_dates AS (
+    SELECT
+        hub.CUSTOMER_PK,
+        x.AS_OF_DATE
+    FROM DBTVAULT.TEST.HUB_CUSTOMER hub
+    INNER JOIN AS_OF AS x
+    ON (1=1)
+),
+
+new_rows AS (
+    SELECT
+        a.CUSTOMER_PK,
+        a.AS_OF_DATE,
+        COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
+        COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_DETAILS_LDTS,
+        COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
+        COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_LOGIN_LDTS,
+        COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,
+        COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_PROFILE_LDTS
+    FROM new_rows_as_of_dates AS a
+
+    LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS SAT_CUSTOMER_DETAILS_SRC
+        ON  a.CUSTOMER_PK = SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK
+        AND SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE <= a.AS_OF_DATE
+    LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS SAT_CUSTOMER_LOGIN_SRC
+        ON  a.CUSTOMER_PK = SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK
+        AND SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE <= a.AS_OF_DATE
+    LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS SAT_CUSTOMER_PROFILE_SRC
+        ON  a.CUSTOMER_PK = SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK
+        AND SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE <= a.AS_OF_DATE
+
+    GROUP BY
+        a.CUSTOMER_PK, a.AS_OF_DATE
+    ORDER BY (1, 2)
+),
+
+PIT AS (
+SELECT * FROM new_rows
+)
+
+SELECT DISTINCT * FROM PIT
+```
+
+#### As Of Date Table Structures
+
+An As of Date table contains a single column of dates used to construct the history in the PIT. A typical structure will 
+be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
+time after which the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
+3 months of end of week values. So the as of dates table would contain a datetime for each entry to match this. 
+As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
+Using the example history before if a week had passed since when we had created the as of dates table
+it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
+
+!!! Warning 
+    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
+    is called correctly in the .yml, the column name must be called AS_OF_DATE.
+
 ___
 
 ## Staging Macros

@@ -1147,6 +1147,44 @@ ___
     ```
 ___
 
+### Point-in-Time Tables (PITs)
+
+#### Parameters
+
+[pit macro parameters](macros.md#pit)
+
+#### Metadata
+=== "dbt_project.yml"
+    ```yaml
+    PIT_CUSTOMER:
+      vars:
+        source_model: HUB_CUSTOMER
+        src_pk: CUSTOMER_PK
+        as_of_date_table: AS_OF_DATE
+        satellites: 
+            - SAT_CUSTOMER_DETAILS
+                -pk
+                    'PK': 'CUSTOMER_PK'
+                -ldts
+                    'LDTS': 'LOAD_DATE'
+            - SAT_CUSTOMER_LOGIN
+                -pk
+                    'PK': 'CUSTOMER_PK'
+                -ldts
+                    'LDTS': 'LOAD_DATE'
+            - SAT_CUSTOMER_PROFILE
+                -pk
+                    'PK': 'CUSTOMER_PK'
+                -ldts
+                    'LDTS': 'LOAD_DATE'
+        stage_tables:
+            'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
+            'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
+            'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
+        src_ldts: 'LOAD_DATE'
+      ```
+___
+
 ### The problem with metadata
 
 When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
