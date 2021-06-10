@@ -695,13 +695,13 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         new_reopened_records AS (
             SELECT DISTINCT
-                lc.ORDER_CUSTOMER_PK
-                ,lc.ORDER_PK, lc.CUSTOMER_PK
-                ,lc.START_DATE AS START_DATE
-                ,g.END_DATE AS END_DATE
-                ,g.EFFECTIVE_FROM AS EFFECTIVE_FROM
-                ,g.LOAD_DATETIME
-                ,g.SOURCE
+                lc.ORDER_CUSTOMER_PK,
+                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
             FROM source_data AS g
             INNER JOIN latest_closed lc
             ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
@@ -709,13 +709,13 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         new_closed_records AS (
             SELECT DISTINCT
-                lo.ORDER_CUSTOMER_PK
-                ,lo.ORDER_PK, lo.CUSTOMER_PK
-                ,lo.START_DATE AS START_DATE
-                ,h.EFFECTIVE_FROM AS END_DATE
-                ,h.EFFECTIVE_FROM AS EFFECTIVE_FROM
-                ,h.LOAD_DATETIME
-                ,lo.SOURCE
+                lo.ORDER_CUSTOMER_PK,
+                lo.ORDER_PK, lo.CUSTOMER_PK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
             FROM source_data AS h
             INNER JOIN latest_open AS lo
             ON lo.ORDER_PK = h.ORDER_PK
@@ -776,13 +776,13 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         new_reopened_records AS (
             SELECT DISTINCT
-                lc.ORDER_CUSTOMER_PK
-                ,lc.ORDER_PK, lc.CUSTOMER_PK
-                ,lc.START_DATE AS START_DATE
-                ,g.END_DATE AS END_DATE
-                ,g.EFFECTIVE_FROM AS EFFECTIVE_FROM
-                ,g.LOAD_DATETIME
-                ,g.SOURCE
+                lc.ORDER_CUSTOMER_PK,
+                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
             FROM source_data AS g
             INNER JOIN latest_closed lc
             ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
