@@ -1,7 +1,7 @@
 # Extended Tracking Satellites (XTS)
 
 XTS tables are an integral part of incorporating out of sequence loads. An XTS will link to numerous satellites and keep track of all records loaded to the satellite. This is particularly useful for correcting the timeline of an out of sequence satellite.
-For example, when an unexpected record is loaded late it can cause an inaccuracy in the satellite's history. By tracking all record updates for that satellite, we can discern the correct timeline to reconstruct to incorporate the unexpected record.
+For example, when an unexpected record gets loaded late it can cause an inaccuracy in the satellite's history. By tracking all record updates for that satellite, we can discern the correct timeline to reconstruct to incorporate the unexpected record.
 
 #### Structure
 
@@ -11,13 +11,13 @@ Our extended tracking satellites structures will contain:
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. For an XTS we would expect this to be the same as the corresponding link or hub PK.
 
 ##### Hashdiff ( src_satellite.hashdiff)
-A hashed representation of the record's payload. Since the XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
+A hashed representation of the record's payload. An XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
 
 ##### Satellite name ( src_satellite.sat_name )
 The name of the satellite that the payload is being staged to. This allows us to use one XTS table to track records for many satellites and accurately maintain their timelines.
 
 ##### Load date ( src_ldts )
-A load date or load date timestamp. this identifies when the record was first loaded into the database.
+A load date or load date timestamp. this identifies when the record first gets loaded into the database.
 
 ##### Record Source ( src_source )
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
@@ -27,15 +27,15 @@ which is the code for `stg_customer`)
     
 ### Setting up XTS models
 
-Create a new dbt model as before. We'll call this one `XTS_Customer.sql`. 
+Create a new dbt model as before. We'll call this one `xts_customer.sql`. 
 
-`XTS_Customer``````.sql`
+`xts_customer.sql`
 ```jinja
-{{ dbtvault.xts(var('src_pk'), var('src_satellite'), var('src_ldts'), 
-                var('src_source'), var('source_model'))                 }}
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model)              }}
 ```
 
-To create an XTS model, we will simply copy and paste the above template into a model named after the xts we are creating. dbtvault will generate an xts using parameters provided in the next steps.
+To create an XTS model, we will simply copy and paste the above template into a model named after the XTS we are creating. dbtvault will generate the XTS using parameters provided in the next steps.
 
 `dbt_project.yml`
 ```yaml
@@ -115,17 +115,3 @@ And our table will look like this:
 | .            | .            | .                | .          | .            |
 | .            | .            | .                | .          | .            |
 | FED333...    | 6C958...     | SAT_SAP_CUSTOMER | 1993-01-01 | *            |
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
-- A Link
-- A Transactional Link
-- A Satellite
-- An Effectivity Satellite
-- An Extended Tracking Satellite
-
-Next we will look at [point in time structures](tut_point_in_time.md).
