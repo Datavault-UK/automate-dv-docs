@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.5] - 2021-06-10
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.5)](https://dbtvault.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
+
+### New structures
+- Multi-Active Satellites [Read More](../tutorial/tut_multi_active_satellites.md)
+
+### Bug Fixes
+- Fixed a bug where an Effectivity Satellite with multiple DFKs or SDKs would incorrectly handle changes in the corresponding link records, meaning
+one to many relationships were not getting handled as intended.
+
+### Improvements
+- Added support for multiple `order_by` or `partition_by` columns when creating ranked columns in the `stage` or `ranked_columns` macros.
+
+
 ## [v0.7.4] - 2021-03-27
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.4)](https://dbtvault.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
 
@@ -20,7 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Improvements
 - Added check for matching primary key when inserting new satellite records in the sat macro. This removes the requirement to
 add the natural key to the hashdiff, but it is still recommended. [Read More](../best_practices.md#hashdiff-components)
-  
 
 ### Quality of Life
 - Payload in Transactional (Non-Historised) links now optional

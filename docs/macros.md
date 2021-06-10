@@ -252,7 +252,7 @@ Generates sql to build a link table using the provided parameters.
 
 ``` jinja
 {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
+                 src_source=src_source, source_model=source_model) }}
 ```                                             
 
 #### Parameters
@@ -540,13 +540,14 @@ Generates sql to build a satellite table using the provided parameters.
         WITH source_data AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_PK IS NOT NULL
         ),
-        
+
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
         )
-        
+
         SELECT * FROM records_to_insert
         ```
     
@@ -556,35 +557,37 @@ Generates sql to build a satellite table using the provided parameters.
         WITH source_data AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_PK IS NOT NULL
         ),
-
+        
         update_records AS (
             SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.satellite as a
+            FROM DBTVAULT.TEST.SATELLITE as a
             JOIN source_data as b
             ON a.CUSTOMER_PK = b.CUSTOMER_PK
         ),
-
+        
         latest_records AS (
             SELECT c.CUSTOMER_PK, c.HASHDIFF, c.LOAD_DATE,
-                   CASE WHEN RANK()
-                   OVER (PARTITION BY c.CUSTOMER_PK
-                   ORDER BY c.LOAD_DATE DESC) = 1
-            THEN 'Y' ELSE 'N' END AS latest
+                RANK() OVER (
+                   PARTITION BY c.CUSTOMER_PK
+                   ORDER BY c.LOAD_DATE DESC
+                   ) AS rank
             FROM update_records as c
-            QUALIFY latest = 'Y'
+            QUALIFY rank = 1
         ),
         
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
             LEFT JOIN latest_records
-            ON latest_records.HASHDIFF = e.HASHDIFF
-            WHERE latest_records.HASHDIFF IS NULL
+            ON latest_records.CUSTOMER_PK = e.CUSTOMER_PK
+            WHERE latest_records.HASHDIFF != e.HASHDIFF
+            OR latest_records.HASHDIFF IS NULL
         )
         
         SELECT * FROM records_to_insert
-        ```
+    ```
 
 #### Hashdiff Aliasing
 
@@ -636,15 +639,17 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT.TEST.MY_STAGE
-        ),
-        
+            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_PK IS NOT NULL
+            AND a.CUSTOMER_PK IS NOT NULL
+    ),
+    
         records_to_insert AS (
-            SELECT e.CUSTOMER_ORDER_PK, e.ORDER_PK, e.CUSTOMER_PK, e.START_DATE, e.END_DATE, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-        
+            SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+            FROM source_data AS i
+    )
+    
         SELECT * FROM records_to_insert
         ```
 
@@ -652,79 +657,78 @@ Generates sql to build an effectivity satellite table using the provided paramet
     
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT.TEST.MY_STAGE
+            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_PK IS NOT NULL
+            AND a.CUSTOMER_PK IS NOT NULL
         ),
         
-        latest_open_eff AS
-        (
-            SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_PK
-                        ORDER BY b.LOAD_DATE DESC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.EFF_SAT AS b
-            WHERE TO_DATE(b.END_DATE) = TO_DATE('9999-12-31')
-            QUALIFY row_number = 1
+                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        ORDER BY b.LOAD_DATETIME DESC
+                   ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            QUALIFY row_num = 1
         ),
         
-        stage_slice AS
-        (
-            SELECT stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM stage_slice AS stage
-            LEFT JOIN latest_open_eff AS e
-            ON stage.CUSTOMER_ORDER_PK = e.CUSTOMER_ORDER_PK
-            WHERE e.CUSTOMER_ORDER_PK IS NULL
-            AND stage.ORDER_PK IS NOT NULL
-            AND stage.CUSTOMER_PK IS NOT NULL
+                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
+            WHERE lr.ORDER_CUSTOMER_PK IS NULL
         ),
         
-        links_to_end_date AS (
-            SELECT a.*
-            FROM latest_open_eff AS a
-            LEFT JOIN stage_slice AS b
-            ON a.ORDER_PK = b.ORDER_PK
-                
-            WHERE b.CUSTOMER_PK IS NULL
-            OR a.CUSTOMER_PK <> b.CUSTOMER_PK
-                
-        ),
-        
-        new_end_dated_records AS (
+        new_reopened_records AS (
             SELECT DISTINCT
-                h.CUSTOMER_ORDER_PK,
-                g.ORDER_PK, g.CUSTOMER_PK,
-                h.EFFECTIVE_FROM AS START_DATE, h.SOURCE
-            FROM latest_open_eff AS h
-            INNER JOIN links_to_end_date AS g
-            ON g.CUSTOMER_ORDER_PK = h.CUSTOMER_ORDER_PK
+                lc.ORDER_CUSTOMER_PK,
+                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
         ),
         
-        amended_end_dated_records AS (
+        new_closed_records AS (
             SELECT DISTINCT
-                a.CUSTOMER_ORDER_PK,
-                a.ORDER_PK, a.CUSTOMER_PK,
-                a.START_DATE,
-                stage.EFFECTIVE_FROM AS END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE,
-                a.SOURCE
-            FROM new_end_dated_records AS a
-            INNER JOIN stage_slice AS stage
-            ON stage.ORDER_PK = a.ORDER_PK
-                
-            WHERE stage.CUSTOMER_PK IS NOT NULL
-            AND stage.ORDER_PK IS NOT NULL
+                lo.ORDER_CUSTOMER_PK,
+                lo.ORDER_PK, lo.CUSTOMER_PK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            INNER JOIN latest_open AS lo
+            ON lo.ORDER_PK = h.ORDER_PK
+            WHERE (lo.CUSTOMER_PK <> h.CUSTOMER_PK)
         ),
         
         records_to_insert AS (
             SELECT * FROM new_open_records
             UNION
-            SELECT * FROM amended_end_dated_records
+            SELECT * FROM new_reopened_records
+            UNION
+            SELECT * FROM new_closed_records
         )
         
         SELECT * FROM records_to_insert
@@ -734,41 +738,61 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         ```sql
         WITH source_data AS (
-            SELECT *
-            FROM DBTVAULT.TEST.MY_STAGE
+            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_PK IS NOT NULL
+            AND a.CUSTOMER_PK IS NOT NULL
         ),
         
-        latest_open_eff AS
-        (
-            SELECT b.CUSTOMER_ORDER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATE, b.SOURCE,
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.CUSTOMER_ORDER_PK
-                        ORDER BY b.LOAD_DATE DESC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.EFF_SAT AS b
-            WHERE TO_DATE(b.END_DATE) = TO_DATE('9999-12-31')
-            QUALIFY row_number = 1
+                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        ORDER BY b.LOAD_DATETIME DESC
+                   ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            QUALIFY row_num = 1
         ),
         
-        stage_slice AS
-        (
-            SELECT stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                stage.CUSTOMER_ORDER_PK, stage.ORDER_PK, stage.CUSTOMER_PK, stage.START_DATE, stage.END_DATE, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM stage_slice AS stage
-            LEFT JOIN latest_open_eff AS e
-            ON stage.CUSTOMER_ORDER_PK = e.CUSTOMER_ORDER_PK
-            WHERE e.CUSTOMER_ORDER_PK IS NULL
-            AND stage.ORDER_PK IS NOT NULL
-            AND stage.CUSTOMER_PK IS NOT NULL
+                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
+            WHERE lr.ORDER_CUSTOMER_PK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_PK,
+                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
         ),
         
         records_to_insert AS (
             SELECT * FROM new_open_records
+            UNION
+            SELECT * FROM new_reopened_records
         )
         
         SELECT * FROM records_to_insert
@@ -800,8 +824,136 @@ The definition of the 'end' of a relationship is considered business logic which
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
-!!! warning We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
-exercised if you are unsure.
+!!! warning 
+
+    We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
+    exercised if you are unsure.
+
+___
+
+### ma_sat
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/ma_sat.sql))
+
+Generates SQL to build a multi-active satellite table (MAS).
+
+#### Usage
+
+``` jinja
+{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                   src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
+                   src_source=src_source, source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                         | Type             | Required?                                         |
+| -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
+| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>      |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i>      |
+| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>      |
+| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>      |
+| src_eff        | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i>  |
+| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>      |
+| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>      |
+| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>      |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#multi-active-satellites-mas)
+
+#### Example Output
+
+=== "Snowflake"
+    
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+        ),
+        
+        records_to_insert AS (
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            ,COUNT(DISTINCT a.HASHDIFF, a.CUSTOMER_PHONE )
+                OVER (PARTITION BY a.CUSTOMER_PK) AS source_count
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE a.CUSTOMER_PK IS NOT NULL
+                AND a.CUSTOMER_PHONE IS NOT NULL
+        ),
+        latest_records AS (
+            SELECT *, COUNT(DISTINCT latest_selection.HASHDIFF, latest_selection.CUSTOMER_PHONE )
+                    OVER (PARTITION BY latest_selection.CUSTOMER_PK) AS target_count
+            FROM (
+                SELECT target_records.CUSTOMER_PHONE, target_records.CUSTOMER_PK, target_records.HASHDIFF, target_records.LOAD_DATE
+                    ,RANK() OVER (PARTITION BY target_records.CUSTOMER_PK
+                            ORDER BY target_records.LOAD_DATE DESC) AS rank_value
+                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS target_records
+                INNER JOIN
+                    (SELECT DISTINCT source_pks.CUSTOMER_PK
+                    FROM source_data AS source_pks) AS source_records
+                        ON target_records.CUSTOMER_PK = source_records.CUSTOMER_PK
+                QUALIFY rank_value = 1
+                ) AS latest_selection
+        ),
+        matching_records AS (
+            SELECT stage.CUSTOMER_PK
+                ,COUNT(DISTINCT stage.HASHDIFF, stage.CUSTOMER_PHONE) AS match_count
+            FROM source_data AS stage
+            INNER JOIN latest_records
+                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
+                AND stage.HASHDIFF = latest_records.HASHDIFF
+                AND stage.CUSTOMER_PHONE = latest_records.CUSTOMER_PHONE
+            GROUP BY stage.CUSTOMER_PK
+        ),
+        satellite_update AS (
+            SELECT DISTINCT stage.CUSTOMER_PK
+            FROM source_data AS stage
+            INNER JOIN latest_records
+                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+            LEFT OUTER JOIN matching_records
+                ON matching_records.CUSTOMER_PK = latest_records.CUSTOMER_PK
+            WHERE (stage.source_count != latest_records.target_count
+                OR COALESCE(matching_records.match_count, 0) != latest_records.target_count)
+        ),
+        satellite_insert AS (
+            SELECT DISTINCT stage.CUSTOMER_PK
+            FROM source_data AS stage
+            LEFT OUTER JOIN latest_records
+                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
+            WHERE latest_records.CUSTOMER_PK IS NULL
+        ),
+        records_to_insert AS (
+            SELECT  stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+            INNER JOIN satellite_update
+                ON satellite_update.CUSTOMER_PK = stage.CUSTOMER_PK
+        
+            UNION
+        
+            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            FROM source_data AS stage
+            INNER JOIN satellite_insert
+                ON satellite_insert.CUSTOMER_PK = stage.CUSTOMER_PK
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 
 ___
 
@@ -1241,7 +1393,7 @@ For example:
 
 === "Snowflake"
 
-```yaml hl_lines="5 14"
+```yaml hl_lines="3 12"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
@@ -1337,8 +1489,6 @@ hash every column.
 
 === "Columns not provided"
 
-    !!! tip "New in dbtvault 0.7.2"
-
     === "Columns in source model"
     
         ```text
@@ -1415,11 +1565,11 @@ Please ensure that your function has valid SQL syntax on your platform, for use 
 
 #### Constants (Derived Columns)
 
-```yaml hl_lines="6"
+```yaml hl_lines="4"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-  SOURCE: "!RAW_CUSTOMER"
+  RECORD_SOURCE: "!RAW_CUSTOMER"
   EFFECTIVE_FROM: "BOOKING_DATE"
 ```
 
@@ -1430,15 +1580,25 @@ characters.
 As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like
 the following:
 
-```sql
-SELECT "RAW_CUSTOMER" AS SOURCE
+```sql hl_lines="3"
+SELECT 
+    TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK,
+    'RAW_CUSTOMER' AS RECORD_SOURCE,
+    BOOKING_DATE AS EFFECTIVE_FROM
 ```
+
+And the data would look like:
+
+| CUSTOMER_DOB_UK  | RECORD_SOURCE  | EFFECTIVE_FROM  |
+| ---------------- | -------------- | --------------- |
+| 09-06-1994       | RAW_CUSTOMER   | 01-01-2021      |
+| .                | RAW_CUSTOMER   | .               |
+| .                | RAW_CUSTOMER   | .               |
+| 02-01-1986       | RAW_CUSTOMER   | 07-03-2021      |
 
 #### Composite columns (Derived Columns)
 
-!!! tip "New in dbtvault 0.7.2"
-
-```yaml hl_lines="6 7"
+```yaml hl_lines="3 4 5 6"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_NK:
@@ -1456,41 +1616,67 @@ Given the following values in the above example:
 - `CUSTOMER_ID` = 0011
 - `CUSTOMER_NAME` = Alex
 
-Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values are joined in the order provided, using a
-double pipe `||`. Currently, this `||` join string is hard-coded, but in future it will be user-configurable.
+Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
+double pipe `||`. Currently, this `||` join string has been hard-coded, but in future it will be user-configurable.
 
 The values provided in the list can use any of the previously described syntax (including functions and constants) to
-generate new values, as the concatenation is made in pure SQL as follows:
+generate new values, as the concatenation happens in pure SQL, as follows:
 
 ```sql
-SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV')
+SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
-#### Ranked columns
-
-!!! tip "New in dbtvault 0.7.2"
+#### Defining Ranked columns
 
 To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
-```yaml
-source_model: "MY_STAGE"
-ranked_columns:
-  DBTVAULT_RANK:
-    partition_by: "CUSTOMER_PK"
-    order_by: "LOAD_DATETIME"
-  SAT_BOOKING_RANK:
-    partition_by: "BOOKING_PK"
-    order_by: "LOAD_DATETIME"
-```
+=== "Single item parameters"
+
+    ```yaml
+    source_model: "MY_STAGE"
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: "CUSTOMER_PK"
+        order_by: "LOAD_DATETIME"
+      SAT_BOOKING_RANK:
+        partition_by: "BOOKING_PK"
+        order_by: "LOAD_DATETIME"
+    ```
+
+=== "Multi-item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_PK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE'
+            - 'LOAD_DATETIME'
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_PK'
+        order_by: 'LOAD_DATETIME'
+    ```
 
 This will create columns like so:
 
-```
-RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-```
+=== "Single item parameters"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+=== "Multi-item parameters"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_PK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
 
 ___
 
@@ -1498,7 +1684,8 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/hash_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
@@ -1506,7 +1693,8 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/derive_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
 column value.
@@ -1515,7 +1703,8 @@ column value.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/rank_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns using the `RANK()` window function.
 
@@ -1535,19 +1724,21 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/supporting/hash.sql))
 
-!!! warning This macro ***should not be*** used for cryptographic purposes.
+!!! warning 
+    
+    This macro ***should not be*** used for cryptographic purposes.
 
     The intended use is for creating checksum-like values only, so that we may compare records accurately.
     
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-- [hash_columns](#hash_columns)
-- Read [Hashing best practises and why we hash](best_practices.md#hashing)
-for more detailed information on the purposes of this macro and what it does.
-
-    - You may choose between ```MD5``` and ```SHA-256``` hashing.
-      [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    - [hash_columns](#hash_columns)
+    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
+    for more detailed information on the purposes of this macro and what it does.
+    
+        - You may choose between `MD5` and `SHA-256` hashing.
+          [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
 A macro for generating hashing SQL for columns.
 
@@ -1583,7 +1774,7 @@ A macro for generating hashing SQL for columns.
         ```
 
 !!! tip
-[hash_columns](#hash_columns) may be used to simplify the hashing process and generate multiple hashes with one macro.
+    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes with one macro.
 
 #### Parameters
 
@@ -1611,14 +1802,19 @@ A macro for quickly prefixing a list of columns with a string.
 #### Usage
 
 === "Input"
-```sql {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
-```
+    
+    ```sql 
+    {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
+    ```
 
 === "Output"
-```sql a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
-```
 
-!!! Note Single columns must be provided as a 1-item list, as in the second example above.
+    ```sql 
+    a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
+    ```
+
+!!! Note 
+    Single columns must be provided as a 1-item list, as in the second example above.
 
 ___
 
@@ -1673,9 +1869,11 @@ range. More detail on how this works is below.
 #### Usage
 
 === "Manual Load range #1"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30') }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30') }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1683,9 +1881,11 @@ start_date='2020-01-30') }}
     ```
 
 === "Manual Load range #2"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30', stop_date='2020-04-30') }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30', stop_date='2020-04-30') }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1693,9 +1893,11 @@ start_date='2020-01-30', stop_date='2020-04-30') }}
     ```
 
 === "Manual Load range #3"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1703,9 +1905,11 @@ start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_
     ```
 
 === "Inferred Load range"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-date_source_models=var('source_model')) }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    date_source_models=var('source_model')) }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1737,19 +1941,21 @@ Examples of output for dbt runs using the [eff_sat](#eff_sat) macro and this mat
     ```
 
 === "Incremental load"
-```text 15:24:16 | Concurrency: 4 threads (target='snowflake')
-15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
-15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
-15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
-15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
-15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
-15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
-```
+
+    ```text 
+    15:24:16 | Concurrency: 4 threads (target='snowflake')
+    15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
+    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
+    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
+    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
+    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
+    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
+    15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
+    ```
 
 #### Configuring the load date range
 
@@ -1898,6 +2104,10 @@ A rank column can be created one of three ways:
     derived_columns:
       DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
+   
+!!! note
+
+    [Read more](#defining-ranked-columns) about defining ranked columns.
 
 #### Which option?
 

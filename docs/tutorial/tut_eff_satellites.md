@@ -202,19 +202,3 @@ And our table will look like this:
  | .                  | .            | .             | .          | .          | .              | .            | 1      |
  | .                  | .            | .             | .          | .          | .              | .            | 1      |
  | D8CB1F...          | FED333...    | 8FAA77...     | 1993-01-01 | 9999-31-12 | 1993-01-01     | 1993-01-01   | 1      |
-
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
-- A Link
-- A Transactional Link
-- A Satellite
-- An Effectivity Satellite
-
-That is all for now. More table types will be coming in future! See our [roadmap](../roadmap.md) for more details.
-
-If you want a more realistic real-world example, with real data to work with, take a look at our [worked example](../worked_example/we_worked_example.md).

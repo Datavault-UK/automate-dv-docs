@@ -155,20 +155,8 @@ With our model complete and our YAML written, we can run dbt to create our `t_li
 And our table will look like this:
 
 | TRANSACTION_PK  | CUSTOMER_FK | ORDER_FK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATE    | SOURCE |
-| --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ----------- | ------ |
-| BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-29  | 2      |
-| .               | .           | .         | .                  | .    | .       | .              | .           | .      |
-| .               | .           | .         | .                  | .    | .       | .              | .           | .      |
-| E0E7A8...       | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23  | 1993-01-28     | 1993-01-29  | 2      |
-
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
-- A Link
-- A Transactional Link
- 
-Next we will explore [satellites](tut_satellites.md).
+| --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ------------ | ------ |
+| BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-29   | 2      |
+| .               | .           | .         | .                  | .    | .       | .              | .            | .      |
+| .               | .           | .         | .                  | .    | .       | .              | .            | .      |
+| E0E7A8...       | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23  | 1993-01-28     | 1993-01-29   | 2      |
