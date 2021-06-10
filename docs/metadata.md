@@ -912,67 +912,16 @@ ___
     ```
 ___
 
-### Extended Record Tracking Satellites (XTS)
-
-#### Parameters
-
-[xts macro parameters](macros.md#xts)
-
-#### Metadata
-
-=== "Per-model - YAML strings"
-
-    ```jinja
-    ```
-
-=== "Per-Model - Variables"
-
-    ```jinja
-    {%- set source_model = "v_stg_customer" -%}
-    {%- set src_pk = "CUSTOMER_PK" -%}
-    {%- set src_satellites = -%}
-    {%- set src_ldts = "LOAD_DATE" -%}
-    {%- set src_source = "SOURCE" -%}
-    
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model)              }}
-    ```
-
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1"
-
-    ```yaml
-    xts_customer:
-      vars:
-        source_model: 'stg_customer'
-        src_pk: 'CUSTOMER_PK'
-        src_satellite: 
-            'SATELLITE_CUSTOMER':
-                'sat_name': 
-                    'SATELLITE_NAME': 'SATELLITE_1'
-                'hashdiff':
-                    'HASHDIFF': 'HASHDIFF_1'
-            'SATELLITE_CUSTOMER_DETAILS':
-                'sat_name':
-                    'SATELLITE_NAME': 'SATELLITE_2'
-                'hashdiff': 
-                    'HASHDIFF': 'HASHDIFF_2'
-        src_ldts: 'LOADDATE'
-        src_source: 'SOURCE'
-    ```
-___
-
 ### The problem with metadata
 
-If metadata is stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
-projects. If your metadata is defined and stored in each model, it becomes harder to generate and develop with, 
+When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
+projects. If your metadata gets defined and stored in each model, it becomes harder to generate and develop with, 
 but it can be easier to manage. Model-level metadata alleviates the issue, but will not completely solve it.
 
-Whichever approach is chosen, metadata storage and retrieval is difficult without a dedicated tool. 
+Whichever approach gets chosen, metadata storage and retrieval is difficult without a dedicated tool. 
 To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
 Matillion, or Erwin Data Modeller. 
 
 In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a 
 little longer. Discussions are [already ongoing](https://github.com/fishtown-analytics/dbt/issues/2401), and we hope
-to be able to advise on better ways to manage metadata in future. 
+to be able to advise on better ways to manage metadata in the future. 
