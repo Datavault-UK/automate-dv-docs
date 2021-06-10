@@ -1565,7 +1565,7 @@ Please ensure that your function has valid SQL syntax on your platform, for use 
 
 #### Constants (Derived Columns)
 
-```yaml hl_lines="6"
+```yaml hl_lines="4"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
