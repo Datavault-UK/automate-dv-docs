@@ -1185,6 +1185,106 @@ ___
       ```
 ___
 
+### Bridge tables
+
+#### Parameters
+
+[bridge macro parameters](macros.md#bridge)
+
+#### Metadata
+
+=== "Per-Model - Variables"
+
+    === Example bridge table with hub and two links
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATETIME"
+    as_of_dates_table: "AS_OF_DATE"
+    bridge_walk:
+        CUSTOMER_ORDER:
+            bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
+            bridge_start_date: "EFF_SAT_CUSTOMER_ORDER_STARTDATE"
+            bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+            bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
+            link_table: "LINK_CUSTOMER_ORDER"
+            link_pk: "CUSTOMER_ORDER_PK"
+            link_fk1: "CUSTOMER_FK"
+            link_fk2: "ORDER_FK"
+            eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+            eff_sat_pk: "CUSTOMER_ORDER_PK"
+            eff_sat_end_date: "END_DATE"
+            eff_sat_load_date: "LOAD_DATETIME"
+        ORDER_PRODUCT:
+            bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
+            bridge_start_date: "EFF_SAT_ORDER_PRODUCT_STARTDATE"
+            bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+            bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
+            link_table: "LINK_ORDER_PRODUCT"
+            link_pk: "ORDER_PRODUCT_PK"
+            link_fk1: "ORDER_FK"
+            link_fk2: "PRODUCT_FK"
+            eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+            eff_sat_pk: "ORDER_PRODUCT_PK"
+            eff_sat_end_date: "END_DATE"
+            eff_sat_load_date: "LOAD_DATETIME"
+    stage_tables_ldts:
+        STG_CUSTOMER_ORDER: "LOAD_DATETIME"
+        STG_ORDER_PRODUCT: "LOAD_DATETIME"
+    {%- endset -%}
+
+    {{ dbtvault.bridge({src_pk}, {as_of_dates_table}, {bridge_walk}, 
+        {source_model}, {stage_tables}, {src_ldts}) }}
+    ```
+
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    === Example bridge table with hub and two links
+
+    ```yaml
+    bridge_customer_order:
+      vars:
+        source_model: "HUB_CUSTOMER"
+        src_pk: "CUSTOMER_PK"
+        src_ldts: "LOAD_DATETIME"
+        as_of_dates_table: "AS_OF_DATE"
+        bridge_walk:
+            CUSTOMER_ORDER:
+                bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
+                bridge_start_date: "EFF_SAT_CUSTOMER_ORDER_STARTDATE"
+                bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+                bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
+                link_table: "LINK_CUSTOMER_ORDER"
+                link_pk: "CUSTOMER_ORDER_PK"
+                link_fk1: "CUSTOMER_FK"
+                link_fk2: "ORDER_FK"
+                eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+                eff_sat_pk: "CUSTOMER_ORDER_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+            ORDER_PRODUCT:
+                bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
+                bridge_start_date: "EFF_SAT_ORDER_PRODUCT_STARTDATE"
+                bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+                bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
+                link_table: "LINK_ORDER_PRODUCT"
+                link_pk: "ORDER_PRODUCT_PK"
+                link_fk1: "ORDER_FK"
+                link_fk2: "PRODUCT_FK"
+                eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+                eff_sat_pk: "ORDER_PRODUCT_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+        stage_tables_ldts:
+            STG_CUSTOMER_ORDER: "LOAD_DATETIME"
+            STG_ORDER_PRODUCT: "LOAD_DATETIME"
+    ```
+___
+
 ### The problem with metadata
 
 When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
