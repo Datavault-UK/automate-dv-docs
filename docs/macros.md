@@ -86,7 +86,7 @@ Generates SQL to build a hub table using the provided parameters.
 | source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-[Read the tutorial](tutorial/tut_hubs.md) for more details
+    [Read the tutorial](tutorial/tut_hubs.md) for more details
 
 #### Example Metadata
 
@@ -266,7 +266,7 @@ Generates sql to build a link table using the provided parameters.
 | source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-[Read the tutorial](tutorial/tut_links.md) for more details
+    [Read the tutorial](tutorial/tut_links.md) for more details
 
 #### Example Metadata
 
@@ -452,7 +452,7 @@ Generates sql to build a transactional link table using the provided parameters.
 | source_model  | Staging model name                                  | String              | <i class="fas fa-check-circle required"></i>     |
 
 !!! tip
-[Read the tutorial](tutorial/tut_t_links.md) for more details
+    [Read the tutorial](tutorial/tut_t_links.md) for more details
 
 #### Example Metadata
 
@@ -524,7 +524,7 @@ Generates sql to build a satellite table using the provided parameters.
 | source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>     |
 
 !!! tip
-[Read the tutorial](tutorial/tut_satellites.md) for more details
+    [Read the tutorial](tutorial/tut_satellites.md) for more details
 
 #### Example Metadata
 
@@ -625,7 +625,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
 | source_model   | Staging model name                                  | String                  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-[Read the tutorial](tutorial/tut_eff_satellites.md) for more details
+    [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
 
 #### Example Metadata
 
