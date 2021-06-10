@@ -496,6 +496,11 @@ example provided to help better convey the difference.
 
 #### Metadata
 
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
+
 === "Per-Model - Variables"
 
     === "Single Source"
@@ -589,6 +594,11 @@ example provided to help better convey the difference.
 
 #### Metadata
 
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
+
 === "Per-Model - Variables"
 
     === "Single Source"
@@ -658,6 +668,10 @@ example provided to help better convey the difference.
 
 #### Metadata
 
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
 
 === "Per-Model - Variables"
 
@@ -704,6 +718,11 @@ example provided to help better convey the difference.
 [sat macro parameters](macros.md#sat)
 
 #### Metadata
+
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
 
 === "Per-Model - Variables"
 
@@ -798,6 +817,11 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Metadata
 
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
+
 === "Per-Model - Variables"
 
     ```jinja
@@ -846,6 +870,11 @@ ___
 
 #### Metadata
 
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
+
 === "Per-Model - Variables"
 
     ```jinja
@@ -865,6 +894,8 @@ ___
 
 === "dbt_project.yml"
 
+    !!! warning "Only available with dbt config-version: 1"
+
     ```yaml
     ma_sat_customer_details:
       vars:
@@ -881,14 +912,36 @@ ___
     ```
 ___
 
-### Extended Tracking Satellites (XTS)
+### Extended Record Tracking Satellites (XTS)
 
 #### Parameters
 
 [xts macro parameters](macros.md#xts)
 
 #### Metadata
+
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_customer" -%}
+    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_satellites = -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model)              }}
+    ```
+
 === "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
     ```yaml
     xts_customer:
       vars:
