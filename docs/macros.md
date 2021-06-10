@@ -1627,7 +1627,7 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
-#### Ranked columns
+#### Defining Ranked columns
 
 To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
@@ -2104,6 +2104,10 @@ A rank column can be created one of three ways:
     derived_columns:
       DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
+   
+!!! note
+
+    [Read more](#defining-ranked-columns) about defining ranked columns.
 
 #### Which option?
 
