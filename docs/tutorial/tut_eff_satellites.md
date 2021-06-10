@@ -215,4 +215,4 @@ We have now created:
 - A Satellite
 - An Effectivity Satellite
 
-Next we will look at [extended tracking satellites](tut_xts.md).
+Next we will look at [multi-active satellites](tut_multi_active_satellites.md).
