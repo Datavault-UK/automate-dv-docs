@@ -252,7 +252,7 @@ Generates sql to build a link table using the provided parameters.
 
 ``` jinja
 {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
+                 src_source=src_source, source_model=source_model) }}
 ```                                             
 
 #### Parameters
@@ -939,13 +939,13 @@ ___
 
 ([view source]())
 
-Generates SQL to build a Extended Tracking Satellite table using the provided parameters
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.xts(var('src_pk'), var('src_satellite'), var('src_ldts'),
-                var('src_source'), var('source_model'))                 }}
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model)              }}
 ```
 
 #### Parameters
