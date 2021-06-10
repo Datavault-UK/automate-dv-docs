@@ -252,7 +252,7 @@ Generates sql to build a link table using the provided parameters.
 
 ``` jinja
 {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
+                 src_source=src_source, source_model=source_model) }}
 ```                                             
 
 #### Parameters
@@ -587,7 +587,7 @@ Generates sql to build a satellite table using the provided parameters.
         )
         
         SELECT * FROM records_to_insert
-```
+    ```
 
 #### Hashdiff Aliasing
 
@@ -824,14 +824,16 @@ The definition of the 'end' of a relationship is considered business logic which
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
-!!! warning We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
-exercised if you are unsure.
+!!! warning 
+
+    We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
+    exercised if you are unsure.
 
 ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.3/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
@@ -953,6 +955,144 @@ Generates SQL to build a multi-active satellite table (MAS).
         SELECT * FROM records_to_insert
         ```
 
+___
+
+### xts
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/xts.sql))
+
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters
+
+#### Usage
+
+``` jinja
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model)              }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                                    | Type             | Required?                                    |
+| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
+| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load dat timestamp column                               | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+
+#### Example Metadata
+
+[See examples](metadata.md#extended-tracking-satellites-xts)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Single-Source"
+
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE_1 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE_1 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_1_from_PRIMED_STAGE_2 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE_2 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE_1
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_1
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 ___
 
 ## Staging Macros
@@ -1391,7 +1531,7 @@ For example:
 
 === "Snowflake"
 
-```yaml hl_lines="5 14"
+```yaml hl_lines="3 12"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
@@ -1487,8 +1627,6 @@ hash every column.
 
 === "Columns not provided"
 
-    !!! tip "New in dbtvault 0.7.2"
-
     === "Columns in source model"
     
         ```text
@@ -1569,7 +1707,7 @@ Please ensure that your function has valid SQL syntax on your platform, for use 
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-  SOURCE: "!RAW_CUSTOMER"
+  RECORD_SOURCE: "!RAW_CUSTOMER"
   EFFECTIVE_FROM: "BOOKING_DATE"
 ```
 
@@ -1580,13 +1718,23 @@ characters.
 As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like
 the following:
 
-```sql
-SELECT "RAW_CUSTOMER" AS SOURCE
+```sql hl_lines="3"
+SELECT 
+    TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK,
+    'RAW_CUSTOMER' AS RECORD_SOURCE,
+    BOOKING_DATE AS EFFECTIVE_FROM
 ```
 
-#### Composite columns (Derived Columns)
+And the data would look like:
 
-!!! tip "New in dbtvault 0.7.2"
+| CUSTOMER_DOB_UK  | RECORD_SOURCE  | EFFECTIVE_FROM  |
+| ---------------- | -------------- | --------------- |
+| 09-06-1994       | RAW_CUSTOMER   | 01-01-2021      |
+| .                | RAW_CUSTOMER   | .               |
+| .                | RAW_CUSTOMER   | .               |
+| 02-01-1986       | RAW_CUSTOMER   | 07-03-2021      |
+
+#### Composite columns (Derived Columns)
 
 ```yaml hl_lines="6 7"
 source_model: "MY_STAGE"
@@ -1619,8 +1767,6 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 #### Ranked columns
 
-!!! tip "New in dbtvault 0.7.2"
-
 To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
@@ -1642,13 +1788,32 @@ RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
 RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
 ```
 
+You may also provide multiple columns to the `partition_by` and `order_by` parameters, as follows:
+
+```yaml
+source_model: "MY_STAGE"
+ranked_columns:
+  DBTVAULT_RANK:
+    partition_by: "CUSTOMER_PK"
+    order_by: "LOAD_DATETIME"
+  SAT_BOOKING_RANK:
+    partition_by: 
+      - "BOOKING_PK"
+      - "BOOKING_DATE"
+    order_by: 
+      - "LOAD_DATETIME"
+      - "BOOKING_DATE"
+```
+
+
 ___
 
 ### hash_columns
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/hash_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
@@ -1656,7 +1821,8 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/derive_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
 column value.
@@ -1665,7 +1831,8 @@ column value.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/staging/rank_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns using the `RANK()` window function.
 
@@ -1685,19 +1852,21 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/supporting/hash.sql))
 
-!!! warning This macro ***should not be*** used for cryptographic purposes.
+!!! warning 
+    
+    This macro ***should not be*** used for cryptographic purposes.
 
     The intended use is for creating checksum-like values only, so that we may compare records accurately.
     
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-- [hash_columns](#hash_columns)
-- Read [Hashing best practises and why we hash](best_practices.md#hashing)
-for more detailed information on the purposes of this macro and what it does.
-
-    - You may choose between ```MD5``` and ```SHA-256``` hashing.
-      [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    - [hash_columns](#hash_columns)
+    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
+    for more detailed information on the purposes of this macro and what it does.
+    
+        - You may choose between `MD5` and `SHA-256` hashing.
+          [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
 A macro for generating hashing SQL for columns.
 
@@ -1733,7 +1902,7 @@ A macro for generating hashing SQL for columns.
         ```
 
 !!! tip
-[hash_columns](#hash_columns) may be used to simplify the hashing process and generate multiple hashes with one macro.
+    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes with one macro.
 
 #### Parameters
 
@@ -1761,14 +1930,19 @@ A macro for quickly prefixing a list of columns with a string.
 #### Usage
 
 === "Input"
-```sql {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
-```
+    
+    ```sql 
+    {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
+    ```
 
 === "Output"
-```sql a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
-```
 
-!!! Note Single columns must be provided as a 1-item list, as in the second example above.
+    ```sql 
+    a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
+    ```
+
+!!! Note 
+    Single columns must be provided as a 1-item list, as in the second example above.
 
 ___
 
@@ -1823,9 +1997,11 @@ range. More detail on how this works is below.
 #### Usage
 
 === "Manual Load range #1"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30') }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30') }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1833,9 +2009,11 @@ start_date='2020-01-30') }}
     ```
 
 === "Manual Load range #2"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30', stop_date='2020-04-30') }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30', stop_date='2020-04-30') }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1843,9 +2021,11 @@ start_date='2020-01-30', stop_date='2020-04-30') }}
     ```
 
 === "Manual Load range #3"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1853,9 +2033,11 @@ start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_
     ```
 
 === "Inferred Load range"
-```jinja {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-date_source_models=var('source_model')) }}
 
+    ```jinja 
+    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+    date_source_models=var('source_model')) }}
+    
     {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -1887,19 +2069,21 @@ Examples of output for dbt runs using the [eff_sat](#eff_sat) macro and this mat
     ```
 
 === "Incremental load"
-```text 15:24:16 | Concurrency: 4 threads (target='snowflake')
-15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
-15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
-15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
-15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
-15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
-15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
-15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
-```
+
+    ```text 
+    15:24:16 | Concurrency: 4 threads (target='snowflake')
+    15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
+    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
+    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
+    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
+    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
+    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
+    15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
+    ```
 
 #### Configuring the load date range
 

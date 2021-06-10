@@ -202,17 +202,3 @@ And our table will look like this:
  | .                  | .            | .             | .          | .          | .              | .            | 1      |
  | .                  | .            | .             | .          | .          | .              | .            | 1      |
  | D8CB1F...          | FED333...    | 8FAA77...     | 1993-01-01 | 9999-31-12 | 1993-01-01     | 1993-01-01   | 1      |
-
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
-- A Link
-- A Transactional Link
-- A Satellite
-- An Effectivity Satellite
-
-Next we will look at [multi-active satellites](tut_multi_active_satellites.md).

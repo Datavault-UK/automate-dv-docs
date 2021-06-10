@@ -170,13 +170,3 @@ link_nation_region:
     src_ldts: 'LOAD_DATE'
     src_source: 'SOURCE'
 ```
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
-- A Link
- 
-Next we will look at [transactional links](tut_t_links.md). 
