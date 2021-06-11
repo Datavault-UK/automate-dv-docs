@@ -18,15 +18,11 @@ and create a hash on a concatenation of them.
 Foreign keys referencing the primary key for each hub referenced in the t-link (2 or more depending on the number of hubs 
 referenced) 
 
-##### Payload (src_payload)
+##### Payload (src_payload) - optional
 A t-link payload consists of concrete data for the transaction record. This could be
 a transaction number, an amount paid, transaction type or more. The payload will contain all the
 concrete data for a transaction. This field is optional because you may want to model your transactions as a T-Link, and multiple satellites (off of the T-Link).
 This modelling approach can be useful if there are many fields, and these fields comprise multiple rates of change or types of data.
-
-!!! tip
-    
-    Now optional in dbtvault 0.7.4
 
 ##### Effective From (src_eff)
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
@@ -34,15 +30,15 @@ transaction record. It records that a record is valid from a specific point in t
 is usually the date on which the transaction occurred. 
 
 ##### Load date (src_ldts)
-A load date or load date timestamp. This identifies when the record was first loaded into the database.
+A load date or load date timestamp. this identifies when the record first gets loaded into the database.
 
 ##### Record Source (src_source)
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
 
 !!! note
-    `LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
-    different value, especially if there is a batch processing delay between when a business event happens and the 
+    `LOAD_DATE` is the time the record that gets loaded into the database. `EFFECTIVE_FROM` is different and may hold a 
+    different value, especially if there is a batch processing delay between when a business event happens, and the 
     record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
     and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
     
@@ -155,20 +151,8 @@ With our model complete and our YAML written, we can run dbt to create our `t_li
 And our table will look like this:
 
 | TRANSACTION_PK  | CUSTOMER_FK | ORDER_FK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATE    | SOURCE |
-| --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ----------- | ------ |
-| BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-29  | 2      |
-| .               | .           | .         | .                  | .    | .       | .              | .           | .      |
-| .               | .           | .         | .                  | .    | .       | .              | .           | .      |
-| E0E7A8...       | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23  | 1993-01-28     | 1993-01-29  | 2      |
-
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
-- A Link
-- A Transactional Link
- 
-Next we will explore [satellites](tut_satellites.md).
+| --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ------------ | ------ |
+| BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-29   | 2      |
+| .               | .           | .         | .                  | .    | .       | .              | .            | .      |
+| .               | .           | .         | .                  | .    | .       | .              | .            | .      |
+| E0E7A8...       | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23  | 1993-01-28     | 1993-01-29   | 2      |

@@ -159,12 +159,3 @@ will handle the rest.
         src_ldts: 'LOAD_DATE'
         src_source: 'SOURCE'
     ```
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
- 
-Next we will look at [links](tut_links.md), which are created similarly.

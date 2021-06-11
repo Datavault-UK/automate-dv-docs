@@ -26,13 +26,15 @@ nav:
       - Transactional Links: 'tutorial/tut_t_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
+      - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
+      - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
-    - Getting Started: 'worked_example/we_worked_example.md'
-    - Project setup: 'worked_example/we_setup.md'
-    - Profiling TPC-H: 'worked_example/we_tpch_profile.md'
-    - Creating the stage layers: 'worked_example/we_staging.md'
-    - Loading the vault: 'worked_example/we_loading.md'
+      - Getting Started: 'worked_example/we_worked_example.md'
+      - Project setup: 'worked_example/we_setup.md'
+      - Profiling TPC-H: 'worked_example/we_tpch_profile.md'
+      - Creating the stage layers: 'worked_example/we_staging.md'
+      - Loading the vault: 'worked_example/we_loading.md'
   - Migration Guides:
       - Migrating from v0.5 to v0.6: 'migration_guides/migrating_v0.5_v0.6.md'
       - Migrating from v0.4 to v0.5: 'migration_guides/migrating_v0.4_v0.5.md'
@@ -42,8 +44,8 @@ nav:
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
   - Changelog:
-    - Stable Releases: 'changelog/stable.md'
-    - Beta Releases: 'changelog/beta.md'
+      - Stable Releases: 'changelog/stable.md'
+      - Beta Releases: 'changelog/beta.md'
   - Contributing: 'contributing.md'
   - Licence: 'LICENSE.md'
 
@@ -84,4 +86,4 @@ extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2020 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics
+copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics

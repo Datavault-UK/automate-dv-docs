@@ -82,7 +82,8 @@ We recommend setting the `incremental` materialization on all of your satellites
     ```
 
 !!! tip "Loading Satellites correctly"
-    dbtvault provides custom materialisations, designed to load satellites (among other structures) in the correct way:
+    dbtvault provides custom materialisations, designed to load structures which contain deltas (such as satellites, among other structures) 
+    in the correct way:
     
     - [vault_insert_by_period](../macros.md#vault_insert_by_period)
     - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
@@ -157,16 +158,3 @@ And our table will look like this:
 | .            | .                 | .             | .            | .               | .              | .           | 1      |
 | .            | .                 | .             | .            | .               | .              | .           | 1      |
 | FED333...    | D8CB1F...         | Dom           | 2018-04-13   | 17-214-233-1217 | 1993-01-01     | 1993-01-01  | 1      |
-
-
-### Next steps
-
-We have now created:
-
-- A staging layer 
-- A Hub 
-- A Link
-- A Transactional Link
-- A Satellite
-
-Next we will look at [effectivity satellites](tut_eff_satellites.md).
