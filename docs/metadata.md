@@ -1155,7 +1155,49 @@ ___
 
 #### Metadata
 
+=== "Per-Model - YAML Strings"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: HUB_CUSTOMER
+    src_pk: CUSTOMER_PK
+    as_of_date_table: AS_OF_DATE
+    satellites: 
+        SAT_CUSTOMER_DETAILS:
+          pk:
+              'PK': 'CUSTOMER_PK'
+          ldts:
+              'LDTS': 'LOAD_DATE'
+        SAT_CUSTOMER_LOGIN:
+          pk:
+              'PK': 'CUSTOMER_PK'
+          ldts:
+              'LDTS': 'LOAD_DATE'
+        SAT_CUSTOMER_PROFILE:
+          pk:
+              'PK': 'CUSTOMER_PK'
+          ldts:
+              'LDTS': 'LOAD_DATE'
+    stage_tables:
+        'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
+        'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
+        'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
+    src_ldts: 'LOAD_DATE'
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}   
+
+    {{ dbtvault.pit(source_model=metadata_dict['source_model'], 
+                    src_pk=metadata_dict['src_pk'],
+                    as_of_dates_table=metadata_dict['as_of_dates_table'],
+                    satellites=metadata_dict['satellites'],
+                    stage_tables=metadata_dict['stage_tables'],
+                    src_ldts=metadata_dict['src_ldts']) }}
+    ```
+
 === "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
 
     ```yaml
     PIT_CUSTOMER:
@@ -1195,7 +1237,7 @@ ___
 
 #### Metadata
 
-=== "Per-Model - Variables"
+=== "Per-Model - YAML String"
 
     ```jinja
     {%- set yaml_metadata -%}
@@ -1235,8 +1277,10 @@ ___
         STG_ORDER_PRODUCT: "LOAD_DATETIME"
     {%- endset -%}
 
-    {{ dbtvault.bridge({src_pk}, {as_of_dates_table}, {bridge_walk}, 
-        {source_model}, {stage_tables}, {src_ldts}) }}
+    {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+                       bridge_walk=bridge_walk,
+                       as_of_dates_table=as_of_dates_table,
+                       stage_tables=stage_tables,src_ldts=src_ldts) }}
     ```
 
 === "dbt_project.yml"
