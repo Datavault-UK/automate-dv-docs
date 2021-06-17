@@ -39,10 +39,11 @@ This is the name of the Hub that contains the primary key (src_pk) and that the 
 Create a new dbt model as before. We'll call this one `pit_customer`. 
 
 `pit_customer.sql`
-```jinja
-{{ {{ dbtvault.pit({src_pk}, {as_of_dates_table}, {satellites}, 
-    {source_model}) }} }}
-```
+
+    ```jinja
+    {{ {{ dbtvault.pit({src_pk}, {as_of_dates_table}, {satellites}, 
+        {source_model}) }} }}
+    ```
 
 To create a PIT model, we simply copy and paste the above template into a model named after the PIT we
 are creating. dbtvault will generate a PIT using parameters provided in the next steps.
@@ -52,17 +53,18 @@ PITS should use the pit_incremental materialization, as the pit is remade with e
 We recommend setting the `pit_incremental` materialization on all of your pits using the `dbt_project.yml` file:
 
 `dbt_project.yml`
-```yaml
-models:
-  my_dbtvault_project:
-   pit:
-    materialized: pit_incremental
-    tags:
-      - pit
-    pit_customer:
-      vars:
-        ...
-```
+
+    ```yaml
+    models:
+      my_dbtvault_project:
+       pit:
+        materialized: pit_incremental
+        tags:
+          - pit
+        pit_customer:
+          vars:
+            ...
+    ```
 
 ### Adding the metadata
 
@@ -72,11 +74,13 @@ Let's look at the metadata we need to provide to the [pit](../macros.md#pit) mac
 Here we will define the metadata for the source_model. We will use the HUB_CUSTOMER that we built before.
 
 `dbt_project.yml`
-```yaml
-PIT_CUSTOMER:
-    vars:
-        source_model: HUB_CUSTOMER
-```
+
+    ```yaml
+    PIT_CUSTOMER:
+        vars:
+            source_model: HUB_CUSTOMER
+    ```
+
 #### Source columns
 
 Next we need to choose which source columns we will use but also what satellites to incorporate in our `PIT_CUSTOMER` :
@@ -97,21 +101,21 @@ The dbt_project.yml below only defines one satellite but to add others you would
 It can be seen where the SAT_ORDERS_LOGIN would begin.
 
 `dbt_project.yml`
-```yaml hl_lines="6 7 8 9 10 11 12"
-    PIT_CUSTOMER:
-      vars:
-        source_model: HUB_CUSTOMER
-        as_of_date_table: AS_OF_DATES
-        src_pk: CUSTOMER_PK
-        satellites: 
-            - SAT_CUSTOMER_DETAILS
-                -pk
-                    'PK': 'CUSTOMER_PK'
-                -ldts
-                    'LDTS': 'LOAD_DATE'
-            - SAT_ORDER_LOGIN
-            ...
-```
+
+    ```yaml hl_lines="6 7 8 9 10 11 12"
+        PIT_CUSTOMER:
+          vars:
+            source_model: HUB_CUSTOMER
+            as_of_date_table: AS_OF_DATES
+            src_pk: CUSTOMER_PK
+            satellites: 
+                - SAT_CUSTOMER_DETAILS
+                    -pk
+                        'PK': 'CUSTOMER_PK'
+                    -ldts
+                        'LDTS': 'LOAD_DATE'
+                - SAT_ORDER_LOGIN
+    ```
 
 ### Running dbt
 
