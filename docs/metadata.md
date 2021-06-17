@@ -1154,7 +1154,9 @@ ___
 [pit macro parameters](macros.md#pit)
 
 #### Metadata
+
 === "dbt_project.yml"
+
     ```yaml
     PIT_CUSTOMER:
       vars:
@@ -1163,26 +1165,26 @@ ___
         as_of_date_table: AS_OF_DATE
         satellites: 
             - SAT_CUSTOMER_DETAILS
-                -pk
+                pk:
                     'PK': 'CUSTOMER_PK'
-                -ldts
+                ldts:
                     'LDTS': 'LOAD_DATE'
             - SAT_CUSTOMER_LOGIN
-                -pk
+                pk:
                     'PK': 'CUSTOMER_PK'
-                -ldts
+                ldts:
                     'LDTS': 'LOAD_DATE'
             - SAT_CUSTOMER_PROFILE
-                -pk
+                pk:
                     'PK': 'CUSTOMER_PK'
-                -ldts
+                ldts:
                     'LDTS': 'LOAD_DATE'
         stage_tables:
             'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
             'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
             'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
         src_ldts: 'LOAD_DATE'
-      ```
+    ```
 ___
 
 ### Bridge tables
@@ -1194,8 +1196,6 @@ ___
 #### Metadata
 
 === "Per-Model - Variables"
-
-    === Example bridge table with hub and two links
 
     ```jinja
     {%- set yaml_metadata -%}
@@ -1242,8 +1242,6 @@ ___
 === "dbt_project.yml"
 
     !!! warning "Only available with dbt config-version: 1"
-
-    === Example bridge table with hub and two links
 
     ```yaml
     bridge_customer_order:
