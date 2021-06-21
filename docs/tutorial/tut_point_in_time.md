@@ -100,7 +100,7 @@ there is a column for each satellite included in the PIT.
 valid from and is aliased as satellite name suffixed with an identifier of the date column, usually load date but can also be the effective from (LDTS or EF). This will be paired 
 with its respective `satellite_key` 
    
-The dbt_project.yml below only defines one satellite but to add others you would follow the same method inside of satellites.
+The `dbt_project.yml` below only defines one satellite but to add others you would follow the same method inside of satellites.
 It can be seen where the SAT_ORDERS_LOGIN would begin.
 
 `dbt_project.yml`
@@ -112,12 +112,13 @@ It can be seen where the SAT_ORDERS_LOGIN would begin.
         as_of_date_table: AS_OF_DATES
         src_pk: CUSTOMER_PK
         satellites: 
-            - SAT_CUSTOMER_DETAILS
-                -pk
+            SAT_CUSTOMER_DETAILS:
+                pk:
                     'PK': 'CUSTOMER_PK'
-                -ldts
+                ldts:
                     'LDTS': 'LOAD_DATE'
-            - SAT_ORDER_LOGIN
+            SAT_ORDER_LOGIN:
+               ...
 ```
 
 ### Running dbt
