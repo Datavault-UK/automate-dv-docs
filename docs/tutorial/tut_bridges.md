@@ -43,10 +43,13 @@ Create a new dbt model as before. We'll call this one `bridge_customer_order`.
 
 === "bridge_customer_order.sql"
 
-    ```jinja
-    {{ {{ dbtvault.bridge({src_pk}, {as_of_dates_table}, {bridge_walk}, 
-        {source_model}, {stage_tables}, {src_ldts}) }} }}
+    ``` jinja
+    {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+                            bridge_walk=bridge_walk,
+                            as_of_dates_table=as_of_dates_table,
+                            stage_tables=stage_tables,src_ldts=src_ldts) }}
     ```
+
 
 To create a bridge model, we simply copy and paste the above template into a model named after the bridge table we
 are creating. dbtvault will generate a bridge table using parameters provided in the following steps.
@@ -147,43 +150,43 @@ the bridge_walk metadata. For instance, it can be seen where the `PRODUCT_COMPON
 === "dbt_project.yml"
 
     ```yaml
-        bridge_customer_order:
-          vars:
-            source_model: "HUB_CUSTOMER"
-            src_pk: "CUSTOMER_PK"
-            src_ldts: "LOAD_DATETIME"
-            as_of_dates_table: "AS_OF_DATE"
-            bridge_walk:
-                CUSTOMER_ORDER:
-                    bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-                    bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-                    bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-                    link_table: "LINK_CUSTOMER_ORDER"
-                    link_pk: "CUSTOMER_ORDER_PK"
-                    link_fk1: "CUSTOMER_FK"
-                    link_fk2: "ORDER_FK"
-                    eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-                    eff_sat_pk: "CUSTOMER_ORDER_PK"
-                    eff_sat_end_date: "END_DATE"
-                    eff_sat_load_date: "LOAD_DATETIME"
-                ORDER_PRODUCT:
-                    bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-                    bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-                    bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-                    link_table: "LINK_ORDER_PRODUCT"
-                    link_pk: "ORDER_PRODUCT_PK"
-                    link_fk1: "ORDER_FK"
-                    link_fk2: "PRODUCT_FK"
-                    eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-                    eff_sat_pk: "ORDER_PRODUCT_PK"
-                    eff_sat_end_date: "END_DATE"
-                    eff_sat_load_date: "LOAD_DATETIME"
-                PRODUCT_COMPONENT:
-                    ...
-            stage_tables_ldts:
-                STG_CUSTOMER_ORDER: "LOAD_DATETIME"
-                STG_ORDER_PRODUCT: "LOAD_DATETIME"
-            ...
+    bridge_customer_order:
+      vars:
+        source_model: "HUB_CUSTOMER"
+        src_pk: "CUSTOMER_PK"
+        src_ldts: "LOAD_DATETIME"
+        as_of_dates_table: "AS_OF_DATE"
+        bridge_walk:
+            CUSTOMER_ORDER:
+                bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
+                bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+                bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
+                link_table: "LINK_CUSTOMER_ORDER"
+                link_pk: "CUSTOMER_ORDER_PK"
+                link_fk1: "CUSTOMER_FK"
+                link_fk2: "ORDER_FK"
+                eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+                eff_sat_pk: "CUSTOMER_ORDER_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+            ORDER_PRODUCT:
+                bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
+                bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+                bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
+                link_table: "LINK_ORDER_PRODUCT"
+                link_pk: "ORDER_PRODUCT_PK"
+                link_fk1: "ORDER_FK"
+                link_fk2: "PRODUCT_FK"
+                eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+                eff_sat_pk: "ORDER_PRODUCT_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+            PRODUCT_COMPONENT:
+                ...
+        stage_tables_ldts:
+            STG_CUSTOMER_ORDER: "LOAD_DATETIME"
+            STG_ORDER_PRODUCT: "LOAD_DATETIME"
+        ...
     ```
 
 ### Running dbt
@@ -200,10 +203,3 @@ The resulting table should look like this:
  | .           | .                       | .                      | .                     |
  | .           | .                       | .                      | .                     |
  | M67Y0U...   | 2018-06-01 12:00:00.000 | 1FA79C...              | BH5674...             |
-
-
-### Next steps
-
-That is all for now. More table types will be coming in future! See our [roadmap](../roadmap.md) for more details.
-
-If you want a more realistic real-world example, with real data to work with, take a look at our [worked example](../worked_example/we_worked_example.md).
