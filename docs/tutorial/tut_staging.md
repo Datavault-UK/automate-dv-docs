@@ -205,7 +205,3 @@ And our table will look like this:
 | .            | .            | .                   | .                   | .                      | .            | .              | .              | .          |
 | .            | .            | .                   | .                   | .                      | .            | .              | .              | .          |
 | FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1            | 1993-01-01     | 1993-01-01     | 9998-31-12 |
-
-### Next steps
-
-Now that we have implemented a new staging layer with all the required fields and hashes, we can start loading our vault.
