@@ -63,7 +63,7 @@ for your Data Vault.
 
 ### hub
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/hub.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.5/macros/tables/hub.sql))
 
 Generates SQL to build a hub table using the provided parameters.
 
@@ -244,7 +244,7 @@ ___
 
 ### link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.5/macros/tables/link.sql))
 
 Generates sql to build a link table using the provided parameters.
 
@@ -427,7 +427,7 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/t_link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.5/macros/tables/t_link.sql))
 
 Generates sql to build a transactional link table using the provided parameters.
 
@@ -499,7 +499,7 @@ ___
 
 ### sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.5/macros/tables/sat.sql))
 
 Generates sql to build a satellite table using the provided parameters.
 
@@ -597,7 +597,7 @@ ___
 
 ### eff_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/eff_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.5/macros/tables/eff_sat.sql))
 
 Generates sql to build an effectivity satellite table using the provided parameters.
 
@@ -833,7 +833,7 @@ ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.5/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
@@ -2031,7 +2031,7 @@ a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/hub.sql) source code for further
+See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.5/macros/tables/hub.sql) source code for further
 understanding.
 
 #### Idempotent loads
