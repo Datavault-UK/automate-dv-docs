@@ -28,8 +28,6 @@ nav:
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
-      - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
-      - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
       - Getting Started: 'worked_example/we_worked_example.md'
       - Project setup: 'worked_example/we_setup.md'
