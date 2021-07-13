@@ -86,6 +86,9 @@ plugins:
       copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021
       cover_title: dbtvault Docs
       cover_subtitle: By Datavault
+      exclude_pages:
+        - 'changelog/beta'
+        - 'changelog/stable'
 
 extra_css:
   - 'stylesheets/extra.css'
