@@ -14,28 +14,16 @@ Here is an example:
     ```jinja
     {%- macro hub(src_pk, src_nk, src_ldts, src_source, source_model) -%}
 
-    {{- adapter.dispatch('hub', packages = dbtvault.get_dbtvault_namespaces())(src_pk=src_pk, src_nk=src_nk,
-                                                                               src_ldts=src_ldts, src_source=src_source,
-                                                                               source_model=source_model) -}}
+    {{- adapter.dispatch('hub', 'dbtvault')(src_pk=src_pk, src_nk=src_nk,
+                                            src_ldts=src_ldts, src_source=src_source,
+                                            source_model=source_model) -}}
 
     {%- endmacro -%}
     ```
 
-This snippet contains the magic, the `get_dbtvault_namespaces()` which is defined as follows:
+This snippet defines the macro namespace as `'dbtvault'`, ensuring that this macro gets found in the list of macros implemented in the dbtvault package namespace.
 
-
-=== "get_package_namespaces.sql"
-
-    ```jinja
-    {%- macro get_dbtvault_namespaces() -%}
-        {%- set override_namespaces = var('adapter_packages', []) -%}
-        {%- do return(override_namespaces + ['dbtvault']) -%}
-    {%- endmacro -%}
-    ```
-
-To override the hub macro and ensure dbt uses your own implementation of it, you simply need to provide your project's name to the `adapter_packages` variable.
-
-For example:
+To override the hub macro and ensure dbt uses your own implementation of it, you simply need to provide a configuration in your `dbt_project.yml` as follows:
 
 === "dbt_project.yml"
 
@@ -45,12 +33,12 @@ For example:
     
     config-version: 2
     
-    vars:
-      adapter_packages:
-        - "my_dbt_project"
+    dispatch:
+      - macro_namespace: dbtvault
+        search_order: ['my_project', 'dbtvault']  # enable override
     ```
 
-With this variable, an implementation of the `hub` macro could be defined in your own project as follows:
+With this configuration change, an implementation of the `hub` macro could be defined in your own project as follows:
 
 
 === "my_hub_macro.sql"
@@ -65,4 +53,5 @@ With this variable, an implementation of the `hub` macro could be defined in you
 
 ...and that's it! Yay!
 
-Please ensure you read the [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) docs for more details.
+Please ensure you read the [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) and
+[dispatch config](https://next.docs.getdbt.com/reference/project-configs/dispatch-config) docs for more details.
