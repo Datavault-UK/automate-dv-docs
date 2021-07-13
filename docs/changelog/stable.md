@@ -253,7 +253,7 @@ Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more 
 ### Added
 
 - Table Macros:
-    - [Transactional Links](../macros.md#t_link_template)
+    - [Transactional Links](../macros.md#)
 
 ### Improved
 
