@@ -82,9 +82,12 @@ plugins:
       type: timeago
   - with-pdf:
       output_path: /home/alex/PycharmProjects/dbtvault-docs/pdf/dbtvault.pdf
+      copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021
+      cover_title: dbtvault Docs
+      cover_subtitle: By Datavault
 
 extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics
+copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
