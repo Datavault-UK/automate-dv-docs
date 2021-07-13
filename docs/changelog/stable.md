@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.6] - 2021-07-13
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6)](https://dbtvault.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
+
+- Updated to dbt 0.20.0 and incorporated `adapter.dispatch` changes [(#32)](https://github.com/Datavault-UK/dbtvault/issues/32)
+
 ## [v0.7.5] - 2021-06-10
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.5)](https://dbtvault.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
 
