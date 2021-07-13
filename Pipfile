@@ -3,10 +3,13 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[dev-packages]
+
 [packages]
 mkdocs-material = "*"
 pymdown-extensions = "*"
 mkdocs-git-revision-date-localized-plugin = "*"
+mkdocs-with-pdf = "*"
 
 [requires]
 python_version = "3.8"
