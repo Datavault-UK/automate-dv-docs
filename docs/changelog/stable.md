@@ -26,7 +26,8 @@ one to many relationships were not getting handled as intended.
 
 ### Improvements
 - Added support for multiple `order_by` or `partition_by` columns when creating ranked columns in the `stage` or `ranked_columns` macros.
-
+- Performance improvement for the Satellite macro, which aims to reduce the number of records handled in the 
+  initial selection of records from the source data.
 
 ## [v0.7.4] - 2021-03-27
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.4)](https://dbtvault.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
