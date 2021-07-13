@@ -2,6 +2,7 @@ site_name: dbtvault
 site_author: Datavault
 site_dir: 'site'
 repo_name: 'Datavault-UK/dbtvault'
+site_url: 'https://dbtvault.readthedocs.io/'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
 dev_addr: 127.0.0.1:8001
 theme:
@@ -81,9 +82,13 @@ plugins:
   - search
   - git-revision-date-localized:
       type: timeago
+  - with-pdf:
+      copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021
+      cover_title: dbtvault Docs
+      cover_subtitle: By Datavault
 
 extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics
+copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
