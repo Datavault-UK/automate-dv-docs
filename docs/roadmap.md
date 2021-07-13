@@ -23,7 +23,7 @@ We also have plans to extend this tool to:
 Development is still ongoing, and we are continually adding more and more features.
 If you have any ideas, or are interested in hearing more, contact Datavault directly via Slack or email.
 
-## Coming soon in v0.7.6
+## Coming soon in v0.7.7
 
 - Extended Record Tracking Satellites (XTS)
 - Out of Sequence capabilities for standard satellites. Handle late-arriving records. 
