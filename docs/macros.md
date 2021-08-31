@@ -79,14 +79,14 @@ Generates SQL to build a hub table using the provided parameters.
 
 | Parameter     | Description                                         | Type                 | Required?                                      |
 | ------------- | --------------------------------------------------- | -------------------- | ---------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
-| src_nk        | Source natural key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
-| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required  } |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
-| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_nk        | Source natural key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_hubs.md) for more details
+[Read the tutorial](tutorial/tut_hubs.md) for more details
 
 #### Example Metadata
 
@@ -259,14 +259,14 @@ Generates sql to build a link table using the provided parameters.
 
 | Parameter     | Description                                         | Type                 | Required?                                      |
 | ------------- | --------------------------------------------------- | ---------------------| ---------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
-| src_fk        | Source foreign key column(s)                        | List[String]         | :fontawesome-solid-check-circle:{ .required  } |
-| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required  } |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
-| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_fk        | Source foreign key column(s)                        | List[String]         | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_links.md) for more details
+[Read the tutorial](tutorial/tut_links.md) for more details
 
 #### Example Metadata
 
@@ -443,16 +443,16 @@ Generates sql to build a transactional link table using the provided parameters.
 
 | Parameter     | Description                                         | Type                | Required?                                         |
 | ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String | :fontawesome-solid-check-circle:{ .required  }    |
-| src_fk        | Source foreign key column(s)                        | List[String]        | :fontawesome-solid-check-circle:{ .required  }    |
+| src_pk        | Source primary key column                           | List[String]/String | :fontawesome-solid-check-circle:{ .required }    |
+| src_fk        | Source foreign key column(s)                        | List[String]        | :fontawesome-solid-check-circle:{ .required }    |
 | src_payload   | Source payload column(s)                            | List[String]        | :fontawesome-solid-minus-circle:{ .not-required } |
-| src_eff       | Source effective from column                        | String              | :fontawesome-solid-check-circle:{ .required  }    |
-| src_ldts      | Source load date timestamp column                   | String              | :fontawesome-solid-check-circle:{ .required  }    |
-| src_source    | Name of the column containing the source ID         | String              | :fontawesome-solid-check-circle:{ .required  }    |
-| source_model  | Staging model name                                  | String              | :fontawesome-solid-check-circle:{ .required  }    |
+| src_eff       | Source effective from column                        | String              | :fontawesome-solid-check-circle:{ .required }    |
+| src_ldts      | Source load date timestamp column                   | String              | :fontawesome-solid-check-circle:{ .required }    |
+| src_source    | Name of the column containing the source ID         | String              | :fontawesome-solid-check-circle:{ .required }    |
+| source_model  | Staging model name                                  | String              | :fontawesome-solid-check-circle:{ .required }    |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_t_links.md) for more details
+[Read the tutorial](tutorial/tut_t_links.md) for more details
 
 #### Example Metadata
 
@@ -515,16 +515,16 @@ Generates sql to build a satellite table using the provided parameters.
 
 | Parameter     | Description                                         | Type             | Required?                                          |
 | ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------------- |
-| src_pk        | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required  }     |
-| src_hashdiff  | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required  }     |
-| src_payload   | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required  }     |
+| src_pk        | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff  | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload   | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
 | src_eff       | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required }  |
-| src_ldts      | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required  }     |
-| src_source    | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required  }     |
-| source_model  | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required  }     |
+| src_ldts      | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_source    | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
+| source_model  | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_satellites.md) for more details
+[Read the tutorial](tutorial/tut_satellites.md) for more details
 
 #### Example Metadata
 
@@ -591,7 +591,8 @@ Generates sql to build a satellite table using the provided parameters.
 
 #### Hashdiff Aliasing
 
-If you have multiple satellites using a single stage as its data source, then you will need to use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
+If you have multiple satellites using a single stage as its data source, then you will need to
+use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
 
 ___
 
@@ -614,18 +615,18 @@ Generates sql to build an effectivity satellite table using the provided paramet
 
 | Parameter      | Description                                         | Type                    | Required?                                      |
 | -------------- | --------------------------------------------------- | ----------------------- | ---------------------------------------------- |
-| src_pk         | Source primary key column                           | String                  | :fontawesome-solid-check-circle:{ .required  } |
-| src_dfk        | Source driving foreign key column                   | List[String]/String     | :fontawesome-solid-check-circle:{ .required  } |
-| src_sfk        | Source secondary foreign key column                 | List[String]/String     | :fontawesome-solid-check-circle:{ .required  } |
-| src_start_date | Source start date column                            | String                  | :fontawesome-solid-check-circle:{ .required  } |
-| src_end_date   | Source end date column                              | String                  | :fontawesome-solid-check-circle:{ .required  } |
-| src_eff        | Source effective from column                        | String                  | :fontawesome-solid-check-circle:{ .required  } |
-| src_ldts       | Source load date timestamp column                   | String                  | :fontawesome-solid-check-circle:{ .required  } |
-| src_source     | Name of the column containing the source ID         | String                  | :fontawesome-solid-check-circle:{ .required  } |
-| source_model   | Staging model name                                  | String                  | :fontawesome-solid-check-circle:{ .required  } |
+| src_pk         | Source primary key column                           | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_dfk        | Source driving foreign key column                   | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
+| src_sfk        | Source secondary foreign key column                 | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
+| src_start_date | Source start date column                            | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_end_date   | Source end date column                              | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_eff        | Source effective from column                        | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts       | Source load date timestamp column                   | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_source     | Name of the column containing the source ID         | String                  | :fontawesome-solid-check-circle:{ .required } |
+| source_model   | Staging model name                                  | String                  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
+[Read the tutorial](tutorial/tut_eff_satellites.md) for more details
 
 #### Example Metadata
 
@@ -636,25 +637,25 @@ Generates sql to build an effectivity satellite table using the provided paramet
 === "Snowflake"
 
     === "Base Load"
-        
+
         ```sql
         WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_PK IS NOT NULL
-            AND a.CUSTOMER_PK IS NOT NULL
-    ),
-    
+                SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+                FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+                WHERE a.ORDER_PK IS NOT NULL
+                AND a.CUSTOMER_PK IS NOT NULL
+        ),
+        
         records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-    )
-    
+                SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+                FROM source_data AS i
+        )
+        
         SELECT * FROM records_to_insert
         ```
 
     === "With auto end-dating (Subsequent)"
-    
+
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
@@ -824,7 +825,7 @@ The definition of the 'end' of a relationship is considered business logic which
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
-!!! warning 
+!!! warning
 
     We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
     exercised if you are unsure.
@@ -849,17 +850,17 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 | Parameter      | Description                                         | Type             | Required?                                         |
 | -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
-| src_pk         | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required  }    |
-| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | :fontawesome-solid-check-circle:{ .required  }    |
-| src_hashdiff   | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required  }    |
-| src_payload    | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required  }    |
+| src_pk         | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff   | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload    | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
 | src_eff        | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required } |
-| src_ldts       | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required  }    |
-| src_source     | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required  }    |
-| source_model   | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required  }    |
+| src_ldts       | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_source     | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
+| source_model   | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
+[Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
 
 #### Example Metadata
 
@@ -868,7 +869,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 #### Example Output
 
 === "Snowflake"
-    
+
     === "Base Load"
     
         ```sql
@@ -1367,7 +1368,7 @@ Generates sql to build a staging area using the provided parameters.
 | Parameter              | Description                                                                 | Type           | Default    | Required?                                         |
 | ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
 | include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
-| source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required  }    |
+| source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required }    |
 | derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
@@ -1378,13 +1379,13 @@ Generates sql to build a staging area using the provided parameters.
 
 ### stage macro configurations
 
-The stage macro supports some syntactic sugar and shortcuts for providing metadata. These are
-documented in this section.
+The stage macro supports some syntactic sugar and shortcuts for providing metadata. These are documented in this
+section.
 
 #### Column scoping
 
 The hashed column configuration in the stage macro may refer to columns which have been newly created in the derived
-column configuration. This allows hashes to be created using values generated by the user via the derived column
+column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` section.
 configuration.
 
 For example:
@@ -1682,8 +1683,7 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/hash_columns.sql))
 
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
+!!! note This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
@@ -1691,8 +1691,7 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/derive_columns.sql))
 
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
+!!! note This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
 column value.
@@ -1701,8 +1700,7 @@ column value.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/rank_columns.sql))
 
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
+!!! note This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns using the `RANK()` window function.
 
@@ -1722,8 +1720,8 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/supporting/hash.sql))
 
-!!! warning 
-    
+!!! warning
+
     This macro ***should not be*** used for cryptographic purposes.
 
     The intended use is for creating checksum-like values only, so that we may compare records accurately.
@@ -1731,10 +1729,10 @@ ___
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-    - [hash_columns](#hash_columns)
-    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
-    for more detailed information on the purposes of this macro and what it does.
-    
+- [hash_columns](#hash_columns)
+- Read [Hashing best practises and why we hash](best_practices.md#hashing)
+for more detailed information on the purposes of this macro and what it does.
+
         - You may choose between `MD5` and `SHA-256` hashing.
           [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
@@ -1771,15 +1769,15 @@ A macro for generating hashing SQL for columns.
         )) AS BINARY(32)) AS HASHDIFF
         ```
 
-!!! tip
-    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes with one macro.
+!!! tip The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
+with one macro.
 
 #### Parameters
 
 | Parameter        |  Description                                     | Type                | Required?                                        |
 | ---------------- | -----------------------------------------------  | ------------------- | ------------------------------------------------ |
-| columns          |  Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required  }     |
-| alias            |  The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required  }     |
+| columns          |  Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
+| alias            |  The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required }     |
 | is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-minus-circle:{ .not-required } |      
 
 ___
@@ -1794,13 +1792,13 @@ A macro for quickly prefixing a list of columns with a string.
 
 | Parameter        |  Description                  | Type         | Required?                                      |
 | ---------------- | ----------------------------- | ------------ | ---------------------------------------------- |
-| columns          |  A list of column names       | List[String] | :fontawesome-solid-check-circle:{ .required  } |
-| prefix_str       |  The prefix for the columns   | String       | :fontawesome-solid-check-circle:{ .required  } |
+| columns          |  A list of column names       | List[String] | :fontawesome-solid-check-circle:{ .required } |
+| prefix_str       |  The prefix for the columns   | String       | :fontawesome-solid-check-circle:{ .required } |
 
 #### Usage
 
 === "Input"
-    
+
     ```sql 
     {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
     ```
@@ -1811,8 +1809,7 @@ A macro for quickly prefixing a list of columns with a string.
     a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
     ```
 
-!!! Note 
-    Single columns must be provided as a 1-item list, as in the second example above.
+!!! Note Single columns must be provided as a 1-item list, as in the second example above.
 
 ___
 
@@ -1974,7 +1971,7 @@ Please refer to the _Usage_ section above to see examples.
 
 | Configuration      |  Description                                         | Type                 | Default | Required?                                          |
 | ------------------ | ---------------------------------------------------- | -------------------- | ------- | -------------------------------------------------- |
-| timestamp_field    |  A list of column names                              | List[String]         | None    | :fontawesome-solid-check-circle:{ .required  }     |
+| timestamp_field    |  A list of column names                              | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }     |
 | period             |  Time period to load over                            | String               | day     | :fontawesome-solid-minus-circle:{ .not-required }  |
 | start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
 | stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
@@ -2044,6 +2041,7 @@ If you wish support idempotent loads in your own models using this materialisati
 use `LEFT OUTER JOINS` to ensure duplicate records do not get loaded.
 
 ### vault_insert_by_rank
+
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_rank_materialization.sql))
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
@@ -2075,8 +2073,8 @@ column.
 
 | Configuration      |  Description                                         | Type                 | Default | Required?                                        |
 | ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
-| rank_column        |  The column name containing the rank values          | String               | None    | :fontawesome-solid-check-circle:{ .required  }   |
-| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | :fontawesome-solid-check-circle:{ .required  }   |
+| rank_column        |  The column name containing the rank values          | String               | None    | :fontawesome-solid-check-circle:{ .required }   |
+| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }   |
 
 #### Creating a rank column
 
@@ -2101,7 +2099,7 @@ A rank column can be created one of three ways:
     derived_columns:
       DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
-   
+
 !!! note
 
     [Read more](#defining-ranked-columns) about defining ranked columns.
