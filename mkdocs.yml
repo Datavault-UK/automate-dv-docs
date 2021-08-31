@@ -19,7 +19,7 @@ theme:
     
 nav:
   - Home: 'index.md'
-  - Step-by-step tutorial:
+  - Tutorials:
       - Getting Started: 'tutorial/tut_getting_started.md'
       - Staging: 'tutorial/tut_staging.md'
       - Hubs: 'tutorial/tut_hubs.md'
@@ -73,7 +73,9 @@ markdown_extensions:
   - toc:
       permalink: true
       toc_depth: 1-3
-  - pymdownx.emoji
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - attr_list
 
 plugins:

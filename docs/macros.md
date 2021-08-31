@@ -77,13 +77,13 @@ Generates SQL to build a hub table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                    |
-| ------------- | --------------------------------------------------- | -------------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_nk        | Source natural key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                      |
+| ------------- | --------------------------------------------------- | -------------------- | ---------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
+| src_nk        | Source natural key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required  } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_hubs.md) for more details
@@ -257,13 +257,13 @@ Generates sql to build a link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                    |
-| ------------- | --------------------------------------------------- | ---------------------| -------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_fk        | Source foreign key column(s)                        | List[String]         | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                      |
+| ------------- | --------------------------------------------------- | ---------------------| ---------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
+| src_fk        | Source foreign key column(s)                        | List[String]         | :fontawesome-solid-check-circle:{ .required  } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required  } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required  } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_links.md) for more details
@@ -441,15 +441,15 @@ Generates sql to build a transactional link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                | Required?                                        |
-| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------ |
-| src_pk        | Source primary key column                           | List[String]/String | <i class="fas fa-check-circle required"></i>     |
-| src_fk        | Source foreign key column(s)                        | List[String]        | <i class="fas fa-check-circle required"></i>     |
-| src_payload   | Source payload column(s)                            | List[String]        | <i class="fas fa-minus-circle not-required"></i> |
-| src_eff       | Source effective from column                        | String              | <i class="fas fa-check-circle required"></i>     |
-| src_ldts      | Source load date timestamp column                   | String              | <i class="fas fa-check-circle required"></i>     |
-| src_source    | Name of the column containing the source ID         | String              | <i class="fas fa-check-circle required"></i>     |
-| source_model  | Staging model name                                  | String              | <i class="fas fa-check-circle required"></i>     |
+| Parameter     | Description                                         | Type                | Required?                                         |
+| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String | :fontawesome-solid-check-circle:{ .required  }    |
+| src_fk        | Source foreign key column(s)                        | List[String]        | :fontawesome-solid-check-circle:{ .required  }    |
+| src_payload   | Source payload column(s)                            | List[String]        | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_eff       | Source effective from column                        | String              | :fontawesome-solid-check-circle:{ .required  }    |
+| src_ldts      | Source load date timestamp column                   | String              | :fontawesome-solid-check-circle:{ .required  }    |
+| src_source    | Name of the column containing the source ID         | String              | :fontawesome-solid-check-circle:{ .required  }    |
+| source_model  | Staging model name                                  | String              | :fontawesome-solid-check-circle:{ .required  }    |
 
 !!! tip
     [Read the tutorial](tutorial/tut_t_links.md) for more details
@@ -513,15 +513,15 @@ Generates sql to build a satellite table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type             | Required?                                        |
-| ------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------ |
-| src_pk        | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>     |
-| src_hashdiff  | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>     |
-| src_payload   | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>     |
-| src_eff       | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i> |
-| src_ldts      | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>     |
-| src_source    | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>     |
-| source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>     |
+| Parameter     | Description                                         | Type             | Required?                                          |
+| ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------------- |
+| src_pk        | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required  }     |
+| src_hashdiff  | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required  }     |
+| src_payload   | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required  }     |
+| src_eff       | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required }  |
+| src_ldts      | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required  }     |
+| src_source    | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required  }     |
+| source_model  | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required  }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_satellites.md) for more details
@@ -612,17 +612,17 @@ Generates sql to build an effectivity satellite table using the provided paramet
 
 #### Parameters
 
-| Parameter      | Description                                         | Type                    | Required?                                    |
-| -------------- | --------------------------------------------------- | ----------------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                           | String                  | <i class="fas fa-check-circle required"></i> |
-| src_dfk        | Source driving foreign key column                   | List[String]/String     | <i class="fas fa-check-circle required"></i> |
-| src_sfk        | Source secondary foreign key column                 | List[String]/String     | <i class="fas fa-check-circle required"></i> |
-| src_start_date | Source start date column                            | String                  | <i class="fas fa-check-circle required"></i> |
-| src_end_date   | Source end date column                              | String                  | <i class="fas fa-check-circle required"></i> |
-| src_eff        | Source effective from column                        | String                  | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load date timestamp column                   | String                  | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID         | String                  | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                  | String                  | <i class="fas fa-check-circle required"></i> |
+| Parameter      | Description                                         | Type                    | Required?                                      |
+| -------------- | --------------------------------------------------- | ----------------------- | ---------------------------------------------- |
+| src_pk         | Source primary key column                           | String                  | :fontawesome-solid-check-circle:{ .required  } |
+| src_dfk        | Source driving foreign key column                   | List[String]/String     | :fontawesome-solid-check-circle:{ .required  } |
+| src_sfk        | Source secondary foreign key column                 | List[String]/String     | :fontawesome-solid-check-circle:{ .required  } |
+| src_start_date | Source start date column                            | String                  | :fontawesome-solid-check-circle:{ .required  } |
+| src_end_date   | Source end date column                              | String                  | :fontawesome-solid-check-circle:{ .required  } |
+| src_eff        | Source effective from column                        | String                  | :fontawesome-solid-check-circle:{ .required  } |
+| src_ldts       | Source load date timestamp column                   | String                  | :fontawesome-solid-check-circle:{ .required  } |
+| src_source     | Name of the column containing the source ID         | String                  | :fontawesome-solid-check-circle:{ .required  } |
+| source_model   | Staging model name                                  | String                  | :fontawesome-solid-check-circle:{ .required  } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
@@ -849,14 +849,14 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 | Parameter      | Description                                         | Type             | Required?                                         |
 | -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
-| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>      |
-| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i>      |
-| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>      |
-| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>      |
-| src_eff        | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i>  |
-| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>      |
-| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>      |
-| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>      |
+| src_pk         | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required  }    |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | :fontawesome-solid-check-circle:{ .required  }    |
+| src_hashdiff   | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required  }    |
+| src_payload    | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required  }    |
+| src_eff        | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_ldts       | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required  }    |
+| src_source     | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required  }    |
+| source_model   | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required  }    |
 
 !!! tip
     [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
@@ -1364,13 +1364,13 @@ Generates sql to build a staging area using the provided parameters.
 
 #### Parameters
 
-| Parameter              | Description                                                                 | Type           | Default    | Required?                                        |
-| ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------ |
-| include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | <i class="fas fa-minus-circle not-required"></i> |
-| source_model           | Staging model name                                                          | Mapping        | N/A        | <i class="fas fa-check-circle required"></i>     |
-| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
-| hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
-| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
+| Parameter              | Description                                                                 | Type           | Default    | Required?                                         |
+| ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
+| include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
+| source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required  }    |
+| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 
 #### Example Metadata
 
@@ -1609,12 +1609,12 @@ derived_columns:
 
 You can create new columns, given a list of columns to extract values from, using derived columns.
 
-Given the following values in the above example:
+Given the following values for the columns in the above example:
 
 - `CUSTOMER_ID` = 0011
 - `CUSTOMER_NAME` = Alex
 
-Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
+The new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
 double pipe `||`. Currently, this `||` join string has been hard-coded, but in future it will be user-configurable.
 
 The values provided in the list can use any of the previously described syntax (including functions and constants) to
@@ -1778,9 +1778,9 @@ A macro for generating hashing SQL for columns.
 
 | Parameter        |  Description                                     | Type                | Required?                                        |
 | ---------------- | -----------------------------------------------  | ------------------- | ------------------------------------------------ |
-| columns          |  Columns to hash on                              | List[String]/String | <i class="fas fa-check-circle required"></i>     |
-| alias            |  The name to give the hashed column              | String              | <i class="fas fa-check-circle required"></i>     |
-| is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | <i class="fas fa-minus-circle not-required"></i> |      
+| columns          |  Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required  }     |
+| alias            |  The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required  }     |
+| is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-minus-circle:{ .not-required } |      
 
 ___
 
@@ -1792,10 +1792,10 @@ A macro for quickly prefixing a list of columns with a string.
 
 #### Parameters
 
-| Parameter        |  Description                  | Type         | Required?                                    |
-| ---------------- | ----------------------------- | ------------ | -------------------------------------------- |
-| columns          |  A list of column names       | List[String] | <i class="fas fa-check-circle required"></i> |
-| prefix_str       |  The prefix for the columns   | String       | <i class="fas fa-check-circle required"></i> |
+| Parameter        |  Description                  | Type         | Required?                                      |
+| ---------------- | ----------------------------- | ------------ | ---------------------------------------------- |
+| columns          |  A list of column names       | List[String] | :fontawesome-solid-check-circle:{ .required  } |
+| prefix_str       |  The prefix for the columns   | String       | :fontawesome-solid-check-circle:{ .required  } |
 
 #### Usage
 
@@ -1972,13 +1972,13 @@ Please refer to the _Usage_ section above to see examples.
 
 #### Configuration Options
 
-| Configuration      |  Description                                         | Type                 | Default | Required?                                        |
-| ------------------ | ---------------------------------------------------- | -------------------- | ------- | ------------------------------------------------ |
-| timestamp_field    |  A list of column names                              | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
-| period             |  Time period to load over                            | String               | day     | <i class="fas fa-minus-circle not-required"></i> |
-| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range             |
+| Configuration      |  Description                                         | Type                 | Default | Required?                                          |
+| ------------------ | ---------------------------------------------------- | -------------------- | ------- | -------------------------------------------------- |
+| timestamp_field    |  A list of column names                              | List[String]         | None    | :fontawesome-solid-check-circle:{ .required  }     |
+| period             |  Time period to load over                            | String               | day     | :fontawesome-solid-minus-circle:{ .not-required }  |
+| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
+| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
+| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range (above)       |
 
 #### Period
 
@@ -2075,8 +2075,8 @@ column.
 
 | Configuration      |  Description                                         | Type                 | Default | Required?                                        |
 | ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
-| rank_column        |  The column name containing the rank values          | String               | None    | <i class="fas fa-check-circle required"></i>     |
-| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
+| rank_column        |  The column name containing the rank values          | String               | None    | :fontawesome-solid-check-circle:{ .required  }   |
+| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | :fontawesome-solid-check-circle:{ .required  }   |
 
 #### Creating a rank column
 

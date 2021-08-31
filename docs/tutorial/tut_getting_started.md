@@ -4,43 +4,22 @@
     If you're looking to quickly experiment and learn using pre-written models, 
     take a look at our [worked example](../worked_example/we_worked_example.md).
 
-In this section we teach you how to use dbtvault step-by-step, explaining the use of macros and the
+In this section we teach you how to use dbtvault, by example, explaining the use of macros and the
 different components of the Data Vault in detail.
 
 We will:
 
 - process a raw staging layer.
-- create a Data Vault with hubs, links and satellites using dbtvault.
+- create a raw vault
 
 ## Pre-requisites 
 
-1. Some prior knowledge of Data Vault 2.0 architecture. Have a look at
-[How can I get up to speed on Data Vault 2.0?](../index.md#how-can-i-get-up-to-speed-on-data-vault-20)
+1. Some prior knowledge of Data Vault 2.0 architecture. 
+Read more: [How can I get up to speed on Data Vault 2.0?](../index.md#how-can-i-get-up-to-speed-on-data-vault-20)
 
-2. A Snowflake account, trial or otherwise. [Sign up for a free 30-day trial here](https://trial.snowflake.com/ab/)
+2. We assume you already have a raw staging layer, PSA (Persistent Staging Area) or Data Lake.
 
-3. You must have downloaded and installed dbt
-and [set up a project](https://docs.getdbt.com/docs/building-a-dbt-project/projects).
-
-4. Sources should be set up in dbt [(see below)](tut_getting_started.md#setting-up-sources-in-dbt).
-
-5. We assume you already have a raw staging layer, PSA (Persistent Staging Area) or Data Lake.
-
-6. Some raw vault structures need to be loaded iteratively to ensure record deltas (changes) over time are correctly processed.
-    Currently, these are the following structures:
-
-    - Transactional Links
-    - Satellites
-    - Effectivity Satellites
-    
-    To correctly load these structures, we have developed custom materialisations which iteratively load data:
-    
-    - [vault_insert_by_period](../macros.md#vault_insert_by_period)
-    - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
-    
-    These macros are described in mre depth in their respective sections
-        
-7. You should read our [best practices](../best_practices.md) guidance.
+3. You should read our [best practices](../best_practices.md) guidance.
 
 ## Setting up sources (in dbt)
 
