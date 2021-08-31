@@ -1378,7 +1378,7 @@ Generates sql to build a staging area using the provided parameters.
 
 ### stage macro configurations
 
-The stage macro supports some helper syntax and functionality to make your life easier when staging. These are
+The stage macro supports some syntactic sugar and shortcuts for providing metadata. These are
 documented in this section.
 
 #### Column scoping
@@ -1541,7 +1541,7 @@ individually provide all the columns.
 
 === "Snowflake"
 
-```yaml hl_lines="5"
+```yaml hl_lines="3"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
