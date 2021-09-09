@@ -16,7 +16,8 @@ theme:
       primary: 'black'
       accent: 'indigo'
     highlightjs: true
-    
+    features:
+      - navigation.top
 nav:
   - Home: 'index.md'
   - Tutorials:
