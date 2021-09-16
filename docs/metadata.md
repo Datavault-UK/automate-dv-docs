@@ -794,7 +794,7 @@ example provided to help better convey the difference.
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
     {{ dbtvault.t_link(src_pk=metadata_dict["src_pk"],
-                       src_fk=metadata_dict["src_nk"],
+                       src_fk=metadata_dict["src_fk"],
                        src_payload=metadata_dict["src_payload"],
                        src_eff=metadata_dict["src_eff"],
                        src_ldts=metadata_dict["src_ldts"],
