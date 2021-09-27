@@ -118,7 +118,7 @@ Data Vault 2.0 standards.
 
 !!! seealso "See Also"
 - [hash](macros.md#hash)
-- [hash_columns](macros.md#hash_columns)
+  - [hash_columns](macros.md#hash_columns)
 
 ### The drawbacks of using MD5
 
@@ -275,8 +275,10 @@ Best practices for hashing include:
 - Ensure all **hub** columns used to calculate a primary key hash get presented in the same order across all staging
   tables
 
-!!! note Some tables may use different column names for primary key components, so you generally **should not** use the
-sorting functionality for primary keys.
+!!! note 
+
+    Some tables may use different column names for primary key components, so you generally **should not** use the
+    sorting functionality for primary keys.
 
 - For **links**, columns must be sorted by the primary key of the hub and arranged alphabetically by the hub name. The
   order must also be the same as each hub.
