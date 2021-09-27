@@ -24,26 +24,30 @@ concrete data for an entity, depending on the purpose of the satellite.
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
 satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
-longer have the most recent `EFFECTIVE_FROM` value. This is an optional metadata column which can be useful later on 
-in the Business Vault, and is **not** part of the DataVault 2.0 standard. 
+longer have the most recent `EFFECTIVE_FROM` value. 
 
-!!! tip
-    
-    Now optional in dbtvault 0.7.4
 
-##### Load date (src_ldts)
+!!! note
+    This is an optional metadata column which can be useful later on, and is **not** part of the DataVault 2.0 standard. 
+
+
+#### Load date (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
-##### Record Source (src_source)
+#### Record Source (src_source)
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
 
-!!! note
-    `LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different, 
-    holding the business effectivity date of the record (i.e. When it actually happened in the real world) and will usually 
-    hold a different value, especially if there is a batch processing delay between when a business event happens and the 
-    record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
-    and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
+### Load date vs. Effective From Date
+`LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different, 
+holding the business effectivity date of the record (i.e. When it actually happened in the real world) and will usually 
+hold a different value, especially if there is a batch processing delay between when a business event happens and the 
+record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
+and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
+
+The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
+in our experience we have found it useful for processing and applying business rules in downstream business vault, for 
+use in presentation layers.
 
 ### Setting up satellite models
 
