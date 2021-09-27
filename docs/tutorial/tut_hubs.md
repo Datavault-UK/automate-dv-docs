@@ -19,7 +19,7 @@ A load date or load date timestamp. This identifies when the record was first lo
 #### Record Source (src_source)
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
-(i.e. `1` from the [previous section](tut_staging.md#adding-calculated-and-derived-columns), 
+(i.e. `1` from the [staging section](tut_staging.md#adding-calculated-and-derived-columns), 
 which is the code for `stg_customer`)
 
 ### Creating hub models
@@ -38,23 +38,23 @@ are creating. dbtvault will generate a hub using parameters provided in the next
 
 #### Materialisation
 
-The recommended materialisation for **hubs** is incremental, as we load and add new records to the existing data set.
+The recommended materialisation for **hubs** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [hub](../macros.md#hub) macro.
+Let's look at the metadata we need to provide to the [hub macro](../macros.md#hub).
 
-See our [metadata reference](../metadata.md#hubs) for more detail on how to provide metadata.
+See our [metadata reference](../metadata.md#hubs) for more detail on how to provide metadata to hubs.
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our [knowledge](#structure) of what columns we need in our `hub_customer` table, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `hub_customer` hub, we can identify columns in our
 staging layer which map to them:
 
 | Parameter      | Value          | 
 | -------------- | -------------- | 
 | source_model   | v_stg_customer | 
-| src_pk         | CUSTOMER_PK    |
+| src_pk         | CUSTOMER_HK    |
 | src_nk         | CUSTOMER_ID    |
 | src_ldts       | LOAD_DATETIME  | 
 | src_source     | RECORD_SOURCE  |
@@ -65,7 +65,7 @@ When we provide the metadata above, our model should look like the following:
 {{ config(materialized='incremental')    }}
 
 {%- set source_model = "v_stg_customer" -%}
-{%- set src_pk = "CUSTOMER_PK"          -%}
+{%- set src_pk = "CUSTOMER_HK"          -%}
 {%- set src_nk = "CUSTOMER_ID"          -%}
 {%- set src_ldts = "LOAD_DATETIME"      -%}
 {%- set src_source = "RECORD_SOURCE"    -%}
@@ -82,7 +82,7 @@ With our metadata provided and our model complete, we can run dbt to create our 
 
 And the resulting hub will look like this:
 
-| CUSTOMER_PK  | CUSTOMER_ID  | LOAD_DATETIME            | SOURCE |
+| CUSTOMER_HK  | CUSTOMER_ID  | LOAD_DATETIME            | SOURCE |
 | ------------ | ------------ | ------------------------ | ------ |
 | B8C37E...    | 1001         | 1993-01-01 00:00:00.000  | 1      |
 | .            | .            | .                        | 1      |
@@ -118,7 +118,7 @@ will handle the rest:
                         "v_stg_customer_crm", 
                         "v_stg_customer_sap"] -%}
 
-{%- set src_pk = "CUSTOMER_PK"                -%}
+{%- set src_pk = "CUSTOMER_HK"                -%}
 {%- set src_nk = "CUSTOMER_ID"                -%}
 {%- set src_ldts = "LOAD_DATETIME"            -%}
 {%- set src_source = "RECORD_SOURCE"          -%}

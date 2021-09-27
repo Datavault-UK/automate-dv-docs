@@ -42,7 +42,7 @@ For an effectivity satellite, this should be the same as the corresponding link'
 The driving foreign key stores the primary key of the associated link, which will remain constant over time.
 
 For example, in a relationship between a customer and an order, the order will always have occurred, but the customer
-attached to the order may change over time if the order is amended. In this case the DFK would be the `ORDER_PK` 
+attached to the order may change over time if the order is amended. In this case the DFK would be the `ORDER_HK` 
 (Derived from the `ORDER_ID`).
 
 More on the concept of driving keys is described above.
@@ -51,7 +51,7 @@ More on the concept of driving keys is described above.
 
 The secondary foreign key stores the primary key of the associated link, which is likely to change over time.
 
-As per the example in the DFK section above, this would be the `CUSTOMER_PK`, derived from the `CUSTOMER_ID`. 
+As per the example in the DFK section above, this would be the `CUSTOMER_HK`, derived from the `CUSTOMER_ID`. 
 
 #### Start Date (src_start_date)
 
@@ -114,7 +114,7 @@ satellite we are creating. dbtvault will generate an effectivity satellite using
 
 #### Materialisation
 
-The recommended materialisation for **effectivity satellites** is incremental, as we load and add new records to the existing data set. 
+The recommended materialisation for **effectivity satellites** is `incremental`, as we load and add new records to the existing data set. 
 
 ### Adding the metadata 
 
@@ -124,15 +124,15 @@ See our [metadata reference](../metadata.md#effectivity-satellites) for more det
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our [knowledge](#structure) of what columns we need in our `eff_sat_customer_nation` table, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `eff_sat_customer_nation` effectivity satellite, we can identify columns in our
 staging layer which map to them:
 
 | Parameter      | Value               | 
 | -------------- | ------------------- | 
 | source_model   | v_stg_orders        | 
-| src_pk         | CUSTOMER_NATION_PK  | 
-| src_dfk        | CUSTOMER_PK         | 
-| src_sfk        | NATION_PK           | 
+| src_pk         | CUSTOMER_NATION_HK  | 
+| src_dfk        | CUSTOMER_HK         | 
+| src_sfk        | NATION_HK           | 
 | src_start_date | START_DATE          | 
 | src_end_date   | END_DATE            | 
 | src_eff        | EFFECTIVE_FROM      | 
@@ -145,9 +145,9 @@ When we provide the metadata above, our model should look like the following:
 {{ config(materialized='incremental')  }}
 
 {%- set source_model = "v_stg_orders" -%}
-{%- set src_pk = "CUSTOMER_NATION_PK" -%}
-{%- set src_dfk = "CUSTOMER_PK"       -%}
-{%- set src_sfk = "NATION_PK"         -%}
+{%- set src_pk = "CUSTOMER_NATION_HK" -%}
+{%- set src_dfk = "CUSTOMER_HK"       -%}
+{%- set src_sfk = "NATION_HK"         -%}
 {%- set src_start_date = "START_DATE" -%}
 {%- set src_end_date = "END_DATE"     -%}
 
@@ -172,9 +172,9 @@ effectivity satellite, as follows:
     
 And the resulting effectivity satellite will look like this:
 
- | CUSTOMER_NATION_PK | CUSTOMER_PK  | NATION_PK     | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME            | SOURCE |
- | ------------------ | ------------ | ------------- | ----------------------- | ----------------------- | ----------------------- | ------------------------ | ------ |
- | 3C5984...          | B8C37E...    | 79CBA1...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
- | .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
- | .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
- | D8CB1F...          | FED333...    | 8FAA77...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
+| CUSTOMER_NATION_HK | CUSTOMER_HK  | NATION_HK     | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME            | SOURCE |
+| ------------------ | ------------ | ------------- | ----------------------- | ----------------------- | ----------------------- | ------------------------ | ------ |
+| 3C5984...          | B8C37E...    | 79CBA1...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
+| .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
+| .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
+| D8CB1F...          | FED333...    | 8FAA77...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
