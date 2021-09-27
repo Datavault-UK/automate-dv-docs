@@ -1,6 +1,6 @@
 We advise you follow these best practises when using dbtvault.
 
-## Single record per load period
+## Single record per key, per load (incremental)
 
 At the current time, dbtvault will load discrete records with the same primary key (hash key) simultaneously. This means
 that any deltas formed by loading these records in individual cycles get lost. For hubs and links this is not a problem,
