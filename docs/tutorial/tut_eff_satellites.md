@@ -45,7 +45,7 @@ For example, in a relationship between a customer and an order, the order will a
 attached to the order may change over time if the order is amended. In this case the DFK would be the `ORDER_PK` 
 (Derived from the `ORDER_ID`).
 
-More on driving keys is described below.
+More on the concept of driving keys is described above.
 
 #### Secondary Foreign Key (src_sfk)
 
@@ -86,7 +86,6 @@ The source for the record. This can be a code which is assigned to a source name
 or a string directly naming the source system.
 
 ### Load date vs. Effective From Date
-
 `LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different, 
 holding the business effectivity date of the record (i.e. When it actually happened in the real world) and will usually 
 hold a different value, especially if there is a batch processing delay between when a business event happens and the 
@@ -94,9 +93,10 @@ record arriving in the database for load. Having both dates allows us to ask the
 and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
 
 The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
-in our experience we have found it useful for processing and applying business rules later on.
+in our experience we have found it useful for processing and applying business rules in downstream business vault, for 
+use in presentation layers.
 
-### Setting up effectivity satellite models
+### Creating effectivity satellite models
 
 Create a new dbt model as before.
 
@@ -112,11 +112,9 @@ Create a new dbt model as before.
 To create an effectivity satellite model, we simply copy and paste the above template into a model named after the effectivity
 satellite we are creating. dbtvault will generate an effectivity satellite using parameters provided in the next steps.
 
-!!! tip "Loading Effectivity Satellites correctly"
-    dbtvault provides custom materialisations, designed to load effectivity satellites (among other structures) in the correct way:
-    
-    - [vault_insert_by_period](../macros.md#vault_insert_by_period)
-    - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
+#### Materialisation
+
+The recommended materialisation for **effectivity satellites** is incremental, as we load and add new records to the existing data set. 
 
 ### Adding the metadata 
 
@@ -126,10 +124,10 @@ See our [metadata reference](../metadata.md#effectivity-satellites) for more det
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our knowledge of what columns we need in our `eff_sat_customer_nation` table, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `eff_sat_customer_nation` table, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value (Column name) | 
+| Parameter      | Value               | 
 | -------------- | ------------------- | 
 | source_model   | v_stg_orders        | 
 | src_pk         | CUSTOMER_NATION_PK  | 
@@ -141,23 +139,21 @@ staging layer which map to them:
 | src_ldts       | LOAD_DATETIME       | 
 | src_source     | RECORD_SOURCE       |
 
-Our model should look like the following:
+When we provide the metadata above, our model should look like the following:
 
 ```jinja
-{{ config(materialized='vault_insert_by_period', 
-          timestamp_field='LOAD_DATETIME', period='day',
-          start_date='1993-01-01') }}
+{{ config(materialized='incremental')  }}
 
 {%- set source_model = "v_stg_orders" -%}
 {%- set src_pk = "CUSTOMER_NATION_PK" -%}
-{%- set src_dfk = "CUSTOMER_PK" -%}
-{%- set src_sfk = "NATION_PK" -%}
+{%- set src_dfk = "CUSTOMER_PK"       -%}
+{%- set src_sfk = "NATION_PK"         -%}
 {%- set src_start_date = "START_DATE" -%}
-{%- set src_end_date = "END_DATE" -%}
+{%- set src_end_date = "END_DATE"     -%}
 
-{%- set src_eff = "EFFECTIVE_FROM" -%}
-{%- set src_ldts = "LOAD_DATETIME" -%}
-{%- set src_source = "RECORD_SOURCE" -%}
+{%- set src_eff = "EFFECTIVE_FROM"    -%}
+{%- set src_ldts = "LOAD_DATETIME"    -%}
+{%- set src_source = "RECORD_SOURCE"  -%}
 
 {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, 
@@ -169,15 +165,16 @@ Our model should look like the following:
 
 ### Running dbt
 
-With our model complete and our YAML written, we can run dbt to create our `eff_sat_customer_nation` effectivity satellite.
+With our metadata provided and our model complete, we can run dbt to create `eff_sat_customer_nation` 
+effectivity satellite, as follows:
 
 `dbt run -m +eff_sat_customer_nation`
     
-And our table will look like this:
+And the resulting effectivity satellite will look like this:
 
- | CUSTOMER_NATION_PK | CUSTOMER_PK  | NATION_PK     | START_DATE | END_DATE   | EFFECTIVE_FROM | LOAD_DATE    | SOURCE |
- | ------------------ | ------------ | ------------- | ---------- | ---------- | -------------- | ------------ | ------ |
- | 3C5984...          | B8C37E...    | 79CBA1...     | 1993-01-01 | 9999-31-12 | 1993-01-01     | 1993-01-01   | 1      |
- | .                  | .            | .             | .          | .          | .              | .            | 1      |
- | .                  | .            | .             | .          | .          | .              | .            | 1      |
- | D8CB1F...          | FED333...    | 8FAA77...     | 1993-01-01 | 9999-31-12 | 1993-01-01     | 1993-01-01   | 1      |
+ | CUSTOMER_NATION_PK | CUSTOMER_PK  | NATION_PK     | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME            | SOURCE |
+ | ------------------ | ------------ | ------------- | ----------------------- | ----------------------- | ----------------------- | ------------------------ | ------ |
+ | 3C5984...          | B8C37E...    | 79CBA1...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
+ | .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
+ | .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
+ | D8CB1F...          | FED333...    | 8FAA77...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
