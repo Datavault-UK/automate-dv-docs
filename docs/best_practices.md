@@ -4,18 +4,17 @@ We advise you follow these best practises when using dbtvault.
 
 At the current time, dbtvault will load discrete records with the same primary key (hash key) simultaneously. This means
 that any deltas formed by loading these records in individual cycles get lost. For hubs and links this is not a problem,
-as there are no temporal attributes, but for satellites this will cause inaccuracies in loaded data.
+as there are no temporal attributes, but for structures such as satellites this will produce erroneous loads.
 
-Until a future release solves this limitation, we advise that you use
-the [vault_insert_by_period](macros.md#vault_insert_by_period) materialisation. This materialisation is fully
-configurable and automatically iterates over period of time in a date range, to load each time period in a separate
-transaction.
+Until a future release solves this limitation for structures configured with the built-in **incremental materialisation**,
+we advise that you use one of our provided custom [insert_by materialisations](macros.md#materialisations). 
 
-This materialisation can be configured to load in milliseconds to get around this limitation, however we do not advise
-this for large data sets.
+These materialisations are fully configurable and automatically iterate over records, to load each batch/iteration separately.
 
 We are working on removing this limitation and implementing 'intra-period' loading. If you have any questions, please
 get in touch.
+
+[Read More](#materialisations)
 
 ## Record source table code
 
@@ -76,37 +75,42 @@ If the primary or ANY of the foreign keys are null, then the record does not get
 
 If the driving key column(s) or secondary foreign key (sfk) column(s) are null then the record does not get loaded.
 
-!!! note There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all the
-SFK and DFK columns (so the PK will evaluate as null if they are all null).
+!!! note 
+    There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all the
+    SFK and DFK columns (so the PK will evaluate as null if they are all null).
 
 ## Materialisations
 
-Some raw vault structures need to be loaded incrementally to ensure record deltas (changes) over time are correctly
-processed.
+All raw vault structures support both the built-in dbt incremental materialisation and dbtvault's [custom 
+materialisations](macros.md#materialisations). Hubs and Links remain unaffected.
 
-Currently, these are the following structures:
 
-- Transactional Links
-- Satellites
-- Effectivity Satellites
+!!! bug
+    Currently there exists a bug with how dbtvault structures handle incremental materialisations.
 
-To correctly load these structures, we have developed custom materialisations which iteratively load data:
+    Consult the below issues to see if you are affected. These issues are priority for the dbtvault team to fix.
 
-- [vault_insert_by_period](./macros.md#vault_insert_by_period)
-- [vault_insert_by_rank](./macros.md#vault_insert_by_rank)
+    - [Issue #50](https://github.com/Datavault-UK/dbtvault/issues/50)
+    - [Issue #62](https://github.com/Datavault-UK/dbtvault/issues/62)
+    - [Issue #64](https://github.com/Datavault-UK/dbtvault/issues/64)
+    - [Issue #65](https://github.com/Datavault-UK/dbtvault/issues/65)
 
-These macros are described in more depth in the macro documentation in the links above.
+### Table and View
+
+dbtvault macros do not support Table or View materialisations. You will be able to create your models if these materialisations are
+set, however they will behave unpredictably. We have no plans to support these materialisations, as they fundamentally break and oppose
+Data Vault 2.0 standards.
 
 ### Recommended Materialisations
 
-| Structure                      | Incremental          | vault_insert_by_x  |
-| ------------------------------ | -------------------- | ------------------ |
-| Hub                            | :material-check:     |                    |
-| Link                           | :material-check:     |                    |
-| Transactional Link             |                      | :material-check:   |
-| Satellite                      |                      | :material-check:   |
-| Effectivity Satellites         |                      | :material-check:   |
-| Multi-Active Satellites        |                      | :material-check:   |
+| Structure                      | Incremental          |
+| ------------------------------ | -------------------- |
+| Hub                            | :material-check:     |
+| Link                           | :material-check:     |
+| Transactional Link             | :material-check:     |
+| Satellite                      | :material-check:     |
+| Effectivity Satellites         | :material-check:     |
+| Multi-Active Satellites        | :material-check:     |
 
 ## Hashing
 
