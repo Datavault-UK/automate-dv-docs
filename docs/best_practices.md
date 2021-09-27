@@ -117,9 +117,9 @@ Data Vault 2.0 standards.
 ## Hashing
 
 !!! seealso "See Also"
-  - [hash](macros.md#hash)
-  - [hash_columns](macros.md#hash_columns)
-
+    - [hash](macros.md#hash)
+    - [hash_columns](macros.md#hash_columns)
+ 
 ### The drawbacks of using MD5
 
 By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros.md#hash)
