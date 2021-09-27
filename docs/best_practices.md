@@ -82,11 +82,11 @@ If the driving key column(s) or secondary foreign key (sfk) column(s) are null t
 ## Materialisations
 
 All raw vault structures support both the built-in dbt incremental materialisation and dbtvault's [custom 
-materialisations](macros.md#materialisations). Hubs and Links remain unaffected.
+materialisations](macros.md#materialisations). 
 
 
 !!! bug
-    Currently there exists a bug with how dbtvault structures handle incremental materialisations.
+    Currently there exists a bug with how some dbtvault structures handle incremental materialisations.
 
     Consult the below issues to see if you are affected. These issues are priority for the dbtvault team to fix.
 
@@ -94,6 +94,8 @@ materialisations](macros.md#materialisations). Hubs and Links remain unaffected.
     - [Issue #62](https://github.com/Datavault-UK/dbtvault/issues/62)
     - [Issue #64](https://github.com/Datavault-UK/dbtvault/issues/64)
     - [Issue #65](https://github.com/Datavault-UK/dbtvault/issues/65)
+
+    Hubs and Links remain unaffected.
 
 ### Table and View
 
