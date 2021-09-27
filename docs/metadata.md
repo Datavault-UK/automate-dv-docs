@@ -1,4 +1,6 @@
-dbtvault is metadata driven. On this page, we provide an overview of how to provide and store that data.
+dbtvault is metadata driven. On this page, we provide an overview of how to provide and store the data for **dbtvault macros**.
+
+For all other metadata and configurations, please refer to the [dbt configurations reference](https://docs.getdbt.com/reference/dbt_project.yml).
 
 For further detail about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
