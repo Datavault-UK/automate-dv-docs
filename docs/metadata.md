@@ -10,9 +10,10 @@ and it comes down to user and organisation preference.
 
 !!! note
     The macros **do not care** how the metadata parameters get provided, as long as they are of the correct type.
-    Parameter data types definitions are available on the [macros](macros.md) page.
+    Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our recommendations,
+    which we hope provide a good balance of manageability and readability.  
     
-    **All examples in the following sections will produce the same hub structure, the only difference is how the metadata is provided.**
+    **All examples on this page will produce the same hub structure, the only difference is how the metadata is provided.**
     
 
 It is worth noting that with larger projects, metadata management gets increasingly harder and can 
@@ -22,43 +23,9 @@ We can reduce the impact of this problem by providing the metadata for a given m
 does have the drawback that the creation of models is significantly less copy-and-paste, but the metadata management improvements are
 usually worth it.
 
-#### dbt_project.yml
-
-!!! warning
-
-    Not recommend or possible from dbt v0.19.0 and dbtvault v0.7.3 onwards. This section will be removed from our documentation in due course, 
-    but is retained for now.
-
-We no longer recommend providing metadata in the `dbt_project.yml`, and in fact as of dbt v0.19.0, it has been **permanently removed**.
-Prior to dbt v0.19.0 and dbtvault v0.7.3, you must add `config-version: 1` to your `dbt_project.yml`.
-    
-Read more:
-
-- [Permanent removal](https://github.com/fishtown-analytics/dbt/releases/tag/v0.19.0)
-- [Our suggestion to dbt](https://github.com/fishtown-analytics/dbt/issues/2377) (closed in favour of [2401](https://github.com/fishtown-analytics/dbt/issues/2401))
-- [dbt documentation on the change](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/#better-variable-scoping-semantics)
-
-
-##### Example
-
-=== "dbt_project.yml"
-
-    ```yaml
-    models:
-      hubs:
-        hub_customer:
-          vars:
-            source_model: 'stg_web_customer_hashed'
-            src_pk: 'CUSTOMER_PK'
-            src_nk: 'CUSTOMER_KEY'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-    ``` 
-
 #### Per-model - Variables 
 
-You may also provide metadata on a per-model basis. This is useful if you have a large amount of metadata, and you
-are quickly cluttering your `dbt_project.yml` file.
+You may also provide metadata on a per-model basis. This is useful if you have a large amount of metadata.
 
 ##### Example
 
@@ -67,7 +34,7 @@ are quickly cluttering your `dbt_project.yml` file.
     ```jinja
     {%- set source_model = "stg_web_customer_hashed" -%}
     {%- set src_pk = "CUSTOMER_PK" -%}
-    {%- set src_nk = "CUSTOMER_KEY" -%}
+    {%- set src_nk = "CUSTOMER_ID" -%}
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
     
@@ -85,6 +52,11 @@ which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions
 The below example for a hub is a little excessive for the small amount of metadata provided, so there is also a stage 
 example provided to help better convey the difference.
 
+!!! warning
+    dbt does not yet provide any syntax checking in these YAML strings, often leading to confusing and misleading error
+    messages. If you find that variables which are extracted from the YAML string are empty, it is an indicator that the YAML
+    did not compile correctly, and you should check your formatting; including indentation.
+
 ##### Example
 
 === "hub_customer.sql"
@@ -93,7 +65,7 @@ example provided to help better convey the difference.
     {%- set yaml_metadata -%}
     source_model: 'stg_web_customer_hashed'
     src_pk: 'CUSTOMER_PK'
-    src_nk: 'CUSTOMER_KEY'
+    src_nk: 'CUSTOMER_ID'
     src_ldts: 'LOAD_DATETIME'
     src_source: 'RECORD_SOURCE'
     {%- endset -%}
@@ -506,7 +478,7 @@ example provided to help better convey the difference.
         {%- set yaml_metadata -%}
         source_model: 'stg_web_customer_hashed'
         src_pk: 'CUSTOMER_PK'
-        src_nk: 'CUSTOMER_KEY'
+        src_nk: 'CUSTOMER_ID'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
         {%- endset -%}
@@ -528,7 +500,7 @@ example provided to help better convey the difference.
             - 'stg_web_customer_hashed'
             - 'stg_crm_customer_hashed'
         src_pk: 'CUSTOMER_PK'
-        src_nk: 'CUSTOMER_KEY'
+        src_nk: 'CUSTOMER_ID'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
         {%- endset -%}
@@ -549,7 +521,7 @@ example provided to help better convey the difference.
         source_model: 'stg_customer_hashed'
         src_pk: 'CUSTOMER_PK'
         src_nk: 
-            - 'CUSTOMER_KEY'
+            - 'CUSTOMER_ID'
             - 'CUSTOMER_DOB'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
@@ -571,7 +543,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set source_model = "stg_customer_hashed" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_nk = "CUSTOMER_KEY" -%}
+        {%- set src_nk = "CUSTOMER_ID" -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
@@ -584,7 +556,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set source_model = ["stg_web_customer_hashed", "stg_crm_customer_hashed"] -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_nk = "CUSTOMER_KEY" -%}
+        {%- set src_nk = "CUSTOMER_ID" -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
@@ -597,7 +569,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set source_model = "stg_customer_hashed" -%}
         {%- set src_pk = "CUSTOMER_PK" -%}
-        {%- set src_nk = ["CUSTOMER_KEY", "CUSTOMER_DOB"] -%}
+        {%- set src_nk = ["CUSTOMER_ID", "CUSTOMER_DOB"] -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
@@ -616,7 +588,7 @@ example provided to help better convey the difference.
           vars:
             source_model: 'stg_customer_hashed'
             src_pk: 'CUSTOMER_PK'
-            src_nk: 'CUSTOMER_KEY'
+            src_nk: 'CUSTOMER_ID'
             src_ldts: 'LOAD_DATETIME'
             src_source: 'RECORD_SOURCE'
         ```
@@ -630,7 +602,7 @@ example provided to help better convey the difference.
               - 'stg_web_customer_hashed'
               - 'stg_crm_customer_hashed'
             src_pk: 'CUSTOMER_PK'
-            src_nk: 'CUSTOMER_KEY'
+            src_nk: 'CUSTOMER_ID'
             src_ldts: 'LOAD_DATETIME'
             src_source: 'RECORD_SOURCE'
         ```
@@ -643,7 +615,7 @@ example provided to help better convey the difference.
             source_model: 'stg_customer_hashed'
             src_pk: 'CUSTOMER_PK'
             src_nk:
-              - 'CUSTOMER_KEY'
+              - 'CUSTOMER_ID'
               - 'CUSTOMER_DOB'
             src_ldts: 'LOAD_DATETIME'
             src_source: 'RECORD_SOURCE'
@@ -665,7 +637,7 @@ example provided to help better convey the difference.
         source_model: 'v_stg_orders'
         src_pk: 'LINK_CUSTOMER_NATION_PK'
         src_fk: 
-            - 'CUSTOMER_KEY'
+            - 'CUSTOMER_ID'
             - 'NATION_PK'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
@@ -688,7 +660,7 @@ example provided to help better convey the difference.
             - 'v_stg_transactions'
         src_pk: 'LINK_CUSTOMER_NATION_PK'
         src_fk: 
-            - 'CUSTOMER_KEY'
+            - 'CUSTOMER_ID'
             - 'NATION_PK'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
@@ -1158,5 +1130,5 @@ To help manage large amounts of metadata, we recommend the use of external corpo
 Matillion, or Erwin Data Modeller. 
 
 In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a 
-little longer. Discussions are [already ongoing](https://github.com/fishtown-analytics/dbt/issues/2401), and we hope
+little longer. Discussions are [already ongoing](https://github.com/dbt-labs/dbt/issues/2401), and we hope
 to be able to advise on better ways to manage metadata in the future. 

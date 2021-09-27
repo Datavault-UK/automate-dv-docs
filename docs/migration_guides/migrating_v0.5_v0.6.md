@@ -140,7 +140,7 @@ hub_customer:
 ## Hubs and Links 
 
 The functionality of the hubs and links have been updated to allow for loading multiple load dates in bulk. 
-The hub and link SQL has also been refactored to use common table expressions (CTEs) as suggested in the [Fishtown Analytics SQL style guide](https://github.com/fishtown-analytics/corp/blob/master/dbt_coding_conventions.md#example-sql),
+The hub and link SQL has also been refactored to use common table expressions (CTEs) as suggested in the [dbt Labs SQL style guide](https://github.com/dbt-labs/corp/blob/master/dbt_style_guide.md),
 to improve code readability. 
 
 The invocation of the hub and link macros have not changed aside from the variable change stated above. 

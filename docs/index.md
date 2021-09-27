@@ -5,7 +5,7 @@ on a Snowflake database.
 !!! Note
     You need to be running dbt to use the package.
     
-    [dbt](https://www.getdbt.com/) is a registered trademark of [Fishtown Analytics](https://www.fishtownanalytics.com/).
+    [dbt](https://www.getdbt.com/) is a registered trademark of [dbt Labs](https://www.getdbt.com/dbt-labs/about-us/).
     
     Go check them out!
 

@@ -86,7 +86,7 @@ Generates SQL to build a hub table using the provided parameters.
 | source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-[Read the tutorial](tutorial/tut_hubs.md) for more details
+    [Read the tutorial](tutorial/tut_hubs.md) for more details
 
 #### Example Metadata
 
@@ -240,6 +240,9 @@ Generates SQL to build a hub table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### link
@@ -266,7 +269,7 @@ Generates sql to build a link table using the provided parameters.
 | source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-[Read the tutorial](tutorial/tut_links.md) for more details
+    [Read the tutorial](tutorial/tut_links.md) for more details
 
 #### Example Metadata
 
@@ -423,6 +426,9 @@ Generates sql to build a link table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### t_link
@@ -452,7 +458,7 @@ Generates sql to build a transactional link table using the provided parameters.
 | source_model  | Staging model name                                  | String              | :fontawesome-solid-check-circle:{ .required }    |
 
 !!! tip
-[Read the tutorial](tutorial/tut_t_links.md) for more details
+    [Read the tutorial](tutorial/tut_t_links.md) for more details
 
 #### Example Metadata
 
@@ -495,6 +501,9 @@ Generates sql to build a transactional link table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### sat
@@ -524,7 +533,7 @@ Generates sql to build a satellite table using the provided parameters.
 | source_model  | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
-[Read the tutorial](tutorial/tut_satellites.md) for more details
+    [Read the tutorial](tutorial/tut_satellites.md) for more details
 
 #### Example Metadata
 
@@ -587,7 +596,10 @@ Generates sql to build a satellite table using the provided parameters.
         )
         
         SELECT * FROM records_to_insert
-    ```
+        ```
+
+=== "Google BigQuery"
+    Coming soon!
 
 #### Hashdiff Aliasing
 
@@ -626,7 +638,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
 | source_model   | Staging model name                                  | String                  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-[Read the tutorial](tutorial/tut_eff_satellites.md) for more details
+    [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
 
 #### Example Metadata
 
@@ -799,14 +811,15 @@ Generates sql to build an effectivity satellite table using the provided paramet
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 #### Auto end-dating
 
 Auto end-dating is enabled by providing a config option as below:
 
 ``` jinja
-{{ config(
-    is_auto_end_dating=true
-) }}
+{{ config(is_auto_end_dating=true) }}
 
 {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, src_end_date=src_end_date,
@@ -860,7 +873,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 | source_model   | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
-[Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
+    [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
 
 #### Example Metadata
 
@@ -955,6 +968,9 @@ Generates SQL to build a multi-active satellite table (MAS).
         
         SELECT * FROM records_to_insert
         ```
+
+=== "Google BigQuery"
+    Coming soon!
 
 ## Staging Macros
 
@@ -1436,107 +1452,110 @@ auditability purposes, however this could be useful in some scenarios.
 
 A flag can be provided for hashdiff columns which will invert the selection of columns provided in the list of columns.
 
-The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
-listed under the `columns` key, instead of using them to create the hashdiff. You may also omit the `columns` key to
-hash every column.
-
-##### Examples:
-
-=== "Columns provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_PK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-    
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-            columns:
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_PK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-        ```
-
-=== "Columns not provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_PK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-        ```
-    
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_PK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
 This is extremely useful when a hashdiff composed of many columns needs to be generated, and you do not wish to
 individually provide all the columns.
 
+The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
+listed under the `columns` key, instead of using them to create the hashdiff. 
+
+!!! tip "Hash every column without listing them all"
+    You may omit the `columns` key to hash every column. See the `Columns key not provided` example below.
+
+##### Examples:
+
+=== "Columns key provided"
+
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_PK
+        LOAD_DATE
+        RECORD_SOURCE
+        ```
+    
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+            columns:
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_PK
+              - LOAD_DATE
+              - RECORD_SOURCE
+        ```
+
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+        ```
+
+=== "Columns key not provided"
+
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_PK
+        LOAD_DATE
+        RECORD_SOURCE
+        ```
+
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+        ```
+    
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_PK
+              - LOAD_DATE
+              - RECORD_SOURCE
+        ```
+
 !!! warning
 
-    Care should be taken if using this feature on dynamic data sources. If you expect columns in the data source to 
-    change for any reason, it will become hard to predict what columns are used to generate the hashdiff. If your 
-    component columns change, then your hashdiff output will also change and it will cause unpredictable results.
+    Care should be taken if using this feature on data sources where the columns may change. 
+    If you expect columns in the data source to change for any reason, it will become hard to predict what columns 
+    are used to generate the hashdiff. If your component columns change, then your hashdiff output will also change,
+    and it will cause unpredictable results.
 
 #### Functions (Derived Columns)
 
@@ -1560,7 +1579,8 @@ In the highlighted derived column configuration in the snippet above, the genera
 SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
 ```
 
-Please ensure that your function has valid SQL syntax on your platform, for use in this context.
+!!! Note
+    Please ensure that your function has valid SQL syntax on your platform, for use in this context.
 
 #### Constants (Derived Columns)
 
@@ -1628,7 +1648,7 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 #### Defining Ranked columns
 
-To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
+This stage configuration is a helper for the [vault_insert_by_rank](#vault_insert_by_rank) materialisation. The `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
 === "Single item parameters"
@@ -1683,7 +1703,8 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/hash_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! Note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
@@ -1691,7 +1712,8 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/derive_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! Note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
 column value.
@@ -1700,7 +1722,8 @@ column value.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/rank_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! Note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns using the `RANK()` window function.
 
@@ -1724,18 +1747,17 @@ ___
 
     This macro ***should not be*** used for cryptographic purposes.
 
-    The intended use is for creating checksum-like values only, so that we may compare records accurately.
+    The intended use is for creating checksum-like values only, so that we may compare records consistently.
     
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-- [hash_columns](#hash_columns)
-- Read [Hashing best practises and why we hash](best_practices.md#hashing)
-for more detailed information on the purposes of this macro and what it does.
-
-        - You may choose between `MD5` and `SHA-256` hashing.
-          [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
-
+    - [hash_columns](#hash_columns)
+    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
+    for more detailed information on the purposes of this macro and what it does.
+    - You may choose between `MD5` and `SHA-256` hashing.
+    [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    
 A macro for generating hashing SQL for columns.
 
 #### Usage
@@ -1769,8 +1791,9 @@ A macro for generating hashing SQL for columns.
         )) AS BINARY(32)) AS HASHDIFF
         ```
 
-!!! tip The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
-with one macro.
+!!! tip 
+    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
+    with one macro.
 
 #### Parameters
 
@@ -1809,7 +1832,8 @@ A macro for quickly prefixing a list of columns with a string.
     a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
     ```
 
-!!! Note Single columns must be provided as a 1-item list, as in the second example above.
+!!! Note
+    Single columns must be provided as a 1-item list.
 
 ___
 
@@ -1817,7 +1841,7 @@ ___
 
 ###### (macros/internal)
 
-Internal macros are used by other macros provided in this package. They process provided metadata and should not need to
+Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to
 be called directly.
 
 ___
@@ -1828,7 +1852,7 @@ ___
 
 Materialisations dictate how a model is created in the database.
 
-dbt comes with 4 standard materialisations:
+dbt itself comes with 4 standard materialisations:
 
 - Table
 - View
@@ -1837,16 +1861,15 @@ dbt comes with 4 standard materialisations:
 
 [Read more about materialisations here](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/materializations/)
 
-For dbtvault, we have created some custom materialisations which will provide assistance Data Vault 2.0 specific use
-cases
+In dbtvault, we have created custom materialisations which support Data Vault 2.0 specific use cases. These are detailed below.
 
 ### vault_insert_by_period
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_period_materialization.sql))
 
 This materialisation is based on
-the [insert_by_period](https://github.com/fishtown-analytics/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
-materialisation developed by Fishtown Analytics for the [dbt-utils](https://github.com/fishtown-analytics/dbt-utils)
+the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
+materialisation developed by dbt Labs for the [dbt-utils](https://github.com/dbt-labs/dbt-utils)
 package.
 
 We have re-purposed it and provided support for Snowflake, as well as added a number of convenience features.
@@ -2021,13 +2044,13 @@ At runtime, this string is replaced with SQL which applies conditions to filter 
 the `timestamp_field` to those specified in the load date range. If you are only using dbtvault table template macros
 with this materialisation, then there is no need for any additional work.
 
-However, If you are writing your own models and wish to use the this materialisation, then you must include
+However, If you are writing your own models and wish to use this materialisation, then you must include
 a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql) source code for further
-understanding.
+See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql) source code for 
+a demonstration of this.
 
 #### Idempotent loads
 
@@ -2080,7 +2103,7 @@ column.
 
 A rank column can be created one of three ways:
 
-1. Manually creating it in a model prior to the staging layer, and using this model as the stage `source_model`.
+1. Manually creating it in a model prior to the staging layer, and using this model as the stage's `source_model`.
 
 2. Using the `ranked_columns` configuration of the [stage](#stage) macro
 
@@ -2106,7 +2129,7 @@ A rank column can be created one of three ways:
 
 #### Which option?
 
-- Method #2 is recommended, as it allows ranked columns to use user-defined derived or hashed columns created in the
+- Method #2 is recommended, as makes it easier for rank columns to use user-defined derived or hashed columns created in the
   same staging layer.
 - Method #3 is similar, except it will not have hashed or derived column definitions available to it.
 
