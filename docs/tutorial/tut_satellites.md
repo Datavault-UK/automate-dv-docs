@@ -2,25 +2,25 @@ Satellites contain point-in-time payload data related to their parent hub or lin
 Each hub or link record may have one or more child satellite records, allowing us to record changes in 
 the data as they happen. 
 
-#### Structure
+### Structure
 
 Each component of a satellite is described below.
 
-##### Primary Key (src_pk)
+#### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key.
 For a satellite, this should be the same as the corresponding link or hub PK, concatenated with the load timestamp. 
 
-##### Hashdiff (src_hashdiff)
+#### Hashdiff (src_hashdiff)
 This is a concatenation of the payload (below) and the primary key. This allows us to 
 detect changes in a record (much like a checksum). For example, if a customer changes their name, the hashdiff 
 will change as a result of the payload changing. 
 
-##### Payload (src_payload)
+#### Payload (src_payload)
 The payload consists of concrete data for an entity (e.g. A customer). This could be
 a name, a date of birth, nationality, age, gender or more. The payload will contain some or all of the
 concrete data for an entity, depending on the purpose of the satellite. 
 
-##### Effective From (src_eff)
+#### Effective From (src_eff)
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
 satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
