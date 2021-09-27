@@ -117,7 +117,7 @@ Data Vault 2.0 standards.
 ## Hashing
 
 !!! seealso "See Also"
-- [hash](macros.md#hash)
+  - [hash](macros.md#hash)
   - [hash_columns](macros.md#hash_columns)
 
 ### The drawbacks of using MD5
