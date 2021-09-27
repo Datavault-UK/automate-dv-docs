@@ -132,14 +132,14 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../macros.md#vault_insert_by_period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
-- dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/fishtown-analytics/dbt/releases/tag/v0.18.0)
+- dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/dbt-labs/dbt/releases/tag/v0.18.0)
 
 !!! info
     *This is intended as quick reference and for completeness only, the online documentation is still the main reference documentation.
       
 ### Improved
 
-- All table macros now make more use of CTEs to reduce nested SQL and improve readability and debugging potential. [Why CTE's?](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091)
+- All table macros now make more use of CTEs to reduce nested SQL and improve readability and debugging potential. [Why CTEs?](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091)
 - All macros have had the licence header removed. This was a little messy and unnecessary.
 
 ### Removed

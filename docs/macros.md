@@ -77,13 +77,13 @@ Generates SQL to build a hub table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                    |
-| ------------- | --------------------------------------------------- | -------------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_nk        | Source natural key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                      |
+| ------------- | --------------------------------------------------- | -------------------- | ---------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_nk        | Source natural key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_hubs.md) for more details
@@ -240,6 +240,9 @@ Generates SQL to build a hub table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### link
@@ -257,13 +260,13 @@ Generates sql to build a link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                    |
-| ------------- | --------------------------------------------------- | ---------------------| -------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_fk        | Source foreign key column(s)                        | List[String]         | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                      |
+| ------------- | --------------------------------------------------- | ---------------------| ---------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_fk        | Source foreign key column(s)                        | List[String]         | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_links.md) for more details
@@ -423,6 +426,9 @@ Generates sql to build a link table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### t_link
@@ -441,15 +447,15 @@ Generates sql to build a transactional link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                | Required?                                        |
-| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------ |
-| src_pk        | Source primary key column                           | List[String]/String | <i class="fas fa-check-circle required"></i>     |
-| src_fk        | Source foreign key column(s)                        | List[String]        | <i class="fas fa-check-circle required"></i>     |
-| src_payload   | Source payload column(s)                            | List[String]        | <i class="fas fa-minus-circle not-required"></i> |
-| src_eff       | Source effective from column                        | String              | <i class="fas fa-check-circle required"></i>     |
-| src_ldts      | Source load date timestamp column                   | String              | <i class="fas fa-check-circle required"></i>     |
-| src_source    | Name of the column containing the source ID         | String              | <i class="fas fa-check-circle required"></i>     |
-| source_model  | Staging model name                                  | String              | <i class="fas fa-check-circle required"></i>     |
+| Parameter     | Description                                         | Type                | Required?                                         |
+| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String | :fontawesome-solid-check-circle:{ .required }    |
+| src_fk        | Source foreign key column(s)                        | List[String]        | :fontawesome-solid-check-circle:{ .required }    |
+| src_payload   | Source payload column(s)                            | List[String]        | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_eff       | Source effective from column                        | String              | :fontawesome-solid-check-circle:{ .required }    |
+| src_ldts      | Source load date timestamp column                   | String              | :fontawesome-solid-check-circle:{ .required }    |
+| src_source    | Name of the column containing the source ID         | String              | :fontawesome-solid-check-circle:{ .required }    |
+| source_model  | Staging model name                                  | String              | :fontawesome-solid-check-circle:{ .required }    |
 
 !!! tip
     [Read the tutorial](tutorial/tut_t_links.md) for more details
@@ -495,6 +501,9 @@ Generates sql to build a transactional link table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### sat
@@ -513,15 +522,15 @@ Generates sql to build a satellite table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type             | Required?                                        |
-| ------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------ |
-| src_pk        | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>     |
-| src_hashdiff  | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>     |
-| src_payload   | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>     |
-| src_eff       | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i> |
-| src_ldts      | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>     |
-| src_source    | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>     |
-| source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>     |
+| Parameter     | Description                                         | Type             | Required?                                          |
+| ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------------- |
+| src_pk        | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff  | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload   | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
+| src_eff       | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required }  |
+| src_ldts      | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_source    | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
+| source_model  | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_satellites.md) for more details
@@ -587,11 +596,15 @@ Generates sql to build a satellite table using the provided parameters.
         )
         
         SELECT * FROM records_to_insert
-    ```
+        ```
+
+=== "Google BigQuery"
+    Coming soon!
 
 #### Hashdiff Aliasing
 
-If you have multiple satellites using a single stage as its data source, then you will need to use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
+If you have multiple satellites using a single stage as its data source, then you will need to
+use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
 
 ___
 
@@ -612,17 +625,17 @@ Generates sql to build an effectivity satellite table using the provided paramet
 
 #### Parameters
 
-| Parameter      | Description                                         | Type                    | Required?                                    |
-| -------------- | --------------------------------------------------- | ----------------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                           | String                  | <i class="fas fa-check-circle required"></i> |
-| src_dfk        | Source driving foreign key column                   | List[String]/String     | <i class="fas fa-check-circle required"></i> |
-| src_sfk        | Source secondary foreign key column                 | List[String]/String     | <i class="fas fa-check-circle required"></i> |
-| src_start_date | Source start date column                            | String                  | <i class="fas fa-check-circle required"></i> |
-| src_end_date   | Source end date column                              | String                  | <i class="fas fa-check-circle required"></i> |
-| src_eff        | Source effective from column                        | String                  | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load date timestamp column                   | String                  | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID         | String                  | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                  | String                  | <i class="fas fa-check-circle required"></i> |
+| Parameter      | Description                                         | Type                    | Required?                                      |
+| -------------- | --------------------------------------------------- | ----------------------- | ---------------------------------------------- |
+| src_pk         | Source primary key column                           | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_dfk        | Source driving foreign key column                   | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
+| src_sfk        | Source secondary foreign key column                 | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
+| src_start_date | Source start date column                            | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_end_date   | Source end date column                              | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_eff        | Source effective from column                        | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts       | Source load date timestamp column                   | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_source     | Name of the column containing the source ID         | String                  | :fontawesome-solid-check-circle:{ .required } |
+| source_model   | Staging model name                                  | String                  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
@@ -636,25 +649,25 @@ Generates sql to build an effectivity satellite table using the provided paramet
 === "Snowflake"
 
     === "Base Load"
-        
+
         ```sql
         WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_PK IS NOT NULL
-            AND a.CUSTOMER_PK IS NOT NULL
-    ),
-    
+                SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+                FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+                WHERE a.ORDER_PK IS NOT NULL
+                AND a.CUSTOMER_PK IS NOT NULL
+        ),
+        
         records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-    )
-    
+                SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+                FROM source_data AS i
+        )
+        
         SELECT * FROM records_to_insert
         ```
 
     === "With auto end-dating (Subsequent)"
-    
+
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
@@ -798,14 +811,15 @@ Generates sql to build an effectivity satellite table using the provided paramet
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 #### Auto end-dating
 
 Auto end-dating is enabled by providing a config option as below:
 
 ``` jinja
-{{ config(
-    is_auto_end_dating=true
-) }}
+{{ config(is_auto_end_dating=true) }}
 
 {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, src_end_date=src_end_date,
@@ -824,7 +838,7 @@ The definition of the 'end' of a relationship is considered business logic which
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
-!!! warning 
+!!! warning
 
     We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
     exercised if you are unsure.
@@ -849,14 +863,14 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 | Parameter      | Description                                         | Type             | Required?                                         |
 | -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
-| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>      |
-| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i>      |
-| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>      |
-| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>      |
-| src_eff        | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i>  |
-| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>      |
-| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>      |
-| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>      |
+| src_pk         | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff   | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload    | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
+| src_eff        | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_ldts       | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_source     | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
+| source_model   | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
@@ -868,7 +882,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 #### Example Output
 
 === "Snowflake"
-    
+
     === "Base Load"
     
         ```sql
@@ -954,6 +968,9 @@ Generates SQL to build a multi-active satellite table (MAS).
         
         SELECT * FROM records_to_insert
         ```
+
+=== "Google BigQuery"
+    Coming soon!
 
 ## Staging Macros
 
@@ -1364,13 +1381,13 @@ Generates sql to build a staging area using the provided parameters.
 
 #### Parameters
 
-| Parameter              | Description                                                                 | Type           | Default    | Required?                                        |
-| ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------ |
-| include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | <i class="fas fa-minus-circle not-required"></i> |
-| source_model           | Staging model name                                                          | Mapping        | N/A        | <i class="fas fa-check-circle required"></i>     |
-| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
-| hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
-| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
+| Parameter              | Description                                                                 | Type           | Default    | Required?                                         |
+| ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
+| include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
+| source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required }    |
+| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 
 #### Example Metadata
 
@@ -1378,13 +1395,13 @@ Generates sql to build a staging area using the provided parameters.
 
 ### stage macro configurations
 
-The stage macro supports some helper syntax and functionality to make your life easier when staging. These are
-documented in this section.
+The stage macro supports some syntactic sugar and shortcuts for providing metadata. These are documented in this
+section.
 
 #### Column scoping
 
 The hashed column configuration in the stage macro may refer to columns which have been newly created in the derived
-column configuration. This allows hashes to be created using values generated by the user via the derived column
+column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` section.
 configuration.
 
 For example:
@@ -1435,113 +1452,116 @@ auditability purposes, however this could be useful in some scenarios.
 
 A flag can be provided for hashdiff columns which will invert the selection of columns provided in the list of columns.
 
-The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
-listed under the `columns` key, instead of using them to create the hashdiff. You may also omit the `columns` key to
-hash every column.
-
-##### Examples:
-
-=== "Columns provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_PK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-    
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-            columns:
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_PK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-        ```
-
-=== "Columns not provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_PK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-        ```
-    
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_PK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
 This is extremely useful when a hashdiff composed of many columns needs to be generated, and you do not wish to
 individually provide all the columns.
 
+The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
+listed under the `columns` key, instead of using them to create the hashdiff. 
+
+!!! tip "Hash every column without listing them all"
+    You may omit the `columns` key to hash every column. See the `Columns key not provided` example below.
+
+##### Examples:
+
+=== "Columns key provided"
+
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_PK
+        LOAD_DATE
+        RECORD_SOURCE
+        ```
+    
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+            columns:
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_PK
+              - LOAD_DATE
+              - RECORD_SOURCE
+        ```
+
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+        ```
+
+=== "Columns key not provided"
+
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_PK
+        LOAD_DATE
+        RECORD_SOURCE
+        ```
+
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+        ```
+    
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_PK
+              - LOAD_DATE
+              - RECORD_SOURCE
+        ```
+
 !!! warning
 
-    Care should be taken if using this feature on dynamic data sources. If you expect columns in the data source to 
-    change for any reason, it will become hard to predict what columns are used to generate the hashdiff. If your 
-    component columns change, then your hashdiff output will also change and it will cause unpredictable results.
+    Care should be taken if using this feature on data sources where the columns may change. 
+    If you expect columns in the data source to change for any reason, it will become hard to predict what columns 
+    are used to generate the hashdiff. If your component columns change, then your hashdiff output will also change,
+    and it will cause unpredictable results.
 
 #### Functions (Derived Columns)
 
 === "Snowflake"
 
-```yaml hl_lines="5"
+```yaml hl_lines="3"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
@@ -1559,7 +1579,8 @@ In the highlighted derived column configuration in the snippet above, the genera
 SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
 ```
 
-Please ensure that your function has valid SQL syntax on your platform, for use in this context.
+!!! Note
+    Please ensure that your function has valid SQL syntax on your platform, for use in this context.
 
 #### Constants (Derived Columns)
 
@@ -1609,12 +1630,12 @@ derived_columns:
 
 You can create new columns, given a list of columns to extract values from, using derived columns.
 
-Given the following values in the above example:
+Given the following values for the columns in the above example:
 
 - `CUSTOMER_ID` = 0011
 - `CUSTOMER_NAME` = Alex
 
-Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
+The new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
 double pipe `||`. Currently, this `||` join string has been hard-coded, but in future it will be user-configurable.
 
 The values provided in the list can use any of the previously described syntax (including functions and constants) to
@@ -1627,7 +1648,7 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 #### Defining Ranked columns
 
-To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
+This stage configuration is a helper for the [vault_insert_by_rank](#vault_insert_by_rank) materialisation. The `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
 === "Single item parameters"
@@ -1682,7 +1703,7 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/hash_columns.sql))
 
-!!! note 
+!!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
@@ -1691,7 +1712,7 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/derive_columns.sql))
 
-!!! note 
+!!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
@@ -1701,7 +1722,7 @@ column value.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/rank_columns.sql))
 
-!!! note 
+!!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns using the `RANK()` window function.
@@ -1722,11 +1743,11 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/supporting/hash.sql))
 
-!!! warning 
-    
+!!! warning
+
     This macro ***should not be*** used for cryptographic purposes.
 
-    The intended use is for creating checksum-like values only, so that we may compare records accurately.
+    The intended use is for creating checksum-like values only, so that we may compare records consistently.
     
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
@@ -1734,10 +1755,9 @@ ___
     - [hash_columns](#hash_columns)
     - Read [Hashing best practises and why we hash](best_practices.md#hashing)
     for more detailed information on the purposes of this macro and what it does.
+    - You may choose between `MD5` and `SHA-256` hashing.
+    [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
     
-        - You may choose between `MD5` and `SHA-256` hashing.
-          [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
-
 A macro for generating hashing SQL for columns.
 
 #### Usage
@@ -1771,16 +1791,17 @@ A macro for generating hashing SQL for columns.
         )) AS BINARY(32)) AS HASHDIFF
         ```
 
-!!! tip
-    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes with one macro.
+!!! tip 
+    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
+    with one macro.
 
 #### Parameters
 
 | Parameter        |  Description                                     | Type                | Required?                                        |
 | ---------------- | -----------------------------------------------  | ------------------- | ------------------------------------------------ |
-| columns          |  Columns to hash on                              | List[String]/String | <i class="fas fa-check-circle required"></i>     |
-| alias            |  The name to give the hashed column              | String              | <i class="fas fa-check-circle required"></i>     |
-| is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | <i class="fas fa-minus-circle not-required"></i> |      
+| columns          |  Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
+| alias            |  The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required }     |
+| is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-minus-circle:{ .not-required } |      
 
 ___
 
@@ -1792,15 +1813,15 @@ A macro for quickly prefixing a list of columns with a string.
 
 #### Parameters
 
-| Parameter        |  Description                  | Type         | Required?                                    |
-| ---------------- | ----------------------------- | ------------ | -------------------------------------------- |
-| columns          |  A list of column names       | List[String] | <i class="fas fa-check-circle required"></i> |
-| prefix_str       |  The prefix for the columns   | String       | <i class="fas fa-check-circle required"></i> |
+| Parameter        |  Description                  | Type         | Required?                                      |
+| ---------------- | ----------------------------- | ------------ | ---------------------------------------------- |
+| columns          |  A list of column names       | List[String] | :fontawesome-solid-check-circle:{ .required } |
+| prefix_str       |  The prefix for the columns   | String       | :fontawesome-solid-check-circle:{ .required } |
 
 #### Usage
 
 === "Input"
-    
+
     ```sql 
     {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
     ```
@@ -1811,8 +1832,8 @@ A macro for quickly prefixing a list of columns with a string.
     a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
     ```
 
-!!! Note 
-    Single columns must be provided as a 1-item list, as in the second example above.
+!!! Note
+    Single columns must be provided as a 1-item list.
 
 ___
 
@@ -1820,7 +1841,7 @@ ___
 
 ###### (macros/internal)
 
-Internal macros are used by other macros provided in this package. They process provided metadata and should not need to
+Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to
 be called directly.
 
 ___
@@ -1831,7 +1852,7 @@ ___
 
 Materialisations dictate how a model is created in the database.
 
-dbt comes with 4 standard materialisations:
+dbt itself comes with 4 standard materialisations:
 
 - Table
 - View
@@ -1840,16 +1861,15 @@ dbt comes with 4 standard materialisations:
 
 [Read more about materialisations here](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/materializations/)
 
-For dbtvault, we have created some custom materialisations which will provide assistance Data Vault 2.0 specific use
-cases
+In dbtvault, we have created custom materialisations which support Data Vault 2.0 specific use cases. These are detailed below.
 
 ### vault_insert_by_period
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_period_materialization.sql))
 
 This materialisation is based on
-the [insert_by_period](https://github.com/fishtown-analytics/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
-materialisation developed by Fishtown Analytics for the [dbt-utils](https://github.com/fishtown-analytics/dbt-utils)
+the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
+materialisation developed by dbt Labs for the [dbt-utils](https://github.com/dbt-labs/dbt-utils)
 package.
 
 We have re-purposed it and provided support for Snowflake, as well as added a number of convenience features.
@@ -1972,13 +1992,13 @@ Please refer to the _Usage_ section above to see examples.
 
 #### Configuration Options
 
-| Configuration      |  Description                                         | Type                 | Default | Required?                                        |
-| ------------------ | ---------------------------------------------------- | -------------------- | ------- | ------------------------------------------------ |
-| timestamp_field    |  A list of column names                              | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
-| period             |  Time period to load over                            | String               | day     | <i class="fas fa-minus-circle not-required"></i> |
-| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range             |
+| Configuration      |  Description                                         | Type                 | Default | Required?                                          |
+| ------------------ | ---------------------------------------------------- | -------------------- | ------- | -------------------------------------------------- |
+| timestamp_field    |  A list of column names                              | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }     |
+| period             |  Time period to load over                            | String               | day     | :fontawesome-solid-minus-circle:{ .not-required }  |
+| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
+| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
+| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range (above)       |
 
 #### Period
 
@@ -2024,13 +2044,13 @@ At runtime, this string is replaced with SQL which applies conditions to filter 
 the `timestamp_field` to those specified in the load date range. If you are only using dbtvault table template macros
 with this materialisation, then there is no need for any additional work.
 
-However, If you are writing your own models and wish to use the this materialisation, then you must include
+However, If you are writing your own models and wish to use this materialisation, then you must include
 a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql) source code for further
-understanding.
+See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql) source code for 
+a demonstration of this.
 
 #### Idempotent loads
 
@@ -2044,6 +2064,7 @@ If you wish support idempotent loads in your own models using this materialisati
 use `LEFT OUTER JOINS` to ensure duplicate records do not get loaded.
 
 ### vault_insert_by_rank
+
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_rank_materialization.sql))
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
@@ -2075,14 +2096,14 @@ column.
 
 | Configuration      |  Description                                         | Type                 | Default | Required?                                        |
 | ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
-| rank_column        |  The column name containing the rank values          | String               | None    | <i class="fas fa-check-circle required"></i>     |
-| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
+| rank_column        |  The column name containing the rank values          | String               | None    | :fontawesome-solid-check-circle:{ .required }   |
+| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }   |
 
 #### Creating a rank column
 
 A rank column can be created one of three ways:
 
-1. Manually creating it in a model prior to the staging layer, and using this model as the stage `source_model`.
+1. Manually creating it in a model prior to the staging layer, and using this model as the stage's `source_model`.
 
 2. Using the `ranked_columns` configuration of the [stage](#stage) macro
 
@@ -2101,14 +2122,14 @@ A rank column can be created one of three ways:
     derived_columns:
       DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
     ```
-   
+
 !!! note
 
     [Read more](#defining-ranked-columns) about defining ranked columns.
 
 #### Which option?
 
-- Method #2 is recommended, as it allows ranked columns to use user-defined derived or hashed columns created in the
+- Method #2 is recommended, as makes it easier for rank columns to use user-defined derived or hashed columns created in the
   same staging layer.
 - Method #3 is similar, except it will not have hashed or derived column definitions available to it.
 
