@@ -334,136 +334,6 @@ example provided to help better convey the difference.
                           ranked_columns=none) }}
         ```
 
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1, Prior to dbt v0.19.0 and dbtvault v0.7.3"
-
-    === "All components"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  source_model: "raw_source"
-                  hashed_columns:
-                    CUSTOMER_PK: "CUSTOMER_ID"
-                    CUST_CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_DOB"
-                        - "CUSTOMER_ID"
-                        - "CUSTOMER_NAME"
-                        - "!9999-12-31"
-                    CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_ID"
-                        - "NATIONALITY"
-                        - "PHONE"
-                  derived_columns:
-                    RECORD_SOURCE: "!STG_BOOKING"
-                    EFFECTIVE_FROM: "BOOKING_DATE"
-                  ranked_columns:
-                    DBTVAULT_RANK:
-                      partition_by: "CUSTOMER_ID"
-                      order_by: "BOOKING_DATE"
-        ```
-
-    === "Only Source"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  source_model: "raw_source"
-        ```
-
-    === "Only hashing"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  include_source_columns: false
-                  source_model: "raw_source"
-                  hashed_columns:
-                    CUSTOMER_PK: "CUSTOMER_ID"
-                    CUST_CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_DOB"
-                        - "CUSTOMER_ID"
-                        - "CUSTOMER_NAME"
-                        - "!9999-12-31"
-                    CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_ID"
-                        - "NATIONALITY"
-                        - "PHONE"
-        ```
-
-    === "Only derived"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:   
-                  include_source_columns: false
-                  source_model: "raw_source"
-                  derived_columns:
-                    RECORD_SOURCE: "!STG_BOOKING"
-                    EFFECTIVE_FROM: "BOOKING_DATE"
-        ```
-
-    === "Only ranked"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:   
-                  source_model: "raw_source"
-                  ranked_columns:
-                    DBTVAULT_RANK:
-                      partition_by: "CUSTOMER_ID"
-                      order_by: "BOOKING_DATE"
-        ```
-
-    === "Exclude Columns flag"
-
-        ```yaml
-        models:
-          my_dbtvault_project:
-            staging:
-              my_staging_model:
-                vars:
-                  include_source_columns: false
-                  source_model: "raw_source"
-                  hashed_columns:
-                    CUSTOMER_PK: "CUSTOMER_ID"
-                    CUSTOMER_DETAILS_HASHDIFF:
-                      is_hashdiff: true
-                      exclude_columns: true
-                      columns:
-                        - "PRICE"
-                    CUSTOMER_HASHDIFF:
-                      is_hashdiff: true
-                      columns:
-                        - "CUSTOMER_ID"
-                        - "NATIONALITY"
-                        - "PHONE"
-        ```
-
 ### Hubs
 
 #### Parameters
@@ -579,50 +449,6 @@ example provided to help better convey the difference.
                         src_source=src_source, source_model=source_model) }}
         ```
 
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1, Prior to dbt v0.19.0 and dbtvault v0.7.3"
-
-    === "Single Source"
-
-        ```yaml
-        hub_customer:
-          vars:
-            source_model: 'stg_customer_hashed'
-            src_pk: 'CUSTOMER_PK'
-            src_nk: 'CUSTOMER_ID'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-        ```
-
-    === "Multi Source"
-
-        ```yaml
-        hub_customer:
-          vars:
-            source_model:
-              - 'stg_web_customer_hashed'
-              - 'stg_crm_customer_hashed'
-            src_pk: 'CUSTOMER_PK'
-            src_nk: 'CUSTOMER_ID'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-        ```
-
-    === "Composite NK"
-
-        ```yaml
-        hub_customer:
-          vars:
-            source_model: 'stg_customer_hashed'
-            src_pk: 'CUSTOMER_PK'
-            src_nk:
-              - 'CUSTOMER_ID'
-              - 'CUSTOMER_DOB'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-        ```
-
 ### Links
 
 #### Parameters
@@ -703,40 +529,6 @@ example provided to help better convey the difference.
                          src_source=src_source, source_model=source_model) }}
         ```
 
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1, Prior to dbt v0.19.0 and dbtvault v0.7.3"
-
-    === "Single Source"
-
-        ```yaml
-        link_customer_nation:
-          vars:
-            source_model: 'v_stg_orders'
-            src_pk: 'LINK_CUSTOMER_NATION_PK'
-            src_fk:
-              - 'CUSTOMER_PK'
-              - 'NATION_PK'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-        ```
-
-    === "Multi Source"
-
-        ```yaml
-        link_customer_nation:
-          vars:
-            source_model:
-              - 'v_stg_orders'
-              - 'v_stg_transactions'
-            src_pk: 'LINK_CUSTOMER_NATION_PK'
-            src_fk:
-              - 'CUSTOMER_PK'
-              - 'NATION_PK'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-        ```
-
 ### Transactional links
 ###### (also known as non-historised links)
 
@@ -790,28 +582,6 @@ example provided to help better convey the difference.
     {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                        src_payload=src_payload, src_eff=src_eff,
                        src_source=src_source, source_model=source_model) }}
-    ```
-
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1, Prior to dbt v0.19.0 and dbtvault v0.7.3"
-
-    ```yaml
-    t_link_transactions:
-      vars:
-        source_model: 'v_stg_transactions'
-        src_pk: 'TRANSACTION_PK'
-        src_fk:
-          - 'CUSTOMER_PK'
-          - 'ORDER_PK'
-        src_payload:
-          - 'TRANSACTION_NUMBER'
-          - 'TRANSACTION_DATE'
-          - 'TYPE'
-          - 'AMOUNT'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
     ```
 
 ### Satellites
@@ -922,52 +692,6 @@ example provided to help better convey the difference.
                         source_model=source_model) }}
         ```
 
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1, Prior to dbt v0.19.0 and dbtvault v0.7.3"
-
-    === "Standard"
-
-        ```yaml
-        sat_order_customer_details:
-          vars:
-            source_model: 'v_stg_orders'
-            src_pk: 'CUSTOMER_PK'
-            src_hashdiff: 'CUSTOMER_HASHDIFF'
-            src_payload:
-              - 'NAME'
-              - 'ADDRESS'
-              - 'PHONE'
-              - 'ACCBAL'
-              - 'MKTSEGMENT'
-              - 'COMMENT'
-            src_eff: 'EFFECTIVE_FROM'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-        ```
-
-    === "Hashdiff Aliasing"
-
-        ```yaml
-        sat_order_customer_details:
-          vars:
-            source_model: 'v_stg_orders'
-            src_pk: 'CUSTOMER_PK'
-            src_hashdiff: 
-              source_column: "CUSTOMER_HASHDIFF"
-              alias: "HASHDIFF"
-            src_payload:
-              - 'NAME'
-              - 'ADDRESS'
-              - 'PHONE'
-              - 'ACCBAL'
-              - 'MKTSEGMENT'
-              - 'COMMENT'
-            src_eff: 'EFFECTIVE_FROM'
-            src_ldts: 'LOAD_DATETIME'
-            src_source: 'RECORD_SOURCE'
-        ```
-
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 [Read more](best_practices.md#hashdiff-aliasing)
 
@@ -1028,26 +752,6 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
                         source_model=source_model) }}
     ```
 
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1, Prior to dbt v0.19.0 and dbtvault v0.7.3"
-
-    ```yaml
-    eff_sat_customer_nation:
-      vars:
-        source_model: 'v_stg_order_customer'
-        src_pk: 'CUSTOMER_ORDER_PK'
-        src_dfk: 
-          - 'ORDER_PK'
-        src_sfk: 'CUSTOMER_PK'
-        src_start_date: 'START_DATE'
-        src_end_date: 'END_DATE'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
-    ```
-___
-
 ### Multi Active Satellites (MAS)
 
 #### Parameters
@@ -1101,24 +805,6 @@ ___
                        src_source=src_source, source_model=source_model) }}
     ```
 
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1, Prior to dbt v0.19.0 and dbtvault v0.7.3"
-
-    ```yaml
-    ma_sat_customer_details:
-      vars:
-        source_model: 'v_stg_orders'
-        src_pk: 'CUSTOMER_PK'
-        src_cdk: 
-          - 'CUSTOMER_PHONE'
-        src_payload:
-          - 'CUSTOMER_NAME'
-        src_hashdiff: 'HASHDIFF'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
-    ```
 ___
 
 ### The problem with metadata
