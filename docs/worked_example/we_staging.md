@@ -97,11 +97,11 @@ Let's take a look at some metadata supplied to the stage macro for the `v_stg_tr
       LOAD_DATE: DATEADD(DAY, 1, TRANSACTION_DATE)
       EFFECTIVE_FROM: 'TRANSACTION_DATE'
     hashed_columns:
-      TRANSACTION_PK:
+      TRANSACTION_HK:
         - 'CUSTOMER_ID'
         - 'TRANSACTION_NUMBER'
-      CUSTOMER_PK: 'CUSTOMER_ID'
-      ORDER_PK: 'ORDER_ID'
+      CUSTOMER_HK: 'CUSTOMER_ID'
+      ORDER_HK: 'ORDER_ID'
     {%- endset -%}
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -157,17 +157,17 @@ Next, we define our `hashed_columns`.
     
     ```yaml
     hashed_columns:
-      TRANSACTION_PK:
+      TRANSACTION_HK:
         - 'CUSTOMER_ID'
         - 'TRANSACTION_NUMBER'
-      CUSTOMER_PK: 'CUSTOMER_ID'
-      ORDER_PK: 'ORDER_ID'
+      CUSTOMER_HK: 'CUSTOMER_ID'
+      ORDER_HK: 'ORDER_ID'
     ```
 
-- We are defining `TRANSACTION_PK` as a new hashed column, which is formed from the concatenation of
+- We are defining `TRANSACTION_HK` as a new hashed column, which is formed from the concatenation of
   the `CUSTOMER_ID` and `TRANSACTION_NUMBER` columns present in the `raw_transactions` model. 
   
-- `CUSTOMER_PK` and `ORDER_PK` are both hashed from single columns, so we provide a single string with the column name.
+- `CUSTOMER_HK` and `ORDER_HK` are both hashed from single columns, so we provide a single string with the column name.
 
 In the `v_stg_orders` view we can also see an example of a hashdiff column, `CUSTOMER_HASHDIFF`:
 
@@ -187,7 +187,7 @@ In the `v_stg_orders` view we can also see an example of a hashdiff column, `CUS
           - 'CUSTOMER_COMMENT'
     ```
 
-These work very similarly to multi-column hashes (like `TRANSACTION_PK`) except that we provide an `is_hashdiff` flag 
+These work very similarly to multi-column hashes (like `TRANSACTION_HK`) except that we provide an `is_hashdiff` flag 
 with the value `true` and provide the list of columns under a `columns` key. 
 
 Defining a hashdiff using this syntax will ensure the columns are automatically alpha-sorted, which is standard practise

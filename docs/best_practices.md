@@ -180,7 +180,7 @@ across a data warehouse.
 When we hash single columns, we take the following approach:
 
 ```sql 
-CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(BOOKING_REF AS VARCHAR))), ''))) AS BINARY(16)) AS BOOKING_PK
+CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(BOOKING_REF AS VARCHAR))), ''))) AS BINARY(16)) AS BOOKING_HK
 ```
 
 Single-column hashing step by step:
@@ -218,7 +218,7 @@ When we hash multiple columns, we take the following approach:
             IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
             IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
             IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-        ), '^^||^^||^^')) AS BINARY(16)) AS CUSTOMER_PK
+        ), '^^||^^||^^')) AS BINARY(16)) AS CUSTOMER_HK
         ```
 
     === "Hashdiff"
@@ -294,7 +294,7 @@ Below is an example satellite YAML config from a satellite model:
 ```yaml hl_lines="4 5 6"
 {%- set yaml_metadata -%}
 source_model: 'stg_customer_details_hashed'
-src_pk: 'CUSTOMER_PK'
+src_pk: 'CUSTOMER_HK'
 src_hashdiff: 
   source_column: "CUSTOMER_HASHDIFF"
   alias: "HASHDIFF"

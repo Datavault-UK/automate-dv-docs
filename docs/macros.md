@@ -100,9 +100,9 @@ Generates SQL to build a hub table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -110,7 +110,7 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
         )
 
@@ -121,9 +121,9 @@ Generates SQL to build a hub table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -131,11 +131,11 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
             LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -145,9 +145,9 @@ Generates SQL to build a hub table using the provided parameters.
 
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -155,9 +155,9 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -173,16 +173,16 @@ Generates SQL to build a hub table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_rank_number = 1
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
         )
         
@@ -193,9 +193,9 @@ Generates SQL to build a hub table using the provided parameters.
  
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -203,9 +203,9 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -221,20 +221,20 @@ Generates SQL to build a hub table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_rank_number = 1
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
             LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -283,9 +283,9 @@ Generates sql to build a link table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -293,7 +293,7 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
         )
         
@@ -304,9 +304,9 @@ Generates sql to build a link table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -314,11 +314,11 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
             LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -329,9 +329,9 @@ Generates sql to build a link table using the provided parameters.
 
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -339,9 +339,9 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -357,7 +357,7 @@ Generates sql to build a link table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
@@ -367,7 +367,7 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
         )
         
@@ -378,9 +378,9 @@ Generates sql to build a link table using the provided parameters.
  
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -388,9 +388,9 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -406,7 +406,7 @@ Generates sql to build a link table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
@@ -416,11 +416,11 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
             LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -472,11 +472,11 @@ Generates sql to build a transactional link table using the provided parameters.
     
         ```sql
         WITH stage AS (
-            SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.MY_STAGE
         ),
         records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
         )
         
@@ -487,15 +487,15 @@ Generates sql to build a transactional link table using the provided parameters.
         
         ```sql
         WITH stage AS (
-            SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.raw_stage_hashed
         ),
         records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
             LEFT JOIN DBTVAULT.TEST.t_link AS tgt
-            ON stg.TRANSACTION_PK = tgt.TRANSACTION_PK
-            WHERE tgt.TRANSACTION_PK IS NULL
+            ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
+            WHERE tgt.TRANSACTION_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -547,13 +547,13 @@ Generates sql to build a satellite table using the provided parameters.
     
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
         ),
 
         records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
         )
 
@@ -564,22 +564,22 @@ Generates sql to build a satellite table using the provided parameters.
         
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
         ),
         
         update_records AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.SATELLITE as a
             JOIN source_data as b
-            ON a.CUSTOMER_PK = b.CUSTOMER_PK
+            ON a.CUSTOMER_HK = b.CUSTOMER_HK
         ),
         
         latest_records AS (
-            SELECT c.CUSTOMER_PK, c.HASHDIFF, c.LOAD_DATE,
+            SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE,
                 RANK() OVER (
-                   PARTITION BY c.CUSTOMER_PK
+                   PARTITION BY c.CUSTOMER_HK
                    ORDER BY c.LOAD_DATE DESC
                    ) AS rank
             FROM update_records as c
@@ -587,10 +587,10 @@ Generates sql to build a satellite table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
             LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_PK = e.CUSTOMER_PK
+            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
             WHERE latest_records.HASHDIFF != e.HASHDIFF
             OR latest_records.HASHDIFF IS NULL
         )
@@ -652,14 +652,14 @@ Generates sql to build an effectivity satellite table using the provided paramet
 
         ```sql
         WITH source_data AS (
-                SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+                SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
                 FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-                WHERE a.ORDER_PK IS NOT NULL
-                AND a.CUSTOMER_PK IS NOT NULL
+                WHERE a.ORDER_HK IS NOT NULL
+                AND a.CUSTOMER_HK IS NOT NULL
         ),
         
         records_to_insert AS (
-                SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+                SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
                 FROM source_data AS i
         )
         
@@ -670,16 +670,16 @@ Generates sql to build an effectivity satellite table using the provided paramet
 
         ```sql
         WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
             FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_PK IS NOT NULL
-            AND a.CUSTOMER_PK IS NOT NULL
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
         ),
         
         latest_records AS (
-            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        PARTITION BY b.ORDER_CUSTOMER_HK
                         ORDER BY b.LOAD_DATETIME DESC
                    ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
@@ -687,30 +687,30 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ),
         
         latest_open AS (
-            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
             FROM latest_records AS c
             WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
         ),
         
         latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
             FROM latest_records AS d
             WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
             FROM source_data AS f
             LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
-            WHERE lr.ORDER_CUSTOMER_PK IS NULL
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
         ),
         
         new_reopened_records AS (
             SELECT DISTINCT
-                lc.ORDER_CUSTOMER_PK,
-                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
                 lc.START_DATE AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
@@ -718,13 +718,13 @@ Generates sql to build an effectivity satellite table using the provided paramet
                 g.SOURCE
             FROM source_data AS g
             INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
         ),
         
         new_closed_records AS (
             SELECT DISTINCT
-                lo.ORDER_CUSTOMER_PK,
-                lo.ORDER_PK, lo.CUSTOMER_PK,
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
                 lo.START_DATE AS START_DATE,
                 h.EFFECTIVE_FROM AS END_DATE,
                 h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
@@ -732,8 +732,8 @@ Generates sql to build an effectivity satellite table using the provided paramet
                 lo.SOURCE
             FROM source_data AS h
             INNER JOIN latest_open AS lo
-            ON lo.ORDER_PK = h.ORDER_PK
-            WHERE (lo.CUSTOMER_PK <> h.CUSTOMER_PK)
+            ON lo.ORDER_HK = h.ORDER_HK
+            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
         ),
         
         records_to_insert AS (
@@ -751,16 +751,16 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         ```sql
         WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
             FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_PK IS NOT NULL
-            AND a.CUSTOMER_PK IS NOT NULL
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
         ),
         
         latest_records AS (
-            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        PARTITION BY b.ORDER_CUSTOMER_HK
                         ORDER BY b.LOAD_DATETIME DESC
                    ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
@@ -768,30 +768,30 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ),
         
         latest_open AS (
-            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
             FROM latest_records AS c
             WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
         ),
         
         latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
             FROM latest_records AS d
             WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
             FROM source_data AS f
             LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
-            WHERE lr.ORDER_CUSTOMER_PK IS NULL
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
         ),
         
         new_reopened_records AS (
             SELECT DISTINCT
-                lc.ORDER_CUSTOMER_PK,
-                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
                 lc.START_DATE AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
@@ -799,7 +799,7 @@ Generates sql to build an effectivity satellite table using the provided paramet
                 g.SOURCE
             FROM source_data AS g
             INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
         ),
         
         records_to_insert AS (
@@ -887,12 +887,12 @@ Generates SQL to build a multi-active satellite table (MAS).
     
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
         ),
         
         records_to_insert AS (
-            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            SELECT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
             FROM source_data AS stage
         )
         
@@ -903,67 +903,67 @@ Generates SQL to build a multi-active satellite table (MAS).
         
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             ,COUNT(DISTINCT a.HASHDIFF, a.CUSTOMER_PHONE )
-                OVER (PARTITION BY a.CUSTOMER_PK) AS source_count
+                OVER (PARTITION BY a.CUSTOMER_HK) AS source_count
             FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE a.CUSTOMER_PK IS NOT NULL
+            WHERE a.CUSTOMER_HK IS NOT NULL
                 AND a.CUSTOMER_PHONE IS NOT NULL
         ),
         latest_records AS (
             SELECT *, COUNT(DISTINCT latest_selection.HASHDIFF, latest_selection.CUSTOMER_PHONE )
-                    OVER (PARTITION BY latest_selection.CUSTOMER_PK) AS target_count
+                    OVER (PARTITION BY latest_selection.CUSTOMER_HK) AS target_count
             FROM (
-                SELECT target_records.CUSTOMER_PHONE, target_records.CUSTOMER_PK, target_records.HASHDIFF, target_records.LOAD_DATE
-                    ,RANK() OVER (PARTITION BY target_records.CUSTOMER_PK
+                SELECT target_records.CUSTOMER_PHONE, target_records.CUSTOMER_HK, target_records.HASHDIFF, target_records.LOAD_DATE
+                    ,RANK() OVER (PARTITION BY target_records.CUSTOMER_HK
                             ORDER BY target_records.LOAD_DATE DESC) AS rank_value
                 FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS target_records
                 INNER JOIN
-                    (SELECT DISTINCT source_pks.CUSTOMER_PK
+                    (SELECT DISTINCT source_pks.CUSTOMER_HK
                     FROM source_data AS source_pks) AS source_records
-                        ON target_records.CUSTOMER_PK = source_records.CUSTOMER_PK
+                        ON target_records.CUSTOMER_HK = source_records.CUSTOMER_HK
                 QUALIFY rank_value = 1
                 ) AS latest_selection
         ),
         matching_records AS (
-            SELECT stage.CUSTOMER_PK
+            SELECT stage.CUSTOMER_HK
                 ,COUNT(DISTINCT stage.HASHDIFF, stage.CUSTOMER_PHONE) AS match_count
             FROM source_data AS stage
             INNER JOIN latest_records
-                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
+                ON stage.CUSTOMER_HK = latest_records.CUSTOMER_HK
                 AND stage.HASHDIFF = latest_records.HASHDIFF
                 AND stage.CUSTOMER_PHONE = latest_records.CUSTOMER_PHONE
-            GROUP BY stage.CUSTOMER_PK
+            GROUP BY stage.CUSTOMER_HK
         ),
         satellite_update AS (
-            SELECT DISTINCT stage.CUSTOMER_PK
+            SELECT DISTINCT stage.CUSTOMER_HK
             FROM source_data AS stage
             INNER JOIN latest_records
-                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                ON latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
             LEFT OUTER JOIN matching_records
-                ON matching_records.CUSTOMER_PK = latest_records.CUSTOMER_PK
+                ON matching_records.CUSTOMER_HK = latest_records.CUSTOMER_HK
             WHERE (stage.source_count != latest_records.target_count
                 OR COALESCE(matching_records.match_count, 0) != latest_records.target_count)
         ),
         satellite_insert AS (
-            SELECT DISTINCT stage.CUSTOMER_PK
+            SELECT DISTINCT stage.CUSTOMER_HK
             FROM source_data AS stage
             LEFT OUTER JOIN latest_records
-                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
-            WHERE latest_records.CUSTOMER_PK IS NULL
+                ON stage.CUSTOMER_HK = latest_records.CUSTOMER_HK
+            WHERE latest_records.CUSTOMER_HK IS NULL
         ),
         records_to_insert AS (
-            SELECT  stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            SELECT  stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
             FROM source_data AS stage
             INNER JOIN satellite_update
-                ON satellite_update.CUSTOMER_PK = stage.CUSTOMER_PK
+                ON satellite_update.CUSTOMER_HK = stage.CUSTOMER_HK
         
             UNION
         
-            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
+            SELECT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
             FROM source_data AS stage
             INNER JOIN satellite_insert
-                ON satellite_insert.CUSTOMER_PK = stage.CUSTOMER_PK
+                ON satellite_insert.CUSTOMER_HK = stage.CUSTOMER_HK
         )
         
         SELECT * FROM records_to_insert
@@ -1008,7 +1008,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1035,7 +1035,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1083,7 +1083,7 @@ Generates sql to build a staging area using the provided parameters.
             SOURCE,
             EFFECTIVE_FROM,
         
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
             CAST(MD5_BINARY(CONCAT_WS('||',
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
@@ -1122,7 +1122,7 @@ Generates sql to build a staging area using the provided parameters.
             BOOKING_DATE,
             SOURCE,
             EFFECTIVE_FROM,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUST_CUSTOMER_HASHDIFF,
             CUSTOMER_HASHDIFF
         
@@ -1148,7 +1148,7 @@ Generates sql to build a staging area using the provided parameters.
             
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1181,7 +1181,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1208,7 +1208,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1253,7 +1253,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1297,7 +1297,7 @@ Generates sql to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE,
         
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
             CAST(MD5_BINARY(CONCAT_WS('||',
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
@@ -1316,7 +1316,7 @@ Generates sql to build a staging area using the provided parameters.
         
             SELECT
         
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUST_CUSTOMER_HASHDIFF,
             CUSTOMER_HASHDIFF
         
@@ -1335,7 +1335,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1415,7 +1415,7 @@ derived_columns:
   SOURCE: "!RAW_CUSTOMER"
   EFFECTIVE_FROM: "BOOKING_DATE"
 hashed_columns:
-  CUSTOMER_PK: "CUSTOMER_ID"
+  CUSTOMER_HK: "CUSTOMER_ID"
   HASHDIFF:
     is_hashdiff: true 
     columns:
@@ -1473,7 +1473,7 @@ listed under the `columns` key, instead of using them to create the hashdiff.
         PHONE_NUMBER
         BOOKING_FK
         ORDER_FK
-        CUSTOMER_PK
+        CUSTOMER_HK
         LOAD_DATE
         RECORD_SOURCE
         ```
@@ -1482,14 +1482,14 @@ listed under the `columns` key, instead of using them to create the hashdiff.
         
         ```yaml hl_lines="5"
         hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HK: CUSTOMER_ID
           CUSTOMER_HASHDIFF:
             is_hashdiff: true
             exclude_columns: true
             columns:
               - BOOKING_FK
               - ORDER_FK
-              - CUSTOMER_PK
+              - CUSTOMER_HK
               - LOAD_DATE
               - RECORD_SOURCE
         ```
@@ -1498,7 +1498,7 @@ listed under the `columns` key, instead of using them to create the hashdiff.
     
         ```yaml
         hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HK: CUSTOMER_ID
           CUSTOMER_HASHDIFF:
             is_hashdiff: true
             columns:
@@ -1517,7 +1517,7 @@ listed under the `columns` key, instead of using them to create the hashdiff.
         PHONE_NUMBER
         BOOKING_FK
         ORDER_FK
-        CUSTOMER_PK
+        CUSTOMER_HK
         LOAD_DATE
         RECORD_SOURCE
         ```
@@ -1526,7 +1526,7 @@ listed under the `columns` key, instead of using them to create the hashdiff.
         
         ```yaml hl_lines="5"
         hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HK: CUSTOMER_ID
           CUSTOMER_HASHDIFF:
             is_hashdiff: true
             exclude_columns: true
@@ -1536,7 +1536,7 @@ listed under the `columns` key, instead of using them to create the hashdiff.
     
         ```yaml
         hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
+          CUSTOMER_HK: CUSTOMER_ID
           CUSTOMER_HASHDIFF:
             is_hashdiff: true
             columns:
@@ -1545,7 +1545,7 @@ listed under the `columns` key, instead of using them to create the hashdiff.
               - PHONE_NUMBER
               - BOOKING_FK
               - ORDER_FK
-              - CUSTOMER_PK
+              - CUSTOMER_HK
               - LOAD_DATE
               - RECORD_SOURCE
         ```
@@ -1657,10 +1657,10 @@ configuration allows you to define ranked columns to generate, as follows:
     source_model: "MY_STAGE"
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_PK"
+        partition_by: "CUSTOMER_HK"
         order_by: "LOAD_DATETIME"
       SAT_BOOKING_RANK:
-        partition_by: "BOOKING_PK"
+        partition_by: "BOOKING_HK"
         order_by: "LOAD_DATETIME"
     ```
 
@@ -1671,13 +1671,13 @@ configuration allows you to define ranked columns to generate, as follows:
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_PK'
+            - 'CUSTOMER_HK'
             - 'CUSTOMER_REF'
         order_by: 
             - 'RECORD_SOURCE'
             - 'LOAD_DATETIME'
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_PK'
+        partition_by: 'BOOKING_HK'
         order_by: 'LOAD_DATETIME'
     ```
 
@@ -1686,15 +1686,15 @@ This will create columns like so:
 === "Single item parameters"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
 === "Multi-item parameters"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_PK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
 ___
@@ -1765,7 +1765,7 @@ A macro for generating hashing SQL for columns.
 === "Input"
 
     ```yaml
-    {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_PK') }},
+    {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
     {{ dbtvault.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
     ```
 
@@ -2111,7 +2111,7 @@ A rank column can be created one of three ways:
     source_model: "MY_STAGE"
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_PK"
+        partition_by: "CUSTOMER_HK"
         order_by: "LOAD_DATETIME"
     ```
 
@@ -2120,7 +2120,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
+      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
     ```
 
 !!! note

@@ -1,6 +1,7 @@
-Satellites contain point-in-time payload data related to their parent hub or link records. 
-Each hub or link record may have one or more child satellite records, allowing us to record changes in 
-the data as they happen. 
+Satellites contain point-in-time payload data related to their parent hub or link records. Satellites are where the 
+concrete data for our business entities in the hubs and links, reside.
+Each hub or link record may have one or more child satellite records, which form a history of changes to that hubs 
+or link record as they happen. 
 
 ### Structure
 
@@ -24,12 +25,10 @@ concrete data for an entity, depending on the purpose of the satellite.
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
 satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
-longer have the most recent `EFFECTIVE_FROM` value. 
-
+longer have the most recent `EFFECTIVE_FROM` value.
 
 !!! note
     This is an optional metadata column which can be useful later on, and is **not** part of the DataVault 2.0 standard. 
-
 
 #### Load date (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
@@ -56,97 +55,77 @@ Create a new dbt model as before. We'll call this one `sat_customer_details`.
 === "sat_customer_details.sql"
 
     ```jinja
-    {{ dbtvault.sat(var('src_pk'), var('src_hashdiff'), var('src_payload'),
-                    var('src_eff'), var('src_ldts'), var('src_source'),
-                    var('source_model'))                                   }}
+    {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                    source_model=source_model)                                        }}
     ```
 
 To create a satellite model, we simply copy and paste the above template into a model named after the satellite we
 are creating. dbtvault will generate a satellite using parameters provided in the next steps.
 
-Satellites should use the incremental materialization, as we load and add new records to the existing data set. 
+#### Materialisation
 
-We recommend setting the `incremental` materialization on all of your satellites using the `dbt_project.yml` file:
-
-=== "dbt_project.yml"
-
-    ```yaml
-    models:
-      my_dbtvault_project:
-       satellites:
-        materialized: incremental # See tip below
-        tags:
-          - sat
-        sat_customer_details:
-          vars:
-            ...
-        sat_booking_details:
-          vars:
-            ...
-    ```
-
-!!! tip "Loading Satellites correctly"
-    dbtvault provides custom materialisations, designed to load structures which contain deltas (such as satellites, among other structures) 
-    in the correct way:
-    
-    - [vault_insert_by_period](../macros.md#vault_insert_by_period)
-    - [vault_insert_by_rank](../macros.md#vault_insert_by_rank)
+The recommended materialisation for **satellites** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [sat](../macros.md#sat) macro.
+Let's look at the metadata we need to provide to the [satellite macro](../macros.md#sat).
 
-#### Source model
+See our [metadata reference](../metadata.md#satellites) for more detail on how to provide metadata to satellites.
 
-The first piece of metadata we need is the source model. This step is easy, as in this example we created the 
-staging layer ourselves.  All we need to do is provide the name of stage table as a string in our metadata 
-as follows.
+We provide the column names which we would like to select from the staging area (`source_model`).
 
-=== "dbt_project.yml"
-
-    ```yaml
-    sat_customer_details:
-      vars:
-        source_model: 'stg_customer_hashed'
-    ```
-
-!!! tip
-    See our [metadata reference](../metadata.md#satellites) for more ways to provide metadata
-
-#### Source columns
-
-Next, we define the columns which we would like to bring from the source.
-Using our knowledge of what columns we need in our ```sat_customer_details``` table, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `sat_customer_details` satellite, we can identify columns in our
 staging layer which map to them:
 
-1. The primary key of the parent hub or link table,  which is a hashed natural key. 
-The `CUSTOMER_PK` we created earlier in the [staging](tut_staging.md) section will be used for `sat_customer_details`.
-2. A hashdiff. We created `CUSTOMER_HASHDIFF` in [staging](tut_staging.md) earlier, which we will use here.
-3. Some payload columns: `CUSTOMER_NAME`, `CUSTOMER_DOB`, `CUSTOMER_PHONE` which should be present in the 
-raw staging layer via an [stage](../macros.md#stage) macro call.
-4. An `EFFECTIVE_FROM` column, also added in staging. 
-5. A load date timestamp, which is present in the staging layer as `LOAD_DATE`. 
-6. A `SOURCE` column.
+| Parameter      | Value                                                       | 
+| -------------- | ----------------------------------------------------------- | 
+| source_model   | v_stg_customer                                              | 
+| src_pk         | CUSTOMER_HK                                                 |
+| src_hashdiff   | {"source_column": "CUSTOMER_HASHDIFF", "alias": "HASHDIFF"} |
+| src_payload    | ["CUSTOMER_NAME", "CUSTOMER_DOB", "CUSTOMER_PHONE"]         |
+| src_eff        | EFFECTIVE_FROM                                              |
+| src_ldts       | LOAD_DATETIME                                               | 
+| src_source     | RECORD_SOURCE                                               |
 
-We can now add this metadata to the `dbt_project`:
+!!! Note
+    We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practices.md#hashdiff-aliasing)
 
-=== "dbt_project.yml"
+When we provide the metadata above, our model should look like the following:
 
-    ```yaml hl_lines="4 5 6 7 8 9 10 11 12"
-    sat_order_customer_details:
-      vars:
-        source_model: 'stg_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
-        src_hashdiff: 'CUSTOMER_HASHDIFF'
-        src_payload:
-          - 'CUSTOMER_NAME'
-          - 'CUSTOMER_DOB'
-          - 'CUSTOMER_PHONE'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOAD_DATE'
-        src_source: 'SOURCE'
-    ```
+```jinja
+{{ config(materialized='incremental')                         }}
 
+{%- set yaml_metadata -%}
+source_model: "v_stg_customer"
+src_pk: "CUSTOMER_HK"
+src_hashdiff: 
+  source_column: "CUSTOMER_HASHDIFF"
+  alias: "HASHDIFF"
+src_payload:
+  - "CUSTOMER_NAME"
+  - "CUSTOMER_DOB"
+  - "CUSTOMER_PHONE"
+src_eff: "EFFECTIVE_FROM"
+src_ldts: "LOAD_DATETIME"
+src_source: "RECORD_SOURCE"
+{%- endset -%}
+
+{% set metadata_dict = fromyaml(yaml_metadata) %}
+
+{{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+                src_hashdiff=metadata_dict["src_hashdiff"],
+                src_payload=metadata_dict["src_payload"],
+                src_eff=metadata_dict["src_eff"],
+                src_ldts=metadata_dict["src_ldts"],
+                src_source=metadata_dict["src_source"],
+                source_model=metadata_dict["source_model"])   }}
+```
+
+#### Why does our model look different from the previous examples?
+
+There's a multitude of ways to provide the metadata to dbtvault macros. 
+This particular metadata is easier to read. Take a look at the [metadata approaches](../metadata.md#approaches) for a deeper dive.
 
 ### Running dbt
 
@@ -156,9 +135,9 @@ With our model complete and our YAML written, we can run dbt to create our `sat_
     
 And our table will look like this:
 
-| CUSTOMER_PK  | CUSTOMER_HASHDIFF | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATE    | SOURCE |
-| ------------ | ------------      | ----------    | ------------ | --------------- | -------------- | ----------- | ------ |
-| B8C37E...    | 3C5984...         | Alice         | 1997-04-24   | 17-214-233-1214 | 1993-01-01     | 1993-01-01  | 1      |
-| .            | .                 | .             | .            | .               | .              | .           | 1      |
-| .            | .                 | .             | .            | .               | .              | .           | 1      |
-| FED333...    | D8CB1F...         | Dom           | 2018-04-13   | 17-214-233-1217 | 1993-01-01     | 1993-01-01  | 1      |
+| CUSTOMER_HK  | HASHDIFF   | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE |
+| ------------ | ---------- | ----------    | ------------ | --------------- | -------------- | ------------------------ | ------ |
+| B8C37E...    | 3C5984...  | Alice         | 1997-04-24   | 17-214-233-1214 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |
+| .            | .          | .             | .            | .               | .              | .                        | 1      |
+| .            | .          | .             | .            | .               | .              | .                        | 1      |
+| FED333...    | D8CB1F...  | Dom           | 2018-04-13   | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |

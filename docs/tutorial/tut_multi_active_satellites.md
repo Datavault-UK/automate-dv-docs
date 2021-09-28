@@ -123,7 +123,7 @@ Using our knowledge of what columns we need in our ```ma_sat_customer_details```
 staging layer which map to them:
 
 1. The primary key of the parent hub or link table,  which is a hashed natural key. 
-The `CUSTOMER_PK` we created earlier in the [staging](tut_staging.md) section will be used for `sat_customer_details`.
+The `CUSTOMER_HK` we created earlier in the [staging](tut_staging.md) section will be used for `sat_customer_details`.
 
 2. The child dependent key, `CUSTOMER_PHONE`, that is part of the payload inside the raw [staging](../macros.md#stage) layer.  
 3. A hashdiff. We created `HASHDIFF` in [staging](tut_staging.md) earlier, which we will use here.
@@ -141,7 +141,7 @@ We can now add this metadata to the `dbt_project`:
     ma_sat_customer_details:
       vars:
         source_model: 'stg_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
+        src_pk: 'CUSTOMER_HK'
         src_cdk: 
           - 'CUSTOMER_PHONE'
         src_payload:
@@ -160,7 +160,7 @@ With our model complete and our YAML written, we can run dbt to create our `ma_s
 
 And our table will look like this:
 
-| CUSTOMER_PK  | HASHDIFF     | CUSTOMER_NAME | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATE   | SOURCE |
+| CUSTOMER_HK  | HASHDIFF     | CUSTOMER_NAME | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATE   | SOURCE |
 | ------------ | ------------ | ----------    | --------------- | -------------- | ----------- | ------ |
 | B8C37E...    | 3C5984...    | Alice         | 17-214-233-1214 | 1993-01-01     | 1993-01-01  | 1      |
 | B8C37E...    | A11VT9...    | Alice         | 17-214-233-1224 | 1993-01-01     | 1993-01-01  | 1      |

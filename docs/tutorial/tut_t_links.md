@@ -128,7 +128,7 @@ We can use the columns we identified in the `Source table` section, above.
     t_link_transactions:
       vars:
         source_model: 'stg_transactions_hashed'
-        src_pk: 'TRANSACTION_PK'
+        src_pk: 'TRANSACTION_HK'
         src_fk:
           - 'CUSTOMER_FK'
           - 'ORDER_FK'
@@ -150,7 +150,7 @@ With our model complete and our YAML written, we can run dbt to create our `t_li
     
 And our table will look like this:
 
-| TRANSACTION_PK  | CUSTOMER_FK | ORDER_FK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATE    | SOURCE |
+| TRANSACTION_HK  | CUSTOMER_FK | ORDER_FK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATE    | SOURCE |
 | --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ------------ | ------ |
 | BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-29   | 2      |
 | .               | .           | .         | .                  | .    | .       | .              | .            | .      |

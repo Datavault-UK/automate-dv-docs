@@ -113,9 +113,9 @@ stg_customer_hashed:
     source_model: 
       my_source: "raw_customer"
     hashed_columns:
-      CUSTOMER_PK: "CUSTOMER_ID"
-      NATION_PK: "NATION_ID"
-      CUSTOMER_NATION_PK:
+      CUSTOMER_HK: "CUSTOMER_ID"
+      NATION_HK: "NATION_ID"
+      CUSTOMER_NATION_HK:
         - "CUSTOMER_ID"
         - "NATION_ID"
       CUSTOMER_HASHDIFF:
@@ -128,10 +128,10 @@ stg_customer_hashed:
 
 With this metadata, the [stage](../macros.md#stage) macro will:
 
-- Hash the `CUSTOMER_ID` column, and create a new column called `CUSTOMER_PK` containing the hash value.
-- Hash the `NATION_ID` column, and create a new column called `NATION_PK` containing the hash value.
+- Hash the `CUSTOMER_ID` column, and create a new column called `CUSTOMER_HK` containing the hash value.
+- Hash the `NATION_ID` column, and create a new column called `NATION_HK` containing the hash value.
 - Concatenate the values in the `CUSTOMER_ID` and ```NATION_ID``` columns and hash them in the order supplied, creating a new
-column called `CUSTOMER_NATION_PK` containing the hash of the combination of the values.
+column called `CUSTOMER_NATION_HK` containing the hash of the combination of the values.
 - Concatenate the values in the `CUSTOMER_NAME`, `CUSTOMER_PHONE`, `CUSTOMER_DOB` 
 columns and hash them, creating a new column called `CUSTOMER_HASHDIFF` containing the hash of the 
 combination of the values. The `is_hashdiff: true` flag should be provided so that dbtvault knows to treat this column as a hashdiff.
@@ -158,9 +158,9 @@ stg_customer_hashed:
     source_model: 
       my_source: "raw_customer"
     hashed_columns:
-      CUSTOMER_PK: "CUSTOMER_ID"
-      NATION_PK: "NATION_ID"
-      CUSTOMER_NATION_PK:
+      CUSTOMER_HK: "CUSTOMER_ID"
+      NATION_HK: "NATION_ID"
+      CUSTOMER_NATION_HK:
         - "CUSTOMER_ID"
         - "NATION_ID"
       CUSTOMER_HASHDIFF:
@@ -198,7 +198,7 @@ With our model complete and our YAML written, we can run dbt:
 
 And our table will look like this:
 
-| CUSTOMER_PK  | NATION_PK    | CUSTOMER_NATION_PK  | CUSTOMER_HASHDIFF   | (source table columns) | SOURCE       | EFFECTIVE_FROM | START_DATE     | END_DATE   |
+| CUSTOMER_HK  | NATION_HK    | CUSTOMER_NATION_HK  | CUSTOMER_HASHDIFF   | (source table columns) | SOURCE       | EFFECTIVE_FROM | START_DATE     | END_DATE   |
 | ------------ | ------------ | ------------------- | ------------------- | ---------------------- | ------------ | -------------- | -------------- | ---------- |
 | B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1            | 1993-01-01     | 1993-01-01     | 9998-31-12 |
 | .            | .            | .                   | .                   | .                      | .            | .              | .              | .          |
