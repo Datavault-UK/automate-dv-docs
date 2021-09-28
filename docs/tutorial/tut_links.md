@@ -25,7 +25,7 @@ A load date or load date timestamp. This identifies when the record was first lo
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
 
-(i.e. `1` from the [staging section](tut_staging.md#adding-calculated-and-derived-columns), 
+(i.e. `1` from the [staging section](tut_staging.md#adding-the-metadata), 
 which is the code for `stg_customer`)
 
 ### Creating link models
