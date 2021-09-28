@@ -20,7 +20,7 @@ We also need to ensure column names align with target hub or link table column n
     
     We've implemented hashing as the only option for now, though a non-hashed version will be added in future releases, checkout our [roadmap](../roadmap.md).
 
-### Setting up staging models
+### Creating staging models
 
 To create a stage model, we simply copy and paste the above template into a model named after the staging table/view we
 are creating. dbtvault will generate a stage using parameters provided in the next steps.

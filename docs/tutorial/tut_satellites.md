@@ -48,7 +48,7 @@ The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and a
 in our experience we have found it useful for processing and applying business rules in downstream business vault, for 
 use in presentation layers.
 
-### Setting up satellite models
+### Creating satellite models
 
 Create a new dbt model as before. We'll call this one `sat_customer_details`. 
 
