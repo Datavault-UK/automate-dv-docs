@@ -84,6 +84,7 @@ If the driving key column(s) or secondary foreign key (sfk) column(s) are null t
 All raw vault structures support both the built-in dbt incremental materialisation and dbtvault's [custom 
 materialisations](macros.md#materialisations). 
 
+[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
 !!! bug
     Currently there exists a bug with how some dbtvault structures handle incremental materialisations.

@@ -42,8 +42,6 @@ Create a new dbt model as before. We'll call this one `link_customer_order`.
 To create a link model, we simply copy and paste the above template into a model named after the link we
 are creating. dbtvault will generate a link using metadata provided in the next steps.
 
-Links should use the incremental materialization, as we load and add new records to the existing data set. 
-
 #### Materialisation
 
 The recommended materialisation for **links** is `incremental`, as we load and add new records to the existing data set.

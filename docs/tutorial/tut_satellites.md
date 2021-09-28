@@ -21,7 +21,7 @@ The payload consists of concrete data for an entity (e.g. A customer). This coul
 a name, a date of birth, nationality, age, gender or more. The payload will contain some or all of the
 concrete data for an entity, depending on the purpose of the satellite. 
 
-#### Effective From (src_eff)
+#### Effective From (src_eff) - optional
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
 satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
@@ -76,15 +76,15 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `sat_customer_details` satellite, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value                                                       | 
-| -------------- | ----------------------------------------------------------- | 
-| source_model   | v_stg_orders                                                | 
-| src_pk         | CUSTOMER_HK                                                 |
-| src_hashdiff   | {"source_column": "CUSTOMER_HASHDIFF", "alias": "HASHDIFF"} |
-| src_payload    | ["CUSTOMER_NAME", "CUSTOMER_DOB", "CUSTOMER_PHONE"]         |
-| src_eff        | EFFECTIVE_FROM                                              |
-| src_ldts       | LOAD_DATETIME                                               | 
-| src_source     | RECORD_SOURCE                                               |
+| Parameter      | Value                                                | 
+| -------------- | ---------------------------------------------------- | 
+| source_model   | v_stg_orders                                         | 
+| src_pk         | CUSTOMER_HK                                          |
+| src_hashdiff   | source_column: CUSTOMER_HASHDIFF, alias: HASHDIFF    |
+| src_payload    | CUSTOMER_NAME, CUSTOMER_DOB, CUSTOMER_PHONE          |
+| src_eff        | EFFECTIVE_FROM                                       |
+| src_ldts       | LOAD_DATETIME                                        | 
+| src_source     | RECORD_SOURCE                                        |
 
 !!! Note
     We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practices.md#hashdiff-aliasing)

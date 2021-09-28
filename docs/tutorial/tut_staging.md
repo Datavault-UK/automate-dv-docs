@@ -70,12 +70,12 @@ The model provided in the 'Final model' section below, shows the use of the 'sou
 
 ##### Hashed columns
 
-| Column Name        | Value                                                                                                | 
-| ------------------ | ---------------------------------------------------------------------------------------------------- | 
-| CUSTOMER_HK        | CUSTOMER_ID                                                                                          | 
-| NATION_HK          | NATION_ID                                                                                            |
-| CUSTOMER_NATION_HK | ["CUSTOMER_ID", "NATION_ID"]                                                                         |
-| CUSTOMER_HASHDIFF  | {"is_hashdiff": true, "columns": ["CUSTOMER_NAME", "CUSTOMER_ID", "CUSTOMER_PHONE", "CUSTOMER_DOB"]} |
+| Column Name        | Value                                                                                | 
+| ------------------ | ------------------------------------------------------------------------------------ | 
+| CUSTOMER_HK        | CUSTOMER_ID                                                                          | 
+| NATION_HK          | NATION_ID                                                                            |
+| CUSTOMER_NATION_HK | CUSTOMER_ID, NATION_ID                                                               |
+| CUSTOMER_HASHDIFF  | is_hashdiff: true, columns: CUSTOMER_NAME, CUSTOMER_ID, CUSTOMER_PHONE, CUSTOMER_DOB |
 
 ##### Final Model
 
