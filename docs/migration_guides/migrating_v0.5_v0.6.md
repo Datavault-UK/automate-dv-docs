@@ -26,7 +26,7 @@ Previously, your staging model looked like this:
                                                                                     
 {%- set source_table = source('raw_sources', 'customer_bookings')                   -%}
                                                                                     
-{{ dbtvault.multi_hash([('CUSTOMER_ID', 'CUSTOMER_PK'),                             
+{{ dbtvault.multi_hash([('CUSTOMER_ID', 'CUSTOMER_HK'),                             
                          (['CUSTOMER_ID', 'CUSTOMER_NAME', 'CUSTOMER_DOB'],         
                          'CUST_CUSTOMER_HASHDIFF', true),                           
                          (['CUSTOMER_ID', 'NATIONALITY', 'PHONE'],                  
@@ -57,7 +57,7 @@ In v0.6, the equivalent is now this:
               source_model: 
                 raw_sources: 'customer_bookings'
               hashed_columns:
-                CUSTOMER_PK: "CUSTOMER_ID"
+                CUSTOMER_HK: "CUSTOMER_ID"
                 CUST_CUSTOMER_HASHDIFF:
                   is_hashdiff: true
                   columns:
@@ -115,7 +115,7 @@ the `dbt_project.yml` file looked like:
 hub_customer:
   vars:
     source: 'v_stg_orders'
-    src_pk: 'CUSTOMER_PK'
+    src_pk: 'CUSTOMER_HK'
     src_nk: 'CUSTOMER_KEY'
     src_ldts: 'LOADDATE'
     src_source: 'SOURCE'
@@ -127,7 +127,7 @@ The `dbt_project.yml` file will now look like:
 hub_customer:
   vars:
     source_model: 'v_stg_orders'
-    src_pk: 'CUSTOMER_PK'
+    src_pk: 'CUSTOMER_HK'
     src_nk: 'CUSTOMER_KEY'
     src_ldts: 'LOADDATE'
     src_source: 'SOURCE'
@@ -247,7 +247,7 @@ sat_customer_details:
     - sat
   vars:
     source_model: "stg_customer_details_hashed"
-    src_pk: "CUSTOMER_PK"
+    src_pk: "CUSTOMER_HK"
     src_hashdiff: 
       source_column: "CUSTOMER_HASHDIFF"
       alias: "HASHDIFF"

@@ -35,7 +35,7 @@ You may also provide metadata on a per-model basis. This is useful if you have a
 
     ```jinja
     {%- set source_model = "stg_web_customer_hashed" -%}
-    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_pk = "CUSTOMER_HK" -%}
     {%- set src_nk = "CUSTOMER_ID" -%}
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
@@ -66,7 +66,7 @@ example provided to help better convey the difference.
     ```jinja
     {%- set yaml_metadata -%}
     source_model: 'stg_web_customer_hashed'
-    src_pk: 'CUSTOMER_PK'
+    src_pk: 'CUSTOMER_HK'
     src_nk: 'CUSTOMER_ID'
     src_ldts: 'LOAD_DATETIME'
     src_source: 'RECORD_SOURCE'
@@ -87,7 +87,7 @@ example provided to help better convey the difference.
     {%- set yaml_metadata -%}
     source_model: "raw_source"
     hashed_columns:
-      CUSTOMER_PK: "CUSTOMER_ID"
+      CUSTOMER_HK: "CUSTOMER_ID"
       CUST_CUSTOMER_HASHDIFF:
         is_hashdiff: true
         columns:
@@ -115,7 +115,7 @@ example provided to help better convey the difference.
     {% set source_model = metadata_dict['source_model'] %}
        
     {% set derived_columns = metadata_dict['derived_columns'] %}
-       
+
     {% set hashed_columns = metadata_dict['hashed_columns'] %}
        
     {% set ranked_columns = metadata_dict['ranked_columns'] %}
@@ -142,7 +142,7 @@ example provided to help better convey the difference.
         {%- set yaml_metadata -%}
         source_model: "raw_source"
         hashed_columns:
-        CUSTOMER_PK: "CUSTOMER_ID"
+        CUSTOMER_HK: "CUSTOMER_ID"
         CUST_CUSTOMER_HASHDIFF:
           is_hashdiff: true
           columns:
@@ -225,7 +225,7 @@ example provided to help better convey the difference.
         {%- set yaml_metadata -%}
         source_model: "raw_source"
         hashed_columns:
-        CUSTOMER_PK: "CUSTOMER_ID"
+        CUSTOMER_HK: "CUSTOMER_ID"
         CUST_CUSTOMER_HASHDIFF:
           is_hashdiff: true
           columns:
@@ -307,7 +307,7 @@ example provided to help better convey the difference.
         {%- set yaml_metadata -%}
         source_model: "raw_source"
         hashed_columns:
-          CUSTOMER_PK: "CUSTOMER_ID"
+          CUSTOMER_HK: "CUSTOMER_ID"
           CUSTOMER_DETAILS_HASHDIFF:
             is_hashdiff: true
             exclude_columns: true
@@ -349,7 +349,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 'stg_web_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
+        src_pk: 'CUSTOMER_HK'
         src_nk: 'CUSTOMER_ID'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
@@ -371,7 +371,7 @@ example provided to help better convey the difference.
         source_model: 
             - 'stg_web_customer_hashed'
             - 'stg_crm_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
+        src_pk: 'CUSTOMER_HK'
         src_nk: 'CUSTOMER_ID'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
@@ -391,7 +391,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 'stg_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
+        src_pk: 'CUSTOMER_HK'
         src_nk: 
             - 'CUSTOMER_ID'
             - 'CUSTOMER_DOB'
@@ -414,7 +414,7 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set source_model = "stg_customer_hashed" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
         {%- set src_nk = "CUSTOMER_ID" -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
@@ -427,7 +427,7 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set source_model = ["stg_web_customer_hashed", "stg_crm_customer_hashed"] -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
         {%- set src_nk = "CUSTOMER_ID" -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
@@ -440,7 +440,7 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set source_model = "stg_customer_hashed" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
         {%- set src_nk = ["CUSTOMER_ID", "CUSTOMER_DOB"] -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
@@ -463,10 +463,10 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 'v_stg_orders'
-        src_pk: 'LINK_CUSTOMER_NATION_PK'
+        src_pk: 'LINK_CUSTOMER_NATION_HK'
         src_fk: 
             - 'CUSTOMER_ID'
-            - 'NATION_PK'
+            - 'NATION_HK'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
         {%- endset -%}
@@ -486,10 +486,10 @@ example provided to help better convey the difference.
         source_model: 
             - 'v_stg_orders'
             - 'v_stg_transactions'
-        src_pk: 'LINK_CUSTOMER_NATION_PK'
+        src_pk: 'LINK_CUSTOMER_NATION_HK'
         src_fk: 
             - 'CUSTOMER_ID'
-            - 'NATION_PK'
+            - 'NATION_HK'
         src_ldts: 'LOAD_DATETIME'
         src_source: 'RECORD_SOURCE'
         {%- endset -%}
@@ -508,8 +508,8 @@ example provided to help better convey the difference.
     === "Single Source"
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
-        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
-        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
+        {%- set src_pk = "LINK_CUSTOMER_NATION_HK" -%}
+        {%- set src_fk = ["CUSTOMER_HK", "NATION_HK"] -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
@@ -520,8 +520,8 @@ example provided to help better convey the difference.
     === "Multi Source"
         ```jinja
         {%- set source_model = ["v_stg_orders", "v_stg_transactions"] -%}
-        {%- set src_pk = "LINK_CUSTOMER_NATION_PK" -%}
-        {%- set src_fk = ["CUSTOMER_PK", "NATION_PK"] -%}
+        {%- set src_pk = "LINK_CUSTOMER_NATION_HK" -%}
+        {%- set src_fk = ["CUSTOMER_HK", "NATION_HK"] -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
@@ -543,10 +543,10 @@ example provided to help better convey the difference.
     ```jinja
     {%- set yaml_metadata -%}
     source_model: 'v_stg_transactions'
-    src_pk: 'TRANSACTION_PK'
+    src_pk: 'TRANSACTION_HK'
     src_fk: 
-        - 'CUSTOMER_PK'
-        - 'ORDER_PK'
+        - 'CUSTOMER_HK'
+        - 'ORDER_HK'
     src_payload:
         - 'TRANSACTION_NUMBER'
         - 'TRANSACTION_DATE'
@@ -572,8 +572,8 @@ example provided to help better convey the difference.
 
     ```jinja
     {%- set source_model = "v_stg_transactions" -%}
-    {%- set src_pk = "TRANSACTION_PK" -%}
-    {%- set src_fk = ["CUSTOMER_PK", "ORDER_PK"] -%}
+    {%- set src_pk = "TRANSACTION_HK" -%}
+    {%- set src_fk = ["CUSTOMER_HK", "ORDER_HK"] -%}
     {%- set src_payload = ["TRANSACTION_NUMBER", "TRANSACTION_DATE", "TYPE", "AMOUNT"] -%}
     {%- set src_eff = "EFFECTIVE_FROM" -%}
     {%- set src_ldts = "LOAD_DATETIME" -%}
@@ -599,7 +599,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 'v_stg_orders'
-        src_pk: 'CUSTOMER_PK'
+        src_pk: 'CUSTOMER_HK'
         src_hashdiff: 'CUSTOMER_HASHDIFF'
         src_payload:
           - 'NAME'
@@ -629,7 +629,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 'v_stg_orders'
-        src_pk: 'CUSTOMER_PK'
+        src_pk: 'CUSTOMER_HK'
         src_hashdiff: 
           source_column: "CUSTOMER_HASHDIFF"
           alias: "HASHDIFF"
@@ -662,7 +662,7 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
         {%- set src_hashdiff = "CUSTOMER_HASHDIFF" -%}
         {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
         {%- set src_eff = "EFFECTIVE_FROM" -%}
@@ -679,7 +679,7 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
-        {%- set src_pk = "CUSTOMER_PK" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
         {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
         {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
         {%- set src_eff = "EFFECTIVE_FROM" -%}
@@ -708,10 +708,10 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```jinja
     {%- set yaml_metadata -%}
     source_model: 'v_stg_order_customer'
-    src_pk: 'CUSTOMER_ORDER_PK'
+    src_pk: 'CUSTOMER_ORDER_HK'
     src_dfk: 
-      - 'ORDER_PK'
-    src_sfk: 'CUSTOMER_PK'
+      - 'ORDER_HK'
+    src_sfk: 'CUSTOMER_HK'
     src_start_date: 'START_DATE'
     src_end_date: 'END_DATE'
     src_eff: 'EFFECTIVE_FROM'
@@ -736,9 +736,9 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
     ```jinja
     {%- set source_model = "v_stg_orders" -%}
-    {%- set src_pk = "TRANSACTION_PK" -%}
-    {%- set src_dfk = "CUSTOMER_PK" -%}
-    {%- set src_sfk = "NATION_PK" -%}
+    {%- set src_pk = "TRANSACTION_HK" -%}
+    {%- set src_dfk = "CUSTOMER_HK" -%}
+    {%- set src_sfk = "NATION_HK" -%}
     {%- set src_start_date = "START_DATE" -%}
     {%- set src_end_date = "END_DATE" -%}
 
@@ -765,7 +765,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```jinja
     {%- set yaml_metadata -%}
     source_model: 'v_stg_orders'
-    src_pk: 'CUSTOMER_PK'
+    src_pk: 'CUSTOMER_HK'
     src_cdk: 
       - 'CUSTOMER_PHONE'
     src_payload:
@@ -792,7 +792,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
     ```jinja
     {%- set source_model = "v_stg_customer" -%}
-    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_pk = "CUSTOMER_HK" -%}
     {%- set src_cdk = ["CUSTOMER_PHONE", "EXTENSION"] -%}
     {%- set src_hashdiff = "HASHDIFF" -%}
     {%- set src_payload = ["CUSTOMER_NAME"] -%}
