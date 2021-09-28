@@ -19,7 +19,7 @@ A load date or load date timestamp. This identifies when the record was first lo
 #### Record Source (src_source)
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
-(i.e. `1` from the [staging section](tut_staging.md#adding-calculated-and-derived-columns), 
+(i.e. `1` from the [staging section](tut_staging.md#adding-the-metadata), 
 which is the code for `stg_customer`)
 
 ### Creating hub models
@@ -44,8 +44,6 @@ The recommended materialisation for **hubs** is `incremental`, as we load and ad
 
 Let's look at the metadata we need to provide to the [hub macro](../macros.md#hub).
 
-See our [metadata reference](../metadata.md#hubs) for more detail on how to provide metadata to hubs.
-
 We provide the column names which we would like to select from the staging area (`source_model`).
 
 Using our [knowledge](#structure) of what columns we need in our `hub_customer` hub, we can identify columns in our
@@ -53,7 +51,7 @@ staging layer which map to them:
 
 | Parameter      | Value          | 
 | -------------- | -------------- | 
-| source_model   | v_stg_customer | 
+| source_model   | v_stg_orders | 
 | src_pk         | CUSTOMER_HK    |
 | src_nk         | CUSTOMER_ID    |
 | src_ldts       | LOAD_DATETIME  | 
@@ -64,7 +62,7 @@ When we provide the metadata above, our model should look like the following:
 ```jinja
 {{ config(materialized='incremental')    }}
 
-{%- set source_model = "v_stg_customer" -%}
+{%- set source_model = "v_stg_orders"   -%}
 {%- set src_pk = "CUSTOMER_HK"          -%}
 {%- set src_nk = "CUSTOMER_ID"          -%}
 {%- set src_ldts = "LOAD_DATETIME"      -%}
@@ -73,6 +71,9 @@ When we provide the metadata above, our model should look like the following:
 {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                 src_source=src_source, source_model=source_model) }}
 ```
+
+!!! Note
+    See our [metadata reference](../metadata.md#hubs) for more detail on how to provide metadata to hubs.
 
 ### Running dbt
 
@@ -109,14 +110,12 @@ will handle the rest:
     tables, they will need to be aliased to the same name in the respective staging layers 
     via a `derived column` configuration, using the [stage](../macros.md#stage) macro in the staging layer.
 
-
-
 ```jinja hl_lines="3 4 5"
 {{ config(materialized='incremental') }}
 
-{%- set source_model = ["v_stg_customer_web", 
-                        "v_stg_customer_crm", 
-                        "v_stg_customer_sap"] -%}
+{%- set source_model = ["v_stg_orders_web", 
+                        "v_stg_orders_crm", 
+                        "v_stg_orders_sap"]   -%}
 
 {%- set src_pk = "CUSTOMER_HK"                -%}
 {%- set src_nk = "CUSTOMER_ID"                -%}

@@ -71,8 +71,6 @@ The recommended materialisation for **satellites** is `incremental`, as we load 
 
 Let's look at the metadata we need to provide to the [satellite macro](../macros.md#sat).
 
-See our [metadata reference](../metadata.md#satellites) for more detail on how to provide metadata to satellites.
-
 We provide the column names which we would like to select from the staging area (`source_model`).
 
 Using our [knowledge](#structure) of what columns we need in our `sat_customer_details` satellite, we can identify columns in our
@@ -80,7 +78,7 @@ staging layer which map to them:
 
 | Parameter      | Value                                                       | 
 | -------------- | ----------------------------------------------------------- | 
-| source_model   | v_stg_customer                                              | 
+| source_model   | v_stg_orders                                                | 
 | src_pk         | CUSTOMER_HK                                                 |
 | src_hashdiff   | {"source_column": "CUSTOMER_HASHDIFF", "alias": "HASHDIFF"} |
 | src_payload    | ["CUSTOMER_NAME", "CUSTOMER_DOB", "CUSTOMER_PHONE"]         |
@@ -94,10 +92,10 @@ staging layer which map to them:
 When we provide the metadata above, our model should look like the following:
 
 ```jinja
-{{ config(materialized='incremental')                         }}
+{{ config(materialized='incremental') }}
 
 {%- set yaml_metadata -%}
-source_model: "v_stg_customer"
+source_model: "v_stg_orders"
 src_pk: "CUSTOMER_HK"
 src_hashdiff: 
   source_column: "CUSTOMER_HASHDIFF"
@@ -122,10 +120,8 @@ src_source: "RECORD_SOURCE"
                 source_model=metadata_dict["source_model"])   }}
 ```
 
-#### Why does our model look different from the previous examples?
-
-There's a multitude of ways to provide the metadata to dbtvault macros. 
-This particular metadata is easier to read. Take a look at the [metadata approaches](../metadata.md#approaches) for a deeper dive.
+!!! Note
+    See our [metadata reference](../metadata.md#satellites) for more detail on how to provide metadata to satellites.
 
 ### Running dbt
 

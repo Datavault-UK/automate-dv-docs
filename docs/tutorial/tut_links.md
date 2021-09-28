@@ -52,8 +52,6 @@ The recommended materialisation for **links** is `incremental`, as we load and a
 
 Let's look at the metadata we need to provide to the [link macro](../macros.md#link).
 
-See our [metadata reference](../metadata.md#links) for more detail on how to provide metadata to links.
-
 We provide the column names which we would like to select from the staging area (`source_model`).
 
 Using our [knowledge](#structure) of what columns we need in our `link_customer_order` table, we can identify columns in our
@@ -72,7 +70,7 @@ When we provide the metadata above, our model should look like the following:
 ```jinja
 {{ config(materialized='incremental')         }}
 
-{%- set source_model = "v_stg_customer"      -%}
+{%- set source_model = "v_stg_orders"        -%}
 {%- set src_pk = "CUSTOMER_ORDER_HK"         -%}
 {%- set src_fk = ["CUSTOMER_HK", "ORDER_HK"] -%}
 {%- set src_ldts = "LOAD_DATETIME"           -%}
@@ -81,6 +79,9 @@ When we provide the metadata above, our model should look like the following:
 {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                  src_source=src_source, source_model=source_model) }}
 ```
+
+!!! Note
+    See our [metadata reference](../metadata.md#links) for more detail on how to provide metadata to links.
 
 ### Running dbt
 
