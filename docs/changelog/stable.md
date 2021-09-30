@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+
+## [v0.7.7] - 2021-08-24
+- Re-release of v0.7.6.1 to ensure deployment to dbt Hub
+
+
+## [v0.7.6.1] - 2021-07-14
+- Hotfix for 0.7.6 to remove unintentionally added macros from the beta branch. #36 
+
+### Installing
+**Note:** This version **cannot** be installed via dbt hub, please install as follows:
+
+```
+packages:
+  - git: "https://github.com/Datavault-UK/dbtvault.git"
+    revision: v0.7.6.1
+```
+
 ## [v0.7.6] - 2021-07-13
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6)](https://dbtvault.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
 
