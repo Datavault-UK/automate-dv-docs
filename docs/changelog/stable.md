@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [v0.7.6.1] - 2021-07-14
-- Hotfix for 0.7.6 to remove unintentionally added macros from the beta branch. #36 
+- Hotfix for 0.7.6 to remove unintentionally added macros from the beta branch. [#36](https://github.com/Datavault-UK/dbtvault/issues/36)
 
 ### Installing
 **Note:** This version **cannot** be installed via dbt hub, please install as follows:
