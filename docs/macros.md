@@ -1002,6 +1002,16 @@ Generates SQL to build a point-in-time table (PIT).
 !!! tip
     [Read the tutorial](tutorial/tut_point_in_time.md) for more details
 
+#### Parameter breakdown
+
+##### satellites
+
+PLACEHOLDER
+
+##### stage_tables
+
+PLACEHOLDER
+
 #### Example Metadata
 
 [See examples](metadata.md#point-in-time-tables-pits)
@@ -1774,6 +1784,20 @@ Generates sql to build a staging area using the provided parameters.
 | hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 
+#### Parameter breakdown
+
+##### derived_columns
+
+PLACEHOLDER
+
+##### hashed_columns
+
+PLACEHOLDER
+
+##### ranked_columns
+
+PLACEHOLDER
+
 #### Example Metadata
 
 [See examples](metadata.md#staging)
@@ -2110,7 +2134,7 @@ column value.
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
 
-Generates SQL to create columns using the `RANK()` window function.
+Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function.
 
 ___
 
