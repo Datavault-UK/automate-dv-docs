@@ -8,7 +8,7 @@ Your old metadata would have looked something like this:
 
 {%- set source = [ref('v_stg_orders')]                                             -%}
 
-{%- set src_pk = 'CUSTOMER_PK'                                                     -%}
+{%- set src_pk = 'CUSTOMER_HK'                                                     -%}
 {%- set src_nk = 'CUSTOMER_ID'                                                     -%}
 {%- set src_ldts = 'LOADDATE'                                                      -%}
 {%- set src_source = 'SOURCE'                                                      -%}
@@ -36,7 +36,7 @@ The metadata is structured as follows in the ```dbt_project.yml``` file:
 hub_customer:
           vars:
             source: 'v_stg_orders'
-            src_pk: 'CUSTOMER_PK'
+            src_pk: 'CUSTOMER_HK'
             src_nk: 'CUSTOMER_KEY'
             src_ldts: 'LOADDATE'
             src_source: 'SOURCE'

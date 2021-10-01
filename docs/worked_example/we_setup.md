@@ -171,7 +171,7 @@ Metadata for each structure is provided in each file, for example:
 
     ```jinja
     {%- set source_model = "v_stg_orders" -%}
-    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_pk = "CUSTOMER_HK" -%}
     {%- set src_nk = "CUSTOMERKEY" -%}
     {%- set src_ldts = "LOAD_DATE" -%}
     {%- set src_source = "RECORD_SOURCE" -%}

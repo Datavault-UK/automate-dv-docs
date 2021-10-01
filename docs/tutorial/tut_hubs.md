@@ -1,161 +1,129 @@
 Hubs are one of the core building blocks of a Data Vault. Hubs record a unique list of all business keys for a single entity. 
 For example, a Hub may contain a list of all Customer IDs in the business. 
 
-#### Structure
+### Structure
 
 In general, Hubs consist of 4 columns, described below.
 
-##### Primary Key (src_pk)
+#### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key.
 
-##### Natural Key (src_nk)
-This is usually a formal identification for the record such as a customer ID or 
-order number.
+#### Natural Key / Business Key (src_nk)
+This is usually a formal identification for the record, such as a customer ID or 
+order number. Usually called the business key because this value has meaning in
+business processes such as transactions and events.
 
-##### Load date (src_ldts)
+#### Load date (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
-##### Record Source (src_source)
+#### Record Source (src_source)
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
-(i.e. `1` from the [previous section](tut_staging.md#adding-calculated-and-derived-columns), 
+(i.e. `1` from the [staging section](tut_staging.md#adding-the-metadata), 
 which is the code for `stg_customer`)
 
-### Setting up hub models
+### Creating hub models
 
 Create a new dbt model as before. We'll call this one `hub_customer`. 
 
 === "hub_customer.sql"
 
     ```jinja
-    {{ dbtvault.hub(var('src_pk'), var('src_nk'), var('src_ldts'),
-                    var('src_source'), var('source_model'))        }}
+    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
     ```
 
 To create a hub model, we simply copy and paste the above template into a model named after the hub we
 are creating. dbtvault will generate a hub using parameters provided in the next steps.
 
-Hubs should use the incremental materialization, as we load and add new records to the existing data set. 
+#### Materialisation
 
-We recommend setting the `incremental` materialization on all of your hubs using the `dbt_project.yml` file:
-
-
-=== "dbt_project.yml"
-
-    ```yaml
-    models:
-      my_dbtvault_project:
-       hubs:
-        materialized: incremental
-        tags:
-          - hub
-        hub_customer:
-          vars:
-            ...
-        hub_booking:
-          vars:
-            ...
-    ```
-
+The recommended materialisation for **hubs** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [hub](../macros.md#hub) macro.
+Let's look at the metadata we need to provide to the [hub macro](../macros.md#hub).
 
-#### Source model
+We provide the column names which we would like to select from the staging area (`source_model`).
 
-The first piece of metadata we need is the source model. This step is simple, 
-all we need to do is provide the name of the model for the stage table as a string in our metadata as follows:
+Using our [knowledge](#structure) of what columns we need in our `hub_customer` hub, we can identify columns in our
+staging layer which map to them:
 
-=== "dbt_project.yml"
+| Parameter      | Value          | 
+| -------------- | -------------- | 
+| source_model   | v_stg_orders | 
+| src_pk         | CUSTOMER_HK    |
+| src_nk         | CUSTOMER_ID    |
+| src_ldts       | LOAD_DATETIME  | 
+| src_source     | RECORD_SOURCE  |
 
-    ```yaml
-    hub_customer:
-      vars:
-        source_model: 'stg_customer_hashed'
-        ...
-    ```
+When we provide the metadata above, our model should look like the following:
 
-!!! tip
-    See our [metadata reference](../metadata.md#hubs) for more ways to provide metadata
+```jinja
+{{ config(materialized='incremental')    }}
 
-#### Source columns
+{%- set source_model = "v_stg_orders"   -%}
+{%- set src_pk = "CUSTOMER_HK"          -%}
+{%- set src_nk = "CUSTOMER_ID"          -%}
+{%- set src_ldts = "LOAD_DATETIME"      -%}
+{%- set src_source = "RECORD_SOURCE"    -%}
 
-Next, we define the columns which we would like to bring from the source.
-Using our knowledge of what columns we need in our  `hub_customer` table, we can identify columns in our
-staging layer which we will then use to form our hub:
+{{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model) }}
+```
 
-1. A primary key, which is a hashed natural key. The `CUSTOMER_PK` we created earlier in the [staging](tut_staging.md) 
-section will be used for `hub_customer`.
-2. The natural key, `CUSTOMER_ID` which we added using the [stage](../macros.md#stage) macro.
-3. A load date timestamp, which is present in the staging layer as `LOAD_DATE`
-4. A `SOURCE` column.
-
-We can now add this metadata to the `dbt_project.yml` file:
-
-=== "dbt_project.yml"
-
-    ```yaml hl_lines="4 5 6 7"
-    hub_customer:
-      vars:
-        source_model: 'stg_customer_hashed'
-        src_pk: 'CUSTOMER_PK'
-        src_nk: 'CUSTOMER_ID'
-        src_ldts: 'LOAD_DATE'
-        src_source: 'SOURCE'
-    ```
+!!! Note
+    See our [metadata reference](../metadata.md#hubs) for more detail on how to provide metadata to hubs.
 
 ### Running dbt
 
-With our model complete and our YAML written, we can run dbt to create our `hub_customer` table.
+With our metadata provided and our model complete, we can run dbt to create our `hub_customer` hub, as follows:
 
 `dbt run -m +hub_customer`
 
-!!! tip
-    Using the '+' in the command above will get dbt to compile and run all parent dependencies for the model we are 
-    running, in this case, it will compile and run the staging layer as well as the hub if they don't already exist. 
-    
-And our table will look like this:
+And the resulting hub will look like this:
 
-| CUSTOMER_PK  | CUSTOMER_ID  | LOAD_DATE   | SOURCE       |
-| ------------ | ------------ | ---------- | ------------ |
-| B8C37E...    | 1001         | 1993-01-01 | 1            |
-| .            | .            | .          | .            |
-| .            | .            | .          | .            |
-| FED333...    | 1004         | 1993-01-01 | 1            |
+| CUSTOMER_HK  | CUSTOMER_ID  | LOAD_DATETIME            | SOURCE |
+| ------------ | ------------ | ------------------------ | ------ |
+| B8C37E...    | 1001         | 1993-01-01 00:00:00.000  | 1      |
+| .            | .            | .                        | 1      |
+| .            | .            | .                        | 1      |
+| FED333...    | 1004         | 1993-01-01 00:00:00.000  | 1      |
 
 ### Loading hubs from multiple sources
 
 In some cases, we may need to load hubs from multiple sources, instead of a single source as we have seen so far.
 This may be because we have multiple source staging tables, each of which contains a natural key for the hub. 
 This would require multiple feeds into one table: dbt prefers one feed, 
-so we union the separate sources together and load them as one. 
+so we perform a union operation on the separate sources together and load them as one. 
 
-The data can and should be combined because these records have a related key, and are related to the same business concept. 
-We can union the tables on that key, and create a hub containing a complete record set.
+The data can and should be combined because these records have a truly identical key (same business meaning).
+The hub macro will perform a union operation to combine the tables using that key, and create a hub containing
+a complete record set.
 
-We'll need to have a [staging model](tut_staging.md) for each of the sources involved, 
-and provide them as a list of strings in the `dbt_project.yml` file as shown below.
+The metadata needed to create a multi-source hub is identical to a single-source hub, we just provide a 
+list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [hub](../macros.md#hub) macro 
+will handle the rest:
 
 !!! note
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
-    via the [stage](../macros.md#stage) macro.
+    via a `derived column` configuration, using the [stage](../macros.md#stage) macro in the staging layer.
 
-The macro needed to create a union hub is identical to a single-source hub, we just provide a 
-list of sources rather than a single source in the metadata, the [hub](../macros.md#hub) macro 
-will handle the rest. 
+```jinja hl_lines="3 4 5"
+{{ config(materialized='incremental') }}
 
-=== "dbt_project.yml"
+{%- set source_model = ["v_stg_orders_web", 
+                        "v_stg_orders_crm", 
+                        "v_stg_orders_sap"]   -%}
 
-    ```yaml hl_lines="3 4 5"
-    hub_nation:
-      vars:
-        source_model:
-          - 'stg_customer_hashed'
-          - 'v_stg_inventory'
-        src_pk: 'NATION_PK'
-        src_nk: 'NATION_ID'
-        src_ldts: 'LOAD_DATE'
-        src_source: 'SOURCE'
-    ```
+{%- set src_pk = "CUSTOMER_HK"                -%}
+{%- set src_nk = "CUSTOMER_ID"                -%}
+{%- set src_ldts = "LOAD_DATETIME"            -%}
+{%- set src_source = "RECORD_SOURCE"          -%}
+
+{{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model) }}
+```
+
+See the [hub metadata reference](../metadata.md#hubs) for more examples.

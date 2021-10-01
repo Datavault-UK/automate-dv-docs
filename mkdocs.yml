@@ -16,10 +16,11 @@ theme:
       primary: 'black'
       accent: 'indigo'
     highlightjs: true
-    
+    features:
+      - navigation.top
 nav:
   - Home: 'index.md'
-  - Step-by-step tutorial:
+  - Tutorials:
       - Getting Started: 'tutorial/tut_getting_started.md'
       - Staging: 'tutorial/tut_staging.md'
       - Hubs: 'tutorial/tut_hubs.md'
@@ -73,20 +74,19 @@ markdown_extensions:
   - toc:
       permalink: true
       toc_depth: 1-3
-  - pymdownx.emoji
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - attr_list
 
 plugins:
   - search
   - git-revision-date-localized:
       type: timeago
-  - with-pdf:
-      copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021
-      cover_title: dbtvault Docs
-      cover_subtitle: By Datavault
-      exclude_pages:
-        - 'changelog/beta'
-        - 'changelog/stable'
+#  - with-pdf:
+#      copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021
+#      cover_title: dbtvault Docs
+#      cover_subtitle: By Datavault
 
 extra_css:
   - 'stylesheets/extra.css'

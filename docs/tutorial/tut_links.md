@@ -1,172 +1,137 @@
-Links are another fundamental component in a Data Vault. 
+Links are another fundamental component in a Data Vault, forming the core of the raw vault along with Hubs and Satellites. 
 
 Links model an association or link, between two business keys.
-A good example would be a list of all Orders and the Customer associated with that order, in the business.
+A good example would be a list of all Orders and the Customers associated with those orders, for the whole business.
 
 !!! note
     Due to the similarities in the load logic between links and hubs, most of this page will be familiar if you have already followed the
     [hubs](tut_hubs.md) page.
     
-#### Structure
+### Structure
 
-Our links will contain:
-
-##### Primary Key (src_pk)
+#### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. 
 For links, we take the natural keys (prior to hashing) represented by the foreign key columns below 
 and create a hash on a concatenation of them. 
 
-##### Foreign Keys (src_fk)
+#### Foreign Keys (src_fk)
 Foreign keys referencing the primary key for each hub referenced in the link (2 or more depending on the number of hubs 
 referenced) 
 
-##### Load date (src_ldts)
+#### Load date (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
-##### Record Source (src_source)
+#### Record Source (src_source)
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
 
+(i.e. `1` from the [staging section](tut_staging.md#adding-the-metadata), 
+which is the code for `stg_customer`)
 
-### Setting up link models
+### Creating link models
 
-Create a new dbt model as before. We'll call this one `link_customer_nation`. 
+Create a new dbt model as before. We'll call this one `link_customer_order`. 
 
 === "link_customer_nation.sql"
 
     ```jinja
-    {{ dbtvault.link(var('src_pk'), var('src_fk'), var('src_ldts'),
-                     var('src_source'), var('source_model'))        }}
+    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
     ```
 
 To create a link model, we simply copy and paste the above template into a model named after the link we
 are creating. dbtvault will generate a link using metadata provided in the next steps.
 
-Links should use the incremental materialization, as we load and add new records to the existing data set. 
+#### Materialisation
 
-We recommend setting the `incremental` materialization on all of your links using the `dbt_project.yml` file:
-
-=== "dbt_project.yml"
-
-    ```yaml
-    models:
-      my_dbtvault_project:
-       links:
-        materialized: incremental
-        tags:
-          - link
-        link_customer_nation:
-          vars:
-            ...
-        link_booking_order:
-          vars:
-            ...
-    ```
+The recommended materialisation for **links** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
-Now we need to provide some metadata to the [link](../macros.md#link) macro.
+Let's look at the metadata we need to provide to the [link macro](../macros.md#link).
 
-#### Source model
+We provide the column names which we would like to select from the staging area (`source_model`).
 
-The first piece of metadata we need is the source model. This step is easy, as we created the 
-staging layer ourselves. All we need to do is provide the name of the staging layer in the `dbt_project.yml` file 
-and dbtvault will do the rest for us.
-
-=== "dbt_project.yml"
-
-    ```yaml
-    link_customer_nation:
-      vars:
-        source_model: 'stg_customer_hashed'
-        ...
-    ```
-
-!!! tip
-    See our [metadata reference](../metadata.md#links) for more ways to provide metadata
-
-#### Source columns
-
-Next, we define the columns which we would like to bring from the source.
-Using our knowledge of what columns we need in our  `link_customer_nation` table, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `link_customer_order` table, we can identify columns in our
 staging layer which map to them:
 
-1. A primary key, which is a combination of the two natural keys: In this case `CUSTOMER_NATION_PK` 
-which we added in our staging layer.
-2. `CUSTOMER_KEY` which is one of our natural keys (we'll use the hashed column, `CUSTOMER_PK`).
-3. `NATION_KEY` the second natural key (we'll use the hashed column, `NATION_PK`).
-4. A load date timestamp, which is present in the staging layer as `LOAD_DATE` 
-5. A `SOURCE` column.
+| Parameter      | Value                 | 
+| -------------- | --------------------- | 
+| source_model   | v_stg_orders          |
+| src_pk         | CUSTOMER_ORDER_HK     |
+| src_fk         | CUSTOMER_ID, ORDER_ID |
+| src_ldts       | LOAD_DATETIME         | 
+| src_source     | RECORD_SOURCE         |
 
-We can now add this metadata to the `dbt_project.yml` file:
+When we provide the metadata above, our model should look like the following:
 
-=== "dbt_project.yml"
+```jinja
+{{ config(materialized='incremental')         }}
 
-    ```yaml hl_lines="4 5 6 7 8 9"
-    link_customer_nation:
-      vars:
-        source_model: 'stg_customer_hashed'
-        src_pk: 'LINK_CUSTOMER_NATION_PK'
-        src_fk:
-          - 'CUSTOMER_PK'
-          - 'NATION_PK'
-        src_ldts: 'LOAD_DATE'
-        src_source: 'SOURCE'
-    ```
+{%- set source_model = "v_stg_orders"        -%}
+{%- set src_pk = "CUSTOMER_ORDER_HK"         -%}
+{%- set src_fk = ["CUSTOMER_HK", "ORDER_HK"] -%}
+{%- set src_ldts = "LOAD_DATETIME"           -%}
+{%- set src_source = "RECORD_SOURCE"         -%}
 
-!!! note 
-    We are using `src_fk`, a list of the foreign keys. This is instead of the `src_nk` 
-    we used when building the hubs. These columns must be given in this list format in the `dbt_project.yml` file
-    for the links.
+{{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                 src_source=src_source, source_model=source_model) }}
+```
+
+!!! Note
+    See our [metadata reference](../metadata.md#links) for more detail on how to provide metadata to links.
 
 ### Running dbt
 
-With our model complete and our YAML written, we can run dbt to create our `link_customer_nation` link.
+With our metadata provided and our model complete, we can run dbt to create our `link_customer_order` link, as follows:
 
-`dbt run -m +link_customer_nation`
+`dbt run -m +link_customer_order`
 
-And our table will look like this:
+And the resulting link will look like this:
 
-| CUSTOMER_NATION_PK | CUSTOMER_FK  | NATION_FK    | LOAD_DATE   | SOURCE       |
-| ------------------ | ------------ | ------------ | ---------- | ------------ |
-| 72A160...          | B8C37E...    | D89F3A...    | 1993-01-01 | 1            |
-| .                  | .            | .            | .          | .            |
-| .                  | .            | .            | .          | .            |
-| 1CE6A9...          | FED333...    | D78382...    | 1993-01-01 | 1            |
+| CUSTOMER_ORDER_HK  | CUSTOMER_HK  | ORDER_HK     | LOAD_DATETIME            | SOURCE |
+| ------------------ | ------------ | ------------ | ------------------------ | ------ |
+| 72A160...          | B8C37E...    | D89F3A...    | 1993-01-01 00:00:00.000  | 1      |
+| .                  | .            | .            | .                        | 1      |
+| .                  | .            | .            | .                        | 1      |
+| 1CE6A9...          | FED333...    | D78382...    | 1993-01-01 00:00:00.000  | 1      |
 
-### Loading from multiple sources to form a union-based link
+### Loading links from multiple sources
 
-In some cases, we may need to create a link via a union, instead of a single source as we have seen so far.
-This may be because we have multiple source staging tables, each of which contains a natural key of the link. 
+In some cases, we may need to load links from multiple sources, instead of a single source as we have seen so far.
+This may be because we have multiple source staging tables, each of which contains a natural key for the link. 
 This would require multiple feeds into one table: dbt prefers one feed, 
-so we union the different feeds into one source before performing the insert via dbt. 
+so we perform a union operation on the separate sources together and load them as one. 
 
-So, this data can and should be combined because these records have a shared key. 
-We can union the tables on that key, and create a link containing a complete record set.
+The data can and should be combined because these records have a truly identical key (same business meaning).
+The link macro will perform a union operation to combine the tables using that key, and create a link containing
+a complete record set.
 
-We'll need to have a [staging model](tut_staging.md) for each of the sources involved, 
-and provide them as a list of strings in the `dbt_project.yml` file as shown below.
+The metadata needed to create a multi-source link is identical to a single-source link, we just provide a 
+list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [link](../macros.md#link) macro 
+will handle the rest:
 
 !!! note
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
-    via the [stage](../macros.md#stage) macro.
+    via a `derived column` configuration, using the [stage](../macros.md#stage) macro in the staging layer.
 
-The union link model will look exactly the same as creating a single source link model. To create a union you need to 
-provide a list of sources rather than a single source in the metadata, the [link](../macros.md#link) macro 
-will handle the rest. 
 
-`dbt_project.yml`
-```yaml hl_lines="3 4 5"   
-link_nation_region:
-  vars:
-    source_model:
-      - 'stg_customer_hashed'
-      - 'v_stg_inventory'
-    src_pk: 'NATION_REGION_PK'
-    src_fk:
-      - 'NATION_PK'
-      - 'REGION_PK'
-    src_ldts: 'LOAD_DATE'
-    src_source: 'SOURCE'
+
+```jinja hl_lines="3 4 5"
+{{ config(materialized='incremental') }}
+
+{%- set source_model = ["v_stg_orders_web",   
+                        "v_stg_orders_crm",   
+                        "v_stg_orders_sap"]   -%}
+
+{%- set src_pk = "CUSTOMER_ORDER_HK"          -%}
+{%- set src_fk = ["CUSTOMER_HK", "ORDER_HK"]  -%}
+{%- set src_ldts = "LOAD_DATETIME"            -%}
+{%- set src_source = "RECORD_SOURCE"          -%}
+
+{{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                 src_source=src_source, source_model=source_model) }}
 ```
+
+See the [link metadata reference](../metadata.md#links) for more examples.

@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+
+## [v0.7.7] - 2021-08-24
+- Re-release of v0.7.6.1 to ensure deployment to dbt Hub
+
+
+## [v0.7.6.1] - 2021-07-14
+- Hotfix for 0.7.6 to remove unintentionally added macros from the beta branch. [#36](https://github.com/Datavault-UK/dbtvault/issues/36)
+
+### Installing
+**Note:** This version **cannot** be installed via dbt hub, please install as follows:
+
+```
+packages:
+  - git: "https://github.com/Datavault-UK/dbtvault.git"
+    revision: v0.7.6.1
+```
+
 ## [v0.7.6] - 2021-07-13
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6)](https://dbtvault.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
 
@@ -132,14 +149,14 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../macros.md#vault_insert_by_period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
-- dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/fishtown-analytics/dbt/releases/tag/v0.18.0)
+- dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/dbt-labs/dbt/releases/tag/v0.18.0)
 
 !!! info
     *This is intended as quick reference and for completeness only, the online documentation is still the main reference documentation.
       
 ### Improved
 
-- All table macros now make more use of CTEs to reduce nested SQL and improve readability and debugging potential. [Why CTE's?](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091)
+- All table macros now make more use of CTEs to reduce nested SQL and improve readability and debugging potential. [Why CTEs?](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091)
 - All macros have had the licence header removed. This was a little messy and unnecessary.
 
 ### Removed
