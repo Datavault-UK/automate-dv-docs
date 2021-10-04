@@ -10,14 +10,14 @@ dbtvault provides the means for specifying sources for Data Vault structures wit
 
 This behaves differently for the [stage](#stage) macro, which supports either style, shown below:
 
-##### ref style
+#### ref style
 
 ```yaml
 stg_customer:
   source_model: 'raw_customer'
 ```
 
-##### source style
+#### source style
 
 === "stage configuration"
 
@@ -53,6 +53,37 @@ the `source()` macro.
 For all other structures (hub, link, satellite, etc.) the `source_model` argument must be a string to denote a single
 staging source, or a list of strings to denote multiple staging sources, which must be names of models (minus
 the `.sql`).
+
+## Global variables
+
+dbtvault provides user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml)
+which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of dbtvault.
+
+=== "dbt_project.yml"
+
+    ```yaml
+    vars:
+      hash: MD5
+      max_datetime: '{{ dbtvault.max_datetime() }}'
+      concat_string: '||'
+      null_placeholder_string: '^^'
+    ```
+
+#### hash
+
+TODO
+
+#### max_datetime
+
+TODO
+
+#### concat_string
+
+TODO
+
+#### null_placeholder_string
+
+TODO
 
 ## Table templates
 
