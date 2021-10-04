@@ -29,7 +29,8 @@ nav:
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
-      - Point in Time: 'tutorial/tut_point_in_time.md'
+      - Extended Record Tracking Satellites: 'tutorial/tut_xts.md'
+      - Point in Time (PITs): 'tutorial/tut_point_in_time.md'
       - Bridges: 'tutorial/tut_bridges.md'
   - Worked example:
       - Getting Started: 'worked_example/we_worked_example.md'

@@ -807,6 +807,57 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 ___
 
+### Extended Record Tracking Satellites (XTS)
+
+#### Parameters
+
+[xts macro parameters](macros.md#xts)
+
+#### Metadata
+
+=== "Per-model - YAML strings"
+
+    ```jinja
+    ```
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_customer" -%}
+    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_satellites = -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model)              }}
+    ```
+
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    ```yaml
+    xts_customer:
+      vars:
+        source_model: 'stg_customer'
+        src_pk: 'CUSTOMER_PK'
+        src_satellite: 
+            'SATELLITE_CUSTOMER':
+                'sat_name': 
+                    'SATELLITE_NAME': 'SATELLITE_1'
+                'hashdiff':
+                    'HASHDIFF': 'HASHDIFF_1'
+            'SATELLITE_CUSTOMER_DETAILS':
+                'sat_name':
+                    'SATELLITE_NAME': 'SATELLITE_2'
+                'hashdiff': 
+                    'HASHDIFF': 'HASHDIFF_2'
+        src_ldts: 'LOADDATE'
+        src_source: 'SOURCE'
+    ```
+___
+
 ### Point-in-Time Tables (PITs)
 
 #### Parameters
@@ -823,25 +874,25 @@ ___
     src_pk: CUSTOMER_PK
     as_of_date_table: AS_OF_DATE
     satellites: 
-        SAT_CUSTOMER_DETAILS:
-          pk:
-              'PK': 'CUSTOMER_PK'
-          ldts:
-              'LDTS': 'LOAD_DATE'
-        SAT_CUSTOMER_LOGIN:
-          pk:
-              'PK': 'CUSTOMER_PK'
-          ldts:
-              'LDTS': 'LOAD_DATE'
-        SAT_CUSTOMER_PROFILE:
-          pk:
-              'PK': 'CUSTOMER_PK'
-          ldts:
-              'LDTS': 'LOAD_DATE'
+      SAT_CUSTOMER_DETAILS:
+        pk:
+          'PK': 'CUSTOMER_PK'
+        ldts:
+          'LDTS': 'LOAD_DATE'
+      SAT_CUSTOMER_LOGIN:
+        pk:
+          'PK': 'CUSTOMER_PK'
+        ldts:
+          'LDTS': 'LOAD_DATE'
+      SAT_CUSTOMER_PROFILE:
+        pk:
+            'PK': 'CUSTOMER_PK'
+        ldts:
+            'LDTS': 'LOAD_DATE'
     stage_tables:
-        'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
-        'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
-        'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
+      STG_CUSTOMER_DETAILS: 'LOAD_DATE',
+      STG_CUSTOMER_LOGIN: 'LOAD_DATE',
+      STG_CUSTOMER_PROFILE: 'LOAD_DATE'
     src_ldts: 'LOAD_DATE'
     {%- endset -%}
 

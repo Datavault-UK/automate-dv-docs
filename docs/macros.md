@@ -63,7 +63,7 @@ for your Data Vault.
 
 ### hub
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/hub.sql))
 
 Generates SQL to build a hub table using the provided parameters.
 
@@ -247,7 +247,7 @@ ___
 
 ### link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/link.sql))
 
 Generates sql to build a link table using the provided parameters.
 
@@ -433,7 +433,7 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/t_link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/t_link.sql))
 
 Generates sql to build a transactional link table using the provided parameters.
 
@@ -508,7 +508,7 @@ ___
 
 ### sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/sat.sql))
 
 Generates sql to build a satellite table using the provided parameters.
 
@@ -610,7 +610,7 @@ ___
 
 ### eff_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/eff_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/eff_sat.sql))
 
 Generates sql to build an effectivity satellite table using the provided parameters.
 
@@ -847,7 +847,7 @@ ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
@@ -972,9 +972,149 @@ Generates SQL to build a multi-active satellite table (MAS).
 === "Google BigQuery"
     Coming soon!
 
+___
+
+### xts
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/xts.sql))
+
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters
+
+#### Usage
+
+``` jinja
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model)              }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                                    | Type             | Required?                                    |
+| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
+| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load dat timestamp column                               | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+
+#### Example Metadata
+
+[See examples](metadata.md#extended-record-tracking-satellites-xts)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Single-Source"
+
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        WITH 
+        satellite_SATELLITE_1_from_PRIMED_STAGE_1 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE_1 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_1_from_PRIMED_STAGE_2 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        satellite_SATELLITE_2_from_PRIMED_STAGE_2 AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+            union_satellites AS (
+            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE_1
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_1
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
+            UNION ALL
+            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
+            ON ( union_satellites.HASHDIFF = d.HASHDIFF
+            AND union_satellites.LOAD_DATE = d.LOAD_DATE
+            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
+            WHERE d.HASHDIFF IS NULL
+            AND d.LOAD_DATE IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+___
+
 ### pit
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6-b1/macros/tables/pit.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/pit.sql))
 
 Generates SQL to build a point-in-time table (PIT).
 
@@ -1087,7 +1227,7 @@ ___
 
 ### bridge
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6-b1/macros/tables/pit.sql)))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/pit.sql)))
 
 Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links,
 using the provided parameters.
@@ -1376,7 +1516,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/stage.sql))
 
 Generates sql to build a staging area using the provided parameters.
 
@@ -2110,7 +2250,7 @@ ___
 
 ### hash_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/hash_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/hash_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2119,7 +2259,7 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ### derive_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/derive_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/derive_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2129,7 +2269,7 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/rank_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/rank_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2150,7 +2290,7 @@ ___
 
 ### hash
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/supporting/hash.sql))
 
 !!! warning
 
@@ -2216,7 +2356,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
@@ -2274,7 +2414,7 @@ In dbtvault, we have created custom materialisations which support Data Vault 2.
 
 ### vault_insert_by_period
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_period_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/materialisations/vault_insert_by_period_materialization.sql))
 
 This materialisation is based on
 the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
@@ -2458,7 +2598,7 @@ a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql) source code for 
+See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/hub.sql) source code for 
 a demonstration of this.
 
 #### Idempotent loads
@@ -2474,7 +2614,7 @@ use `LEFT OUTER JOINS` to ensure duplicate records do not get loaded.
 
 ### vault_insert_by_rank
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_rank_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/materialisations/vault_insert_by_rank_materialization.sql))
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
 arbitrary rank column, created in the staging layer.

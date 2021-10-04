@@ -4,19 +4,19 @@ It will act as 'window in time' which references data valid at a specific point 
 [as of dates table](../macros.md#as-of-date-table-structures). To create a PIT table, a minimum of two satellites will be required, though PIT tables are more 
 beneficial when referencing a greater number of satellites. 
 
-#### Structure
+### Structure
 
 Our point-in-time structures will contain:
 
-##### Primary Key (src_pk)
+#### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. This will be the primary key used
 by the Hub.
 
-##### as_of_dates_table 
+#### as_of_dates_table 
 The as_of_dates_table describes the history needed to construct the PIT table as a list of dates. This is where you would 
 supply the name of your as of date table.
 
-##### Satellites
+#### Satellites
 This is a dictionary of the satellites that is used to define their metadata. Each satellite entry will be its name exactly and will contain
 two nested dictionaries pk and ldts. which will define the satellite key and the date column used to compare to the as of table. 
 These will contain a key pair described below.
@@ -30,11 +30,10 @@ Typically, the Load_date is used, but the effective_from can also be used. You m
 although the entry may be the most valid for that date it may not have been a representation of the data vault on that day as the load date could be
 further in the future. The key pair will be defined by 'the suffix for date type column used (eg: LDTS, EF)' : 'name of the date column you want to use'
 
-##### source_model
+#### source_model
 This is the name of the Hub that contains the primary key (src_pk) and that the satellites are connected to. 
 
-
-### Setting up PIT models
+### Creating PIT models
 
 Create a new dbt model as before. We'll call this one `pit_customer`. 
 
@@ -53,21 +52,7 @@ are creating. dbtvault will generate a PIT using parameters provided in the next
 
 PITS should use the pit_incremental materialization, as the pit is remade with every new as of dates table. 
 
-We recommend setting the `pit_incremental` materialization on all of your pits using the `dbt_project.yml` file:
-
-`dbt_project.yml`
-
-```yaml
-models:
-  my_dbtvault_project:
-   pit:
-    materialized: pit_incremental
-    tags:
-      - pit
-    pit_customer:
-      vars:
-        ...
-```
+ADD METADATA SECTION
 
 ### Adding the metadata
 
