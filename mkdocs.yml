@@ -49,7 +49,10 @@ nav:
   - Changelog:
       - Stable Releases: 'changelog/stable.md'
       - Beta Releases: 'changelog/beta.md'
-  - Contributing: 'contributing.md'
+  - Contributing:
+    - Getting Started: 'contributing.md'
+    - Style Guides:
+        - Tutorials: 'style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
 
 extra:
