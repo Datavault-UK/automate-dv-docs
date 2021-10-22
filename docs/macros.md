@@ -1005,539 +1005,6 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 ___
 
-### xts
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/xts.sql))
-
-Generates SQL to build an Extended Tracking Satellite table using the provided parameters
-
-#### Usage
-
-``` jinja
-{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model)              }}
-```
-
-#### Parameters
-
-| Parameter      | Description                                                    | Type             | Required?                                    |
-| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
-| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load dat timestamp column                               | String           | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
-
-#### Example Metadata
-
-[See examples](metadata.md#extended-record-tracking-satellites-xts)
-
-#### Example Output
-
-=== "Snowflake"
-
-    === "Single-Source"
-
-        ```sql
-        WITH 
-        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-            union_satellites AS (
-            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
-        ),
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
-            ON ( union_satellites.HASHDIFF = d.HASHDIFF
-            AND union_satellites.LOAD_DATE = d.LOAD_DATE
-            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
-            WHERE d.HASHDIFF IS NULL
-            AND d.LOAD_DATE IS NULL
-            AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-        ```
-
-    === "Single-Source with Multiple Satellite Feeds"
-        
-        ```sql
-        WITH 
-        satellite_SATELLITE_1_from_PRIMED_STAGE AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        satellite_SATELLITE_2_from_PRIMED_STAGE AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-            union_satellites AS (
-            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE
-            UNION ALL
-            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE
-        ),
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
-            ON ( union_satellites.HASHDIFF = d.HASHDIFF
-            AND union_satellites.LOAD_DATE = d.LOAD_DATE
-            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
-            WHERE d.HASHDIFF IS NULL
-            AND d.LOAD_DATE IS NULL
-            AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-        ```
-
-    === "Multi-Source"
-        
-        ```sql
-        WITH 
-        satellite_SATELLITE_1_from_PRIMED_STAGE_1 AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        satellite_SATELLITE_2_from_PRIMED_STAGE_1 AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        satellite_SATELLITE_1_from_PRIMED_STAGE_2 AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_NAME_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        satellite_SATELLITE_2_from_PRIMED_STAGE_2 AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_NAME_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT_DEV.TEST.PRIMED_STAGE_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-            union_satellites AS (
-            SELECT * FROM satellite_SATELLITE_1_from_PRIMED_STAGE_1
-            UNION ALL
-            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_1
-            UNION ALL
-            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
-            UNION ALL
-            SELECT * FROM satellite_SATELLITE_2_from_PRIMED_STAGE_2
-        ),
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT_DEV.TEST.xts AS d
-            ON ( union_satellites.HASHDIFF = d.HASHDIFF
-            AND union_satellites.LOAD_DATE = d.LOAD_DATE
-            AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME )
-            WHERE d.HASHDIFF IS NULL
-            AND d.LOAD_DATE IS NULL
-            AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-        ```
-___
-
-### pit
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/pit.sql))
-
-Generates SQL to build a point-in-time table (PIT).
-
-#### Usage
-
-``` jinja
-{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                as_of_dates_table=as_of_dates_table,
-                satellites=satellites,
-                stage_tables=stage_tables,
-                src_ldts=src_ldts) }}
-```
-
-#### Parameters
-
-| Parameter         | Description                                         | Type             | Required?                                    |
-| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-|  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
-|  as_of_dates_table| Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
-|  satellites       | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  stage_tables     | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  src_ldts         | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
-|  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
-
-!!! tip
-    [Read the tutorial](tutorial/tut_point_in_time.md) for more details
-
-#### Parameter breakdown
-
-##### satellites
-
-PLACEHOLDER
-
-##### stage_tables
-
-PLACEHOLDER
-
-#### Example Metadata
-
-[See examples](metadata.md#point-in-time-tables-pits)
-
-#### Example Output
-
-=== "Snowflake"
-
-    ```sql
-    WITH as_of AS (
-        SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
-    ),
-    
-    new_rows_as_of_dates AS (
-        SELECT
-            hub.CUSTOMER_PK,
-            x.AS_OF_DATE
-        FROM DBTVAULT.TEST.HUB_CUSTOMER hub
-        INNER JOIN AS_OF AS x
-        ON (1=1)
-    ),
-    
-    new_rows AS (
-        SELECT
-            a.CUSTOMER_PK,
-            a.AS_OF_DATE,
-            COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
-            COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_DETAILS_LDTS,
-            COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
-            COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_LOGIN_LDTS,
-            COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,
-            COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_PROFILE_LDTS
-        FROM new_rows_as_of_dates AS a
-    
-        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS SAT_CUSTOMER_DETAILS_SRC
-            ON  a.CUSTOMER_PK = SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE <= a.AS_OF_DATE
-        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS SAT_CUSTOMER_LOGIN_SRC
-            ON  a.CUSTOMER_PK = SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE <= a.AS_OF_DATE
-        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS SAT_CUSTOMER_PROFILE_SRC
-            ON  a.CUSTOMER_PK = SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE <= a.AS_OF_DATE
-    
-        GROUP BY
-            a.CUSTOMER_PK, a.AS_OF_DATE
-        ORDER BY (1, 2)
-    ),
-    
-    PIT AS (
-    SELECT * FROM new_rows
-    )
-    
-    SELECT DISTINCT * FROM PIT
-    ```
-
-#### As Of Date Table Structures
-
-An As of Date table contains a single column of dates used to construct the history in the PIT. A typical structure will 
-be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
-time after which the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
-3 months of end of week values. So the as of dates table would contain a datetime for each entry to match this. 
-As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
-Using the example history before if a week had passed since when we had created the as of dates table
-it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
-
-!!! Warning 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
-    is called correctly in the .yml, the column name must be called AS_OF_DATE.
-
-___
-
-### bridge
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/pit.sql)))
-
-Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links,
-using the provided parameters.
-
-For the current version effectivity satellite auto end dating must be enabled.
-
-#### Usage
-
-``` jinja
-{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                        bridge_walk=bridge_walk,
-                        as_of_dates_table=as_of_dates_table,
-                        stage_tables=stage_tables,src_ldts=src_ldts) }}
-```
-
-#### Parameters
-
-| Parameter          | Description                                         | Type             | Required?                                    |
-| ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-| src_pk             | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i> |
-| as_of_dates_table  | Name for the AS OF DATE table                       | String           | <i class="fas fa-check-circle required"></i> |
-| bridge_walk        | Dictionary of bridge reference mappings             | Mapping          | <i class="fas fa-check-circle required"></i> |
-| source_model       | Hub model name                                      | String           | <i class="fas fa-check-circle required"></i> |
-| stage_tables       | List of stage table load date timestamps            | String           | <i class="fas fa-check-circle required"></i> |
-| src_ldts           | Source load date timestamp                          | String           | <i class="fas fa-check-circle required"></i> |
-
-!!! tip
-    [Read the tutorial](tutorial/tut_bridges.md) for more details
-
-#### Example Metadata
-
-[See examples](metadata.md#bridge-tables)
-
-#### Example Output
-
-=== "Snowflake"
-
-    === "Base Load"
-
-        ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
-        ),
-
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK
-                ,b.AS_OF_DATE
-                ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-                ,LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK AS LINK_ORDER_PRODUCT_PK
-                ,EFF_SAT_ORDER_PRODUCT.END_DATE AS EFF_SAT_ORDER_PRODUCT_ENDDATE
-                ,EFF_SAT_ORDER_PRODUCT.LOAD_DATETIME AS EFF_SAT_ORDER_PRODUCT_LOADDATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN AS_OF AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.LINK_ORDER_PRODUCT AS LINK_ORDER_PRODUCT
-                ON LINK_CUSTOMER_ORDER.ORDER_FK = LINK_ORDER_PRODUCT.ORDER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_ORDER_PRODUCT AS EFF_SAT_ORDER_PRODUCT
-                ON EFF_SAT_ORDER_PRODUCT.ORDER_PRODUCT_PK = LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK
-                AND EFF_SAT_ORDER_PRODUCT.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-
-        all_rows AS (
-            SELECT * FROM new_rows
-        ),
-
-        candidate_rows AS (
-            SELECT *
-                ,ROW_NUMBER() OVER (
-                    PARTITION BY AS_OF_DATE,
-                        LINK_CUSTOMER_ORDER_PK
-                        ,LINK_ORDER_PRODUCT_PK
-                    ORDER BY
-                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
-                        ,EFF_SAT_ORDER_PRODUCT_LOADDATE DESC
-                    ) AS rownum
-            FROM all_rows
-            QUALIFY rownum = 1
-        ),
-
-        bridge AS (
-            SELECT
-                CUSTOMER_PK
-                ,AS_OF_DATE
-                ,LINK_CUSTOMER_ORDER_PK
-                ,EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                ,LINK_ORDER_PRODUCT_PK
-                ,EFF_SAT_ORDER_PRODUCT_ENDDATE
-            FROM candidate_rows
-            WHERE EFF_SAT_CUSTOMER_ORDER_ENDDATE = '9999-12-31 23:59:59.999'
-                AND EFF_SAT_ORDER_PRODUCT_ENDDATE = '9999-12-31 23:59:59.999'
-        )
-
-        SELECT * FROM bridge    
-        ```
-
-    === "Incremental Load"
-
-        ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
-        ),
-
-        last_safe_load_datetime AS (
-            SELECT min(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
-            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_ORDER
-                  UNION ALL
-                  SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_ORDER_PRODUCT
-                 )
-        ),
-
-        as_of_grain_old_entries AS (
-            SELECT DISTINCT AS_OF_DATE
-            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER_PRODUCT
-        ),
-
-        as_of_grain_lost_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_grain_old_entries AS a
-            LEFT OUTER JOIN as_of AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-
-        as_of_grain_new_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of AS a
-            LEFT OUTER JOIN as_of_grain_old_entries AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-
-        min_date AS (
-            SELECT min(AS_OF_DATE) AS MIN_DATE
-            FROM as_of
-        ),
-
-        new_rows_pks AS (
-            SELECT h.CUSTOMER_PK
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS h
-            WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-
-        new_rows_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of
-            WHERE as_of.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-            UNION
-            SELECT as_of_date
-            FROM as_of_grain_new_entries
-        ),
-
-        overlap_pks AS (
-            SELECT p.CUSTOMER_PK
-            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER_PRODUCT AS p
-            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as h
-                ON p.CUSTOMER_PK = h.CUSTOMER_PK
-            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-
-        overlap_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of AS p
-            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-
-        overlap AS (
-            SELECT
-                a.CUSTOMER_PK
-                ,b.AS_OF_DATE
-                ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-                ,LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK AS LINK_ORDER_PRODUCT_PK
-                ,EFF_SAT_ORDER_PRODUCT.END_DATE AS EFF_SAT_ORDER_PRODUCT_ENDDATE
-                ,EFF_SAT_ORDER_PRODUCT.LOAD_DATETIME AS EFF_SAT_ORDER_PRODUCT_LOADDATE
-            FROM overlap_pks AS a
-            INNER JOIN overlap_as_of AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.LINK_ORDER_PRODUCT AS LINK_ORDER_PRODUCT
-                ON LINK_CUSTOMER_ORDER.ORDER_FK = LINK_ORDER_PRODUCT.ORDER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_ORDER_PRODUCT AS EFF_SAT_ORDER_PRODUCT
-                ON EFF_SAT_ORDER_PRODUCT.ORDER_PRODUCT_PK = LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK
-                AND EFF_SAT_ORDER_PRODUCT.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK
-                ,b.AS_OF_DATE
-                ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-                ,LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK AS LINK_ORDER_PRODUCT_PK
-                ,EFF_SAT_ORDER_PRODUCT.END_DATE AS EFF_SAT_ORDER_PRODUCT_ENDDATE
-                ,EFF_SAT_ORDER_PRODUCT.LOAD_DATETIME AS EFF_SAT_ORDER_PRODUCT_LOADDATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN NEW_ROWS_AS_OF AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.LINK_ORDER_PRODUCT AS LINK_ORDER_PRODUCT
-                ON LINK_CUSTOMER_ORDER.ORDER_FK = LINK_ORDER_PRODUCT.ORDER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_ORDER_PRODUCT AS EFF_SAT_ORDER_PRODUCT
-                ON EFF_SAT_ORDER_PRODUCT.ORDER_PRODUCT_PK = LINK_ORDER_PRODUCT.ORDER_PRODUCT_PK
-                AND EFF_SAT_ORDER_PRODUCT.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-
-        all_rows AS (
-            SELECT * FROM new_rows
-            UNION ALL
-            SELECT * FROM overlap
-        ),
-
-        candidate_rows AS (
-            SELECT *
-                ,ROW_NUMBER() OVER (
-                    PARTITION BY AS_OF_DATE,
-                        LINK_CUSTOMER_ORDER_PK
-                        ,LINK_ORDER_PRODUCT_PK
-                    ORDER BY
-                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
-                        ,EFF_SAT_ORDER_PRODUCT_LOADDATE DESC
-                    ) AS rownum
-            FROM all_rows
-            QUALIFY rownum = 1
-        ),
-
-        bridge AS (
-            SELECT
-                CUSTOMER_PK
-                ,AS_OF_DATE
-                ,LINK_CUSTOMER_ORDER_PK
-                ,EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                ,LINK_ORDER_PRODUCT_PK
-                ,EFF_SAT_ORDER_PRODUCT_ENDDATE
-            FROM candidate_rows
-            WHERE EFF_SAT_CUSTOMER_ORDER_ENDDATE = '9999-12-31 23:59:59.999'
-                AND EFF_SAT_ORDER_PRODUCT_ENDDATE = '9999-12-31 23:59:59.999'
-        )
-
-        SELECT * FROM bridge
-        ```
-
-#### As Of Date Table Structures
-
-An As of Date table contains a single column of dates used to construct the history in the bridge table. A typical structure will 
-contain a date range and date intervals appropriate to the data mart or reporting requirement(s).
-
-!!! Warning 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
-    is called correctly in the .yml, the column name must be called AS_OF_DATE.
-
-___
-
 ## Staging Macros
 
 ###### (macros/staging)
@@ -1951,25 +1418,9 @@ Generates sql to build a staging area using the provided parameters.
 | ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
 | include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
 | source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required }    |
-| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| derived_columns        | Mappings of column names and their value                                    | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
-
-#### Parameter breakdown
-
-##### derived_columns
-
-PLACEHOLDER
-
-##### hashed_columns
-
-PLACEHOLDER
-
-##### ranked_columns
-
-PLACEHOLDER
-
-#### Example Metadata
 
 [See examples](metadata.md#staging)
 
@@ -1981,8 +1432,7 @@ section.
 #### Column scoping
 
 The hashed column configuration in the stage macro may refer to columns which have been newly created in the derived
-column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` section.
-configuration.
+column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` configuration.
 
 For example:
 
@@ -2226,7 +1676,7 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
-#### Defining Ranked columns
+#### Defining and configuring Ranked columns
 
 This stage configuration is a helper for the [vault_insert_by_rank](#vault_insert_by_rank) materialisation. The `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
@@ -2234,17 +1684,24 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Single item parameters"
 
     ```yaml
-    source_model: "MY_STAGE"
+    source_model: 'MY_STAGE'
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_HK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'CUSTOMER_HK'
+        order_by: 'LOAD_DATETIME'
       SAT_BOOKING_RANK:
-        partition_by: "BOOKING_HK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
     ```
 
-=== "Multi-item parameters"
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
 
     ```yaml
     source_model: 'MY_STAGE'
@@ -2261,19 +1718,84 @@ configuration allows you to define ranked columns to generate, as follows:
         order_by: 'LOAD_DATETIME'
     ```
 
-This will create columns like so:
-
-=== "Single item parameters"
-
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-=== "Multi-item parameters"
+=== "Generated SQL"
 
     ```sql
     RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Dense rank
+
+=== "Dense Rank configuration"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE'
+            - 'LOAD_DATETIME'
+        dense_rank: true
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Order by direction
+
+=== "Single item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 'CUSTOMER_HK'
+        order_by:
+           LOAD_DATETIME: DESC
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE': 'DESC'
+            - 'LOAD_DATETIME': 'ASC'
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
