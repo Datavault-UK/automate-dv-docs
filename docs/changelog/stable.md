@@ -9,10 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.8] - 2021-10-25
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.8)](https://dbtvault.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
+
+#### Dependencies
+
+- dbt 0.21.0 support
+- dbt utils package dependency now has a version range (sorry!)
+
+### Fixes
+
+- Effectivity Satellites **with auto-end-dating off** now handle the use case where records may already be end-dated in the staging layer, 
+as a result of loading data 'manually' end-dated by business rules.
+
+### Features
+
+#### Rank column configurations in stage macro (ranked_columns):
+
+- Provide ASC or DESC for an `order_by` column [Read More](../macros.md#order-by-direction)
+- Configure the ranking to use `DENSE_RANK()` or `RANK()` [Read More](../macros.md#dense-rank)
+
+#### Configuration for hash strings
+
+[Read More](../best_practices.md#configuring-hash-strings)
+
+- Concatenation string can now be user defined
+- Null placeholder string can now be user defined
 
 ## [v0.7.7] - 2021-08-24
 - Re-release of v0.7.6.1 to ensure deployment to dbt Hub
-
 
 ## [v0.7.6.1] - 2021-07-14
 - Hotfix for 0.7.6 to remove unintentionally added macros from the beta branch. [#36](https://github.com/Datavault-UK/dbtvault/issues/36)

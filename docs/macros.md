@@ -10,14 +10,14 @@ dbtvault provides the means for specifying sources for Data Vault structures wit
 
 This behaves differently for the [stage](#stage) macro, which supports either style, shown below:
 
-##### ref style
+#### ref style
 
 ```yaml
 stg_customer:
   source_model: 'raw_customer'
 ```
 
-##### source style
+#### source style
 
 === "stage configuration"
 
@@ -54,6 +54,37 @@ For all other structures (hub, link, satellite, etc.) the `source_model` argumen
 staging source, or a list of strings to denote multiple staging sources, which must be names of models (minus
 the `.sql`).
 
+## Global variables
+
+dbtvault provides user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml)
+which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of dbtvault.
+
+=== "dbt_project.yml"
+
+    ```yaml
+    vars:
+      hash: MD5
+      max_datetime: '{{ dbtvault.max_datetime() }}'
+      concat_string: '||'
+      null_placeholder_string: '^^'
+    ```
+
+#### hash
+
+TODO
+
+#### max_datetime
+
+TODO
+
+#### concat_string
+
+TODO
+
+#### null_placeholder_string
+
+TODO
+
 ## Table templates
 
 ###### (macros/tables)
@@ -63,7 +94,7 @@ for your Data Vault.
 
 ### hub
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/hub.sql))
 
 Generates SQL to build a hub table using the provided parameters.
 
@@ -247,7 +278,7 @@ ___
 
 ### link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/link.sql))
 
 Generates sql to build a link table using the provided parameters.
 
@@ -433,7 +464,7 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/t_link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/t_link.sql))
 
 Generates sql to build a transactional link table using the provided parameters.
 
@@ -508,7 +539,7 @@ ___
 
 ### sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/sat.sql))
 
 Generates sql to build a satellite table using the provided parameters.
 
@@ -610,7 +641,7 @@ ___
 
 ### eff_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/eff_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/eff_sat.sql))
 
 Generates sql to build an effectivity satellite table using the provided parameters.
 
@@ -847,7 +878,7 @@ ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
@@ -972,6 +1003,8 @@ Generates SQL to build a multi-active satellite table (MAS).
 === "Google BigQuery"
     Coming soon!
 
+___
+
 ## Staging Macros
 
 ###### (macros/staging)
@@ -981,7 +1014,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/stage.sql))
 
 Generates sql to build a staging area using the provided parameters.
 
@@ -1385,11 +1418,9 @@ Generates sql to build a staging area using the provided parameters.
 | ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
 | include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
 | source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required }    |
-| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| derived_columns        | Mappings of column names and their value                                    | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
-
-#### Example Metadata
 
 [See examples](metadata.md#staging)
 
@@ -1401,8 +1432,7 @@ section.
 #### Column scoping
 
 The hashed column configuration in the stage macro may refer to columns which have been newly created in the derived
-column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` section.
-configuration.
+column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` configuration.
 
 For example:
 
@@ -1646,7 +1676,7 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
-#### Defining Ranked columns
+#### Defining and configuring Ranked columns
 
 This stage configuration is a helper for the [vault_insert_by_rank](#vault_insert_by_rank) materialisation. The `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
@@ -1654,17 +1684,24 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Single item parameters"
 
     ```yaml
-    source_model: "MY_STAGE"
+    source_model: 'MY_STAGE'
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_HK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'CUSTOMER_HK'
+        order_by: 'LOAD_DATETIME'
       SAT_BOOKING_RANK:
-        partition_by: "BOOKING_HK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
     ```
 
-=== "Multi-item parameters"
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
 
     ```yaml
     source_model: 'MY_STAGE'
@@ -1681,19 +1718,84 @@ configuration allows you to define ranked columns to generate, as follows:
         order_by: 'LOAD_DATETIME'
     ```
 
-This will create columns like so:
-
-=== "Single item parameters"
-
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-=== "Multi-item parameters"
+=== "Generated SQL"
 
     ```sql
     RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Dense rank
+
+=== "Dense Rank configuration"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE'
+            - 'LOAD_DATETIME'
+        dense_rank: true
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Order by direction
+
+=== "Single item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 'CUSTOMER_HK'
+        order_by:
+           LOAD_DATETIME: DESC
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE': 'DESC'
+            - 'LOAD_DATETIME': 'ASC'
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -1701,7 +1803,7 @@ ___
 
 ### hash_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/hash_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/hash_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -1710,7 +1812,7 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ### derive_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/derive_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/derive_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -1720,12 +1822,12 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/staging/rank_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/rank_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
 
-Generates SQL to create columns using the `RANK()` window function.
+Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function.
 
 ___
 
@@ -1741,7 +1843,7 @@ ___
 
 ### hash
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/supporting/hash.sql))
 
 !!! warning
 
@@ -1807,7 +1909,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
@@ -1865,7 +1967,7 @@ In dbtvault, we have created custom materialisations which support Data Vault 2.
 
 ### vault_insert_by_period
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_period_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/materialisations/vault_insert_by_period_materialization.sql))
 
 This materialisation is based on
 the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
@@ -2049,7 +2151,7 @@ a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/tables/hub.sql) source code for 
+See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/hub.sql) source code for 
 a demonstration of this.
 
 #### Idempotent loads
@@ -2065,7 +2167,7 @@ use `LEFT OUTER JOINS` to ensure duplicate records do not get loaded.
 
 ### vault_insert_by_rank
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.6/macros/materialisations/vault_insert_by_rank_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/materialisations/vault_insert_by_rank_materialization.sql))
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
 arbitrary rank column, created in the staging layer.
