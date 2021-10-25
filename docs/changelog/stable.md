@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.7.8] - 2021-10-25
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.8)](https://dbtvault.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
 
-#### Dependencies
+### Dependencies
 
 - dbt 0.21.0 support
 - dbt utils package dependency now has a version range (sorry!)
