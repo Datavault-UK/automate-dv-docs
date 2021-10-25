@@ -1951,7 +1951,7 @@ Generates sql to build a staging area using the provided parameters.
 | ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
 | include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
 | source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required }    |
-| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| derived_columns        | Mappings of column names and their value                                    | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 | ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 
@@ -1981,8 +1981,7 @@ section.
 #### Column scoping
 
 The hashed column configuration in the stage macro may refer to columns which have been newly created in the derived
-column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` section.
-configuration.
+column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` configuration.
 
 For example:
 
@@ -2226,7 +2225,7 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
-#### Defining Ranked columns
+#### Defining and configuring Ranked columns
 
 This stage configuration is a helper for the [vault_insert_by_rank](#vault_insert_by_rank) materialisation. The `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
@@ -2234,17 +2233,24 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Single item parameters"
 
     ```yaml
-    source_model: "MY_STAGE"
+    source_model: 'MY_STAGE'
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_HK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'CUSTOMER_HK'
+        order_by: 'LOAD_DATETIME'
       SAT_BOOKING_RANK:
-        partition_by: "BOOKING_HK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
     ```
 
-=== "Multi-item parameters"
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
 
     ```yaml
     source_model: 'MY_STAGE'
@@ -2261,19 +2267,84 @@ configuration allows you to define ranked columns to generate, as follows:
         order_by: 'LOAD_DATETIME'
     ```
 
-This will create columns like so:
-
-=== "Single item parameters"
-
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-=== "Multi-item parameters"
+=== "Generated SQL"
 
     ```sql
     RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Dense rank
+
+=== "Dense Rank configuration"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE'
+            - 'LOAD_DATETIME'
+        dense_rank: true
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Order by direction
+
+=== "Single item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 'CUSTOMER_HK'
+        order_by:
+           LOAD_DATETIME: DESC
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE': 'DESC'
+            - 'LOAD_DATETIME': 'ASC'
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
