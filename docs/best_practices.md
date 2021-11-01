@@ -239,7 +239,7 @@ described below.
 multi-column hash.
 
 5\. `IFNULL` if Steps 1-4 resolve in a NULL value (in the case of the empty string, or a true `NULL`)
-then we output a double-hat string, `^^`. This ensures that we can detect changes in columns between `NULL` d and
+then we output a double-hat string, `^^` by default. This ensures that we can detect changes in columns between `NULL` d and
 non-NULL values. This is particularly important for `HASHDIFFS`.
 
 5.5\. `NULLIF` When `is_hashdiff = false` and multiple columns get hashed, an extra `NULLIF` check gets executed. This
@@ -247,7 +247,7 @@ is to ensure that if ALL components of a composite hash key are `NULL`, then the
 loading Hubs, for example we do not want to load NULL records and if we evaluate the whole key as `NULL`, then we
 resolve this issue.
 
-6\. `CONCAT_WS` Next, we concatenate the column values using a double-pipe string, `||`. This ensures we have consistent
+6\. `CONCAT_WS` Next, we concatenate the column values using a double-pipe string, `||`, by default. This ensures we have consistent
 concatenation, using a string which is unlikely to be contained in the columns we are concatenating. Concatenating in
 this way means that we can be more confident that a combination of columns will always generate the same hash value,
 particularly where `NULLS` are concerned.
@@ -292,25 +292,27 @@ of our `HASHDIFF` columns differently.
 
 Below is an example satellite YAML config from a satellite model:
 
-```yaml hl_lines="4 5 6"
-{%- set yaml_metadata -%}
-source_model: 'stg_customer_details_hashed'
-src_pk: 'CUSTOMER_HK'
-src_hashdiff: 
-  source_column: "CUSTOMER_HASHDIFF"
-  alias: "HASHDIFF"
-src_payload:
-  - 'NAME'
-  - 'ADDRESS'
-  - 'PHONE'
-  - 'ACCBAL'
-  - 'MKTSEGMENT'
-  - 'COMMENT'
-src_eff: 'EFFECTIVE_FROM'
-src_ldts: 'LOAD_DATETIME'
-src_source: 'RECORD_SOURCE'
-{%- endset -%}
-```
+=== "sat_customer_details"
+
+    ```yaml hl_lines="4 5 6"
+    {%- set yaml_metadata -%}
+    source_model: 'stg_customer_details_hashed'
+    src_pk: 'CUSTOMER_HK'
+    src_hashdiff: 
+      source_column: "CUSTOMER_HASHDIFF"
+      alias: "HASHDIFF"
+    src_payload:
+      - 'NAME'
+      - 'ADDRESS'
+      - 'PHONE'
+      - 'ACCBAL'
+      - 'MKTSEGMENT'
+      - 'COMMENT'
+    src_eff: 'EFFECTIVE_FROM'
+    src_ldts: 'LOAD_DATETIME'
+    src_source: 'RECORD_SOURCE'
+    {%- endset -%}
+    ```
 
 The highlighted lines show the syntax required to alias a column named `CUSTOMER_HASHDIFF` (present in the
 `stg_customer_details_hashed` staging layer) as `HASHDIFF`.
@@ -327,30 +329,29 @@ collision rates in larger data sets.
 Configuring the hashing algorithm which will be used by dbtvault is simple: add a global variable to your
 `dbt_project.yml` as follows:
 
-`dbt_project.yml`
+=== "dbt_project.yml"
 
-```yaml
-
-name: 'my_project'
-version: '1'
-
-profile: 'my_project'
-
-source-paths: [ "models" ]
-analysis-paths: [ "analysis" ]
-test-paths: [ "tests" ]
-data-paths: [ "data" ]
-macro-paths: [ "macros" ]
-
-target-path: "target"
-clean-targets:
-  - "target"
-  - "dbt_modules"
-
-models:
-  vars:
-    hash: SHA # or MD5
-```
+    ```yaml
+    
+    name: 'my_project'
+    version: '1'
+    
+    profile: 'my_project'
+    
+    source-paths: [ "models" ]
+    analysis-paths: [ "analysis" ]
+    test-paths: [ "tests" ]
+    data-paths: [ "data" ]
+    macro-paths: [ "macros" ]
+    
+    target-path: "target"
+    clean-targets:
+      - "target"
+      - "dbt_modules"
+    
+    vars:
+      hash: SHA # or MD5
+    ```
 
 It is possible to configure a hashing algorithm on a model-by-model basis using the hierarchical structure of the `yaml`
 file. We recommend you keep the hashing algorithm consistent across all tables, however, as per best practise.
@@ -358,17 +359,48 @@ file. We recommend you keep the hashing algorithm consistent across all tables, 
 Read the [dbt documentation](https://docs.getdbt.com/reference/dbt-jinja-functions/var) for further information on
 variable scoping.
 
-!!! warning Stick with your chosen algorithm unless you can afford to full-refresh, and you still have access to source
-data. Changing between hashing configurations when data has already been loaded will require a full-refresh of your
-models in order to re-calculate all hashes.
+!!! warning 
+
+    Stick with your chosen algorithm unless you can afford to full-refresh, and you still have access to source
+    data. Changing between hashing configurations when data has already been loaded will require a full-refresh of your
+    models in order to re-calculate all hashes.
+
+### Configuring hash strings
+
+!!! tip "New in 0.7.8"
+    
+
+As previously described, the default hashing strings are as follows:
+
+`concat_string` is `||`
+
+`null_placeholder_string` is `^^`
+
+The strings can be changed by the user, and this is achieved in the same way as configuring the hashing algorithm:
+
+=== "dbt_project.yml hash string configuration"
+
+    ```yaml
+    
+    ...
+    vars:
+      concat_string: '!!'
+      null_placeholder_string: '##'  
+    ```
+
+=== "Result (Multi Column Hashing with custom strings)"
+
+    ```sql 
+    CAST(MD5_BINARY(NULLIF(CONCAT_WS('!!', 
+        IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '##'),
+        IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '##'), '!!',
+        IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '##')
+    ), '##!!##!!##')) AS BINARY(16)) AS CUSTOMER_HK
+    ```
 
 ### The future of hashing in dbtvault
 
-[We plan to make hashing more configurable in the future](https://github.com/Datavault-UK/dbtvault/pull/4), meaning that
-the concatenation string (`||`), `NULL` string (`^^`) and trimming, casing and `NULL` handling in general will be fully
-configurable.
-
-As mentioned elsewhere in the documentation, we will also add functionality to allow hashing to be disabled entirely.
+We plan to provide users with the ability to disable hashing entirely.
 
 In summary, the intent behind our hashing approach is to provide a robust method of ensuring consistent hashing (same
 input gives same output). Until we provide more configuration options, feel free to modify our macros for your needs, as
