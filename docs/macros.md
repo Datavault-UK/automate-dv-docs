@@ -973,14 +973,14 @@ Generates SQL to build a point-in-time table (PIT).
 
 #### Parameters
 
-| Parameter         | Description                                         | Type             | Required?                                    |
-| --------------    | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-|  src_pk           | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
-|  as_of_dates_table| Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
-|  satellites       | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  stage_tables     | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  src_ldts         | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
-|  source_model     | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
+| Parameter          | Description                                         | Type             | Required?                                    |
+| ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|  src_pk            | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table | Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
+|  satellites        | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  stage_tables      | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  src_ldts          | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
+|  source_model      | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
     [Read the tutorial](tutorial/tut_point_in_time.md) for more details
@@ -994,16 +994,17 @@ Generates SQL to build a point-in-time table (PIT).
 === "Snowflake"
 
     ```sql
-    WITH as_of AS (
-        SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+    WITH as_of_dates AS (
+        SELECT * 
+        FROM DBTVAULT.TEST.AS_OF_DATE AS a
     ),
     
     new_rows_as_of_dates AS (
         SELECT
-            hub.CUSTOMER_PK,
-            x.AS_OF_DATE
-        FROM DBTVAULT.TEST.HUB_CUSTOMER hub
-        INNER JOIN AS_OF AS x
+            a.CUSTOMER_PK,
+            b.AS_OF_DATE
+        FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+        INNER JOIN as_of_dates AS b
         ON (1=1)
     ),
     
@@ -1011,34 +1012,31 @@ Generates SQL to build a point-in-time table (PIT).
         SELECT
             a.CUSTOMER_PK,
             a.AS_OF_DATE,
-            COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
-            COALESCE(MAX(SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_DETAILS_LDTS,
-            COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
-            COALESCE(MAX(SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_LOGIN_LDTS,
-            COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK), '0000000000000000'::BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,
-            COALESCE(MAX(SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE), '1900-01-01 00:00:00.000000'::TIMESTAMP_NTZ) AS SAT_CUSTOMER_PROFILE_LDTS
+            COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
+            COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
+            COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
+            COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
+            COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
+            COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
         FROM new_rows_as_of_dates AS a
-    
-        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS SAT_CUSTOMER_DETAILS_SRC
-            ON  a.CUSTOMER_PK = SAT_CUSTOMER_DETAILS_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_DETAILS_SRC.LOAD_DATE <= a.AS_OF_DATE
-        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS SAT_CUSTOMER_LOGIN_SRC
-            ON  a.CUSTOMER_PK = SAT_CUSTOMER_LOGIN_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_LOGIN_SRC.LOAD_DATE <= a.AS_OF_DATE
-        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS SAT_CUSTOMER_PROFILE_SRC
-            ON  a.CUSTOMER_PK = SAT_CUSTOMER_PROFILE_SRC.CUSTOMER_PK
-            AND SAT_CUSTOMER_PROFILE_SRC.LOAD_DATE <= a.AS_OF_DATE
-    
+        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+            ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+            AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+            ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
+            AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
+        LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+            ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
+            AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
         GROUP BY
             a.CUSTOMER_PK, a.AS_OF_DATE
-        ORDER BY (1, 2)
     ),
     
-    PIT AS (
-    SELECT * FROM new_rows
+    pit AS (
+        SELECT * FROM new_rows
     )
     
-    SELECT DISTINCT * FROM PIT
+    SELECT DISTINCT * FROM pit
     ```
 
 #### As Of Date Table Structures
