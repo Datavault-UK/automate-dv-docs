@@ -1161,7 +1161,7 @@ ___
     {%- set yaml_metadata -%}
     source_model: HUB_CUSTOMER
     src_pk: CUSTOMER_PK
-    as_of_date_table: AS_OF_DATE
+    as_of_dates_table: AS_OF_DATE
     satellites: 
         SAT_CUSTOMER_DETAILS:
           pk:
@@ -1200,7 +1200,7 @@ ___
     !!! warning "Only available with dbt config-version: 1"
 
     ```yaml
-    PIT_CUSTOMER:
+    pit_customer:
       vars:
         source_model: HUB_CUSTOMER
         src_pk: CUSTOMER_PK
@@ -1248,7 +1248,6 @@ ___
     bridge_walk:
         CUSTOMER_ORDER:
             bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-            bridge_start_date: "EFF_SAT_CUSTOMER_ORDER_STARTDATE"
             bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
             bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
             link_table: "LINK_CUSTOMER_ORDER"
@@ -1261,7 +1260,6 @@ ___
             eff_sat_load_date: "LOAD_DATETIME"
         ORDER_PRODUCT:
             bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-            bridge_start_date: "EFF_SAT_ORDER_PRODUCT_STARTDATE"
             bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
             bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
             link_table: "LINK_ORDER_PRODUCT"
@@ -1277,10 +1275,13 @@ ___
         STG_ORDER_PRODUCT: "LOAD_DATETIME"
     {%- endset -%}
 
-    {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                       bridge_walk=bridge_walk,
-                       as_of_dates_table=as_of_dates_table,
-                       stage_tables=stage_tables,src_ldts=src_ldts) }}
+    {% set metadata_dict = fromyaml(yaml_metadata) %}   
+
+    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], metadata_dict['src_pk=src_pk'],
+                            src_ldts=metadata_dict['src_ldts'],
+                            bridge_walk=metadata_dict['bridge_walk'],
+                            as_of_dates_table=metadata_dict['as_of_dates_table'],
+                            stage_tables_ldts=metadata_dict['stage_tables_ldts']) }}
     ```
 
 === "dbt_project.yml"
@@ -1297,7 +1298,6 @@ ___
         bridge_walk:
             CUSTOMER_ORDER:
                 bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-                bridge_start_date: "EFF_SAT_CUSTOMER_ORDER_STARTDATE"
                 bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
                 bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
                 link_table: "LINK_CUSTOMER_ORDER"
@@ -1310,107 +1310,6 @@ ___
                 eff_sat_load_date: "LOAD_DATETIME"
             ORDER_PRODUCT:
                 bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-                bridge_start_date: "EFF_SAT_ORDER_PRODUCT_STARTDATE"
-                bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-                bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-                link_table: "LINK_ORDER_PRODUCT"
-                link_pk: "ORDER_PRODUCT_PK"
-                link_fk1: "ORDER_FK"
-                link_fk2: "PRODUCT_FK"
-                eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-                eff_sat_pk: "ORDER_PRODUCT_PK"
-                eff_sat_end_date: "END_DATE"
-                eff_sat_load_date: "LOAD_DATETIME"
-        stage_tables_ldts:
-            STG_CUSTOMER_ORDER: "LOAD_DATETIME"
-            STG_ORDER_PRODUCT: "LOAD_DATETIME"
-    ```
-___
-
-### Bridge tables
-
-#### Parameters
-
-[bridge macro parameters](macros.md#bridge)
-
-#### Metadata
-
-=== "Per-Model - Variables"
-
-    === Example bridge table with hub and two links
-
-    ```jinja
-    {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
-    bridge_walk:
-        CUSTOMER_ORDER:
-            bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-            bridge_start_date: "EFF_SAT_CUSTOMER_ORDER_STARTDATE"
-            bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-            bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-            link_table: "LINK_CUSTOMER_ORDER"
-            link_pk: "CUSTOMER_ORDER_PK"
-            link_fk1: "CUSTOMER_FK"
-            link_fk2: "ORDER_FK"
-            eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-            eff_sat_pk: "CUSTOMER_ORDER_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
-        ORDER_PRODUCT:
-            bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-            bridge_start_date: "EFF_SAT_ORDER_PRODUCT_STARTDATE"
-            bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-            bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-            link_table: "LINK_ORDER_PRODUCT"
-            link_pk: "ORDER_PRODUCT_PK"
-            link_fk1: "ORDER_FK"
-            link_fk2: "PRODUCT_FK"
-            eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-            eff_sat_pk: "ORDER_PRODUCT_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
-    stage_tables_ldts:
-        STG_CUSTOMER_ORDER: "LOAD_DATETIME"
-        STG_ORDER_PRODUCT: "LOAD_DATETIME"
-    {%- endset -%}
-
-    {{ dbtvault.bridge({src_pk}, {as_of_dates_table}, {bridge_walk}, 
-        {source_model}, {stage_tables}, {src_ldts}) }}
-    ```
-
-=== "dbt_project.yml"
-
-    !!! warning "Only available with dbt config-version: 1"
-
-    === Example bridge table with hub and two links
-
-    ```yaml
-    bridge_customer_order:
-      vars:
-        source_model: "HUB_CUSTOMER"
-        src_pk: "CUSTOMER_PK"
-        src_ldts: "LOAD_DATETIME"
-        as_of_dates_table: "AS_OF_DATE"
-        bridge_walk:
-            CUSTOMER_ORDER:
-                bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-                bridge_start_date: "EFF_SAT_CUSTOMER_ORDER_STARTDATE"
-                bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-                bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-                link_table: "LINK_CUSTOMER_ORDER"
-                link_pk: "CUSTOMER_ORDER_PK"
-                link_fk1: "CUSTOMER_FK"
-                link_fk2: "ORDER_FK"
-                eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-                eff_sat_pk: "CUSTOMER_ORDER_PK"
-                eff_sat_end_date: "END_DATE"
-                eff_sat_load_date: "LOAD_DATETIME"
-            ORDER_PRODUCT:
-                bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-                bridge_start_date: "EFF_SAT_ORDER_PRODUCT_STARTDATE"
                 bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
                 bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
                 link_table: "LINK_ORDER_PRODUCT"
