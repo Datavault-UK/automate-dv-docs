@@ -957,7 +957,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 ### pit
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/pit.sql))
 
 Generates SQL to build a point-in-time table (PIT).
 
