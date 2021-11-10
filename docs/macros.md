@@ -68,22 +68,22 @@ which allow you to configure different aspects of dbtvault. These variables will
       concat_string: '||'
       null_placeholder_string: '^^'
     ```
+=== "hash"
 
-#### hash
+    TODO hash
 
-TODO
+=== "max_datetime"
 
-#### max_datetime
+    TODO max_datetime
 
-TODO
+=== "concat_string"
 
-#### concat_string
+    TODO concat_string
 
-TODO
+=== "null_placeholder_string"
 
-#### null_placeholder_string
+    TODO null_placeholder_string
 
-TODO
 
 ## Table templates
 

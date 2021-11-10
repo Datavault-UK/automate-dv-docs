@@ -28,7 +28,7 @@ The method covers the full approach for developing a Data Warehouse: architectur
 and includes a number of unique techniques. 
 
 If you want to learn about Data Vault 2.0, your best starting point is the book Building a Scalable Data Warehouse with 
-Data Vault 2.0 ([see details below](#pre-requisites)).
+Data Vault 2.0 ([see details below](#pre-requisite)).
 
 ## Why do Data Vault 2.0 and dbt integrate well? 
 The Data Vault 2.0 method uses a small set of standard building blocks to model your data warehouse 
@@ -61,7 +61,7 @@ dbt works with the dbtvault package to:
 - Generate data flow diagrams showing data lineage.
 - Automatically build a documentation website.
 
-## Pre-requisites
+## Pre-requisite
 If you are going to use the dbtvault package for your Data Vault 2.0 project, then we expect you to have some prior 
 knowledge about the Data Vault 2.0 method.
 
