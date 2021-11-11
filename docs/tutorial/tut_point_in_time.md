@@ -66,127 +66,78 @@ PIT tables should use the *pit_incremental* materialization, as they will be rem
 
 We recommend setting the `pit_incremental` materialization on all of your pits using the `dbt_project.yml` file:
 
-`dbt_project.yml`
+=== "dbt_project.yml"
 
-```yaml
-models:
-  my_dbtvault_project:
-   pit:
-    materialized: pit_incremental
-    tags:
-      - pit
-    pit_customer:
-      vars:
-        ...
-```
+    ```yaml
+    models:
+      my_dbtvault_project:
+       pit:
+        materialized: pit_incremental
+        tags:
+          - pit
+        pit_customer:
+          vars:
+            ...
+    ```
 
 ### Adding the metadata
 
 Let's look at the metadata we need to provide to the [pit](../metadata.md#point-in-time-tables-pits) macro.
 
 #### Source table
+
 Here we will define the metadata for the source_model. We will use the HUB_CUSTOMER that we built before.
 
-`dbt_project.yml`
+=== "dbt_project.yml"
 
-```yaml
-pit_customer:
-  vars:
-    source_model: HUB_CUSTOMER
-    ...
-```
+    ```yaml
+    pit_customer:
+      vars:
+        source_model: HUB_CUSTOMER
+        ...
+    ```
 
 #### Primary Key
+
 Next we need add the Hub's Primary Key column 
 
-`dbt_project.yml`
+=== "dbt_project.yml"
 
-```yaml
-pit_customer:
-  vars:
-    source_model: HUB_CUSTOMER
-    src_pk: CUSTOMER_PK
-    ...
-```
-
-#### As-of Date Table 
-Next, we provide the PIT's column name for the as-of dates.
-
-`dbt_project.yml`
-
-```yaml
-pit_customer:
-  vars:
-    source_model: HUB_CUSTOMER
-    src_pk:CUSTOMER_PK
-    as_of_dates_table: AS_OF_DATE
-    ...
-```
-
-#### Satellites metadata
-Here we add the Satellite related details (i.e. the Primary/Hash Key and the Load Date/Timestamp column names)
-
-`dbt_project.yml`
-
-```yaml
-pit_customer:
-  vars:
-    source_model: HUB_CUSTOMER
-    src_pk:CUSTOMER_PK
-    as_of_dates_table: AS_OF_DATE
-    satellites: 
-        SAT_CUSTOMER_DETAILS
-          pk
-            'PK': 'CUSTOMER_PK'
-          ldts
-            'LDTS': 'LOAD_DATE'
-        SAT_CUSTOMER_LOGIN:
-          pk:
-            'PK': 'CUSTOMER_PK'
-          ldts:
-            'LDTS': 'LOAD_DATE'
-    ...
-```
-
-#### Stage metadata 
-Here we add Satellites' stage table names and their Load Date/Timestamp column names
-
-`dbt_project.yml`
-
-```yaml
-pit_customer:
-  vars:
-    source_model: HUB_CUSTOMER
-    src_pk:CUSTOMER_PK
-    as_of_dates_table: AS_OF_DATE
-    satellites: 
-        SAT_CUSTOMER_DETAILS
-          pk
-            'PK': 'CUSTOMER_PK'
-          ldts
-            'LDTS': 'LOAD_DATE'
-        SAT_CUSTOMER_LOGIN:
-          pk:
-            'PK': 'CUSTOMER_PK'
-          ldts:
-            'LDTS': 'LOAD_DATE'
-    stage_tables: 
-        'STG_CUSTOMER_DETAILS': 'LOAD_DATE'
-        'STG_CUSTOMER_LOGIN': 'LOAD_DATE'      
-    ...
-```
-
-#### Load Date/Timestamp
-Finally, we add the Load Date/Timestamp column name of the parent Hub 
-
-`dbt_project.yml`
-
-```yaml hl_lines="6 7 8 9 10 11 12"
+    ```yaml
     pit_customer:
       vars:
         source_model: HUB_CUSTOMER
         src_pk: CUSTOMER_PK
-        as_of_date_table: AS_OF_DATE
+        ...
+    ```
+
+#### As-of Date Table 
+
+Next, we provide the PIT's column name for the as-of dates.
+
+=== "dbt_project.yml"
+
+    ```yaml
+    pit_customer:
+      vars:
+        source_model: HUB_CUSTOMER
+        src_pk:CUSTOMER_PK
+        as_of_dates_table: AS_OF_DATE
+        ...
+    ```
+
+#### Satellites metadata
+
+Here we add the Satellite related details (i.e. the Primary/Hash Key and the Load Date/Timestamp column names)
+
+=== "dbt_project.yml"
+
+    ```yaml
+    pit_customer:
+      vars:
+        source_model: HUB_CUSTOMER
+        src_pk:CUSTOMER_PK
+        as_of_dates_table: AS_OF_DATE
         satellites: 
             SAT_CUSTOMER_DETAILS
               pk
@@ -198,11 +149,66 @@ Finally, we add the Load Date/Timestamp column name of the parent Hub
                 'PK': 'CUSTOMER_PK'
               ldts:
                 'LDTS': 'LOAD_DATE'
-        stage_tables:
+        ...
+    ```
+
+#### Stage metadata 
+
+Here we add Satellites' stage table names and their Load Date/Timestamp column names
+
+=== "dbt_project.yml"
+
+    ```yaml
+    pit_customer:
+      vars:
+        source_model: HUB_CUSTOMER
+        src_pk:CUSTOMER_PK
+        as_of_dates_table: AS_OF_DATE
+        satellites: 
+            SAT_CUSTOMER_DETAILS
+              pk
+                'PK': 'CUSTOMER_PK'
+              ldts
+                'LDTS': 'LOAD_DATE'
+            SAT_CUSTOMER_LOGIN:
+              pk:
+                'PK': 'CUSTOMER_PK'
+              ldts:
+                'LDTS': 'LOAD_DATE'
+        stage_tables: 
             'STG_CUSTOMER_DETAILS': 'LOAD_DATE'
-            'STG_CUSTOMER_LOGIN': 'LOAD_DATE'
-        src_ldts: 'LOAD_DATE'        
-```
+            'STG_CUSTOMER_LOGIN': 'LOAD_DATE'      
+        ...
+    ```
+
+#### Load Date/Timestamp
+
+Finally, we add the Load Date/Timestamp column name of the parent Hub 
+
+=== "dbt_project.yml"
+
+    ```yaml hl_lines="6 7 8 9 10 11 12"
+        pit_customer:
+          vars:
+            source_model: HUB_CUSTOMER
+            src_pk: CUSTOMER_PK
+            as_of_date_table: AS_OF_DATE
+            satellites: 
+                SAT_CUSTOMER_DETAILS
+                  pk
+                    'PK': 'CUSTOMER_PK'
+                  ldts
+                    'LDTS': 'LOAD_DATE'
+                SAT_CUSTOMER_LOGIN:
+                  pk:
+                    'PK': 'CUSTOMER_PK'
+                  ldts:
+                    'LDTS': 'LOAD_DATE'
+            stage_tables:
+                'STG_CUSTOMER_DETAILS': 'LOAD_DATE'
+                'STG_CUSTOMER_LOGIN': 'LOAD_DATE'
+            src_ldts: 'LOAD_DATE'        
+    ```
 
 The dbt_project.yml above only defines one PIT. To add others you would follow the same method, by adding another entry under the 
 _models > my_dbtvault_project > pit_ section inside `dbt_project.yml` (see [above](tut_point_in_time.md#setting-up-pit-models)). 
