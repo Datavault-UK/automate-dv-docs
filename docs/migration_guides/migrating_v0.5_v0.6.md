@@ -8,8 +8,7 @@ The release of dbtvault v0.6 has brought in a number of major changes:
 - [hub](../macros.md#hub) and [link](../macros.md#link) macros have been refactored to 
 allow for multi-date and intra-day loading. 
     
-- The  `source` variable used by table macros in the  
-`dbt_project.yml` file has previously caused some confusion. 
+- The  `source` variable used by table macros in the `dbt_project.yml` file has previously caused some confusion. 
 This variable has been renamed to `source_model` and must be used in all models. 
 See below for more details. A big thank you to @balmasi for this suggestion.
 
@@ -83,9 +82,9 @@ In v0.6, the equivalent is now this:
                       derived_columns=var('derived_columns', none)) }}
     ```
 
-No more unnecessary `from` macro, no more hard to read nested lists and no more awkward comma.
-With this new approach, staging is also more modular; if you do not need to derive or hash columns then you can simply 
-skip writing the configuration in the YAML.
+No more unnecessary `from` macro. No more hard to read nested lists. No more awkward comma.
+With this new approach, staging is more modular; without the need to derive or hash columns, 
+writing the configuration in the YAML becomes redundant.
 
 Staging has been messy for a little while, and we appreciate your patience whilst we worked on improving it!
 We hope that this makes life easier.
@@ -144,7 +143,7 @@ The hub and link SQL has also been refactored to use common table expressions (C
 to improve code readability. 
 
 The invocation of the hub and link macros have not changed aside from the variable change stated above. 
-The old invocations of the macros were:
+Sorted in the tabs below, the old invocations of the macros were:
 
 === "Old hub invocation"
 
@@ -204,7 +203,7 @@ The t-links have not changed, other than their invocation.
 
 ## Satellites
 
-Satellites have gone through a minor change in v0.6.
+Satellites have also gone through a minor change in v0.6.
 
 ### Invocation
 
