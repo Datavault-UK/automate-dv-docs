@@ -72,18 +72,34 @@ which allow you to configure different aspects of dbtvault. These variables will
 
     TODO hash
 
-=== "max_datetime"
+Configure the type of hashing.
 
-    TODO max_datetime
+This can be one of: 
 
-=== "concat_string"
+- MD5
+- SHA
 
-    TODO concat_string
+[Read more](./best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
-=== "null_placeholder_string"
+#### max_datetime
 
-    TODO null_placeholder_string
+Configure the value for the maximum datetime. 
 
+This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances. 
+
+This is currently only used in Effectivity Satellites, but will also be used in future (unreleased) structures (e.g. PITs and Bridges)
+
+#### concat_string
+
+Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '||'
+
+[Read more](./best_practices.md#multi-column-hashing)
+
+#### null_placeholder_string
+
+Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret characters: '^^'
+
+[Read more](./best_practices.md#null-handling)
 
 ## Table templates
 
