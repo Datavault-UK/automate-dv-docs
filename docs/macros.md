@@ -1217,7 +1217,7 @@ ___
 
 [comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/bridge.sql&#41;&#41;&#41;)
 
-Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links,
+Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links (and their effectivity satellites),
 using the provided parameters.
 
 For the current version effectivity satellite auto end dating must be enabled.
@@ -1382,10 +1382,10 @@ For the current version effectivity satellite auto end dating must be enabled.
         overlap AS (
             SELECT
                 a.CUSTOMER_PK,
-                b.AS_OF_DATE
-                            ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+                b.AS_OF_DATE,
+                LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK,
+                EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE,
+                EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
             FROM overlap_pks AS a
             INNER JOIN overlap_as_of AS b
                 ON (1=1)
@@ -1399,9 +1399,10 @@ For the current version effectivity satellite auto end dating must be enabled.
         new_rows AS (
             SELECT
                 a.CUSTOMER_PK,
-                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+                b.AS_OF_DATE,
+                LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK,
+                EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE,
+                EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
             FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
             INNER JOIN NEW_ROWS_AS_OF AS b
                 ON (1=1)
@@ -1433,7 +1434,8 @@ For the current version effectivity satellite auto end dating must be enabled.
         bridge AS (
             SELECT
                 CUSTOMER_PK,
-                AS_OF_DATE,LINK_CUSTOMER_ORDER_PK
+                AS_OF_DATE,
+                LINK_CUSTOMER_ORDER_PK
             FROM candidate_rows
             WHERE TO_DATE(EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
         )
@@ -1441,15 +1443,16 @@ For the current version effectivity satellite auto end dating must be enabled.
         SELECT * FROM bridge
         ```
 
-#### As Of Date Table Structures
+#### As-Of Dates Table Structures
 
-An As of Date table contains a single column of dates used to construct the history in the bridge table. A typical structure will 
+An As-of Dates table contains a single column of dates used to construct the history in the bridge table. A typical structure will 
 contain a date range and date intervals appropriate to the data mart or reporting requirement(s).
 
 !!! Warning 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
-    is called correctly in the .yml, the column name must be called AS_OF_DATE.
+    have to supply this yourself. Another caveat is that even though the As-of Dates table can take any name, you need to make sure 
+    it's defined accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#bridge-tables) for Bridges). 
+    The column name in the As-of Dates table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
 
 ___
 
