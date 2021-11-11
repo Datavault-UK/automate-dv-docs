@@ -1277,7 +1277,8 @@ ___
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}   
 
-    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], metadata_dict['src_pk=src_pk'],
+    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], 
+                            src_pk=metadata_dict['src_pk'],
                             src_ldts=metadata_dict['src_ldts'],
                             bridge_walk=metadata_dict['bridge_walk'],
                             as_of_dates_table=metadata_dict['as_of_dates_table'],
