@@ -1,4 +1,4 @@
-Bridge tables are query assistant tables that form part of the Business Vault. Similar to PIT tables, their purpose is
+Bridge tables are query assistant tables that are part of the Business Vault. Similar to PIT tables, their purpose is
 to improve performance of queries on the Raw Data Vault by reducing the number of required joins for such queries to 
 simple equi-joins. A bridge table spans across a hub and one or more associated links. This means that it is essentially 
 a specialised form of link table, containing hash keys from the hub and the links its spans. It does not contain 
@@ -10,9 +10,12 @@ A basic bridge table model for a hub and two links:
 
 ![alt text](../assets/images/bridge_diagram.png "A basic bridge table model for a hub and two links")
 
-### Structure
+#### Structure
 
 Our bridge structures will contain:
+
+##### Hub Table Name (source_model)
+This is the name of the hub that contains the primary key (src_pk) and to which the links are connected to.
 
 ##### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. This will be the primary 
@@ -26,9 +29,6 @@ would supply the name of your as of date table.
 This is a dictionary of bridge table metadata subdivided into dictionaries for each link relationship. The metadata for 
 each link relationship includes bridge table column aliases (bridge_xxxxx), link table name and foreign key column names 
 (link_xxxxx), and the related effectivity satellite table details (eff_sat_xxxxx).
-
-##### Hub Table Name (source_model)
-This is the name of the hub that contains the primary key (src_pk) and that the links are connected to. 
 
 ##### Stage Load Date Timestamps (stage_tables_ldts)
 List of stage table load date timestamp columns. These are used to find the waterlevel, i.e. the latest date that hasn't 
@@ -45,9 +45,10 @@ Create a new dbt model as before. We'll call this one `bridge_customer_order`.
 
     ``` jinja
     {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+                            src_ldts=src_ldts,
                             bridge_walk=bridge_walk,
                             as_of_dates_table=as_of_dates_table,
-                            stage_tables=stage_tables,src_ldts=src_ldts) }}
+                            stage_tables_ldts=stage_tables_ldts) }}
     ```
 
 
@@ -77,6 +78,7 @@ We recommend setting the `bridge_incremental` materialization on all of your bri
 Let's look at the metadata we need to provide to the [bridge](../macros.md#bridge) macro.
 
 #### Source table
+
 Here we will define the metadata for the source_model. We will use the HUB_CUSTOMER that we built before.
 
 === "dbt_project.yml"
@@ -108,10 +110,12 @@ The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be u
             ...
     ```
 
-#### As of table
+#### As-of Dates Table
 
-The `AS_OF_DATE` table is the source information of the [as of dates table](../macros.md#As-Of-Date-Table-Structures).
+The As-of Dates table is the source information of the [as of dates table](../macros.md#As-Of-Date-Table-Structures).
 This will provide the dates for which to generate the bridge table.
+
+Here we name our As-of Dates table `AS_OF_DATE`. 
 
 
 === "dbt_project.yml"
@@ -144,8 +148,53 @@ Below there are described the different bridge aliases, links table and column n
 10. The name of the column inside the `EFF_SAT_CUSTOMER_ORDER` table describing the timestamp when a `CUSTOMER_ORDER` relationship ended is `END_DATE`.  
 11. The name of the column inside the `EFF_SAT_CUSTOMER_ORDER` table recording the load date/timestamp of a `CUSTOMER_ORDER` relationship is `LOAD_DATE`.
 
+In a similar fashion, continue defining the different aliases for the `ORDER_PRODUCT` link and effectivity satellite columns. 
+
 The dbt_project.yml below only defines two link relationships but to add others you would follow the same method inside 
 the bridge_walk metadata. For instance, it can be seen where the `PRODUCT_COMPONENT` relationship metadata would begin.
+
+=== "dbt_project.yml"
+
+    ```yaml
+    bridge_customer_order:
+      vars:
+        source_model: "HUB_CUSTOMER"
+        src_pk: "CUSTOMER_PK"
+        src_ldts: "LOAD_DATETIME"
+        as_of_dates_table: "AS_OF_DATE"
+        bridge_walk:
+            CUSTOMER_ORDER:
+                bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
+                bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+                bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
+                link_table: "LINK_CUSTOMER_ORDER"
+                link_pk: "CUSTOMER_ORDER_PK"
+                link_fk1: "CUSTOMER_FK"
+                link_fk2: "ORDER_FK"
+                eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+                eff_sat_pk: "CUSTOMER_ORDER_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+            ORDER_PRODUCT:
+                bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
+                bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+                bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
+                link_table: "LINK_ORDER_PRODUCT"
+                link_pk: "ORDER_PRODUCT_PK"
+                link_fk1: "ORDER_FK"
+                link_fk2: "PRODUCT_FK"
+                eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+                eff_sat_pk: "ORDER_PRODUCT_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+            PRODUCT_COMPONENT:
+                ...
+        ...
+    ```
+
+#### Stage metadata 
+
+Finally, we add the Links & Effectivity Satellites stage table names and their Load Date/Timestamp column names 
 
 === "dbt_project.yml"
 
@@ -193,9 +242,13 @@ the bridge_walk metadata. For instance, it can be seen where the `PRODUCT_COMPON
 
 In order to finalise the creation of the `bridge_customer_order` table we use the following dbt command:
 
-`dbt run -m +bridge_customer_order`
+=== '< dbt v0.20.x'
+    `dbt run -m +bridge_customer_order`
 
-The resulting table should look like this:
+=== '> dbt v0.21.0'
+    `dbt run --select +bridge_customer_order`
+
+The resulting Bridge table should look like this:
 
  | CUSTOMER_PK | AS_OF_DATE              | LINK_CUSTOMER_ORDER_PK | LINK_ORDER_PRODUCT_PK |
  | ----------- | ----------------------- | ---------------------- | --------------------- |
