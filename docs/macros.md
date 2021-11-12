@@ -1019,6 +1019,503 @@ Generates SQL to build a multi-active satellite table (MAS).
 === "Google BigQuery"
     Coming soon!
 
+[comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/pit.sql&#41;&#41;)
+
+Generates SQL to build a point-in-time table (PIT).
+
+#### Usage
+
+``` jinja
+{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+                as_of_dates_table=as_of_dates_table,
+                satellites=satellites,
+                stage_tables=stage_tables,
+                src_ldts=src_ldts) }}
+```
+
+#### Parameters
+
+| Parameter          | Description                                         | Type             | Required?                                    |
+| ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
+|  src_pk            | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table | Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
+|  satellites        | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  stage_tables      | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
+|  src_ldts          | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
+|  source_model      | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_point_in_time.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#point-in-time-tables-pits)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Base Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * 
+            FROM DBTVAULT.TEST.AS_OF_DATE AS a
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN as_of_dates AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
+                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
+                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
+                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
+                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
+                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
+            FROM new_rows_as_of_dates AS a
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
+                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
+                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
+
+    === "Incremental Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * 
+            FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+        
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME 
+            FROM (
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
+                UNION ALL
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
+                UNION ALL
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
+            ) a
+        ),
+        
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE 
+            FROM DBTVAULT.TEST.PIT_CUSTOMER
+        ),
+        
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of_dates AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_dates AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        min_date AS (
+            SELECT min(AS_OF_DATE) AS MIN_DATE
+            FROM as_of_dates
+        ),
+        
+        backfill_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_pks AS (
+            SELECT a.CUSTOMER_PK
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+            UNION
+            SELECT AS_OF_DATE
+            FROM as_of_grain_new_entries
+        ),
+        
+        overlap AS (
+            SELECT a.*
+            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
+            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
+                ON a.CUSTOMER_PK = b.CUSTOMER_PK
+            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        -- Back-fill any newly arrived hubs, set all historical pit dates to ghost records
+        
+        backfill_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM new_rows_pks AS a
+            INNER JOIN backfill_as_of AS b
+                ON (1=1 )
+        ),
+        
+        backfill AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
+                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_DETAILS_LDTS,
+                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
+                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_LOGIN_LDTS,
+                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,        
+                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_PROFILE_LDTS
+            FROM backfill_rows_as_of_dates AS a
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
+                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
+                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN new_rows_as_of AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
+                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
+                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
+                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
+                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
+                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
+            FROM new_rows_as_of_dates AS a
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
+                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
+                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap
+            UNION ALL
+            SELECT * FROM backfill
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
+
+#### As Of Date Table Structures
+
+An As of Date table contains a single column of dates used to construct the history in the PIT. A typical structure will 
+be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
+time after which the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
+3 months of end of week values. So the as of dates table would contain a datetime for each entry to match this. 
+As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
+Using the example history before if a week had passed since when we had created the as of dates table
+it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
+
+!!! Warning 
+    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
+    is called correctly in the .yml, the column name must be called AS_OF_DATE.
+
+___
+
+### bridge
+
+[comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/bridge.sql&#41;&#41;&#41;)
+
+Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links (and their effectivity satellites),
+using the provided parameters.
+
+For the current version effectivity satellite auto end dating must be enabled.
+
+#### Usage
+
+``` jinja
+{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+                        src_ldts=src_ldts,
+                        bridge_walk=bridge_walk,
+                        as_of_dates_table=as_of_dates_table,
+                        stage_tables_ldts=stage_tables_ldts) }}
+```
+
+#### Parameters
+
+| Parameter          | Description                                                                 | Type             | Required?                                    |
+| ------------------ | --------------------------------------------------------------------------  | ---------------- | -------------------------------------------- |
+| source_model       | Starting Hub model name                                                     | String           | <i class="fas fa-check-circle required"></i> |
+| src_pk             | Starting Hub primary key column                                             | String           | <i class="fas fa-check-circle required"></i> |
+| src_ldts           | Starting Hub load date timestamp                                            | String           | <i class="fas fa-check-circle required"></i> |
+| bridge_walk        | Dictionary of bridge reference mappings                                     | Mapping          | <i class="fas fa-check-circle required"></i> |
+| as_of_dates_table  | Name for the AS OF DATE table                                               | String           | <i class="fas fa-check-circle required"></i> |
+| stage_tables_ldts  | Dictionary of stage table reference mappings and their load date timestamps | Mapping          | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_bridges.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#bridge-tables)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Base Load"
+
+        ```sql
+        WITH as_of AS (
+             SELECT a.AS_OF_DATE
+             FROM DBTVAULT.TEST.AS_OF_DATE AS a
+             WHERE a.AS_OF_DATE <= CURRENT_DATE()
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
+                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
+                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN AS_OF AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
+            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
+                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
+        ),
+        
+        all_rows AS (
+            SELECT * FROM new_rows
+        ),
+        
+        candidate_rows AS (
+            SELECT *,
+                ROW_NUMBER() OVER (
+                    PARTITION BY AS_OF_DATE,
+                        LINK_CUSTOMER_ORDER_PK
+                    ORDER BY
+                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
+                    ) AS row_num
+            FROM all_rows
+            QUALIFY row_num = 1
+        ),
+        
+        bridge AS (
+            SELECT
+                CUSTOMER_PK,
+                AS_OF_DATE,LINK_CUSTOMER_ORDER_PK
+            FROM candidate_rows
+            WHERE TO_DATE(EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
+        )
+        
+        SELECT * FROM bridge
+        ```
+
+    === "Incremental Load"
+
+        ```sql
+        WITH as_of AS (
+             SELECT a.AS_OF_DATE
+             FROM DBTVAULT.TEST.AS_OF_DATE AS a
+             WHERE a.AS_OF_DATE <= CURRENT_DATE()
+        ),
+        
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
+            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_ORDER) 
+        ),
+        
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE
+            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER
+        ),
+        
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        min_date AS (
+            SELECT min(AS_OF_DATE) AS MIN_DATE
+            FROM as_of
+        ),
+        
+        new_rows_pks AS (
+            SELECT h.CUSTOMER_PK
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS h
+            WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of
+            WHERE as_of.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+            UNION
+            SELECT as_of_date
+            FROM as_of_grain_new_entries
+        ),
+        
+        overlap_pks AS (
+            SELECT p.CUSTOMER_PK
+            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER AS p
+            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as h
+                ON p.CUSTOMER_PK = h.CUSTOMER_PK
+            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        overlap_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of AS p
+            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        overlap AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE,
+                LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK,
+                EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE,
+                EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+            FROM overlap_pks AS a
+            INNER JOIN overlap_as_of AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
+            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
+                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE,
+                LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK,
+                EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE,
+                EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN NEW_ROWS_AS_OF AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
+            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
+                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
+        ),
+        
+        all_rows AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap
+        ),
+        
+        candidate_rows AS (
+            SELECT *,
+                ROW_NUMBER() OVER (
+                    PARTITION BY AS_OF_DATE,
+                        LINK_CUSTOMER_ORDER_PK
+                    ORDER BY
+                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
+                    ) AS row_num
+            FROM all_rows
+            QUALIFY row_num = 1
+        ),
+        
+        bridge AS (
+            SELECT
+                CUSTOMER_PK,
+                AS_OF_DATE,
+                LINK_CUSTOMER_ORDER_PK
+            FROM candidate_rows
+            WHERE TO_DATE(EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
+        )
+        
+        SELECT * FROM bridge
+        ```
+
+#### As-Of Dates Table Structures
+
+An As-of Dates table contains a single column of dates used to construct the history in the bridge table. A typical structure will 
+contain a date range and date intervals appropriate to the data mart or reporting requirement(s).
+
+!!! Warning 
+    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    have to supply this yourself. Another caveat is that even though the As-of Dates table can take any name, you need to make sure 
+    it's defined accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#bridge-tables) for Bridges). 
+    The column name in the As-of Dates table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
+
 ___
 
 ## Staging Macros

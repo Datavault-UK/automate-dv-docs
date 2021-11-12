@@ -807,6 +807,186 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 ___
 
+### Point-in-Time Tables (PITs)
+
+#### Parameters
+
+[pit macro parameters](macros.md#pit)
+
+#### Metadata
+
+=== "Per-Model - YAML Strings"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: HUB_CUSTOMER
+    src_pk: CUSTOMER_PK
+    as_of_dates_table: AS_OF_DATE
+    satellites: 
+        SAT_CUSTOMER_DETAILS:
+          pk:
+              'PK': 'CUSTOMER_PK'
+          ldts:
+              'LDTS': 'LOAD_DATE'
+        SAT_CUSTOMER_LOGIN:
+          pk:
+              'PK': 'CUSTOMER_PK'
+          ldts:
+              'LDTS': 'LOAD_DATE'
+        SAT_CUSTOMER_PROFILE:
+          pk:
+              'PK': 'CUSTOMER_PK'
+          ldts:
+              'LDTS': 'LOAD_DATE'
+    stage_tables:
+        'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
+        'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
+        'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
+    src_ldts: 'LOAD_DATE'
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}   
+
+    {{ dbtvault.pit(source_model=metadata_dict['source_model'], 
+                    src_pk=metadata_dict['src_pk'],
+                    as_of_dates_table=metadata_dict['as_of_dates_table'],
+                    satellites=metadata_dict['satellites'],
+                    stage_tables=metadata_dict['stage_tables'],
+                    src_ldts=metadata_dict['src_ldts']) }}
+    ```
+
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    ```yaml
+    pit_customer:
+      vars:
+        source_model: HUB_CUSTOMER
+        src_pk: CUSTOMER_PK
+        as_of_date_table: AS_OF_DATE
+        satellites: 
+            SAT_CUSTOMER_DETAILS:
+              pk:
+                  'PK': 'CUSTOMER_PK'
+              ldts:
+                  'LDTS': 'LOAD_DATE'
+            SAT_CUSTOMER_LOGIN:
+              pk:
+                  'PK': 'CUSTOMER_PK'
+              ldts:
+                  'LDTS': 'LOAD_DATE'
+            SAT_CUSTOMER_PROFILE:
+              pk:
+                  'PK': 'CUSTOMER_PK'
+              ldts:
+                  'LDTS': 'LOAD_DATE'
+        stage_tables:
+            'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
+            'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
+            'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
+        src_ldts: 'LOAD_DATE'
+    ```
+___
+
+### Bridge tables
+
+#### Parameters
+
+[bridge macro parameters](macros.md#bridge)
+
+#### Metadata
+
+=== "Per-Model - YAML String"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATETIME"
+    as_of_dates_table: "AS_OF_DATE"
+    bridge_walk:
+        CUSTOMER_ORDER:
+            bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
+            bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+            bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
+            link_table: "LINK_CUSTOMER_ORDER"
+            link_pk: "CUSTOMER_ORDER_PK"
+            link_fk1: "CUSTOMER_FK"
+            link_fk2: "ORDER_FK"
+            eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+            eff_sat_pk: "CUSTOMER_ORDER_PK"
+            eff_sat_end_date: "END_DATE"
+            eff_sat_load_date: "LOAD_DATETIME"
+        ORDER_PRODUCT:
+            bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
+            bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+            bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
+            link_table: "LINK_ORDER_PRODUCT"
+            link_pk: "ORDER_PRODUCT_PK"
+            link_fk1: "ORDER_FK"
+            link_fk2: "PRODUCT_FK"
+            eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+            eff_sat_pk: "ORDER_PRODUCT_PK"
+            eff_sat_end_date: "END_DATE"
+            eff_sat_load_date: "LOAD_DATETIME"
+    stage_tables_ldts:
+        STG_CUSTOMER_ORDER: "LOAD_DATETIME"
+        STG_ORDER_PRODUCT: "LOAD_DATETIME"
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}   
+
+    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], 
+                            src_pk=metadata_dict['src_pk'],
+                            src_ldts=metadata_dict['src_ldts'],
+                            bridge_walk=metadata_dict['bridge_walk'],
+                            as_of_dates_table=metadata_dict['as_of_dates_table'],
+                            stage_tables_ldts=metadata_dict['stage_tables_ldts']) }}
+    ```
+
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    ```yaml
+    bridge_customer_order:
+      vars:
+        source_model: "HUB_CUSTOMER"
+        src_pk: "CUSTOMER_PK"
+        src_ldts: "LOAD_DATETIME"
+        as_of_dates_table: "AS_OF_DATE"
+        bridge_walk:
+            CUSTOMER_ORDER:
+                bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
+                bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+                bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
+                link_table: "LINK_CUSTOMER_ORDER"
+                link_pk: "CUSTOMER_ORDER_PK"
+                link_fk1: "CUSTOMER_FK"
+                link_fk2: "ORDER_FK"
+                eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+                eff_sat_pk: "CUSTOMER_ORDER_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+            ORDER_PRODUCT:
+                bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
+                bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+                bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
+                link_table: "LINK_ORDER_PRODUCT"
+                link_pk: "ORDER_PRODUCT_PK"
+                link_fk1: "ORDER_FK"
+                link_fk2: "PRODUCT_FK"
+                eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+                eff_sat_pk: "ORDER_PRODUCT_PK"
+                eff_sat_end_date: "END_DATE"
+                eff_sat_load_date: "LOAD_DATETIME"
+        stage_tables_ldts:
+            STG_CUSTOMER_ORDER: "LOAD_DATETIME"
+            STG_ORDER_PRODUCT: "LOAD_DATETIME"
+    ```
+___
+
 ### The problem with metadata
 
 When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
