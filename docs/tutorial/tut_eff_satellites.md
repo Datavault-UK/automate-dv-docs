@@ -7,7 +7,7 @@ have them and how they work.
 Say we have a Table A. Table A contains a column which is a foreign key link to a Table B. In the Data Vault we model
 this as a Link, as follows:
 
-![alt text](../assets/images/basichublink.png "A basic hub/link model")
+![alt text](../assets/images/basic_hub_link.png "A basic hub/link model")
 
 A link does not have any temporal data; it declares that there is a relationship between A and B, but nothing about when or for how long.
 
