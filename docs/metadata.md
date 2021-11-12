@@ -923,14 +923,43 @@ ___
 === "Per-model - YAML strings"
 
     ```jinja
+    {%- set yaml_metadata -%}
+    source_model: 'STG_CUSTOMER'
+    src_pk: 'CUSTOMER_PK'
+    src_ldts: 'LOAD_DATE'
+    src_satellite:
+      SATELLITE_CUSTOMER:
+        sat_name:
+          SATELLITE_NAME: "SATELLITE_1"
+        hashdiff:
+          HASHDIFF: "HASHDIFF_1"
+    src_source: 'SOURCE'
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+
+    {{ dbtvault.xts(src_pk=metadata_dict['src_pk'],
+                    src_satellite=metadata_dict['src_satellite'],
+                    src_ldts=metadata_dict["src_ldts"],
+                    src_source=metadata_dict["src_source"],
+                    source_model=metadata_dict["source_model"]) }}
     ```
 
 === "Per-Model - Variables"
 
     ```jinja
-    {%- set source_model = "v_stg_customer" -%}
+    {%- set source_model = "STG_CUSTOMER" -%}
     {%- set src_pk = "CUSTOMER_PK" -%}
-    {%- set src_satellites = -%}
+    {%- set src_satellites = { 
+            "SATELLITE_CUSTOMER": {
+                "sat_name": {
+                    "SATELLITE_NAME": "SATELLITE_1"
+                },
+                "hashdiff": {
+                    "HASHDIFF": "HASHDIFF_1"
+                }
+            }
+        } -%}
     {%- set src_ldts = "LOAD_DATE" -%}
     {%- set src_source = "SOURCE" -%}
     
@@ -945,7 +974,7 @@ ___
     ```yaml
     xts_customer:
       vars:
-        source_model: 'stg_customer'
+        source_model: 'STG_CUSTOMER'
         src_pk: 'CUSTOMER_PK'
         src_satellite: 
             'SATELLITE_CUSTOMER':
@@ -953,12 +982,7 @@ ___
                     'SATELLITE_NAME': 'SATELLITE_1'
                 'hashdiff':
                     'HASHDIFF': 'HASHDIFF_1'
-            'SATELLITE_CUSTOMER_DETAILS':
-                'sat_name':
-                    'SATELLITE_NAME': 'SATELLITE_2'
-                'hashdiff': 
-                    'HASHDIFF': 'HASHDIFF_2'
-        src_ldts: 'LOADDATE'
+        src_ldts: 'LOAD_DATE'
         src_source: 'SOURCE'
     ```
 ___
