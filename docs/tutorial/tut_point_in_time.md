@@ -217,10 +217,10 @@ _models > my_dbtvault_project > pit_ section inside `dbt_project.yml` (see [abov
 
 With our model complete and our YAML written, we can run dbt to create our `pit_customer` table.
 
-=== '< dbt v0.20.x'
+=== "< dbt v0.20.x"
     `dbt run -m +pit_customer`
 
-=== '> dbt v0.21.0'
+=== "> dbt v0.21.0"
     `dbt run --select +pit_customer`
 
 And our PIT table would look like this:
