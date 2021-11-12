@@ -242,10 +242,10 @@ Finally, we add the Links & Effectivity Satellites stage table names and their L
 
 In order to finalise the creation of the `bridge_customer_order` table we use the following dbt command:
 
-=== '< dbt v0.20.x'
+=== "< dbt v0.20.x"
     `dbt run -m +bridge_customer_order`
 
-=== '> dbt v0.21.0'
+=== "> dbt v0.21.0"
     `dbt run --select +bridge_customer_order`
 
 The resulting Bridge table should look like this:
