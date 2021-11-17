@@ -16,8 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Stable Releases](stable.md){: .md-button }
 
+
+## [v0.7.6-b1] - 2020-06-11
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6-b1)](https://dbtvault.readthedocs.io/en/v0.7.6-b1/?badge=v0.7.6-b1)
+
+### Added:
+- PITs [Read more](https://dbtvault.readthedocs.io/en/v0.7.6-b1/tutorial/tut_point_in_time/)
+- Bridges [Read more](https://dbtvault.readthedocs.io/en/v0.7.6-b1/tutorial/tut_bridges/)
+
 ## [v0.6-b2] - 2020-04-15
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6-b2)](https://dbtvault.readthedocs.io/en/v0.6-b2/?badge=v0.6-b2)
+
+Docs no longer available
 
 ### Added
 - Added more documentation for effectivity satellites
@@ -30,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed more macro headers (removed copyright etc.)
 
 ## [v0.6-b1] - 2020-04-06
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6-b1)](https://dbtvault.readthedocs.io/en/v0.6-b1/?badge=v0.6-b1)
+
+Docs no longer available
 
 ### Added
 

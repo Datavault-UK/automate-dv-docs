@@ -1,212 +1,155 @@
 ![alt text](../assets/images/staging.png "Staging from a raw table to the raw vault")
 
-The dbtvault package assumes you've already loaded a Snowflake database staging table with raw data 
-from a source system or feed (the 'raw staging layer').
-
 ### Pre-conditions
 
-All records in a single load must be for the same for the same load datetime. This restriction is not applicable to Hubs and Links.
-We will soon be removing this restriction for T-Links, Satellites and Effectivity Satellites. 
+1. The dbtvault package assumes you've already loaded a Snowflake database staging table with raw data 
+from a source system or feed; the 'raw staging layer'.
+
+2. All records in a single load must be for the same load datetime. This restriction is not applicable to Hubs and Links.
+   We will be removing this restriction for other structures in the future. 
 
 ### Let's Begin
 
 The raw staging table needs to be prepared with additional columns so that we may load our raw vault.
-Specifically, we need to add primary key hashes, hashdiffs, and any implied fixed-value columns (see the diagram).
+Specifically, we need to add hash keys, hashdiffs, and any implied fixed-value columns (see the above diagram).
 
 We also need to ensure column names align with target hub or link table column names.
 
 !!! info
-    Hashing of primary keys is optional in Snowflake and natural keys alone can be used in place of hashing. 
+    Hash keys are optional in Snowflake. Natural/business keys alone can be used in place of hashing. 
     
     We've implemented hashing as the only option for now, though a non-hashed version will be added in future releases, checkout our [roadmap](../roadmap.md).
-    
-## Creating the stage model
 
-To prepare our raw staging layer, we create a dbt model and call the dbtvault [stage](../macros.md#stage) macro with 
-provided metadata. 
+### Creating staging models
 
-### Setting up staging models
+To create a stage model, we simply copy and paste the above template into a model named after the staging table/view we
+are creating. dbtvault will generate a stage using parameters provided in the next steps.
 
-First we create a new dbt model. Our example source table is called `raw_orders`, and in this scenario contains data about customers and orders.
-We should name our staging model sensibly, for example `stg_orders_hashed.sql`, although any consistent and sensible naming convention will work.
+=== "v_stg_orders.sql"
 
-`stg_orders_hashed.sql`
-```sql
-{{ dbtvault.stage(include_source_columns=var('include_source_columns', none), 
-                  source_model=var('source_model', none), 
-                  hashed_columns=var('hashed_columns', none), 
-                  derived_columns=var('derived_columns', none)) }}
-```
+    ```sql
+    {{ dbtvault.stage(include_source_columns=true,
+                      source_model=source_model,
+                      derived_columns=derived_columns,
+                      hashed_columns=hashed_columns,
+                      ranked_columns=ranked_columns) }}
+    ```
 
-To create a staging model, we simply copy and paste the above template into a model named after the staging table/view we
-are creating. We provide the metadata to this template, which will use them to generate a staging layer.
+#### Materialisation
 
-Staging models should use the `view` materialization, though it can be a `table` depending on your requirements. 
-We recommend setting the `view` materialization on all of your staging models using the `dbt_project.yml` file:
+The recommended materialisation for a **stage** is `view`, as the stage layer contains minimal transformations on the 
+raw staging layer which need to remain in sync. You may materialise some or all stages as tables if necessary, though this
+can increase costs significantly for large amounts of data. 
 
-`dbt_project.yml`
-```yaml
-models:
-  my_dbtvault_project:
-   staging:
-    materialized: view
-    tags:
-      - stage
-    stg_customer_hashed:
-      vars:
-        ...
-    stg_booking_hashed:
-      vars:
-        ...
-```
-
-#### Adding the metadata
+### Adding the metadata
 
 Let's look at the metadata we need to provide to the [stage](../macros.md#stage) macro.
 
-#### Source model
+##### Source model
 
-The first piece of metadata we need is the source name. This can be in dbt `source` style, or `ref` style.
-Generally speaking, our source for staging will be an external raw source of data, so we should set up 
-a dbt source and use the `source` style.
-We will assume you have opted to use the `source` style for the remainder of the staging tutorial. 
+The "source model" for a stage does not necessarily need to be a model. This means you do not need to manage
+the raw stage via dbt models if you don't need to, and can simply reference tables in your database via a 
+[dbt source](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources).
 
-=== "source"
+The model provided in the 'Final model' section below, shows the use of the 'source style' 
+[source_model syntax](../macros.md#source_model-syntax).
 
-    ```yaml
-    # schema.yml
-    version: 2
+##### Derived columns
+
+| Column Name    | Value                   | 
+| -------------- | ----------------------- | 
+| SOURCE         | !1                      | 
+| LOAD_DATETIME  | CRM_DATA_INGESTION_TIME | 
+| EFFECTIVE_FROM | BOOKING_DATE            |
+| START_DATE     | BOOKING_DATE            |
+| END_DATE       | TO_DATE('9999-31-12')   |
+
+!!! Note "What is the '!'?"
+    This is some syntactic sugar provided by dbtvault to create constant values. [Read More](../macros.md#constants-derived-columns)
     
-    sources:
-      - name: my_source
-        database: MY_DATABASE
-        schema: MY_SCHEMA
-        tables:
-          - name: raw_customer
-    
-    # dbt_project.yml
-    stg_customer_hashed:
-      vars:
-        source_model: 
-          my_source: "raw_customer"
-    ```
 
-=== "ref"
+##### Hashed columns
 
-    ```yaml
-    # dbt_project.yml
-    stg_customer_hashed:
-      vars:
-        source_model: "raw_customer"
-    ```
+| Column Name        | Value                                                                                | 
+| ------------------ | ------------------------------------------------------------------------------------ | 
+| CUSTOMER_HK        | CUSTOMER_ID                                                                          | 
+| NATION_HK          | NATION_ID                                                                            |
+| CUSTOMER_NATION_HK | CUSTOMER_ID, NATION_ID                                                               |
+| CUSTOMER_HASHDIFF  | is_hashdiff: true, columns: CUSTOMER_NAME, CUSTOMER_ID, CUSTOMER_PHONE, CUSTOMER_DOB |
 
-### Adding hashed columns
+##### Final Model
 
-We can now specify a mapping of columns to hash, which we will use in our raw vault layer.
+When we provide the metadata above, our model should look like the following:
 
-`dbt_project.yml`
+```jinja
+{{ config(materialized='view') }}
 
-```yaml hl_lines="5 6 7 8 9 10 11 12 13 14 15 16 17"
+{%- set yaml_metadata -%}
+source_model: 
+  raw_staging: "raw_customer"
+derived_columns:
+  SOURCE: "!1"
+  LOAD_DATETIME: "CRM_DATA_INGESTION_TIME"
+  EFFECTIVE_FROM: "BOOKING_DATE"
+  START_DATE: "BOOKING_DATE"
+  END_DATE: "TO_DATE('9999-31-12')"
+hashed_columns:
+  CUSTOMER_HK: "CUSTOMER_ID"
+  NATION_HK: "NATION_ID"
+  CUSTOMER_NATION_HK:
+    - "CUSTOMER_ID"
+    - "NATION_ID"
+  CUSTOMER_HASHDIFF:
+    is_hashdiff: true
+    columns:
+      - "CUSTOMER_NAME"
+      - "CUSTOMER_ID"
+      - "CUSTOMER_PHONE"
+      - "CUSTOMER_DOB"
+{%- endset -%}
 
-stg_customer_hashed:
-  vars:
-    source_model: 
-      my_source: "raw_customer"
-    hashed_columns:
-      CUSTOMER_PK: "CUSTOMER_ID"
-      NATION_PK: "NATION_ID"
-      CUSTOMER_NATION_PK:
-        - "CUSTOMER_ID"
-        - "NATION_ID"
-      CUSTOMER_HASHDIFF:
-        is_hashdiff: true
-        columns:
-          - "CUSTOMER_NAME"
-          - "CUSTOMER_PHONE"
-          - "CUSTOMER_DOB"
+{% set metadata_dict = fromyaml(yaml_metadata) %}
+
+{{ dbtvault.stage(include_source_columns=true,
+                  source_model=metadata_dict['source_model'],
+                  derived_columns=metadata_dict['derived_columns'],
+                  hashed_columns=metadata_dict['hashed_columns'],
+                  ranked_columns=none) }}
 ```
 
-With this metadata, the [stage](../macros.md#stage) macro will:
+!!! Note
+    See our [metadata reference](../metadata.md#staging) for more detail on how to provide metadata to stages.
 
-- Hash the `CUSTOMER_ID` column, and create a new column called `CUSTOMER_PK` containing the hash value.
-- Hash the `NATION_ID` column, and create a new column called `NATION_PK` containing the hash value.
-- Concatenate the values in the `CUSTOMER_ID` and ```NATION_ID``` columns and hash them in the order supplied, creating a new
-column called `CUSTOMER_NATION_PK` containing the hash of the combination of the values.
-- Concatenate the values in the `CUSTOMER_NAME`, `CUSTOMER_PHONE`, `CUSTOMER_DOB` 
-columns and hash them, creating a new column called `CUSTOMER_HASHDIFF` containing the hash of the 
-combination of the values. The `is_hashdiff: true` flag should be provided so that dbtvault knows to treat this column as a hashdiff.
-Treating this column as a hashdiff means dbtvault with automatically sort the columns prior to hashing.
 
-See [Why do we hash?](../best_practices.md#why-do-we-hash) for details on hashing best practises.
-
-### Adding calculated and derived columns
-
-We can also provide a mapping of derived, calculated or constant columns which will be needed for the raw vault 
-but which do not already exist in the raw data.
-
-Some of these columns may be 'constants' implied by the context of the staging data.
-For example, we could add a source table code value for audit purposes, or a load date which is the result of a function such as `CURRENT_TIMESTAMP()`.
-We provide a constant by prepending a `!` to the front of the value in the key/value pair. 
-[Read more about constants](../metadata.md#constants)
-
-!!! tip
-    For full options, usage examples and syntax, please refer to the [stage](../macros.md#stage) macro documentation.
-
-```yaml hl_lines="18 19 20"
-
-stg_customer_hashed:
-  vars:
-    source_model: 
-      my_source: "raw_customer"
-    hashed_columns:
-      CUSTOMER_PK: "CUSTOMER_ID"
-      NATION_PK: "NATION_ID"
-      CUSTOMER_NATION_PK:
-        - "CUSTOMER_ID"
-        - "NATION_ID"
-      CUSTOMER_HASHDIFF:
-        is_hashdiff: true
-        columns:
-          - "CUSTOMER_NAME"
-          - "CUSTOMER_ID"
-          - "CUSTOMER_PHONE"
-          - "CUSTOMER_DOB"
-    derived_columns:
-      SOURCE: "!1"
-      EFFECTIVE_FROM: "BOOKING_DATE"
-      START_DATE: "BOOKING_DATE"
-      END_DATE: "TO_DATE('9999-31-12')"
-```
-
-!!! info
-    By default, the stage macro will automatically select all columns which exist in the source model, unless
-    the `include_source_columns` macro is set to `false`.
+#### Summary 
 
 In summary this model will:
 
 - Be materialized as a view
 - Select all columns from the external data source `raw_customer`
-- Generate hashed columns to create primary keys and a hashdiff
+- Generate hashed columns to create hash keys and a hashdiff
 - Generate a `SOURCE` column with the constant value `1`
 - Generate an `EFFECTIVE_FROM` column derived from the `BOOKING_DATE` column present in the raw data.
-- Generate `START_DATE` and `END_DATE` columns for use in the [effectivity satellites](tut_eff_satellites.md) later on. 
+- Generate `START_DATE` and `END_DATE` columns for use in the [effectivity satellites](tut_eff_satellites.md) later on.
+
+!!! Note "Using the staging macro"
+    Take a look at the [stage section of the macro documentation](../macros.md#stage) for a more in-depth look at what you can do with the stage macro
 
 ### Running dbt
 
 With our model complete and our YAML written, we can run dbt:
                                        
-`dbt run -m stg_customer_hashed`
+`dbt run -m v_stg_orders`
 
 And our table will look like this:
 
-| CUSTOMER_PK  | NATION_PK    | CUSTOMER_NATION_PK  | CUSTOMER_HASHDIFF   | (source table columns) | SOURCE       | EFFECTIVE_FROM | START_DATE     | END_DATE   |
-| ------------ | ------------ | ------------------- | ------------------- | ---------------------- | ------------ | -------------- | -------------- | ---------- |
-| B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1            | 1993-01-01     | 1993-01-01     | 9998-31-12 |
-| .            | .            | .                   | .                   | .                      | .            | .              | .              | .          |
-| .            | .            | .                   | .                   | .                      | .            | .              | .              | .          |
-| FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1            | 1993-01-01     | 1993-01-01     | 9998-31-12 |
+| CUSTOMER_HK  | NATION_HK    | CUSTOMER_NATION_HK  | CUSTOMER_HASHDIFF   | (source table columns) | LOAD_DATETIME            | SOURCE | EFFECTIVE_FROM | START_DATE     | END_DATE   |
+| ------------ | ------------ | ------------------- | ------------------- | ---------------------- | ------------------------ | ------ | -------------- | -------------- | ---------- |
+| B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1993-01-01 00:00:00.000  | 1      | 1993-01-01     | 1993-01-01     | 9998-31-12 |
+| .            | .            | .                   | .                   | .                      | .                        | 1      | .              | .              | .          |
+| .            | .            | .                   | .                   | .                      | .                        | 1      | .              | .              | .          |
+| FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1993-01-01 00:00:00.000  | 1      | 1993-01-01     | 1993-01-01     | 9998-31-12 |
 
 ### Next steps
 
-Now that we have implemented a new staging layer with all the required fields and hashes, we can start loading our vault
-with hubs, links and satellites.
+Now that we have implemented a new staging layer with all the required fields and hashes, we can start loading our vault.
