@@ -893,6 +893,7 @@ ___
 
 ### ma_sat
 
+[comment]: <> (todo:) update the link to the macro 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
@@ -933,13 +934,15 @@ Generates SQL to build a multi-active satellite table (MAS).
     
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
         ),
         
         records_to_insert AS (
-            SELECT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
+            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
+            FROM source_data
         )
         
         SELECT * FROM records_to_insert
@@ -949,67 +952,74 @@ Generates SQL to build a multi-active satellite table (MAS).
         
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            ,COUNT(DISTINCT a.HASHDIFF, a.CUSTOMER_PHONE )
-                OVER (PARTITION BY a.CUSTOMER_HK) AS source_count
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE a.CUSTOMER_HK IS NOT NULL
-                AND a.CUSTOMER_PHONE IS NOT NULL
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE 
+                ,COUNT(DISTINCT s.HASHDIFF, s.CUSTOMER_PHONE)
+                    OVER (PARTITION BY s.CUSTOMER_PK) AS source_count
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
         ),
+        
         latest_records AS (
-            SELECT *, COUNT(DISTINCT latest_selection.HASHDIFF, latest_selection.CUSTOMER_PHONE )
-                    OVER (PARTITION BY latest_selection.CUSTOMER_HK) AS target_count
-            FROM (
-                SELECT target_records.CUSTOMER_PHONE, target_records.CUSTOMER_HK, target_records.HASHDIFF, target_records.LOAD_DATE
-                    ,RANK() OVER (PARTITION BY target_records.CUSTOMER_HK
-                            ORDER BY target_records.LOAD_DATE DESC) AS rank_value
-                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS target_records
-                INNER JOIN
-                    (SELECT DISTINCT source_pks.CUSTOMER_HK
-                    FROM source_data AS source_pks) AS source_records
-                        ON target_records.CUSTOMER_HK = source_records.CUSTOMER_HK
-                QUALIFY rank_value = 1
-                ) AS latest_selection
+            SELECT mas.CUSTOMER_PK
+                ,mas.HASHDIFF
+                ,mas.CUSTOMER_PHONE
+                ,mas.LOAD_DATE
+                ,mas.latest_rank
+                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
+                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
+            FROM
+            (
+            SELECT inner_mas.CUSTOMER_PK
+                ,inner_mas.HASHDIFF
+                ,inner_mas.CUSTOMER_PHONE
+                ,inner_mas.LOAD_DATE
+                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
+                    ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
+            FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
+            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
+                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
+            QUALIFY latest_rank = 1
+            ) AS mas
         ),
-        matching_records AS (
-            SELECT stage.CUSTOMER_HK
-                ,COUNT(DISTINCT stage.HASHDIFF, stage.CUSTOMER_PHONE) AS match_count
-            FROM source_data AS stage
-            INNER JOIN latest_records
-                ON stage.CUSTOMER_HK = latest_records.CUSTOMER_HK
-                AND stage.HASHDIFF = latest_records.HASHDIFF
-                AND stage.CUSTOMER_PHONE = latest_records.CUSTOMER_PHONE
-            GROUP BY stage.CUSTOMER_HK
+        
+        latest_group_details AS (
+            SELECT lr.CUSTOMER_PK
+                ,lr.LOAD_DATE
+                ,MAX(lr.check_rank) AS latest_count
+            FROM latest_records AS lr
+            GROUP BY lr.CUSTOMER_PK, lr.LOAD_DATE
         ),
-        satellite_update AS (
-            SELECT DISTINCT stage.CUSTOMER_HK
-            FROM source_data AS stage
-            INNER JOIN latest_records
-                ON latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
-            LEFT OUTER JOIN matching_records
-                ON matching_records.CUSTOMER_HK = latest_records.CUSTOMER_HK
-            WHERE (stage.source_count != latest_records.target_count
-                OR COALESCE(matching_records.match_count, 0) != latest_records.target_count)
-        ),
-        satellite_insert AS (
-            SELECT DISTINCT stage.CUSTOMER_HK
-            FROM source_data AS stage
-            LEFT OUTER JOIN latest_records
-                ON stage.CUSTOMER_HK = latest_records.CUSTOMER_HK
-            WHERE latest_records.CUSTOMER_HK IS NULL
-        ),
+        
         records_to_insert AS (
-            SELECT  stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
-            INNER JOIN satellite_update
-                ON satellite_update.CUSTOMER_HK = stage.CUSTOMER_HK
-        
-            UNION
-        
-            SELECT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
-            INNER JOIN satellite_insert
-                ON satellite_insert.CUSTOMER_HK = stage.CUSTOMER_HK
+            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
+            FROM source_data
+            WHERE EXISTS
+            (
+                SELECT 1
+                FROM source_data AS stage
+                WHERE NOT EXISTS
+                (
+                    SELECT 1
+                    FROM
+                    (
+                        SELECT lr.CUSTOMER_PK
+                        ,lr.HASHDIFF
+                        ,lr.CUSTOMER_PHONE
+                        ,lr.LOAD_DATE
+                        ,lg.latest_count
+                        FROM latest_records AS lr
+                        INNER JOIN latest_group_details AS lg
+                            ON lr.CUSTOMER_PK = lg.CUSTOMER_PK 
+                            AND lr.LOAD_DATE = lg.LOAD_DATE
+                    ) AS active_records
+                    WHERE stage.CUSTOMER_PK = active_records.CUSTOMER_PK 
+                        AND stage.HASHDIFF = active_records.HASHDIFF
+                        AND stage.CUSTOMER_PHONE = active_records.CUSTOMER_PHONE 
+                        AND stage.source_count = active_records.latest_count
+                )
+                AND source_data.CUSTOMER_PK = stage.CUSTOMER_PK 
+            )
         )
         
         SELECT * FROM records_to_insert

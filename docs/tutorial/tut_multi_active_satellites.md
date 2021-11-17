@@ -5,7 +5,7 @@ allow for multiple records to be valid at the same time. Some example use cases 
 phone numbers or addresses. 
 
 In order to accommodate for multiple records of the same entity at a point-in-time, one or more Child Dependent Keys 
-will be included in the Primary Key. 
+will be included in the Primary Key alongside the Hash Key and the Load Date/Timestamp. 
 
 ### Structure
 
