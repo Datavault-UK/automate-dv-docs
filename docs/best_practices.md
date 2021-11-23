@@ -40,7 +40,7 @@ Nulls get handled in the built-in hashing processes in dbtvault.
 - Nulls get replaced with a placeholder; by default this is `^^`.
 - If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL.
 - If all components of a hashdiff hashed column are NULL, then the hashdiff will be a hash of `^^` multiplied by how
-  many components the hashdiff comprise, and separated by the concat string, which is `||` by default. e.g.
+  many components the hashdiff comprise and separated by the concat string, which is `||` by default. e.g.
   ```text
     ^^||^^||^^ = 3C92E664B39D90428DBC94975B5DDA58
   ```
