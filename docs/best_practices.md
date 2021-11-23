@@ -1,4 +1,4 @@
-We advise you follow these best practises when using dbtvault.
+We advise you follow these best practices when using dbtvault.
 
 ## Single record per key, per load (incremental)
 
@@ -31,23 +31,23 @@ the [stage](macros.md#stage) macro.
 
 ## NULL Handling
 
-The handling of nulls is important in Data Vault 2.0 because as a general rule, nulls represent a lack of something, and
+The handling of nulls is important in Data Vault 2.0 because - as a general rule -, nulls represent a lack of something, and
 therefore do not mean anything to the business. This means we do not want records or keys containing nulls ending up in
 our raw vault.
 
 Nulls get handled in the built-in hashing processes in dbtvault.
 
-- Nulls get replaced with a placeholder, by default this is `^^`.
-- If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL.
+- Nulls get replaced with a placeholder; by default this is `^^`
+- If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL
 - If all components of a hashdiff hashed column are NULL, then the hashdiff will be a hash of `^^` multiplied by how
-  many components the hashdiff comprise and separated by the concat string, which is `||` by default. e.g.
+  many components the hashdiff comprise, and separated by the concat string, which is `||` by default. e.g.
   ```text
     ^^||^^||^^ = 3C92E664B39D90428DBC94975B5DDA58
   ```
 
 !!! tip
 
-    The concat(||) and null strings(^^) can be configured, [Read more](./macros.md#global-variables)
+    The concat (`||`) and null (`^^`) strings can be configured, [Read more](./macros.md#global-variables)
 
 This is described in more depth below (with code examples).
 
@@ -140,10 +140,10 @@ possibility of collision in larger data sets.
 
 #### Personally Identifiable Information (PII)
 
-Although we do not use hashing for the purposes of security (but rather optimisation and uniqueness) using unsalted MD5
+Although we do not use hashing for the purposes of security (but rather optimisation and uniqueness) using _unsalted_ MD5
 and SHA-256 could still pose a security risk for your organisation. If any of your presentation layer (marts) tables or
 views containing any hashed PII data, an attacker may be able to brute-force the hashing to gain access to the PII. For
-this reason, we highly recommend concatenating a salt to your hashed columns in the staging layer using
+this reason, we highly recommend concatenating a _salt_ to your hashed columns in the staging layer using
 the [stage](macros.md#stage) macro.
 
 It's generally ill-advised to store this salt in the database alongside your hashed values, so we recommend injecting it
@@ -195,7 +195,7 @@ Single-column hashing step by step:
    same value.
 
 2. `TRIM` We trim whitespace from string to ensure that values with arbitrary leading or trailing whitespace will always
-   hash to the same value. For example `1001    ` and `1001 `.
+   hash to the same value. For example <code>1001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> and <code>&nbsp;1001</code>.
 
 3. `UPPER` Next we eliminate problems where the casing in a string will cause a different hash value to be generated for
    the same word, for example `DBTVAULT` and `dbtvault`.
@@ -236,15 +236,15 @@ When we hash multiple columns, we take the following approach:
         )) AS BINARY(16)) AS HASHDIFF
         ```
 
-This is similar to single-column hashing aside from the use of `IFNULL` and `CONCAT`, the step-by-step process has been
+This is similar to single-column hashing aside from the use of `IFNULL` and `CONCAT`. The step-by-step process has been
 described below.
 
 1\. Steps 1-4 are described in single-column hashing above and are performed on each column which comprises the
 multi-column hash.
 
-5\. `IFNULL` if Steps 1-4 resolve in a NULL value (in the case of the empty string, or a true `NULL`)
-then we output a double-hat string, `^^` by default. This ensures that we can detect changes in columns between `NULL` d and
-non-NULL values. This is particularly important for `HASHDIFFS`.
+5\. `IFNULL` If Steps 1-4 resolve in a NULL value (in the case of the empty string, or a true `NULL`),
+then we output a double-hat string `^^` by default. This ensures that we can detect changes in columns between `NULL` and
+non-`NULL` values. This is particularly important for `HASHDIFFS`.
 
 5.5\. `NULLIF` When `is_hashdiff = false` and multiple columns get hashed, an extra `NULLIF` check gets executed. This
 is to ensure that if ALL components of a composite hash key are `NULL`, then the whole key evaluates as `NULL`. When
@@ -358,7 +358,7 @@ Configuring the hashing algorithm which will be used by dbtvault is simple: add 
     ```
 
 It is possible to configure a hashing algorithm on a model-by-model basis using the hierarchical structure of the `yaml`
-file. We recommend you keep the hashing algorithm consistent across all tables, however, as per best practise.
+file. We recommend you keep the hashing algorithm consistent across all tables, however, as per best practice.
 
 Read the [dbt documentation](https://docs.getdbt.com/reference/dbt-jinja-functions/var) for further information on
 variable scoping.
@@ -410,4 +410,4 @@ In summary, the intent behind our hashing approach is to provide a robust method
 input gives same output). Until we provide more configuration options, feel free to modify our macros for your needs, as
 long as you stick to a standard that makes sense to you or your organisation. If you need
 advice, [feel free to join our slack and ask our developers](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA)!
-.
+
