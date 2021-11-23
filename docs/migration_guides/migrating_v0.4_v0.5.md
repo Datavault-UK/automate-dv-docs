@@ -1,7 +1,7 @@
 # Migrating from v0.4 to v0.5
 
 With the release of v0.5, we moved the metadata into variables held in the ```dbt_project.yml``` file.
-Your old metadata would have looked something like this: 
+Your old metadata would have looked like this: 
 
 ```sql
 {{- config(materialized='incremental', schema='vlt', 

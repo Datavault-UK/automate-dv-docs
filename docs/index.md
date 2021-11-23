@@ -11,8 +11,9 @@ on a Snowflake database.
     Go check them out!
 
 dbt is designed for ease of use in data engineering: for when you need to develop a data pipeline. 
-It is a single command-line utility that can run on your desktop or a VM in your network, it is developed in Python,
-and it is free to download and use.
+They offer a command-line utility developed in Python that can run on your desktop or inside a VM in your network 
+and is free to download and use. Alternatively, you can use their web-based [dbt Cloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview)
+service for an even smoother experience.
 
 Our package runs inside the dbt environment, so you can use dbt to run other parts of the Data Vault pipeline, combined with the 
 dbtvault package for the Data Vault specific steps.
@@ -28,7 +29,7 @@ The method covers the full approach for developing a Data Warehouse: architectur
 and includes a number of unique techniques. 
 
 If you want to learn about Data Vault 2.0, your best starting point is the book Building a Scalable Data Warehouse with 
-Data Vault 2.0 ([see details below](#pre-requisite)).
+Data Vault 2.0 (see details [below](#pre-requisite)).
 
 ## Why do Data Vault 2.0 and dbt integrate well? 
 The Data Vault 2.0 method uses a small set of standard building blocks to model your data warehouse 

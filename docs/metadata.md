@@ -2,7 +2,7 @@ dbtvault is metadata driven. On this page, we provide an overview of how to prov
 
 For all other metadata and configurations, please refer to the [dbt configurations reference](https://docs.getdbt.com/reference/dbt_project.yml).
 
-For further detail about how to use the macros in this section, see [table templates](macros.md#table-templates).
+For further details about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
 ### Approaches
 
@@ -47,9 +47,9 @@ You may also provide metadata on a per-model basis. This is useful if you have a
 #### Per-Model - YAML strings 
 
 If you want to provide metadata inside the model itself, but find yourself disliking the format for 
-larger collections of metadata or certain data types (e.g. dict literals), then providing a YAML String is a good 
-alternative to using `set`. This approach takes advantage of the `fromyaml()` built-in jinja function provided by dbt, 
-which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
+larger collections of metadata or certain data types (e.g. dict literals), then providing a YAML String inside a block 
+`set` assignment is a good alternative to using multiple individual `set` assignments. This approach takes advantage of 
+the `fromyaml()` built-in jinja function provided by dbt, which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
 
 The below example for a hub is a little excessive for the small amount of metadata provided, so there is also a stage 
 example provided to help better convey the difference.
@@ -127,6 +127,11 @@ example provided to help better convey the difference.
                       ranked_columns=ranked_columns) }}
     ```
 
+!!! Note 
+    
+    '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
+    [Read More](../macros.md#constants-derived-columns)
+
 ### Staging
 
 #### Parameters
@@ -142,20 +147,20 @@ example provided to help better convey the difference.
         {%- set yaml_metadata -%}
         source_model: "raw_source"
         hashed_columns:
-        CUSTOMER_HK: "CUSTOMER_ID"
-        CUST_CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_DOB"
-            - "CUSTOMER_ID"
-            - "CUSTOMER_NAME"
-            - "!9999-12-31"
-        CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_ID"
-            - "NATIONALITY"
-            - "PHONE"
+          CUSTOMER_HK: "CUSTOMER_ID"
+          CUST_CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - "CUSTOMER_DOB"
+              - "CUSTOMER_ID"
+              - "CUSTOMER_NAME"
+              - "!9999-12-31"
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - "CUSTOMER_ID"
+              - "NATIONALITY"
+              - "PHONE"
         derived_columns:
           RECORD_SOURCE: "!STG_BOOKING"
           EFFECTIVE_FROM: "BOOKING_DATE"
@@ -225,20 +230,20 @@ example provided to help better convey the difference.
         {%- set yaml_metadata -%}
         source_model: "raw_source"
         hashed_columns:
-        CUSTOMER_HK: "CUSTOMER_ID"
-        CUST_CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_DOB"
-            - "CUSTOMER_ID"
-            - "CUSTOMER_NAME"
-            - "!9999-12-31"
-        CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_ID"
-            - "NATIONALITY"
-            - "PHONE"
+          CUSTOMER_HK: "CUSTOMER_ID"
+          CUST_CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - "CUSTOMER_DOB"
+              - "CUSTOMER_ID"
+              - "CUSTOMER_NAME"
+              - "!9999-12-31"
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - "CUSTOMER_ID"
+              - "NATIONALITY"
+              - "PHONE"
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -292,7 +297,7 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict['source_model'] %}
         
-        {% set derived_columns = metadata_dict['derived_columns'] %}
+        {% set ranked_columns = metadata_dict['ranked_columns'] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,

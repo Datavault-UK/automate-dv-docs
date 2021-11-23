@@ -47,7 +47,7 @@ stg_customer:
           - name: REGION
     ```
 
-The mapping provided for the source style, is in the form `source_name: table_name` which mimics the syntax for
+The mapping provided for the source style is in the form `source_name: table_name` which mimics the syntax for
 the `source()` macro.
 
 For all other structures (hub, link, satellite, etc.) the `source_model` argument must be a string to denote a single
@@ -896,7 +896,7 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/ma_sat.sql))
 
-Generates SQL to build a multi-active satellite table (MAS).
+Generates SQL to build a multi-active satellite (MAS) table.
 
 #### Usage
 
@@ -2555,7 +2555,7 @@ Due to the way materialisations currently work in dbt, the model which the `vaul
 applied to, must be run twice to complete a full load.
 
 The first time a model with the materialisation applied is run, a `BASE LOAD` is executed. This loads all data for the
-first period in the load date range (e.g. The first day's data). All subsequent runs of the same model will execute
+first period in the load date range (e.g. the first day's data). All subsequent runs of the same model will execute
 incremental loads for each consecutive period.
 
 The first period load will be repeated but no duplicates should be inserted when using dbtvault macros.
@@ -2597,8 +2597,7 @@ materialisation is configured, the start and end of the load will get defined di
 
 | Configuration                | Outcome                                                                                                                  | Usage                | 
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current
-date**.                           | Manual Load range #1 |
+| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current date**.                           | Manual Load range #1 |
 | `start_date` and `stop_date` |  The load will start at `start_date`, and stop at `stop_date`                                                            | Manual Load range #2 |                  
 | `date_source_models`         |  The models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field` | Inferred Load range  |                 
 | All three config options     |  Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    
@@ -2742,9 +2741,9 @@ A rank column can be created one of three ways:
 
     [Read more](#defining-ranked-columns) about defining ranked columns.
 
-#### Which option?
+#### Which option to choose?
 
-- Method #2 is recommended, as makes it easier for rank columns to use user-defined derived or hashed columns created in the
+- Method #2 is recommended, as it makes it easier for rank columns to use user-defined derived or hashed columns created in the
   same staging layer.
 - Method #3 is similar, except it will not have hashed or derived column definitions available to it.
 
