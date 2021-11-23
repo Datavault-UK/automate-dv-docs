@@ -708,7 +708,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     ```jinja
     {%- set yaml_metadata -%}
     source_model: 'v_stg_order_customer'
-    src_pk: 'CUSTOMER_ORDER_HK'
+    src_pk: 'ORDER_CUSTOMER_HK'
     src_dfk: 
       - 'ORDER_HK'
     src_sfk: 'CUSTOMER_HK'
@@ -735,13 +735,12 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 === "Per-Model - Variables"
 
     ```jinja
-    {%- set source_model = "v_stg_orders" -%}
-    {%- set src_pk = "TRANSACTION_HK" -%}
-    {%- set src_dfk = "CUSTOMER_HK" -%}
-    {%- set src_sfk = "NATION_HK" -%}
+    {%- set source_model = "v_stg_order_customer" -%}
+    {%- set src_pk = "ORDER_CUSTOMER_HK" -%}
+    {%- set src_dfk = ["ORDER_HK"] -%}
+    {%- set src_sfk = "CUSTOMER_HK" -%}
     {%- set src_start_date = "START_DATE" -%}
     {%- set src_end_date = "END_DATE" -%}
-
     {%- set src_eff = "EFFECTIVE_FROM" -%}
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
