@@ -957,9 +957,9 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 ### pit
 
-[comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/pit.sql&#41;&#41;)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/pit.sql))
 
-Generates SQL to build a point-in-time table (PIT).
+Generates SQL to build a point-in-time (PIT) table.
 
 #### Usage
 
@@ -976,7 +976,7 @@ Generates SQL to build a point-in-time table (PIT).
 | Parameter          | Description                                         | Type             | Required?                                    |
 | ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
 |  src_pk            | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
-|  as_of_dates_table | Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table | Name for the As of Dates table                      |  String          | <i class="fas fa-check-circle required"></i> |
 |  satellites        | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
 |  stage_tables      | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
 |  src_ldts          | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
@@ -1196,26 +1196,24 @@ Generates SQL to build a point-in-time table (PIT).
         SELECT DISTINCT * FROM pit
         ```
 
-#### As Of Date Table Structures
+#### As Of Dates Table Structures
 
-An As of Date table contains a single column of dates used to construct the history in the PIT. A typical structure will 
-be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
-time after which the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
-3 months of end of week values. So the as of dates table would contain a datetime for each entry to match this. 
-As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
-Using the example history before if a week had passed since when we had created the as of dates table
-it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
+An As of Dates table contains a single column of dates used to construct the history in the PIT. 
 
 !!! Warning 
+
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
-    is called correctly in the .yml, the column name must be called AS_OF_DATE.
+    have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
+
+    Another caveat is that even though the As of Dates table can take any name, you need to make sure it's defined 
+    accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#point-in-time-pit-tables) 
+    for PITs). The column name in the As of Dates table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
 
 ___
 
 ### bridge
 
-[comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/bridge.sql&#41;&#41;&#41;)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/bridge.sql)))
 
 Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links (and their effectivity satellites),
 using the provided parameters.
@@ -1240,7 +1238,7 @@ For the current version effectivity satellite auto end dating must be enabled.
 | src_pk             | Starting Hub primary key column                                             | String           | <i class="fas fa-check-circle required"></i> |
 | src_ldts           | Starting Hub load date timestamp                                            | String           | <i class="fas fa-check-circle required"></i> |
 | bridge_walk        | Dictionary of bridge reference mappings                                     | Mapping          | <i class="fas fa-check-circle required"></i> |
-| as_of_dates_table  | Name for the AS OF DATE table                                               | String           | <i class="fas fa-check-circle required"></i> |
+| as_of_dates_table  | Name for the As of Dates table                                              | String           | <i class="fas fa-check-circle required"></i> |
 | stage_tables_ldts  | Dictionary of stage table reference mappings and their load date timestamps | Mapping          | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
@@ -1443,16 +1441,18 @@ For the current version effectivity satellite auto end dating must be enabled.
         SELECT * FROM bridge
         ```
 
-#### As-Of Dates Table Structures
+#### As Of Dates Table Structures
 
-An As-of Dates table contains a single column of dates used to construct the history in the bridge table. A typical structure will 
-contain a date range and date intervals appropriate to the data mart or reporting requirement(s).
+An As of Dates table contains a single column of dates used to construct the history in the Bridge table. 
 
 !!! Warning 
+
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. Another caveat is that even though the As-of Dates table can take any name, you need to make sure 
-    it's defined accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#bridge-tables) for Bridges). 
-    The column name in the As-of Dates table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
+    have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
+    
+    Another caveat is that even though the As of Dates table can take any name, you need to make sure it's defined 
+    accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#bridge-tables) 
+    for Bridges). The column name in the As of Dates table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
 
 ___
 

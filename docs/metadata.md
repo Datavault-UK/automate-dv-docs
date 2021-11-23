@@ -1147,7 +1147,7 @@ ___
     ```
 ___
 
-### Point-in-Time Tables (PITs)
+### Point-in-Time (PIT) Tables 
 
 #### Parameters
 
