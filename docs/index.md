@@ -10,8 +10,9 @@ on a Snowflake database.
     Go check them out!
 
 dbt is designed for ease of use in data engineering: for when you need to develop a data pipeline. 
-It is a single command-line utility that can run on your desktop or a VM in your network, it is developed in Python,
-and it is free to download and use.
+They offer a command-line utility developed in Python that can run on your desktop or inside a VM in your network 
+and is free to download and use. Alternatively, you can use their web-based [dbt Cloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview)
+service for an even smoother experience.
 
 Our package runs inside the dbt environment, so you can use dbt to run other parts of the Data Vault pipeline, combined with the 
 dbtvault package for the Data Vault specific steps.
@@ -28,12 +29,12 @@ Data Vault 2.0 is an Agile method that can be used to deliver a highly scalable 
 The method covers the full approach for developing a Data Warehouse: architecture, data modelling, development, 
 and includes a number of unique techniques. 
 
-If you want to learn about Data Vault 2.0, your best starting point is the book Building a Scalable Data Warehouse with 
-Data Vault 2.0 (see details below).
+If you want to learn about Data Vault 2.0, your best starting point is the book "Building a Scalable Data Warehouse with 
+Data Vault 2.0" (see details [below](#books-from-amazon)).
 
-## Data Vault 2.0 supports code automation. 
-Essentially, the method uses a small set of standard building blocks to model your data warehouse (
-Hubs, Links and Satellites in the Raw Data Vault) and, because they are standardised, you can load these blocks with 
+## Data Vault 2.0 supports code automation 
+Essentially, the method uses a small set of standard building blocks to model your data warehouse (Hubs,
+Links and Satellites in the Raw Data Vault) and, because they are standardised, you can load these blocks with 
 templated SQL. The result is a template-driven implementation, populated by metadata. 
 You provide the metadata (table names and mapping details) and SQL is generated automatically. 
 This leads to better quality code, fewer mistakes, and greatly improved productivity: i.e. Agility.
@@ -49,27 +50,28 @@ respecting any and all dependencies.
 dbt even runs the load in parallel. As Data Vault 2.0 is designed for parallel load and Snowflake is highly performant, 
 your ETL load will finish in rapid time. 
 
-dbtvault reduces the need to write Snowflake SQL by hand to load the Data Vault, which is is a repetitive, time-consuming 
-and potentially error prone task.
+dbtvault reduces the need to write Snowflake SQL by hand to load the Data Vault, which is a repetitive, time-consuming 
+and potentially error-prone task.
 
 
 ## What features does dbt running the dbtvault package offer?
 dbt works with the dbtvault package to:
 
-- Generate SQL to process the staging layer and load the data vault.
-- Ensures consistency and correctness in the generated SQL.
-- Identify dependencies between SQL statements.
-- Create Raw Data Vault tables when a release first identifies them.
-- Execute all generated SQL statements as a complete set.
-- Execute data load in parallel up to a user-defined number of parallel threads.
-- Generate data flow diagrams showing data lineage.
-- Automatically build a documentation website.
+- Generate SQL to process the staging layer and load the data vault
+- Ensures consistency and correctness in the generated SQL
+- Identify dependencies between SQL statements
+- Create Raw Data Vault tables when a release first identifies them
+- Execute all generated SQL statements as a complete set
+- Execute data load in parallel up to a user-defined number of parallel threads
+- Generate data flow diagrams showing data lineage
+- Automatically build a documentation website
 
-## You Do Need Some Prior Knowledge About the Data Vault 2.0 Method
-If you are going to use the dbtvault package for your Data Vault 2.0 project, then we expect you to have some prior 
-knowledge about the Data Vault 2.0 method.
+!!! warning "Expected prior knowledge of the Data Vault 2.0 method"
+    
+    If you are going to use the dbtvault package for your Data Vault 2.0 project, then we expect you to have some prior 
+    knowledge about the Data Vault 2.0 method.
 
-## How Can I Get Up to Speed on Data Vault 2.0?
+## How can I get up to speed on Data Vault 2.0?
 You can get further information about the Data Vault 2.0 method from the following resources:
 
 ### Books (from Amazon)
