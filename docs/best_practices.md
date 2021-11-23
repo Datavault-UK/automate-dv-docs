@@ -37,8 +37,8 @@ our raw vault.
 
 Nulls get handled in the built-in hashing processes in dbtvault.
 
-- Nulls get replaced with a placeholder; by default this is `^^`
-- If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL
+- Nulls get replaced with a placeholder; by default this is `^^`.
+- If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL.
 - If all components of a hashdiff hashed column are NULL, then the hashdiff will be a hash of `^^` multiplied by how
   many components the hashdiff comprise, and separated by the concat string, which is `||` by default. e.g.
   ```text
@@ -278,7 +278,7 @@ Best practices for hashing include:
   Refer to the [stage](macros.md#stage) docs for details on how to do this.
 
 - Ensure all **hub** columns used to calculate a primary key hash get presented in the same order across all staging
-  tables
+  tables.
 
 !!! note 
 

@@ -57,14 +57,14 @@ and potentially error-prone task.
 ## What features does dbt running the dbtvault package offer?
 dbt works with the dbtvault package to:
 
-- Generate SQL to process the staging layer and load the data vault
-- Ensures consistency and correctness in the generated SQL
-- Identify dependencies between SQL statements
-- Create Raw Data Vault tables when a release first identifies them
-- Execute all generated SQL statements as a complete set
-- Execute data load in parallel up to a user-defined number of parallel threads
-- Generate data flow diagrams showing data lineage
-- Automatically build a documentation website
+- Generate SQL to process the staging layer and load the data vault.
+- Ensures consistency and correctness in the generated SQL.
+- Identify dependencies between SQL statements.
+- Create Raw Data Vault tables when a release first identifies them.
+- Execute all generated SQL statements as a complete set.
+- Execute data load in parallel up to a user-defined number of parallel threads.
+- Generate data flow diagrams showing data lineage.
+- Automatically build a documentation website.
 
 !!! warning "Expected prior knowledge of the Data Vault 2.0 method"
     
