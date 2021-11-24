@@ -54,11 +54,6 @@ We recommend setting the `incremental` materialization on all of your satellites
             ...
     ```
 
-!!! tip "New in dbtvault v0.7.0"
-
-    You may also use the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialisation, a custom materialisation 
-    included with dbtvault which enables you to iteratively load a table using a configurable period of time (e.g. by day). 
-
 [Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
 ### Adding the metadata
