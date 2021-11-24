@@ -959,7 +959,7 @@ ___
 
 ### xts
 
-[comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.4/macros/tables/xts.sql&#41;&#41;)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters
 
@@ -994,7 +994,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        WITH satellite_SATELLITE_1_from_STG_CUSTOMER AS (
+        WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER
             WHERE CUSTOMER_PK IS NOT NULL
@@ -1002,7 +1002,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         
         union_satellites AS (
             SELECT * 
-            FROM satellite_SATELLITE_1_from_STG_CUSTOMER
+            FROM satellite_a
         ),
         
         records_to_insert AS (
@@ -1024,22 +1024,22 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        WITH satellite_SATELLITE_1_from_STG_CUSTOMER_2SAT AS (
+        WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
-        satellite_SATELLITE_2_from_STG_CUSTOMER_2SAT AS (
+        satellite_b AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         union_satellites AS (
-            SELECT * FROM satellite_SATELLITE_1_from_STG_CUSTOMER_2SAT
+            SELECT * FROM satellite_a
             UNION ALL
-            SELECT * FROM satellite_SATELLITE_2_from_STG_CUSTOMER_2SAT
+            SELECT * FROM satellite_b
         ),
         
         records_to_insert AS (
@@ -1060,38 +1060,38 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Multi-Source"
         
         ```sql
-        WITH satellite_SATELLITE_1_from_STG_CUSTOMER_2SAT_1 AS (
+        WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
-        satellite_SATELLITE_2_from_STG_CUSTOMER_2SAT_1 AS (
+        satellite_b AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
-        satellite_SATELLITE_1_from_STG_CUSTOMER_2SAT_2 AS (
+        satellite_c AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
-        satellite_SATELLITE_2_from_STG_CUSTOMER_2SAT_2 AS (
+        satellite_d AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         union_satellites AS (
-            SELECT * FROM satellite_SATELLITE_1_from_STG_CUSTOMER_2SAT_1
+            SELECT * FROM satellite_a
             UNION ALL
-            SELECT * FROM satellite_SATELLITE_2_from_STG_CUSTOMER_2SAT_1
+            SELECT * FROM satellite_b
             UNION ALL
-            SELECT * FROM satellite_SATELLITE_1_from_STG_CUSTOMER_2SAT_2
+            SELECT * FROM satellite_c
             UNION ALL
-            SELECT * FROM satellite_SATELLITE_2_from_STG_CUSTOMER_2SAT_2
+            SELECT * FROM satellite_d
         ),
         
         records_to_insert AS (
