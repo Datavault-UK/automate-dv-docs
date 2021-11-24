@@ -893,8 +893,7 @@ ___
 
 ### ma_sat
 
-[comment]: <> (todo:) update the link to the macro 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
