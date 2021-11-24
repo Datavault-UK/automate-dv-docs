@@ -2,6 +2,7 @@ site_name: dbtvault
 site_author: Datavault
 site_dir: 'site'
 repo_name: 'Datavault-UK/dbtvault'
+site_url: 'https://dbtvault.readthedocs.io/'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
 dev_addr: 127.0.0.1:8001
 theme:
@@ -27,6 +28,7 @@ nav:
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
+      - As of Dates Tables: 'tutorial/tut_as_of_date.md'
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
       - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
