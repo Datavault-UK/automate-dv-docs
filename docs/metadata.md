@@ -806,6 +806,81 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 ___
 
+### Extended Record Tracking Satellites (XTS)
+
+#### Parameters
+
+[xts macro parameters](macros.md#xts)
+
+#### Metadata
+
+=== "Per-model - YAML strings"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: 'STG_CUSTOMER'
+    src_pk: 'CUSTOMER_PK'
+    src_ldts: 'LOAD_DATE'
+    src_satellite:
+      SATELLITE_CUSTOMER:
+        sat_name:
+          SATELLITE_NAME: "SATELLITE_1"
+        hashdiff:
+          HASHDIFF: "HASHDIFF_1"
+    src_source: 'SOURCE'
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+
+    {{ dbtvault.xts(src_pk=metadata_dict['src_pk'],
+                    src_satellite=metadata_dict['src_satellite'],
+                    src_ldts=metadata_dict["src_ldts"],
+                    src_source=metadata_dict["src_source"],
+                    source_model=metadata_dict["source_model"]) }}
+    ```
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "STG_CUSTOMER" -%}
+    {%- set src_pk = "CUSTOMER_PK" -%}
+    {%- set src_satellites = { 
+            "SATELLITE_CUSTOMER": {
+                "sat_name": {
+                    "SATELLITE_NAME": "SATELLITE_1"
+                },
+                "hashdiff": {
+                    "HASHDIFF": "HASHDIFF_1"
+                }
+            }
+        } -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
+    {%- set src_source = "SOURCE" -%}
+    
+    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model)              }}
+    ```
+
+=== "dbt_project.yml"
+
+    !!! warning "Only available with dbt config-version: 1"
+
+    ```yaml
+    xts_customer:
+      vars:
+        source_model: 'STG_CUSTOMER'
+        src_pk: 'CUSTOMER_PK'
+        src_satellite: 
+            'SATELLITE_CUSTOMER':
+                'sat_name': 
+                    'SATELLITE_NAME': 'SATELLITE_1'
+                'hashdiff':
+                    'HASHDIFF': 'HASHDIFF_1'
+        src_ldts: 'LOAD_DATE'
+        src_source: 'SOURCE'
+    ```
+___
+
 ### The problem with metadata
 
 When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 

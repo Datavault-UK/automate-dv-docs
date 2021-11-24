@@ -1039,6 +1039,157 @@ Generates SQL to build a multi-active satellite table (MAS).
 === "Google BigQuery"
     Coming soon!
 
+### xts
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
+
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters
+
+#### Usage
+
+``` jinja
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                                    | Type             | Required?                                    |
+| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
+| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load date/timestamp column                              | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+[Read the tutorial](tutorial/tut_xts.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#extended-tracking-satellites-xts)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Single-Source"
+
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * 
+            FROM satellite_a
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* 
+            FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_c AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_d AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+            UNION ALL
+            SELECT * FROM satellite_c
+            UNION ALL
+            SELECT * FROM satellite_d
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 ___
 
 ## Staging Macros
