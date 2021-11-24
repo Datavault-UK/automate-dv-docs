@@ -957,7 +957,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 ### pit
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/pit.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/pit.sql))
 
 Generates SQL to build a point-in-time (PIT) table.
 
@@ -1213,7 +1213,7 @@ ___
 
 ### bridge
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/bridge.sql)))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/bridge.sql)))
 
 Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links (and their effectivity satellites),
 using the provided parameters.
