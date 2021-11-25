@@ -39,6 +39,7 @@ nav:
       - Loading the vault: 'worked_example/we_loading.md'
   - Metadata Reference: 'metadata.md'
   - Macros: 'macros.md'
+  - Materialisations: 'materialisations.md'
   - Best Practices: 'best_practices.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'

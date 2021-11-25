@@ -63,7 +63,7 @@ for your Data Vault.
 
 ### hub
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/hub.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/hub.sql))
 
 Generates SQL to build a hub table using the provided parameters.
 
@@ -244,7 +244,7 @@ ___
 
 ### link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/link.sql))
 
 Generates sql to build a link table using the provided parameters.
 
@@ -427,7 +427,7 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/t_link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/t_link.sql))
 
 Generates sql to build a transactional link table using the provided parameters.
 
@@ -499,7 +499,7 @@ ___
 
 ### sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/sat.sql))
 
 Generates sql to build a satellite table using the provided parameters.
 
@@ -591,13 +591,14 @@ Generates sql to build a satellite table using the provided parameters.
 
 #### Hashdiff Aliasing
 
-If you have multiple satellites using a single stage as its data source, then you will need to use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
+If you have multiple satellites using a single stage as its data source, then you will need to
+use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
 
 ___
 
 ### eff_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/eff_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/eff_sat.sql))
 
 Generates sql to build an effectivity satellite table using the provided parameters.
 
@@ -824,7 +825,7 @@ The definition of the 'end' of a relationship is considered business logic which
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
-!!! warning 
+!!! warning
 
     We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
     exercised if you are unsure.
@@ -833,7 +834,7 @@ ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/ma_sat.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
 
@@ -868,7 +869,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 #### Example Output
 
 === "Snowflake"
-    
+
     === "Base Load"
     
         ```sql
@@ -1198,9 +1199,9 @@ Generates SQL to build a point-in-time (PIT) table.
 
 #### As Of Dates Tables
 
-An As of Dates table contains a single column of dates used to construct the history in the PIT. 
+An As of Dates table contains a single column of dates used to construct the history in the PIT.
 
-!!! Warning 
+!!! Warning
 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
@@ -1215,8 +1216,8 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/bridge.sql)))
 
-Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or more associated links (and their effectivity satellites),
-using the provided parameters.
+Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or 
+more associated links (and their effectivity satellites), using the provided parameters.
 
 For the current version effectivity satellite auto end dating must be enabled.
 
@@ -1242,7 +1243,7 @@ For the current version effectivity satellite auto end dating must be enabled.
 | stage_tables_ldts  | Dictionary of stage table reference mappings and their load date timestamps | Mapping          | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_bridges.md) for more details
+[Read the tutorial](tutorial/tut_bridges.md) for more details
 
 #### Example Metadata
 
@@ -1443,9 +1444,9 @@ For the current version effectivity satellite auto end dating must be enabled.
 
 #### As Of Dates Table Structures
 
-An As of Dates table contains a single column of dates used to construct the history in the Bridge table. 
+An As of Dates table contains a single column of dates used to construct the history in the Bridge table.
 
-!!! Warning 
+!!! Warning
 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
@@ -1465,7 +1466,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/stage.sql))
 
 Generates sql to build a staging area using the provided parameters.
 
@@ -2128,7 +2129,7 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 #### Defining Ranked columns
 
-To make it easier to use the [vault_insert_by_rank](#vault_insert_by_rank) materialisation, the `ranked_columns`
+To make it easier to use the [vault_insert_by_rank](materialisations.md#vault_insert_by_rank) materialisation, the `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
 === "Single item parameters"
@@ -2181,16 +2182,15 @@ ___
 
 ### hash_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/staging/hash_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/hash_columns.sql))
 
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
+!!! note This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
 ### derive_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/staging/derive_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/derive_columns.sql))
 
 !!! note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2200,7 +2200,7 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/staging/rank_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/rank_columns.sql))
 
 !!! note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2221,10 +2221,10 @@ ___
 
 ### hash
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/supporting/hash.sql))
 
-!!! warning 
-    
+!!! warning
+
     This macro ***should not be*** used for cryptographic purposes.
 
     The intended use is for creating checksum-like values only, so that we may compare records accurately.
@@ -2232,10 +2232,10 @@ ___
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-    - [hash_columns](#hash_columns)
-    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
-    for more detailed information on the purposes of this macro and what it does.
-    
+- [hash_columns](#hash_columns)
+- Read [Hashing best practises and why we hash](best_practices.md#hashing)
+for more detailed information on the purposes of this macro and what it does.
+
         - You may choose between `MD5` and `SHA-256` hashing.
           [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
@@ -2272,8 +2272,8 @@ A macro for generating hashing SQL for columns.
         )) AS BINARY(32)) AS HASHDIFF
         ```
 
-!!! tip
-    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes with one macro.
+!!! tip The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
+with one macro.
 
 #### Parameters
 
@@ -2287,7 +2287,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
@@ -2301,7 +2301,7 @@ A macro for quickly prefixing a list of columns with a string.
 #### Usage
 
 === "Input"
-    
+
     ```sql 
     {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
     ```
@@ -2323,302 +2323,3 @@ ___
 
 Internal macros are used by other macros provided in this package. They process provided metadata and should not need to
 be called directly.
-
-___
-
-## Materialisations
-
-###### (macros/materialisations)
-
-Materialisations dictate how a model is created in the database.
-
-dbt comes with 4 standard materialisations:
-
-- Table
-- View
-- Incremental
-- Ephemeral
-
-[Read more about materialisations here](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/materializations/)
-
-For dbtvault, we have created some custom materialisations which will provide assistance Data Vault 2.0 specific use
-cases.
-
-### vault_insert_by_period
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/materialisations/vault_insert_by_period_materialization.sql))
-
-This materialisation is based on
-the [insert_by_period](https://github.com/fishtown-analytics/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
-materialisation developed by Fishtown Analytics for the [dbt-utils](https://github.com/fishtown-analytics/dbt-utils)
-package.
-
-We have re-purposed it and provided support for Snowflake, as well as added a number of convenience features.
-
-Features include:
-
-- Idempotent loading
-- Inference of date range to load with
-- Manually configurable date range to load with
-- Configurable granularity (day, month, year etc.)
-
-The purpose of the materialisation is to insert data into a table iteratively and periodically, using a configured date
-range. More detail on how this works is below.
-
-#### Usage
-
-=== "Manual Load range #1"
-
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30') }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
-
-=== "Manual Load range #2"
-
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30', stop_date='2020-04-30') }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
-
-=== "Manual Load range #3"
-
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
-
-=== "Inferred Load range"
-
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    date_source_models=var('source_model')) }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
-
-#### Initial/Base Load vs. Incremental Load
-
-Due to the way materialisations currently work in dbt, the model which the `vault_insert_by_period` materialisation is
-applied to, must be run twice to complete a full load.
-
-The first time a model with the materialisation applied is run, a `BASE LOAD` is executed. This loads all data for the
-first period in the load date range (e.g. The first day's data). All subsequent runs of the same model will execute
-incremental loads for each consecutive period.
-
-The first period load will be repeated but no duplicates should be inserted when using dbtvault macros.
-
-##### Run Output
-
-Examples of output for dbt runs using the [eff_sat](#eff_sat) macro and this materialisation.
-
-=== "Initial/Base load"
-
-    ```text
-    15:24:08 | Concurrency: 4 threads (target='snowflake')
-    15:24:08 | 15:24:08 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-    15:24:10 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [BASE LOAD 1 in 1.78s]
-    15:24:10 | 15:24:10 | Finished running 1 vault_insert_by_period model in 3.99s.
-    ```
-
-=== "Incremental load"
-
-    ```text 
-    15:24:16 | Concurrency: 4 threads (target='snowflake')
-    15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
-    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
-    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
-    15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
-    ```
-
-#### Configuring the load date range
-
-The start and finish date of the load can be configured in a number of different ways. Depending on how the
-materialisation is configured, the start and end of the load will get defined differently, as shown in the table below.
-
-| Configuration                | Outcome                                                                                                                  | Usage                | 
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current
-date**.                           | Manual Load range #1 |
-| `start_date` and `stop_date` |  The load will start at `start_date`, and stop at `stop_date`                                                            | Manual Load range #2 |                  
-| `date_source_models`         |  The models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field` | Inferred Load range  |                 
-| All three config options     |  Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    
-
-Please refer to the _Usage_ section above to see examples.
-
-#### Configuration Options
-
-| Configuration      |  Description                                         | Type                 | Default | Required?                                        |
-| ------------------ | ---------------------------------------------------- | -------------------- | ------- | ------------------------------------------------ |
-| timestamp_field    |  A list of column names                              | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
-| period             |  Time period to load over                            | String               | day     | <i class="fas fa-minus-circle not-required"></i> |
-| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range             |
-
-#### Period
-
-The period configuration option allows us to configure the granularity of the load.
-
-The naming varies per platform, though some common examples are:
-
-- hour
-- day
-- month
-- year
-
-See below for the platform-specific documentation.
-
-- [Snowflake](https://docs.snowflake.com/en/sql-reference/functions-date-time.html#supported-date-and-time-parts)
-
-#### Automatic load range inference
-
-Providing a list of models with the `date_source_models` configuration option, will automatically load all data from the
-source with date or date-times between the minimum and maximum values contained in the `timestamp_field` column.
-
-When using the dbtvault table template macros, `date_source_models` should be the same as the `source_model` attribute
-in the macro.
-
-This does not necessarily have to be the case however, and it is possible to create a waterlevel-like table as follows:
-
-=== "waterlevel.sql"
-
-    | TYPE  | LOAD_DATE      | 
-    | ----- | -------------- | 
-    | Start | 2020-01-30     | 
-    | Stop  | 2020-04-30     |
-
-Where `LOAD_DATE` is provided to the materialisation as the `timestamp_field`, and `date_source_models` is provided
-as `waterlevel` (the model name).
-
-#### Using the materialisation with non-dbtvault SQL
-
-Every [table template macro](macros.md#table-templates) includes a `__PERIOD_FILTER__` string in its SQL when used in
-conjunction with this materialisation.
-
-At runtime, this string is replaced with SQL which applies conditions to filter the dates contained in
-the `timestamp_field` to those specified in the load date range. If you are only using dbtvault table template macros
-with this materialisation, then there is no need for any additional work.
-
-However, If you are writing your own models and wish to use the this materialisation, then you must include
-a `WHERE __PERIOD_FILTER__`
-somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
-should provide best results.
-
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/hub.sql) source code for further
-understanding.
-
-#### Idempotent loads
-
-This materialisation supports idempotent loads when used with dbtvault macros. When calculating the `start` and `stop`
-dates of the load, a `COALESCE` function is applied. This `COALESCE` call compares the maximum timestamp contained in
-the `timestamp_field`, and the provided or inferred `start_date` and sets the `start_date`
-to whatever is larger (more recent). This means that any aborted loads will continue where they left off, and any
-duplicate loads will not have any effect (if using dbtvault macros).
-
-If you wish support idempotent loads in your own models using this materialisation, the best approach is to
-use `LEFT OUTER JOINS` to ensure duplicate records are not loaded.
-
-### vault_insert_by_rank
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/materialisations/vault_insert_by_rank_materialization.sql))
-
-The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
-arbitrary rank column, created in the staging layer.
-
-The `RANK()` window function is used to rank (using an `ORDER BY` clause) a row within the current 'window' of the
-function, which is defined by the
-`PARTITION BY` clause.
-
-The custom materialisation uses this value as the value to iterate over when loading; a row with rank 1 will be loaded
-prior to a row with rank 2, and so on.
-
-This materialisation can be used to correctly load temporal structures (such as satellites) where records may have
-millisecond timings between them, by partitioning by the primary/hash key of a table, and ordering by the timestamp
-column.
-
-#### Usage
-
-```jinja
-{{ config(materialized='vault_insert_by_rank', rank_column='DBTVAULT_RANK', rank_source_models='MY_STAGE') }}
-
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                    src_start_date=src_start_date, src_end_date=src_end_date,
-                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                    source_model=source_model) }}
-```
-
-#### Configuration Options
-
-| Configuration      |  Description                                         | Type                 | Default | Required?                                        |
-| ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
-| rank_column        |  The column name containing the rank values          | String               | None    | <i class="fas fa-check-circle required"></i>     |
-| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
-
-#### Creating a rank column
-
-A rank column can be created one of three ways:
-
-1. Manually creating it in a model prior to the staging layer, and using this model as the stage `source_model`.
-
-2. Using the `ranked_columns` configuration of the [stage](#stage) macro
-
-    ```yaml
-    source_model: "MY_STAGE"
-    ranked_columns:
-      DBTVAULT_RANK:
-        partition_by: "CUSTOMER_PK"
-        order_by: "LOAD_DATETIME"
-    ```
-
-3. Using the `derived_columns` configuration of the [stage](#stage) macro
-
-    ```yaml
-    source_model: "MY_STAGE"
-    derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
-    ```
-   
-!!! note
-
-    [Read more](#defining-ranked-columns) about defining ranked columns.
-
-#### Which option?
-
-- Method #2 is recommended, as it allows ranked columns to use user-defined derived or hashed columns created in the
-  same staging layer.
-- Method #3 is similar, except it will not have hashed or derived column definitions available to it.
-
-!!! warning "Check your rank"
-
-    It is important that once a rank column is created, it should be sense checked for correct and expected ordering. If your ranking is incorrect according to
-    the business, then loading will not be executed correctly.
-
-### bridge_incremental
-
-### pit_incremental
