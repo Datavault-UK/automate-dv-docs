@@ -2342,7 +2342,7 @@ dbt comes with 4 standard materialisations:
 [Read more about materialisations here](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/materializations/)
 
 For dbtvault, we have created some custom materialisations which will provide assistance Data Vault 2.0 specific use
-cases
+cases.
 
 ### vault_insert_by_period
 
@@ -2618,3 +2618,7 @@ A rank column can be created one of three ways:
 
     It is important that once a rank column is created, it should be sense checked for correct and expected ordering. If your ranking is incorrect according to
     the business, then loading will not be executed correctly.
+
+### bridge_incremental
+
+### pit_incremental
