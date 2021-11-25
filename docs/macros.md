@@ -987,7 +987,7 @@ Generates SQL to build a point-in-time (PIT) table.
 
 #### Example Metadata
 
-[See examples](metadata.md#point-in-time-tables-pits)
+[See examples](metadata.md#point-in-time-pit-tables)
 
 #### Example Output
 
@@ -1196,7 +1196,7 @@ Generates SQL to build a point-in-time (PIT) table.
         SELECT DISTINCT * FROM pit
         ```
 
-#### As Of Dates Table Structures
+#### As Of Dates Tables
 
 An As of Dates table contains a single column of dates used to construct the history in the PIT. 
 

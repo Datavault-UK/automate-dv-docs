@@ -61,7 +61,7 @@ Bridge tables should use the `bridge_incremental` materialisation, as the bridge
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [bridge](macros.md#bridge) macro.
+Let's look at the metadata we need to provide to the [bridge](../macros.md#bridge) macro.
 
 | Parameter         | Value                                                                    | 
 | ----------------- | ------------------------------------------------------------------------ | 
@@ -130,7 +130,7 @@ The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be u
 
 #### As of Dates Table
 
-The As of Dates table is the source information of the [as of dates table](tutorial/tut_as_of_date.md).
+The As of Dates table is the source information of the [as of dates table](tut_as_of_date.md).
 This will provide the dates for which to generate the bridge table.
 
 Here we name our As of Dates table `AS_OF_DATES`. 
