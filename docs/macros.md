@@ -2399,7 +2399,7 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 #### Defining and configuring Ranked columns
 
-This stage configuration is a helper for the [vault_insert_by_rank](#vault_insert_by_rank) materialisation. The `ranked_columns`
+This stage configuration is a helper for the [vault_insert_by_rank](materialisations.md#vault_insert_by_rank-insert-by-rank) materialisation. The `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
 === "Single item parameters"
@@ -2562,7 +2562,7 @@ you wish.
 
 ___
 
-### hash
+### hash (macro)
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql))
 

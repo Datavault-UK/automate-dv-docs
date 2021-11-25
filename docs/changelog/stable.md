@@ -279,7 +279,7 @@ Read [Migrating from v0.4](https://dbtvault.readthedocs.io/en/v0.7.6/migration_g
 
 ### Fixed
 
-- Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros.md#hash), 
+- Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros.md#hash-macro), 
 _**multi_hash**_, [staging](../macros.md#staging-macros)).   
 
 ## [v0.4.1] - 2020-01-08

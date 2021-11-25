@@ -7,7 +7,7 @@ that any deltas formed by loading these records in individual cycles get lost. F
 as there are no temporal attributes, but for structures such as satellites this will produce erroneous loads.
 
 Until a future release solves this limitation for structures configured with the built-in **incremental materialisation**,
-we advise that you use one of our provided custom [insert_by materialisations](macros.md#materialisations). 
+we advise that you use one of our provided [custom materialisations](materialisations.md). 
 
 These materialisations are fully configurable and automatically iterate over records, to load each batch/iteration separately.
 
@@ -86,7 +86,7 @@ If the driving key column(s) or secondary foreign key (sfk) column(s) are null t
 ## Materialisations
 
 All raw vault structures support both the built-in dbt incremental materialisation and dbtvault's [custom 
-materialisations](macros.md#materialisations). 
+materialisations](materialisations.md). 
 
 [Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
@@ -122,12 +122,12 @@ Data Vault 2.0 standards.
 ## Hashing
 
 !!! seealso "See Also"
-    - [hash](macros.md#hash)
+    - [hash](macros.md#hash-macro)
     - [hash_columns](macros.md#hash_columns)
  
 ### The drawbacks of using MD5
 
-By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros.md#hash)
+By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros.md#hash-macro)
 and [hash_columns](macros.md#hash_columns). If your table contains more than a few billion rows, then there is a chance
 of a clash: where two different values generate the same hash value
 (see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collision_vulnerabilities)).

@@ -11,20 +11,16 @@ dbt comes with 4 standard materialisations:
 
 [Read more about materialisations here](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/materializations/)
 
-For dbtvault, we have created some custom materialisations which support Data Vault 2.0 specific patterns.
+For dbtvault, we have created some custom materialisations which support Data Vault 2.0 specific patterns which are 
+documented below.
 
-- Insert by Period
-- Insert by Rank
-- Incremental Bridge
-- Incremental PIT
+### vault_insert_by_period (Insert by Period)
 
-### vault_insert_by_period
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/materialisations/vault_insert_by_period_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/vault_insert_by_period_materialization.sql))
 
 This materialisation is based on
-the [insert_by_period](https://github.com/fishtown-analytics/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
-materialisation developed by Fishtown Analytics for the [dbt-utils](https://github.com/fishtown-analytics/dbt-utils)
+the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
+materialisation developed by dbt Labs for the [dbt-utils](https://github.com/dbt-labs/dbt-utils)
 package.
 
 We have re-purposed it and provided support for Snowflake, as well as added a number of convenience features.
@@ -147,13 +143,13 @@ Please refer to the _Usage_ section above to see examples.
 
 #### Configuration Options
 
-| Configuration      |  Description                                         | Type                 | Default | Required?                                        |
-| ------------------ | ---------------------------------------------------- | -------------------- | ------- | ------------------------------------------------ |
-| timestamp_field    |  A list of column names                              | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
-| period             |  Time period to load over                            | String               | day     | <i class="fas fa-minus-circle not-required"></i> |
-| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range             |
-| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range             |
+| Configuration      |  Description                                         | Type                 | Default | Required?                                          |
+| ------------------ | ---------------------------------------------------- | -------------------- | ------- | -------------------------------------------------- |
+| timestamp_field    |  A list of column names                              | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }     |
+| period             |  Time period to load over                            | String               | day     | :fontawesome-solid-minus-circle:{ .not-required }  |
+| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
+| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
+| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range (above)       |
 
 #### Period
 
@@ -199,13 +195,13 @@ At runtime, this string is replaced with SQL which applies conditions to filter 
 the `timestamp_field` to those specified in the load date range. If you are only using dbtvault table template macros
 with this materialisation, then there is no need for any additional work.
 
-However, If you are writing your own models and wish to use the this materialisation, then you must include
+However, If you are writing your own models and wish to use this materialisation, then you must include
 a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/hub.sql) source code for further
-understanding.
+See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql) source code for 
+a demonstration of this.
 
 #### Idempotent loads
 
@@ -216,11 +212,11 @@ to whatever is larger (more recent). This means that any aborted loads will cont
 duplicate loads will not have any effect (if using dbtvault macros).
 
 If you wish support idempotent loads in your own models using this materialisation, the best approach is to
-use `LEFT OUTER JOINS` to ensure duplicate records are not loaded.
+use `LEFT OUTER JOINS` to ensure duplicate records do not get loaded.
 
-### vault_insert_by_rank
+### vault_insert_by_rank (Insert by Rank)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/materialisations/vault_insert_by_rank_materialization.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/vault_insert_by_rank_materialization.sql))
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
 arbitrary rank column, created in the staging layer.
@@ -251,14 +247,14 @@ column.
 
 | Configuration      |  Description                                         | Type                 | Default | Required?                                        |
 | ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
-| rank_column        |  The column name containing the rank values          | String               | None    | <i class="fas fa-check-circle required"></i>     |
-| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | <i class="fas fa-check-circle required"></i>     |
+| rank_column        |  The column name containing the rank values          | String               | None    | :fontawesome-solid-check-circle:{ .required }   |
+| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }   |
 
 #### Creating a rank column
 
 A rank column can be created one of three ways:
 
-1. Manually creating it in a model prior to the staging layer, and using this model as the stage `source_model`.
+1. Manually creating it in a model prior to the staging layer, and using this model as the stage's `source_model`.
 
 2. Using the `ranked_columns` configuration of the [stage](macros.md#stage) macro
 
@@ -266,7 +262,7 @@ A rank column can be created one of three ways:
     source_model: "MY_STAGE"
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_PK"
+        partition_by: "CUSTOMER_HK"
         order_by: "LOAD_DATETIME"
     ```
 
@@ -275,16 +271,15 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME)"
+      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
     ```
-   
-!!! note
 
-    [Read more](#defining-ranked-columns) about defining ranked columns.
+!!! note
+    [Read more](macros.md#defining-and-configuring-ranked-columns) about defining ranked columns.
 
 #### Which option?
 
-- Method #2 is recommended, as it allows ranked columns to use user-defined derived or hashed columns created in the
+- Method #2 is recommended, as makes it easier for rank columns to use user-defined derived or hashed columns created in the
   same staging layer.
 - Method #3 is similar, except it will not have hashed or derived column definitions available to it.
 
@@ -293,6 +288,6 @@ A rank column can be created one of three ways:
     It is important that once a rank column is created, it should be sense checked for correct and expected ordering. If your ranking is incorrect according to
     the business, then loading will not be executed correctly.
 
-### bridge_incremental
+### bridge_incremental (Incremental Bridge)
 
-### pit_incremental
+### pit_incremental (Incremental PIT)

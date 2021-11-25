@@ -24,8 +24,6 @@ Development is still ongoing, and we are continually adding more and more featur
 If you have any ideas, or are interested in hearing more, contact Datavault directly via Slack or email or submit an 
 issue on our GitHub.
 
-
-
 ## Releases Roadmap
 
 ### v0.7.9

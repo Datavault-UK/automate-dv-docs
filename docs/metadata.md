@@ -807,7 +807,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 ___
 
 
-### xts
+### Extended Tracking Satellites (XTS)
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
 
