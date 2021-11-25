@@ -290,7 +290,6 @@ _**multi_hash**_, [staging](../macros.md#staging-macros)).
 
 
 ## [v0.4] - 2019-11-27
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.4)](https://dbtvault.readthedocs.io/en/v0.4-pre/?badge=v0.4)
 
 ### Added
 
@@ -370,11 +369,11 @@ causing subsequent loads after the initial load, to fail.
 
 ### Macros
 
-- Updated [hash](../macros.md#hash) and _**multi-hash**_
-    - [hash](../macros.md#hash) now accepts a third parameter, `sort`
+- Updated _**hash**_ and _**multi-hash**_
+    - _**hash**_ now accepts a third parameter, `sort`
     which will alpha-sort provided columns when set to true.
     - _**multi-hash updated**_ to take advantage of
-    the the [hash](../macros.md#hash) functionality.
+    the _**hash**_ functionality.
 
 ### Documentation
 
@@ -390,7 +389,6 @@ causing subsequent loads after the initial load, to fail.
 - Renamed `stg_orders_hashed` back to `stg_customers_hashed`
 
 ## [v0.2.1-pre] - 2019-10-07
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2.1-pre)](https://dbtvault.readthedocs.io/en/v0.2.1-pre/?badge=v0.2.1-pre)
 
 ### Documentation
 
@@ -400,8 +398,6 @@ causing subsequent loads after the initial load, to fail.
     - Corrected version in dbt_project.yml
 
 ## [v0.2-pre] - 2019-10-07
-
-[Feedback is welcome!](https://github.com/Datavault-UK/dbtvault/issues)
  
 ### Improved
 Read the linked documentation for more detail on how to take advantage of
