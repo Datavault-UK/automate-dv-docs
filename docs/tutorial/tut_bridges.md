@@ -4,7 +4,7 @@ simple equi-joins. A bridge table spans across a hub and one or more associated 
 a specialised form of link table, containing hash keys from the hub and the links its spans. It does not contain 
 information from satellites, however, it may contain computations and aggregations (according to grain) to increase 
 query performance upstream when creating virtualised data marts. Bridge tables provide a timeline for valid sets of 
-hub and link relationships for a given set of dates described in an [As-of Dates table](../macros.md#as-of-date-tables)
+hub and link relationships for a given set of dates described in an [As of Date table](../macros.md#as-of-date-tables)
 
 A basic bridge table model for a hub and two links:
 
@@ -21,9 +21,9 @@ This is the name of the hub that contains the primary key (src_pk) and to which 
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. This will be the primary 
 key used by the hub.
 
-##### As of Dates Table (as_of_dates_table) 
-The As of Dates table describes the history needed to construct the bridge table as a list of dates. This is where you 
-would supply the name of your As of Dates table.
+##### As of Date Table (as_of_dates_table) 
+The As of Date table describes the history needed to construct the bridge table as a list of dates. This is where you 
+would supply the name of your As of Date table.
 
 ##### Bridge Table Parameters (bridge_walk)
 This is a dictionary of bridge table metadata subdivided into dictionaries for each link relationship. The metadata for 
@@ -57,7 +57,7 @@ are creating. dbtvault will generate a bridge table using parameters provided in
 
 #### Materialisation
 
-Bridge tables should use the `bridge_incremental` materialisation, as the bridge is remade with each new As of Dates table. 
+Bridge tables should use the `bridge_incremental` materialisation, as the bridge is remade with each new As of Date table. 
 
 ### Adding the metadata
 
@@ -68,7 +68,7 @@ Let's look at the metadata we need to provide to the [bridge](../macros.md#bridg
 | source_model      | HUB_CUSTOMER                                                             | 
 | src_pk            | CUSTOMER_PK                                                              |
 | src_ldts          | LOAD_DATETIME                                                            |
-| as_of_dates_table | AS_OF_DATES                                                              |
+| as_of_dates_table | AS_OF_DATE                                                               |
 | satellites        | {'CUSTOMER_ORDER':                                                       |
 |                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_CUSTOMER_ORDER_PK',                 | 
 |                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_CUSTOMER_ORDER_ENDDATE',   | 
@@ -128,12 +128,12 @@ The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be u
     ...
     ```
 
-#### As of Dates Table
+#### As of Date Table
 
-The As of Dates table is the source information of the [as of dates table](tut_as_of_date.md).
+The As of Date table is the source information of the [As of Dates](tut_as_of_date.md).
 This will provide the dates for which to generate the bridge table.
 
-Here we name our As of Dates table `AS_OF_DATES`. 
+Here we name our As of Date table `AS_OF_DATE`. 
 
 === "bridge_customer_order.sql"
 
@@ -142,7 +142,7 @@ Here we name our As of Dates table `AS_OF_DATES`.
     source_model: "HUB_CUSTOMER"
     src_pk: "CUSTOMER_PK"
     src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATES"
+    as_of_dates_table: "AS_OF_DATE"
     ...
     ```
 
@@ -176,7 +176,7 @@ the bridge_walk metadata. For instance, it can be seen where the `PRODUCT_COMPON
     source_model: "HUB_CUSTOMER"
     src_pk: "CUSTOMER_PK"
     src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATES"
+    as_of_dates_table: "AS_OF_DATE"
     bridge_walk:
         CUSTOMER_ORDER:
             bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
@@ -216,7 +216,7 @@ Finally, we add the Links & Effectivity Satellites stage table names and their L
     source_model: "HUB_CUSTOMER"
     src_pk: "CUSTOMER_PK"
     src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATES"
+    as_of_dates_table: "AS_OF_DATE"
     bridge_walk:
         CUSTOMER_ORDER:
             bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
@@ -259,7 +259,7 @@ In the end, our model should look like the following:
     source_model: "HUB_CUSTOMER"
     src_pk: "CUSTOMER_PK"
     src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATES"
+    as_of_dates_table: "AS_OF_DATE"
     bridge_walk:
         CUSTOMER_ORDER:
             bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"

@@ -1,6 +1,6 @@
 A Point-In-Time table is a query assistant structure, part of the Business Vault, meant to improve the performance of 
 loading and creating the information marts. Given a supplied list of dates/timestamps in an 
-[as of dates table](../macros.md#as-of-dates-tables), the PIT table will identify the relevant records from 
+[As of Date table](../macros.md#as-of-date-tables), the PIT table will identify the relevant records from 
 each Satellite for that specific date/timestamp and record the Hash Key and the LDTS value of that Satellite record. 
 By identifying the "coordinates" of the relevant records at each point-in-time a priori, the information marts queries 
 can make use of equi-joins which offer a significant boost in performance.    
@@ -22,9 +22,9 @@ by the parent Hub.
 ##### Load Date/Timestamp (src_ldts)
 This is a string with the name of the Hub's Load Date/Timestamp column 
 
-##### As-of Dates Table (as_of_dates_table) 
-The as_of_dates_table describes the history needed to construct the PIT table as a list of dates. This is where you would 
-supply the name of your As of Dates table.
+##### As of Date Table (as_of_dates_table) 
+The `as_of_dates_table` describes the history needed to construct the PIT table as a list of dates. This is where you would 
+supply the name of your As of Date table.
 
 ##### Satellites (satellites)
 This is a dictionary that contains the metadata for the Satellites in subject. It will have three levels of keys. 
@@ -65,7 +65,7 @@ are creating. dbtvault will generate a PIT using parameters provided in the next
 
 #### Materialisation
 
-PIT tables should use the `pit_incremental` materialisation, as they will be remade with every new As of Dates table. 
+PIT tables should use the `pit_incremental` materialisation, as they will be remade with every new As of Date table. 
 
 ### Adding the metadata
 
@@ -76,7 +76,7 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 | source_model      | HUB_CUSTOMER                                      | 
 | src_pk            | CUSTOMER_PK                                       |
 | src_ldts          | LOAD_DATE                                         |
-| as_of_dates_table | AS_OF_DATES                                       |
+| as_of_dates_table | AS_OF_DATE                                        |
 | satellites        | {'SAT_CUSTOMER_DETAILS':                          |
 |                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         | 
 |                   | &emsp;&emsp;&nbsp;'ldts': {'LDTS': 'LOAD_DATE'}}, |
@@ -125,9 +125,9 @@ Next, we add the Load Date/Timestamp column name of the parent Hub
     ...
     ```
 
-#### As of Dates Table 
+#### As of Date Table 
 
-Next, we provide the PIT's column name for the As of Dates table.
+Next, we provide the PIT's column name for the As of Date table.
 
 === "pit_customer.yml"
 
@@ -206,7 +206,7 @@ In the end, our model should look like the following:
     source_model: "HUB_CUSTOMER"
     src_pk: "CUSTOMER_PK"
     src_ldts: "LOAD_DATE"        
-    as_of_dates_table: "AS_OF_DATES"
+    as_of_dates_table: "AS_OF_DATE"
     satellites: 
         SAT_CUSTOMER_DETAILS
           pk:

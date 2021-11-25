@@ -1230,7 +1230,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 | Parameter          | Description                                         | Type             | Required?                                    |
 | ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
 |  src_pk            | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
-|  as_of_dates_table | Name for the As of Dates table                      |  String          | <i class="fas fa-check-circle required"></i> |
+|  as_of_dates_table | Name for the As of Date table                       |  String          | <i class="fas fa-check-circle required"></i> |
 |  satellites        | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
 |  stage_tables      | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
 |  src_ldts          | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
@@ -1456,12 +1456,12 @@ An As of Date table contains a single column of dates (a date spine) used to con
 contain a date range where the date interval will be short, such as every day or every hour, followed by a period of 
 time after which the date intervals are slightly larger. 
 
-An example history could be end of day values for 3 months followed by another 3 months of end of week values. The as of dates table 
+An example history could be end of day values for 3 months followed by another 3 months of end of week values. The As of Date table 
 would then contain a datetime for each entry to match this. 
 
-As the days pass, the as of dates table should change to reflect this with dates being removed off the end and new dates added.
+As the days pass, the As of Dates should change to reflect this with dates being removed off the end and new dates added.
 
-If we use the 3-month example from before, and a week had passed since when we had created the as of dates table, then
+If we use the 3-month example from before, and a week had passed since when we had created the As of Date table, then
 it would still contain 3 months worth of end of day values followed by 3 months of end of week values but shifted a week forward 
 to reflect the current date.
 
@@ -1471,9 +1471,9 @@ Think of As of Date tables as essentially a rolling window of time.
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
 
-    Another caveat is that even though the As of Dates table can take any name, you need to make sure it's defined 
+    Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
     accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#point-in-time-pit-tables) 
-    for PITs). The column name in the As of Dates table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
+    for PITs). The column name in the As of Date table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
 
 ___
 
@@ -1504,7 +1504,7 @@ For the current version effectivity satellite auto end dating must be enabled.
 | src_pk             | Starting Hub primary key column                                             | String           | <i class="fas fa-check-circle required"></i> |
 | src_ldts           | Starting Hub load date timestamp                                            | String           | <i class="fas fa-check-circle required"></i> |
 | bridge_walk        | Dictionary of bridge reference mappings                                     | Mapping          | <i class="fas fa-check-circle required"></i> |
-| as_of_dates_table  | Name for the As of Dates table                                              | String           | <i class="fas fa-check-circle required"></i> |
+| as_of_dates_table  | Name for the As of Date table                                               | String           | <i class="fas fa-check-circle required"></i> |
 | stage_tables_ldts  | Dictionary of stage table reference mappings and their load date timestamps | Mapping          | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
@@ -1711,18 +1711,18 @@ For the current version effectivity satellite auto end dating must be enabled.
         SELECT * FROM bridge
         ```
 
-#### As Of Dates Table Structures
+#### As Of Date Table Structures
 
-An As of Dates table contains a single column of dates used to construct the history in the Bridge table.
+An As of Date table contains a single column of dates used to construct the history in the Bridge table.
 
 !!! Warning
 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
     
-    Another caveat is that even though the As of Dates table can take any name, you need to make sure it's defined 
+    Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
     accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#bridge-tables) 
-    for Bridges). The column name in the As of Dates table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
+    for Bridges). The column name in the As of Date table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
 
 ___
 

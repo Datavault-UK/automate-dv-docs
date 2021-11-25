@@ -30,7 +30,7 @@ nav:
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
       - Extended Tracking Satellites: 'tutorial/tut_xts.md'
-      - As of Dates Tables: 'tutorial/tut_as_of_date.md'
+      - As of Date Tables: 'tutorial/tut_as_of_date.md'
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
       - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
