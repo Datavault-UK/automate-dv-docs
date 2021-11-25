@@ -72,6 +72,8 @@ When we provide the metadata above, our model should look like the following:
 === "as_of_dates.sql"
 
     ```jinja
+    {{ config(materialized='table') }}
+    
     {%- set datepart = "day" -%}
     {%- set start_date="to_date('2021/01/01', 'yyyy/mm/dd')" -%}
     {%- set end_date="to_date('2021/04/01', 'yyyy/mm/dd')" -%}
