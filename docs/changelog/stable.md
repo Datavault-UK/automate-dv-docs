@@ -9,6 +9,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.8] - 2021-10-25
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.8)](https://dbtvault.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
+
+### Dependencies
+
+- dbt 0.21.0 support
+- dbt utils package dependency now has a version range (sorry!)
+
+### Fixes
+
+- Effectivity Satellites **with auto-end-dating off** now handle the use case where records may already be end-dated in the staging layer, 
+as a result of loading data 'manually' end-dated by business rules.
+
+### Features
+
+#### Rank column configurations in stage macro (ranked_columns):
+
+- Provide ASC or DESC for an `order_by` column [Read More](../macros.md#order-by-direction)
+- Configure the ranking to use `DENSE_RANK()` or `RANK()` [Read More](../macros.md#dense-rank)
+
+#### Configuration for hash strings
+
+[Read More](../best_practices.md#configuring-hash-strings)
+
+- Concatenation string can now be user defined
+- Null placeholder string can now be user defined
+
+## [v0.7.7] - 2021-08-24
+- Re-release of v0.7.6.1 to ensure deployment to dbt Hub
+
+## [v0.7.6.1] - 2021-07-14
+- Hotfix for 0.7.6 to remove unintentionally added macros from the beta branch. [#36](https://github.com/Datavault-UK/dbtvault/issues/36)
+
+### Installing
+**Note:** This version **cannot** be installed via dbt hub, please install as follows:
+
+```
+packages:
+  - git: "https://github.com/Datavault-UK/dbtvault.git"
+    revision: v0.7.6.1
+```
+
+## [v0.7.6] - 2021-07-13
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6)](https://dbtvault.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
+
+- Updated to dbt 0.20.0 and incorporated `adapter.dispatch` changes [(#32)](https://github.com/Datavault-UK/dbtvault/issues/32)
+
 ## [v0.7.5] - 2021-06-10
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.5)](https://dbtvault.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
 
@@ -21,7 +68,8 @@ one to many relationships were not getting handled as intended.
 
 ### Improvements
 - Added support for multiple `order_by` or `partition_by` columns when creating ranked columns in the `stage` or `ranked_columns` macros.
-
+- Performance improvement for the Satellite macro, which aims to reduce the number of records handled in the 
+  initial selection of records from the source data.
 
 ## [v0.7.4] - 2021-03-27
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.4)](https://dbtvault.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
@@ -126,14 +174,14 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../macros.md#vault_insert_by_period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
-- dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/fishtown-analytics/dbt/releases/tag/v0.18.0)
+- dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/dbt-labs/dbt/releases/tag/v0.18.0)
 
 !!! info
     *This is intended as quick reference and for completeness only, the online documentation is still the main reference documentation.
       
 ### Improved
 
-- All table macros now make more use of CTEs to reduce nested SQL and improve readability and debugging potential. [Why CTE's?](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091)
+- All table macros now make more use of CTEs to reduce nested SQL and improve readability and debugging potential. [Why CTEs?](https://discourse.getdbt.com/t/why-the-fishtown-sql-style-guide-uses-so-many-ctes/1091)
 - All macros have had the licence header removed. This was a little messy and unnecessary.
 
 ### Removed
@@ -217,7 +265,6 @@ We'll be updating the other macros soon, stay tuned!
 [New docs repo](https://github.com/Datavault-UK/dbtvault-docs)
 
 ## [v0.5] - 2020-02-24
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.5)](https://dbtvault.readthedocs.io/en/v0.5/?badge=v0.5)
 
 ### Added
 
@@ -236,7 +283,6 @@ Read [Migrating from v0.4](https://dbtvault.readthedocs.io/en/v0.7.6/migration_g
 _**multi_hash**_, [staging](../macros.md#staging-macros)).   
 
 ## [v0.4.1] - 2020-01-08
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.4.1)](https://dbtvault.readthedocs.io/en/v0.4.1/?badge=v0.4.1)
 
 ### Added
 
@@ -254,7 +300,7 @@ _**multi_hash**_, [staging](../macros.md#staging-macros)).
 ### Improved
 
 - Hashing:
-    - You may now choose between ```MD5``` and ```SHA-256``` hashing with a simple yaml configuration
+    - You may now choose between `MD5` and `SHA-256` hashing with a simple yaml configuration
     [Learn how!](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
     
 ### Worked example
@@ -271,7 +317,6 @@ is using dbt 0.14 currently (we will be updating to 0.15 soon!)
 - Minor corrections
 
 ## [v0.3.3-pre] - 2019-10-31
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.3.3-pre)](https://dbtvault.readthedocs.io/en/v0.3.3-pre/?badge=v0.3.3-pre)
 
 ### Documentation
 
@@ -279,7 +324,6 @@ is using dbt 0.14 currently (we will be updating to 0.15 soon!)
 - Minor corrections
 
 ## [v0.3.2-pre] - 2019-10-28
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.3.2-pre)](https://dbtvault.readthedocs.io/en/v0.3.2-pre/?badge=v0.3.2-pre)
 
 ### Bug Fixes
 
@@ -290,7 +334,6 @@ is using dbt 0.14 currently (we will be updating to 0.15 soon!)
 - Various corrections and clarifications on the macros page.
 
 ## [v0.3.1-pre] - 2019-10-25
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.3.1-pre)](https://dbtvault.readthedocs.io/en/v0.3.1-pre/?badge=v0.3.1-pre)
 
 ### Error handling
 
@@ -299,11 +342,10 @@ provided for a model in the case where a source relation is also provided for a 
 This caused missing columns in generated SQL, and a misleading error message from dbt. 
 
 ## [v0.3-pre] - 2019-10-24
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.3-pre)](https://dbtvault.readthedocs.io/en/v0.3-pre/?badge=v0.3-pre)
 
 ### Improvements
 
-- We've removed the need to specify full mappings in the ```tgt``` metadata when creating table models.
+- We've removed the need to specify full mappings in the `tgt` metadata when creating table models.
 Users may now provide a table reference instead, as a shorthand way to keep the column name 
 and date type the same as the source.
 The option to provide a mapping is still available.
@@ -317,7 +359,6 @@ The option to provide a mapping is still available.
 - Various clarifications added and errors fixed
 
 ## [v0.2.4-pre] - 2019-10-17
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2.4-pre)](https://dbtvault.readthedocs.io/en/v0.2.4-pre/?badge=v0.2.4-pre)
 
 ### Bug Fixes
 
@@ -326,7 +367,6 @@ causing subsequent loads after the initial load, to fail.
 
 
 ## [v0.2.3-pre] - 2019-10-08
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2.3-pre)](https://dbtvault.readthedocs.io/en/v0.2.3-pre/?badge=v0.2.3-pre)
 
 ### Macros
 
@@ -341,14 +381,13 @@ causing subsequent loads after the initial load, to fail.
 - Updated _**hash**_ and _**multi-hash**_ according to new changes.
 
 ## [v0.2.2-pre]  - 2019-10-08
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2.2-pre)](https://dbtvault.readthedocs.io/en/v0.2.2-pre/?badge=v0.2.2-pre)
 
 ### Documentation
 
 - Finished Satellite page
 - Added Union sections to Hub and Link pages
 - Updated staging page with Satellite fields
-- Renamed ```stg_orders_hashed``` back to ```stg_customers_hashed```
+- Renamed `stg_orders_hashed` back to `stg_customers_hashed`
 
 ## [v0.2.1-pre] - 2019-10-07
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2.1-pre)](https://dbtvault.readthedocs.io/en/v0.2.1-pre/?badge=v0.2.1-pre)
@@ -361,7 +400,6 @@ causing subsequent loads after the initial load, to fail.
     - Corrected version in dbt_project.yml
 
 ## [v0.2-pre] - 2019-10-07
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2-pre)](https://dbtvault.readthedocs.io/en/v0.2-pre/?badge=v0.2-pre)
 
 [Feedback is welcome!](https://github.com/Datavault-UK/dbtvault/issues)
  
@@ -370,7 +408,7 @@ Read the linked documentation for more detail on how to take advantage of
 the new and improved features.
 
 - Table Macros:
-    - All table macros now no longer require the ```tgt_cols``` parameter.
+    - All table macros now no longer require the `tgt_cols` parameter.
     This was unnecessary duplication of metadata and removing this now makes
     creating tables much simpler.
     
@@ -392,7 +430,6 @@ the new and improved features.
           per best practises. 
 
 ## [v0.1-pre] - 2019-09 / 2019-10
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.1-pre)](https://dbtvault.readthedocs.io/en/v0.1-pre/?badge=v0.1-pre)
 
 ### Added
 

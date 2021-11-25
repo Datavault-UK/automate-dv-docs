@@ -10,14 +10,14 @@ dbtvault provides the means for specifying sources for Data Vault structures wit
 
 This behaves differently for the [stage](#stage) macro, which supports either style, shown below:
 
-##### ref style
+#### ref style
 
 ```yaml
 stg_customer:
   source_model: 'raw_customer'
 ```
 
-##### source style
+#### source style
 
 === "stage configuration"
 
@@ -54,6 +54,52 @@ For all other structures (hub, link, satellite, etc.) the `source_model` argumen
 staging source, or a list of strings to denote multiple staging sources, which must be names of models (minus
 the `.sql`).
 
+## Global variables
+
+dbtvault provides user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml)
+which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of dbtvault.
+
+=== "dbt_project.yml"
+
+    ```yaml
+    vars:
+      hash: MD5
+      max_datetime: '{{ dbtvault.max_datetime() }}'
+      concat_string: '||'
+      null_placeholder_string: '^^'
+    ```
+
+#### hash
+
+Configure the type of hashing.
+
+This can be one of: 
+
+- MD5
+- SHA
+
+[Read more](./best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+
+#### max_datetime
+
+Configure the value for the maximum datetime. 
+
+This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances. 
+
+This is currently only used in Effectivity Satellites, but will also be used in future (unreleased) structures (e.g. PITs and Bridges)
+
+#### concat_string
+
+Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '||'
+
+[Read more](./best_practices.md#multi-column-hashing)
+
+#### null_placeholder_string
+
+Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret characters: '^^'
+
+[Read more](./best_practices.md#null-handling)
+
 ## Table templates
 
 ###### (macros/tables)
@@ -63,6 +109,7 @@ for your Data Vault.
 
 ### hub
 
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/hub.sql))
 
 Generates SQL to build a hub table using the provided parameters.
@@ -77,13 +124,13 @@ Generates SQL to build a hub table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                    |
-| ------------- | --------------------------------------------------- | -------------------- | -------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_nk        | Source natural key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                      |
+| ------------- | --------------------------------------------------- | -------------------- | ---------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_nk        | Source natural key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_hubs.md) for more details
@@ -100,9 +147,9 @@ Generates SQL to build a hub table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -110,7 +157,7 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
         )
 
@@ -121,9 +168,9 @@ Generates SQL to build a hub table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -131,11 +178,11 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
             LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -145,9 +192,9 @@ Generates SQL to build a hub table using the provided parameters.
 
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -155,9 +202,9 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -173,16 +220,16 @@ Generates SQL to build a hub table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_rank_number = 1
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
         )
         
@@ -193,9 +240,9 @@ Generates SQL to build a hub table using the provided parameters.
  
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -203,9 +250,9 @@ Generates SQL to build a hub table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -221,29 +268,33 @@ Generates SQL to build a hub table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_rank_number = 1
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
             LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### link
 
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/link.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/link.sql))
 
 Generates sql to build a link table using the provided parameters.
@@ -257,13 +308,13 @@ Generates sql to build a link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                    |
-| ------------- | --------------------------------------------------- | ---------------------| -------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| src_fk        | Source foreign key column(s)                        | List[String]         | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date timestamp column                   | String               | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                  | List[String]/String  | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                         | Type                 | Required?                                      |
+| ------------- | --------------------------------------------------- | ---------------------| ---------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| src_fk        | Source foreign key column(s)                        | List[String]         | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
+| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_links.md) for more details
@@ -280,9 +331,9 @@ Generates sql to build a link table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -290,7 +341,7 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
         )
         
@@ -301,9 +352,9 @@ Generates sql to build a link table using the provided parameters.
     
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -311,11 +362,11 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
             LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -326,9 +377,9 @@ Generates sql to build a link table using the provided parameters.
 
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -336,9 +387,9 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -354,7 +405,7 @@ Generates sql to build a link table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
@@ -364,7 +415,7 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
         )
         
@@ -375,9 +426,9 @@ Generates sql to build a link table using the provided parameters.
  
         ```sql
         WITH row_rank_1 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE
@@ -385,9 +436,9 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         row_rank_2 AS (
-            SELECT CUSTOMER_PK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
             FROM DBTVAULT.TEST.MY_STAGE_2
@@ -403,7 +454,7 @@ Generates sql to build a link table using the provided parameters.
         row_rank_union AS (
             SELECT *,
                    ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_PK
+                       PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE, RECORD_SOURCE ASC
                    ) AS row_rank_number
             FROM stage_union
@@ -413,20 +464,24 @@ Generates sql to build a link table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT a.CUSTOMER_PK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
             LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_PK = d.CUSTOMER_PK
-            WHERE d.CUSTOMER_PK IS NULL
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### t_link
 
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/t_link.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/t_link.sql))
 
 Generates sql to build a transactional link table using the provided parameters.
@@ -441,15 +496,15 @@ Generates sql to build a transactional link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                | Required?                                        |
-| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------ |
-| src_pk        | Source primary key column                           | List[String]/String | <i class="fas fa-check-circle required"></i>     |
-| src_fk        | Source foreign key column(s)                        | List[String]        | <i class="fas fa-check-circle required"></i>     |
-| src_payload   | Source payload column(s)                            | List[String]        | <i class="fas fa-minus-circle not-required"></i> |
-| src_eff       | Source effective from column                        | String              | <i class="fas fa-check-circle required"></i>     |
-| src_ldts      | Source load date timestamp column                   | String              | <i class="fas fa-check-circle required"></i>     |
-| src_source    | Name of the column containing the source ID         | String              | <i class="fas fa-check-circle required"></i>     |
-| source_model  | Staging model name                                  | String              | <i class="fas fa-check-circle required"></i>     |
+| Parameter     | Description                                         | Type                | Required?                                         |
+| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------- |
+| src_pk        | Source primary key column                           | List[String]/String | :fontawesome-solid-check-circle:{ .required }    |
+| src_fk        | Source foreign key column(s)                        | List[String]        | :fontawesome-solid-check-circle:{ .required }    |
+| src_payload   | Source payload column(s)                            | List[String]        | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_eff       | Source effective from column                        | String              | :fontawesome-solid-check-circle:{ .required }    |
+| src_ldts      | Source load date timestamp column                   | String              | :fontawesome-solid-check-circle:{ .required }    |
+| src_source    | Name of the column containing the source ID         | String              | :fontawesome-solid-check-circle:{ .required }    |
+| source_model  | Staging model name                                  | String              | :fontawesome-solid-check-circle:{ .required }    |
 
 !!! tip
     [Read the tutorial](tutorial/tut_t_links.md) for more details
@@ -466,11 +521,11 @@ Generates sql to build a transactional link table using the provided parameters.
     
         ```sql
         WITH stage AS (
-            SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.MY_STAGE
         ),
         records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
         )
         
@@ -481,24 +536,28 @@ Generates sql to build a transactional link table using the provided parameters.
         
         ```sql
         WITH stage AS (
-            SELECT TRANSACTION_PK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.raw_stage_hashed
         ),
         records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_PK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
             LEFT JOIN DBTVAULT.TEST.t_link AS tgt
-            ON stg.TRANSACTION_PK = tgt.TRANSACTION_PK
-            WHERE tgt.TRANSACTION_PK IS NULL
+            ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
+            WHERE tgt.TRANSACTION_HK IS NULL
         )
         
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 ___
 
 ### sat
 
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/sat.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/sat.sql))
 
 Generates sql to build a satellite table using the provided parameters.
@@ -513,15 +572,15 @@ Generates sql to build a satellite table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type             | Required?                                        |
-| ------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------ |
-| src_pk        | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>     |
-| src_hashdiff  | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>     |
-| src_payload   | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>     |
-| src_eff       | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i> |
-| src_ldts      | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>     |
-| src_source    | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>     |
-| source_model  | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>     |
+| Parameter     | Description                                         | Type             | Required?                                          |
+| ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------------- |
+| src_pk        | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff  | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload   | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
+| src_eff       | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required }  |
+| src_ldts      | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_source    | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
+| source_model  | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_satellites.md) for more details
@@ -538,13 +597,13 @@ Generates sql to build a satellite table using the provided parameters.
     
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
         ),
 
         records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
         )
 
@@ -555,22 +614,22 @@ Generates sql to build a satellite table using the provided parameters.
         
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_PK IS NOT NULL
+            WHERE CUSTOMER_HK IS NOT NULL
         ),
         
         update_records AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
             FROM DBTVAULT.TEST.SATELLITE as a
             JOIN source_data as b
-            ON a.CUSTOMER_PK = b.CUSTOMER_PK
+            ON a.CUSTOMER_HK = b.CUSTOMER_HK
         ),
         
         latest_records AS (
-            SELECT c.CUSTOMER_PK, c.HASHDIFF, c.LOAD_DATE,
+            SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE,
                 RANK() OVER (
-                   PARTITION BY c.CUSTOMER_PK
+                   PARTITION BY c.CUSTOMER_HK
                    ORDER BY c.LOAD_DATE DESC
                    ) AS rank
             FROM update_records as c
@@ -578,16 +637,19 @@ Generates sql to build a satellite table using the provided parameters.
         ),
         
         records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_PK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
             LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_PK = e.CUSTOMER_PK
+            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
             WHERE latest_records.HASHDIFF != e.HASHDIFF
             OR latest_records.HASHDIFF IS NULL
         )
         
         SELECT * FROM records_to_insert
-    ```
+        ```
+
+=== "Google BigQuery"
+    Coming soon!
 
 #### Hashdiff Aliasing
 
@@ -598,6 +660,7 @@ ___
 
 ### eff_sat
 
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/eff_sat.sql))
 
 Generates sql to build an effectivity satellite table using the provided parameters.
@@ -613,17 +676,17 @@ Generates sql to build an effectivity satellite table using the provided paramet
 
 #### Parameters
 
-| Parameter      | Description                                         | Type                    | Required?                                    |
-| -------------- | --------------------------------------------------- | ----------------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                           | String                  | <i class="fas fa-check-circle required"></i> |
-| src_dfk        | Source driving foreign key column                   | List[String]/String     | <i class="fas fa-check-circle required"></i> |
-| src_sfk        | Source secondary foreign key column                 | List[String]/String     | <i class="fas fa-check-circle required"></i> |
-| src_start_date | Source start date column                            | String                  | <i class="fas fa-check-circle required"></i> |
-| src_end_date   | Source end date column                              | String                  | <i class="fas fa-check-circle required"></i> |
-| src_eff        | Source effective from column                        | String                  | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load date timestamp column                   | String                  | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID         | String                  | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                  | String                  | <i class="fas fa-check-circle required"></i> |
+| Parameter      | Description                                         | Type                    | Required?                                      |
+| -------------- | --------------------------------------------------- | ----------------------- | ---------------------------------------------- |
+| src_pk         | Source primary key column                           | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_dfk        | Source driving foreign key column                   | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
+| src_sfk        | Source secondary foreign key column                 | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
+| src_start_date | Source start date column                            | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_end_date   | Source end date column                              | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_eff        | Source effective from column                        | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts       | Source load date timestamp column                   | String                  | :fontawesome-solid-check-circle:{ .required } |
+| src_source     | Name of the column containing the source ID         | String                  | :fontawesome-solid-check-circle:{ .required } |
+| source_model   | Staging model name                                  | String                  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
@@ -637,37 +700,37 @@ Generates sql to build an effectivity satellite table using the provided paramet
 === "Snowflake"
 
     === "Base Load"
-        
+
         ```sql
         WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_PK IS NOT NULL
-            AND a.CUSTOMER_PK IS NOT NULL
-    ),
-    
+                SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+                FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+                WHERE a.ORDER_HK IS NOT NULL
+                AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
         records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_PK, i.ORDER_PK, i.CUSTOMER_PK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-    )
-    
+                SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+                FROM source_data AS i
+        )
+        
         SELECT * FROM records_to_insert
         ```
 
     === "With auto end-dating (Subsequent)"
-    
+
         ```sql
         WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
             FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_PK IS NOT NULL
-            AND a.CUSTOMER_PK IS NOT NULL
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
         ),
         
         latest_records AS (
-            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        PARTITION BY b.ORDER_CUSTOMER_HK
                         ORDER BY b.LOAD_DATETIME DESC
                    ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
@@ -675,30 +738,30 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ),
         
         latest_open AS (
-            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
             FROM latest_records AS c
-            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
+            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
         ),
         
         latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
             FROM latest_records AS d
-            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
+            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
             FROM source_data AS f
             LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
-            WHERE lr.ORDER_CUSTOMER_PK IS NULL
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
         ),
         
         new_reopened_records AS (
             SELECT DISTINCT
-                lc.ORDER_CUSTOMER_PK,
-                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
                 lc.START_DATE AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
@@ -706,13 +769,14 @@ Generates sql to build an effectivity satellite table using the provided paramet
                 g.SOURCE
             FROM source_data AS g
             INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
-        ),
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
+),
         
         new_closed_records AS (
             SELECT DISTINCT
-                lo.ORDER_CUSTOMER_PK,
-                lo.ORDER_PK, lo.CUSTOMER_PK,
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
                 lo.START_DATE AS START_DATE,
                 h.EFFECTIVE_FROM AS END_DATE,
                 h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
@@ -720,8 +784,8 @@ Generates sql to build an effectivity satellite table using the provided paramet
                 lo.SOURCE
             FROM source_data AS h
             INNER JOIN latest_open AS lo
-            ON lo.ORDER_PK = h.ORDER_PK
-            WHERE (lo.CUSTOMER_PK <> h.CUSTOMER_PK)
+            ON lo.ORDER_HK = h.ORDER_HK
+            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
         ),
         
         records_to_insert AS (
@@ -739,16 +803,16 @@ Generates sql to build an effectivity satellite table using the provided paramet
         
         ```sql
         WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_PK, a.ORDER_PK, a.CUSTOMER_PK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
             FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_PK IS NOT NULL
-            AND a.CUSTOMER_PK IS NOT NULL
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
         ),
         
         latest_records AS (
-            SELECT b.ORDER_CUSTOMER_PK, b.ORDER_PK, b.CUSTOMER_PK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_PK
+                        PARTITION BY b.ORDER_CUSTOMER_HK
                         ORDER BY b.LOAD_DATETIME DESC
                    ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
@@ -756,30 +820,30 @@ Generates sql to build an effectivity satellite table using the provided paramet
         ),
         
         latest_open AS (
-            SELECT c.ORDER_CUSTOMER_PK, c.ORDER_PK, c.CUSTOMER_PK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
             FROM latest_records AS c
-            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31')
+            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
         ),
         
         latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_PK, d.ORDER_PK, d.CUSTOMER_PK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
             FROM latest_records AS d
-            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31')
+            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
         ),
         
         new_open_records AS (
             SELECT DISTINCT
-                f.ORDER_CUSTOMER_PK, f.ORDER_PK, f.CUSTOMER_PK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
             FROM source_data AS f
             LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_PK = lr.ORDER_CUSTOMER_PK
-            WHERE lr.ORDER_CUSTOMER_PK IS NULL
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
         ),
         
         new_reopened_records AS (
             SELECT DISTINCT
-                lc.ORDER_CUSTOMER_PK,
-                lc.ORDER_PK, lc.CUSTOMER_PK,
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
                 lc.START_DATE AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
@@ -787,9 +851,29 @@ Generates sql to build an effectivity satellite table using the provided paramet
                 g.SOURCE
             FROM source_data AS g
             INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_PK = lc.ORDER_CUSTOMER_PK
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
         ),
         
+        new_closed_records AS (
+            SELECT DISTINCT
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            LEFT JOIN Latest_open AS lo
+            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            LEFT JOIN latest_closed AS lc
+            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            WHERE TO_DATE(h.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
+            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
+            AND lc.ORDER_CUSTOMER_HK IS NULL
+        ),
+
         records_to_insert AS (
             SELECT * FROM new_open_records
             UNION
@@ -799,14 +883,15 @@ Generates sql to build an effectivity satellite table using the provided paramet
         SELECT * FROM records_to_insert
         ```
 
+=== "Google BigQuery"
+    Coming soon!
+
 #### Auto end-dating
 
 Auto end-dating is enabled by providing a config option as below:
 
 ``` jinja
-{{ config(
-    is_auto_end_dating=true
-) }}
+{{ config(is_auto_end_dating=true) }}
 
 {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, src_end_date=src_end_date,
@@ -834,6 +919,7 @@ ___
 
 ### ma_sat
 
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/ma_sat.sql))
 
 Generates SQL to build a multi-active satellite table (MAS).
@@ -850,14 +936,14 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 | Parameter      | Description                                         | Type             | Required?                                         |
 | -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
-| src_pk         | Source primary key column                           | String           | <i class="fas fa-check-circle required"></i>      |
-| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | <i class="fas fa-check-circle required"></i>      |
-| src_hashdiff   | Source hashdiff column                              | String           | <i class="fas fa-check-circle required"></i>      |
-| src_payload    | Source payload column(s)                            | List[String]     | <i class="fas fa-check-circle required"></i>      |
-| src_eff        | Source effective from column                        | String           | <i class="fas fa-minus-circle not-required"></i>  |
-| src_ldts       | Source load date timestamp column                   | String           | <i class="fas fa-check-circle required"></i>      |
-| src_source     | Name of the column containing the source ID         | String           | <i class="fas fa-check-circle required"></i>      |
-| source_model   | Staging model name                                  | String           | <i class="fas fa-check-circle required"></i>      |
+| src_pk         | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff   | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload    | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
+| src_eff        | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_ldts       | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
+| src_source     | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
+| source_model   | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
@@ -874,13 +960,15 @@ Generates SQL to build a multi-active satellite table (MAS).
     
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
         ),
         
         records_to_insert AS (
-            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
+            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
+            FROM source_data
         )
         
         SELECT * FROM records_to_insert
@@ -890,71 +978,236 @@ Generates SQL to build a multi-active satellite table (MAS).
         
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.CUSTOMER_PHONE, a.CUSTOMER_NAME, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            ,COUNT(DISTINCT a.HASHDIFF, a.CUSTOMER_PHONE )
-                OVER (PARTITION BY a.CUSTOMER_PK) AS source_count
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE a.CUSTOMER_PK IS NOT NULL
-                AND a.CUSTOMER_PHONE IS NOT NULL
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE 
+                ,COUNT(DISTINCT s.HASHDIFF, s.CUSTOMER_PHONE)
+                    OVER (PARTITION BY s.CUSTOMER_PK) AS source_count
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
         ),
+        
         latest_records AS (
-            SELECT *, COUNT(DISTINCT latest_selection.HASHDIFF, latest_selection.CUSTOMER_PHONE )
-                    OVER (PARTITION BY latest_selection.CUSTOMER_PK) AS target_count
-            FROM (
-                SELECT target_records.CUSTOMER_PHONE, target_records.CUSTOMER_PK, target_records.HASHDIFF, target_records.LOAD_DATE
-                    ,RANK() OVER (PARTITION BY target_records.CUSTOMER_PK
-                            ORDER BY target_records.LOAD_DATE DESC) AS rank_value
-                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS target_records
-                INNER JOIN
-                    (SELECT DISTINCT source_pks.CUSTOMER_PK
-                    FROM source_data AS source_pks) AS source_records
-                        ON target_records.CUSTOMER_PK = source_records.CUSTOMER_PK
-                QUALIFY rank_value = 1
-                ) AS latest_selection
+            SELECT mas.CUSTOMER_PK
+                ,mas.HASHDIFF
+                ,mas.CUSTOMER_PHONE
+                ,mas.LOAD_DATE
+                ,mas.latest_rank
+                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
+                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
+            FROM
+            (
+            SELECT inner_mas.CUSTOMER_PK
+                ,inner_mas.HASHDIFF
+                ,inner_mas.CUSTOMER_PHONE
+                ,inner_mas.LOAD_DATE
+                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
+                    ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
+            FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
+            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
+                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
+            QUALIFY latest_rank = 1
+            ) AS mas
         ),
-        matching_records AS (
-            SELECT stage.CUSTOMER_PK
-                ,COUNT(DISTINCT stage.HASHDIFF, stage.CUSTOMER_PHONE) AS match_count
-            FROM source_data AS stage
-            INNER JOIN latest_records
-                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
-                AND stage.HASHDIFF = latest_records.HASHDIFF
-                AND stage.CUSTOMER_PHONE = latest_records.CUSTOMER_PHONE
-            GROUP BY stage.CUSTOMER_PK
+        
+        latest_group_details AS (
+            SELECT lr.CUSTOMER_PK
+                ,lr.LOAD_DATE
+                ,MAX(lr.check_rank) AS latest_count
+            FROM latest_records AS lr
+            GROUP BY lr.CUSTOMER_PK, lr.LOAD_DATE
         ),
-        satellite_update AS (
-            SELECT DISTINCT stage.CUSTOMER_PK
-            FROM source_data AS stage
-            INNER JOIN latest_records
-                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
-            LEFT OUTER JOIN matching_records
-                ON matching_records.CUSTOMER_PK = latest_records.CUSTOMER_PK
-            WHERE (stage.source_count != latest_records.target_count
-                OR COALESCE(matching_records.match_count, 0) != latest_records.target_count)
-        ),
-        satellite_insert AS (
-            SELECT DISTINCT stage.CUSTOMER_PK
-            FROM source_data AS stage
-            LEFT OUTER JOIN latest_records
-                ON stage.CUSTOMER_PK = latest_records.CUSTOMER_PK
-            WHERE latest_records.CUSTOMER_PK IS NULL
-        ),
+        
         records_to_insert AS (
-            SELECT  stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
-            INNER JOIN satellite_update
-                ON satellite_update.CUSTOMER_PK = stage.CUSTOMER_PK
-        
-            UNION
-        
-            SELECT stage.CUSTOMER_PK, stage.HASHDIFF, stage.CUSTOMER_PHONE, stage.CUSTOMER_NAME, stage.EFFECTIVE_FROM, stage.LOAD_DATE, stage.SOURCE
-            FROM source_data AS stage
-            INNER JOIN satellite_insert
-                ON satellite_insert.CUSTOMER_PK = stage.CUSTOMER_PK
+            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
+            FROM source_data
+            WHERE EXISTS
+            (
+                SELECT 1
+                FROM source_data AS stage
+                WHERE NOT EXISTS
+                (
+                    SELECT 1
+                    FROM
+                    (
+                        SELECT lr.CUSTOMER_PK
+                        ,lr.HASHDIFF
+                        ,lr.CUSTOMER_PHONE
+                        ,lr.LOAD_DATE
+                        ,lg.latest_count
+                        FROM latest_records AS lr
+                        INNER JOIN latest_group_details AS lg
+                            ON lr.CUSTOMER_PK = lg.CUSTOMER_PK 
+                            AND lr.LOAD_DATE = lg.LOAD_DATE
+                    ) AS active_records
+                    WHERE stage.CUSTOMER_PK = active_records.CUSTOMER_PK 
+                        AND stage.HASHDIFF = active_records.HASHDIFF
+                        AND stage.CUSTOMER_PHONE = active_records.CUSTOMER_PHONE 
+                        AND stage.source_count = active_records.latest_count
+                )
+                AND source_data.CUSTOMER_PK = stage.CUSTOMER_PK 
+            )
         )
         
         SELECT * FROM records_to_insert
         ```
+
+=== "Google BigQuery"
+    Coming soon!
+
+### xts
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
+
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters
+
+
+#### Usage
+
+``` jinja
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                                    | Type             | Required?                                    |
+| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
+| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load date/timestamp column                              | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+[Read the tutorial](tutorial/tut_xts.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#extended-tracking-satellites-xts)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Single-Source"
+
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * 
+            FROM satellite_a
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* 
+            FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_c AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_d AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+            UNION ALL
+            SELECT * FROM satellite_c
+            UNION ALL
+            SELECT * FROM satellite_d
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+___
 
 ### pit
 
@@ -962,7 +1215,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 Generates SQL to build a point-in-time (PIT) table.
 
-#### Usage
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters
 
 ``` jinja
 {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
@@ -1247,19 +1500,19 @@ For the current version effectivity satellite auto end dating must be enabled.
 
 #### Example Metadata
 
-[See examples](metadata.md#bridge-tables)
+[See examples](metadata.md#extended-tracking-satellites-xts)
 
 #### Example Output
 
 === "Snowflake"
 
-    === "Base Load"
+    === "Single-Source"
 
         ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER
+            WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         new_rows AS (
@@ -1305,13 +1558,13 @@ For the current version effectivity satellite auto end dating must be enabled.
         SELECT * FROM bridge
         ```
 
-    === "Incremental Load"
-
+    === "Single-Source with Multiple Satellite Feeds"
+        
         ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         last_safe_load_datetime AS (
@@ -1415,7 +1668,11 @@ For the current version effectivity satellite auto end dating must be enabled.
         all_rows AS (
             SELECT * FROM new_rows
             UNION ALL
-            SELECT * FROM overlap
+            SELECT * FROM satellite_b
+            UNION ALL
+            SELECT * FROM satellite_c
+            UNION ALL
+            SELECT * FROM satellite_d
         ),
         
         candidate_rows AS (
@@ -1466,7 +1723,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/stage.sql))
 
 Generates sql to build a staging area using the provided parameters.
 
@@ -1493,7 +1750,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1520,7 +1777,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1568,7 +1825,7 @@ Generates sql to build a staging area using the provided parameters.
             SOURCE,
             EFFECTIVE_FROM,
         
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
             CAST(MD5_BINARY(CONCAT_WS('||',
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
@@ -1607,7 +1864,7 @@ Generates sql to build a staging area using the provided parameters.
             BOOKING_DATE,
             SOURCE,
             EFFECTIVE_FROM,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUST_CUSTOMER_HASHDIFF,
             CUSTOMER_HASHDIFF
         
@@ -1633,7 +1890,7 @@ Generates sql to build a staging area using the provided parameters.
             
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1666,7 +1923,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1693,7 +1950,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1738,7 +1995,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1782,7 +2039,7 @@ Generates sql to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE,
         
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_PK,
+            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
             CAST(MD5_BINARY(CONCAT_WS('||',
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
                 IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
@@ -1801,7 +2058,7 @@ Generates sql to build a staging area using the provided parameters.
         
             SELECT
         
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUST_CUSTOMER_HASHDIFF,
             CUSTOMER_HASHDIFF
         
@@ -1820,7 +2077,7 @@ Generates sql to build a staging area using the provided parameters.
         
             BOOKING_FK,
             ORDER_FK,
-            CUSTOMER_PK,
+            CUSTOMER_HK,
             CUSTOMER_ID,
             LOAD_DATE,
             RECORD_SOURCE,
@@ -1866,28 +2123,25 @@ Generates sql to build a staging area using the provided parameters.
 
 #### Parameters
 
-| Parameter              | Description                                                                 | Type           | Default    | Required?                                        |
-| ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------ |
-| include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | <i class="fas fa-minus-circle not-required"></i> |
-| source_model           | Staging model name                                                          | Mapping        | N/A        | <i class="fas fa-check-circle required"></i>     |
-| derived_columns        | Mappings of constants to their source columns                               | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
-| hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
-| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | <i class="fas fa-minus-circle not-required"></i> |
-
-#### Example Metadata
+| Parameter              | Description                                                                 | Type           | Default    | Required?                                         |
+| ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
+| include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
+| source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required }    |
+| derived_columns        | Mappings of column names and their value                                    | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
 
 [See examples](metadata.md#staging)
 
 ### stage macro configurations
 
-The stage macro supports some helper syntax and functionality to make your life easier when staging. These are
-documented in this section.
+The stage macro supports some syntactic sugar and shortcuts for providing metadata. These are documented in this
+section.
 
 #### Column scoping
 
 The hashed column configuration in the stage macro may refer to columns which have been newly created in the derived
-column configuration. This allows hashes to be created using values generated by the user via the derived column
-configuration.
+column configuration. This allows you to create hashed columns using columns defined in the `derived_columns` configuration.
 
 For example:
 
@@ -1900,7 +2154,7 @@ derived_columns:
   SOURCE: "!RAW_CUSTOMER"
   EFFECTIVE_FROM: "BOOKING_DATE"
 hashed_columns:
-  CUSTOMER_PK: "CUSTOMER_ID"
+  CUSTOMER_HK: "CUSTOMER_ID"
   HASHDIFF:
     is_hashdiff: true 
     columns:
@@ -1937,113 +2191,116 @@ auditability purposes, however this could be useful in some scenarios.
 
 A flag can be provided for hashdiff columns which will invert the selection of columns provided in the list of columns.
 
-The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
-listed under the `columns` key, instead of using them to create the hashdiff. You may also omit the `columns` key to
-hash every column.
-
-##### Examples:
-
-=== "Columns provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_PK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-    
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-            columns:
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_PK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-        ```
-
-=== "Columns not provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_PK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-        ```
-    
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_PK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_PK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
 This is extremely useful when a hashdiff composed of many columns needs to be generated, and you do not wish to
 individually provide all the columns.
 
+The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
+listed under the `columns` key, instead of using them to create the hashdiff. 
+
+!!! tip "Hash every column without listing them all"
+    You may omit the `columns` key to hash every column. See the `Columns key not provided` example below.
+
+##### Examples:
+
+=== "Columns key provided"
+
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_HK
+        LOAD_DATE
+        RECORD_SOURCE
+        ```
+    
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+            columns:
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_HK
+              - LOAD_DATE
+              - RECORD_SOURCE
+        ```
+
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+        ```
+
+=== "Columns key not provided"
+
+    === "Columns in source model"
+    
+        ```text
+        TRANSACTION_NUMBER
+        CUSTOMER_DOB
+        PHONE_NUMBER
+        BOOKING_FK
+        ORDER_FK
+        CUSTOMER_HK
+        LOAD_DATE
+        RECORD_SOURCE
+        ```
+
+    === "hashed_columns configuration"
+        
+        ```yaml hl_lines="5"
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            exclude_columns: true
+        ```
+    
+    === "Equivalent hashed_columns configuration"
+    
+        ```yaml
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - TRANSACTION_NUMBER
+              - CUSTOMER_DOB
+              - PHONE_NUMBER
+              - BOOKING_FK
+              - ORDER_FK
+              - CUSTOMER_HK
+              - LOAD_DATE
+              - RECORD_SOURCE
+        ```
+
 !!! warning
 
-    Care should be taken if using this feature on dynamic data sources. If you expect columns in the data source to 
-    change for any reason, it will become hard to predict what columns are used to generate the hashdiff. If your 
-    component columns change, then your hashdiff output will also change and it will cause unpredictable results.
+    Care should be taken if using this feature on data sources where the columns may change. 
+    If you expect columns in the data source to change for any reason, it will become hard to predict what columns 
+    are used to generate the hashdiff. If your component columns change, then your hashdiff output will also change,
+    and it will cause unpredictable results.
 
 #### Functions (Derived Columns)
 
 === "Snowflake"
 
-```yaml hl_lines="5"
+```yaml hl_lines="3"
 source_model: "MY_STAGE"
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
@@ -2061,7 +2318,8 @@ In the highlighted derived column configuration in the snippet above, the genera
 SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
 ```
 
-Please ensure that your function has valid SQL syntax on your platform, for use in this context.
+!!! Note
+    Please ensure that your function has valid SQL syntax on your platform, for use in this context.
 
 #### Constants (Derived Columns)
 
@@ -2111,12 +2369,12 @@ derived_columns:
 
 You can create new columns, given a list of columns to extract values from, using derived columns.
 
-Given the following values in the above example:
+Given the following values for the columns in the above example:
 
 - `CUSTOMER_ID` = 0011
 - `CUSTOMER_NAME` = Alex
 
-Then a new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
+The new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
 double pipe `||`. Currently, this `||` join string has been hard-coded, but in future it will be user-configurable.
 
 The values provided in the list can use any of the previously described syntax (including functions and constants) to
@@ -2127,72 +2385,145 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
-#### Defining Ranked columns
+#### Defining and configuring Ranked columns
 
-To make it easier to use the [vault_insert_by_rank](materialisations.md#vault_insert_by_rank) materialisation, the `ranked_columns`
+This stage configuration is a helper for the [vault_insert_by_rank](#vault_insert_by_rank) materialisation. The `ranked_columns`
 configuration allows you to define ranked columns to generate, as follows:
 
 === "Single item parameters"
 
     ```yaml
-    source_model: "MY_STAGE"
+    source_model: 'MY_STAGE'
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_PK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'CUSTOMER_HK'
+        order_by: 'LOAD_DATETIME'
       SAT_BOOKING_RANK:
-        partition_by: "BOOKING_PK"
-        order_by: "LOAD_DATETIME"
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
     ```
 
-=== "Multi-item parameters"
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
 
     ```yaml
     source_model: 'MY_STAGE'
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_PK'
+            - 'CUSTOMER_HK'
             - 'CUSTOMER_REF'
         order_by: 
             - 'RECORD_SOURCE'
             - 'LOAD_DATETIME'
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_PK'
+        partition_by: 'BOOKING_HK'
         order_by: 'LOAD_DATETIME'
     ```
 
-This will create columns like so:
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Dense rank
+
+=== "Dense Rank configuration"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE'
+            - 'LOAD_DATETIME'
+        dense_rank: true
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+##### Order by direction
 
 === "Single item parameters"
 
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_PK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 'CUSTOMER_HK'
+        order_by:
+           LOAD_DATETIME: DESC
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
     ```
 
-=== "Multi-item parameters"
+=== "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_PK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_PK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
+    ```
+
+===! "Multi-item parameters"
+
+    ```yaml
+    source_model: 'MY_STAGE'
+    ranked_columns:
+      DBTVAULT_RANK:
+        partition_by: 
+            - 'CUSTOMER_HK'
+            - 'CUSTOMER_REF'
+        order_by: 
+            - 'RECORD_SOURCE': 'DESC'
+            - 'LOAD_DATETIME': 'ASC'
+      SAT_BOOKING_RANK:
+        partition_by: 'BOOKING_HK'
+        order_by: 'LOAD_DATETIME'
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
 ___
 
 ### hash_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/hash_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/hash_columns.sql))
 
-!!! note This is a helper macro used within the stage macro, but can be used independently.
+!!! Note 
+    This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
 
 ### derive_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/derive_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/derive_columns.sql))
 
-!!! note 
+!!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
 
 Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
@@ -2200,12 +2531,12 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/staging/rank_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/rank_columns.sql))
 
-!!! note 
+!!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
 
-Generates SQL to create columns using the `RANK()` window function.
+Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function.
 
 ___
 
@@ -2221,24 +2552,23 @@ ___
 
 ### hash
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql))
 
 !!! warning
 
     This macro ***should not be*** used for cryptographic purposes.
 
-    The intended use is for creating checksum-like values only, so that we may compare records accurately.
+    The intended use is for creating checksum-like values only, so that we may compare records consistently.
     
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-- [hash_columns](#hash_columns)
-- Read [Hashing best practises and why we hash](best_practices.md#hashing)
-for more detailed information on the purposes of this macro and what it does.
-
-        - You may choose between `MD5` and `SHA-256` hashing.
-          [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
-
+    - [hash_columns](#hash_columns)
+    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
+    for more detailed information on the purposes of this macro and what it does.
+    - You may choose between `MD5` and `SHA-256` hashing.
+    [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    
 A macro for generating hashing SQL for columns.
 
 #### Usage
@@ -2246,7 +2576,7 @@ A macro for generating hashing SQL for columns.
 === "Input"
 
     ```yaml
-    {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_PK') }},
+    {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
     {{ dbtvault.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
     ```
 
@@ -2272,31 +2602,32 @@ A macro for generating hashing SQL for columns.
         )) AS BINARY(32)) AS HASHDIFF
         ```
 
-!!! tip The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
-with one macro.
+!!! tip 
+    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
+    with one macro.
 
 #### Parameters
 
 | Parameter        |  Description                                     | Type                | Required?                                        |
 | ---------------- | -----------------------------------------------  | ------------------- | ------------------------------------------------ |
-| columns          |  Columns to hash on                              | List[String]/String | <i class="fas fa-check-circle required"></i>     |
-| alias            |  The name to give the hashed column              | String              | <i class="fas fa-check-circle required"></i>     |
-| is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | <i class="fas fa-minus-circle not-required"></i> |      
+| columns          |  Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
+| alias            |  The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required }     |
+| is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-minus-circle:{ .not-required } |      
 
 ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
 #### Parameters
 
-| Parameter        |  Description                  | Type         | Required?                                    |
-| ---------------- | ----------------------------- | ------------ | -------------------------------------------- |
-| columns          |  A list of column names       | List[String] | <i class="fas fa-check-circle required"></i> |
-| prefix_str       |  The prefix for the columns   | String       | <i class="fas fa-check-circle required"></i> |
+| Parameter        |  Description                  | Type         | Required?                                      |
+| ---------------- | ----------------------------- | ------------ | ---------------------------------------------- |
+| columns          |  A list of column names       | List[String] | :fontawesome-solid-check-circle:{ .required } |
+| prefix_str       |  The prefix for the columns   | String       | :fontawesome-solid-check-circle:{ .required } |
 
 #### Usage
 
@@ -2312,8 +2643,8 @@ A macro for quickly prefixing a list of columns with a string.
     a.CUSTOMERKEY, a.DOB, a.NAME, a.PHONE a.CUSTOMERKEY
     ```
 
-!!! Note 
-    Single columns must be provided as a 1-item list, as in the second example above.
+!!! Note
+    Single columns must be provided as a 1-item list.
 
 ___
 
@@ -2321,5 +2652,5 @@ ___
 
 ###### (macros/internal)
 
-Internal macros are used by other macros provided in this package. They process provided metadata and should not need to
+Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to
 be called directly.

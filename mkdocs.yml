@@ -16,10 +16,11 @@ theme:
       primary: 'black'
       accent: 'indigo'
     highlightjs: true
-    
+    features:
+      - navigation.top
 nav:
   - Home: 'index.md'
-  - Step-by-step tutorial:
+  - Tutorials:
       - Getting Started: 'tutorial/tut_getting_started.md'
       - Staging: 'tutorial/tut_staging.md'
       - Hubs: 'tutorial/tut_hubs.md'
@@ -28,6 +29,7 @@ nav:
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
+      - Extended Tracking Satellites: 'tutorial/tut_xts.md'
       - As of Dates Tables: 'tutorial/tut_as_of_date.md'
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
       - Bridge Tables: 'tutorial/tut_bridges.md'
@@ -46,7 +48,10 @@ nav:
   - Changelog:
       - Stable Releases: 'changelog/stable.md'
       - Beta Releases: 'changelog/beta.md'
-  - Contributing: 'contributing.md'
+  - Contributing:
+    - Getting Started: 'contributing.md'
+    - Style Guides:
+        - Tutorials: 'style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
 
 extra:
@@ -74,16 +79,22 @@ markdown_extensions:
   - toc:
       permalink: true
       toc_depth: 1-3
-  - pymdownx.emoji
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - attr_list
 
 plugins:
   - search
   - git-revision-date-localized:
       type: timeago
+#  - with-pdf:
+#      copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021
+#      cover_title: dbtvault Docs
+#      cover_subtitle: By Datavault
 
 extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of Fishtown Analytics
+copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
