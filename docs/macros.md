@@ -1450,12 +1450,24 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         SELECT DISTINCT * FROM pit
         ```
 
-#### As Of Dates Tables
+#### As Of Date Tables
 
-An As of Dates table contains a single column of dates used to construct the history in the PIT.
+An As of Date table contains a single column of dates (a date spine) used to construct the history in the PIT. A typical structure will 
+contain a date range where the date interval will be short, such as every day or every hour, followed by a period of 
+time after which the date intervals are slightly larger. 
 
-!!! Warning
+An example history could be end of day values for 3 months followed by another 3 months of end of week values. The as of dates table 
+would then contain a datetime for each entry to match this. 
 
+As the days pass, the as of dates table should change to reflect this with dates being removed off the end and new dates added.
+
+If we use the 3-month example from before, and a week had passed since when we had created the as of dates table, then
+it would still contain 3 months worth of end of day values followed by 3 months of end of week values but shifted a week forward 
+to reflect the current date.
+
+Think of As of Date tables as essentially a rolling window of time. 
+
+!!! Warning 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
 
