@@ -186,7 +186,7 @@ this is to clarify this config option as a boolean flag.
 
 We've added a whole host of interesting new features.
 
-[Read our v0.5 to v0.6 migration guide](../migration_guides/migrating_v0.5_v0.6.md)
+[Read our v0.5 to v0.6 migration guide](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/)
 
 ### Added
 
@@ -197,7 +197,7 @@ See the new [stage](../macros.md#stage) macro and the [staging tutorial](../tuto
 A big thank you to @balmasi for this suggestion.
 
 - `HASHDIFF` aliasing is now available for Satellites
-[Read More](../migration_guides/migrating_v0.5_v0.6.md#hashdiff-aliasing)
+[Read More](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/#hashdiff-aliasing)
 
 ### Upgraded
 
@@ -221,8 +221,8 @@ We'll be updating the other macros soon, stay tuned!
 
 ### Added
 
-- Metadata is now provided in the ```dbt_project.yml``` file. This means metadata can be managed in one place. 
-Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more information.
+- Metadata is now provided in the `dbt_project.yml` file. This means metadata can be managed in one place. 
+Read [Migrating from v0.4](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.4_v0.5/) for more information.
 
 ### Removed
 
@@ -232,8 +232,8 @@ Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more 
 
 ### Fixed
 
-- Hashing a single column which contains a ```NULL``` value now works as intended (related to: [hash](../macros.md#hash), 
-[multi_hash](../macros.md#multi_hash), [staging](../macros.md#staging-macros)).   
+- Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros.md#hash), 
+_**multi_hash**_, [staging](../macros.md#staging-macros)).   
 
 ## [v0.4.1] - 2020-01-08
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.4.1)](https://dbtvault.readthedocs.io/en/v0.4.1/?badge=v0.4.1)
@@ -249,7 +249,7 @@ Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more 
 ### Added
 
 - Table Macros:
-    - [Transactional Links](../macros.md#t_link_template)
+    - Transactional Links
 
 ### Improved
 
@@ -330,15 +330,15 @@ causing subsequent loads after the initial load, to fail.
 
 ### Macros
 
-- Updated [hash](../macros.md#hash) and [multi-hash](../macros.md#multi_hash)
-    - [hash](../macros.md#hash) now accepts a third parameter, ```sort```
+- Updated [hash](../macros.md#hash) and _**multi-hash**_
+    - [hash](../macros.md#hash) now accepts a third parameter, `sort`
     which will alpha-sort provided columns when set to true.
-    - [multi-hash](../macros.md#multi_hash) updated to take advantage of
+    - _**multi-hash updated**_ to take advantage of
     the the [hash](../macros.md#hash) functionality.
 
 ### Documentation
 
-- Updated [hash](../macros.md#hash) and [multi-hash](../macros.md#multi_hash) according to new changes.
+- Updated _**hash**_ and _**multi-hash**_ according to new changes.
 
 ## [v0.2.2-pre]  - 2019-10-08
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2.2-pre)](https://dbtvault.readthedocs.io/en/v0.2.2-pre/?badge=v0.2.2-pre)
@@ -375,19 +375,18 @@ the new and improved features.
     creating tables much simpler.
     
 - Supporting Macros:
-    - [add_columns](../macros.md#add_columns)
+    - _**add_columns**_
         - Simplified the process of adding constants.
         - Can now optionally provide a [dbt source](https://docs.getdbt.com/docs/using-sources) to automatically
         retrieve all source columns without needing to type them all manually.
         - If not adding any calculated columns or constants, column pairs can be omitted, enabling you to provide the 
         source parameter above only.
-    - [hash](../macros.md#hash) now alpha-sorts columns prior to hashing, as
+    - _**hash**_ now alpha-sorts columns prior to hashing, as
     per best practises. 
    
 - Staging Macros:
-    - staging_footer renamed to [from](../macros.md#from) and functionality for adding constants moved to
-    [add_columns](../macros.md#add_columns)
-    - [multi-hash](../macros.md#multi_hash)
+    - staging_footer renamed to _**from**_ and functionality for adding constants moved to _**add_columns**_
+    - multi-hash
         - Formatting of output now more readable
         - Now alpha-sorts columns prior to hashing, as
           per best practises. 
@@ -398,19 +397,19 @@ the new and improved features.
 ### Added
 
 - Table Macros:
-    - [Hub](../macros.md#hub_template)
-    - [Link](../macros.md#link_template)
-    - [Satellite](../macros.md#sat_template)
+    - Hub
+    - Link
+    - Satellite
 
 - Supporting Macros:
-    - [cast](../macros.md#cast)
-    - [hash](../macros.md#hash) (renamed from md5_binary)
-    - [prefix](../macros.md#prefix)
+    - cast
+    - hash (renamed from md5_binary)
+    - prefix
 
 - Staging Macros:
-    - [add_columns](../macros.md#add_columns)
-    - [multi_hash](../macros.md#multi_hash) (renamed from gen_hashing)
-    - [staging_footer](../macros.md#from) 
+    - add_columns
+    - multi_hash (renamed from gen_hashing)
+    - staging_footer
 
 ### Documentation
    
