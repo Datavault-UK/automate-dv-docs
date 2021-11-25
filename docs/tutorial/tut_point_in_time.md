@@ -85,7 +85,116 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 | stage_tables      | {'STG_CUSTOMER_DETAILS': 'LOAD_DATE',             |
 |                   | &nbsp;'STG_CUSTOMER_LOGIN': 'LOAD_DATE'}          |
 
-When we provide the metadata above, our model should look like the following:
+#### Source table
+
+Here we will define the metadata for the source_model. We will use the HUB_CUSTOMER that we built before.
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    ...
+    ```
+
+#### Primary Key
+
+Next we need add the Hub's Primary Key column 
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    ...
+    ```
+
+#### Load Date/Timestamp
+
+Next, we add the Load Date/Timestamp column name of the parent Hub 
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    ...
+    ```
+
+#### As of Dates Table 
+
+Next, we provide the PIT's column name for the As of Dates table.
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    as_of_dates_table: "AS_OF_DATE"
+    ...
+    ```
+
+#### Satellites metadata
+
+Here we add the Satellite related details (i.e. the Primary/Hash Key and the Load Date/Timestamp column names)
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    as_of_dates_table: "AS_OF_DATE"
+    satellites: 
+        SAT_CUSTOMER_DETAILS
+          pk
+            "PK": "CUSTOMER_PK"
+          ldts
+            "LDTS": "LOAD_DATE"
+        SAT_CUSTOMER_LOGIN:
+          pk:
+            "PK": "CUSTOMER_PK"
+          ldts:
+            "LDTS": "LOAD_DATE"
+    ...
+    ```
+
+#### Stage metadata 
+
+Finally, we add Satellites' stage table names and their Load Date/Timestamp column names
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    as_of_dates_table: "AS_OF_DATE"
+    satellites: 
+        SAT_CUSTOMER_DETAILS
+          pk
+            "PK": "CUSTOMER_PK"
+          ldts
+            "LDTS": "LOAD_DATE"
+        SAT_CUSTOMER_LOGIN:
+          pk:
+            "PK": "CUSTOMER_PK"
+          ldts:
+            "LDTS": "LOAD_DATE"
+    stage_tables: 
+        "STG_CUSTOMER_DETAILS": "LOAD_DATE"
+        "STG_CUSTOMER_LOGIN": "LOAD_DATE"      
+    {%- endset -%}
+    ```
+
+In the end, our model should look like the following:
 
 === "pit_customer.yml"
 
