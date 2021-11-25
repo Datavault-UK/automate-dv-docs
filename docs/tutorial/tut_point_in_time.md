@@ -42,7 +42,7 @@ The keys in the dictionary will be the stage table names (e.g. 'STG_CUSTOMER_DET
 the name of the Load Date/Timestamp column for that stage table (e.g. 'LOAD_DATE')
 
 !!! tip
-    To see a full example of how the metadata needs to be defined for a PIT object, please check the PIT section on the [metadata](metadata.md#point-in-time-tables-pits) page.
+    To see a full example of how the metadata needs to be defined for a PIT object, please check the PIT section on the [metadata](../metadata.md#point-in-time-pit-tables) page.
 
 
 ### Setting up PIT models
@@ -82,7 +82,7 @@ We recommend setting the `pit_incremental` materialization on all of your pits u
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [pit](../metadata.md#point-in-time-tables-pits) macro.
+Let's look at the metadata we need to provide to the [pit](../metadata.md#point-in-time-pit-tables) macro.
 
 #### Source table
 
