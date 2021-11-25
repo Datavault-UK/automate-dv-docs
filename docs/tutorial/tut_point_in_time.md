@@ -64,26 +64,26 @@ are creating. dbtvault will generate a PIT using parameters provided in the next
 
 #### Materialisation
 
-PIT tables should use the `pit_incremental` materialisation, as they will be remade with every new As-of Dates table. 
+PIT tables should use the `pit_incremental` materialisation, as they will be remade with every new As of Dates table. 
 
 ### Adding the metadata
 
 Let's look at the metadata we need to provide to the [pit](../metadata.md#point-in-time-pit-tables) macro.
 
-| Parameter         | Value                                 | 
-| ----------------- | ------------------------------------- | 
-| source_model      | HUB_CUSTOMER                          | 
-| src_pk            | CUSTOMER_PK                           |
-| src_ldts          | LOAD_DATE                             |
-| as_of_dates_table | AS_OF_DATES                           |
-| satellites        | {'SAT_CUSTOMER_DETAILS':              |
-|                   |      {'pk': {'PK': 'CUSTOMER_PK'},    | 
-|                   |       'ldts': {'LDTS': 'LOAD_DATE'}}, |
-|                   |  'SAT_CUSTOMER_LOGIN':                |
-|                   |      {'pk': {'PK': 'CUSTOMER_PK'},    |
-|                   |       'ldts': {'LDTS': 'LOAD_DATE'}}} |
-| stage_tables      | {'STG_CUSTOMER_DETAILS': 'LOAD_DATE', |
-|                   |  'STG_CUSTOMER_LOGIN': 'LOAD_DATE'}   |
+| Parameter         | Value                                             | 
+| ----------------- | ------------------------------------------------- | 
+| source_model      | HUB_CUSTOMER                                      | 
+| src_pk            | CUSTOMER_PK                                       |
+| src_ldts          | LOAD_DATE                                         |
+| as_of_dates_table | AS_OF_DATES                                       |
+| satellites        | {'SAT_CUSTOMER_DETAILS':                          |
+|                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         | 
+|                   | &emsp;&emsp;&nbsp;'ldts': {'LDTS': 'LOAD_DATE'}}, |
+|                   | &nbsp;'SAT_CUSTOMER_LOGIN':                       |
+|                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         |
+|                   | &emsp;&emsp;&nbsp;'ldts': {'LDTS': 'LOAD_DATE'}}} |
+| stage_tables      | {'STG_CUSTOMER_DETAILS': 'LOAD_DATE',             |
+|                   | &nbsp;'STG_CUSTOMER_LOGIN': 'LOAD_DATE'}          |
 
 When we provide the metadata above, our model should look like the following:
 
