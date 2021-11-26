@@ -65,13 +65,14 @@ Let's look at the metadata we need to provide to the [xts](../macros.md#xts) mac
 The first piece of metadata we need is the source model. This step is simple,
 all we need to do is provide the name of the model for the stage table as a string in our metadata as follows:
 
-=== "dbt_project.yml"
+=== "xts_customer.sql"
 
-    ```yaml
-    xts_customer:
-      vars:
-        source_model: 'STG_CUSTOMER'
-        ...
+    ```jinja
+    {{ config(materialized='incremental') }}
+    
+    {%- set yaml_metadata -%}
+    source_model: 'STG_CUSTOMER'
+    ...
     ```
 
 #### Source columns
@@ -86,21 +87,38 @@ Here we set columns from the `stg_customer` table to variables using in the `xts
 
 Adding this to the metadata we should find something that resembles this:
 
-=== "dbt_project.yml"
+=== "xts_customer.sql"
 
-    ```yaml hl_lines="4 5 6 7 8 9" 
-    xts_customer:
-        vars:
-            source_model: 'STG_CUSTOMER'
-            src_pk: 'CUSTOMER_PK'
-            src_ldts: 'LOAD_DATE'
-            src_satellite:
-              SATELLITE_CUSTOMER
-                sat_name:
-                  'SATELLITE_NAME': 'SAT_SAP_CUSTOMER'
-                hashdiff:                
-                  'HASHDIFF': 'CUSTOMER_HASHDIFF'
-            src_source: 'SOURCE'
+    ```jinja
+    {{ config(materialized='incremental') }}
+    
+    {%- set yaml_metadata -%}
+    source_model: 'STG_CUSTOMER'
+    src_pk: 'CUSTOMER_PK'
+    src_ldts: 'LOAD_DATE'
+    src_satellite:
+      SATELLITE_CUSTOMER
+        sat_name:
+          'SATELLITE_NAME': 'SAT_SAP_CUSTOMER'
+        hashdiff:                
+          'HASHDIFF': 'CUSTOMER_HASHDIFF'
+    src_source: 'SOURCE'
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+ 
+    {% set source_model = metadata_dict['source_model'] %}
+    
+    {% set src_pk = metadata_dict['src_pk'] %}
+    
+    {% set src_ldts = metadata_dict['src_ldts'] %}
+    
+    {% set src_satellite = metadata_dict['src_satellite'] %}
+
+    {% set src_source = metadata_dict['src_source'] %}
+
+    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
     ```
 
 ### Running dbt
