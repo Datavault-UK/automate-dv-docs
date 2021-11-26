@@ -81,7 +81,11 @@ When we provide the metadata above, our model should look like the following:
 
 With our metadata provided and our model complete, we can run dbt to create our `hub_customer` Hub, as follows:
 
-`dbt run -m +hub_customer`
+=== "< dbt v0.20.x"
+    `dbt run -m +hub_customer`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +hub_customer`
 
 And the resulting Hub table will look like this:
 

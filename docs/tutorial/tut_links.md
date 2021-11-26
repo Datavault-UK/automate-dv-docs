@@ -87,7 +87,11 @@ When we provide the metadata above, our model should look like the following:
 
 With our metadata provided and our model complete, we can run dbt to create our `link_customer_order` Link, as follows:
 
-`dbt run -m +link_customer_order`
+=== "< dbt v0.20.x"
+    `dbt run -m +link_customer_order`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +link_customer_order`
 
 And the resulting Link table will look like this:
 

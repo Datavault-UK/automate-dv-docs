@@ -130,7 +130,11 @@ When we provide the metadata above, our model should look like the following:
 
 With our model complete and our YAML written, we can run dbt to create our `sat_customer_detail` Satellite.
 
-`dbt run -m +sat_customer_detail`
+=== "< dbt v0.20.x"
+    `dbt run -m +sat_customer_detail`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +sat_customer_detail`
     
 And our Satellite table will look like this:
 

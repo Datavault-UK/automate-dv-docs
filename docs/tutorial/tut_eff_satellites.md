@@ -170,8 +170,12 @@ When we provide the metadata above, our model should look like the following:
 With our metadata provided and our model complete, we can run dbt to create `eff_sat_customer_nation` 
 Effectivity Satellite, as follows:
 
-`dbt run -m +eff_sat_customer_nation`
-    
+=== "< dbt v0.20.x"
+    `dbt run -m +eff_sat_customer_nation`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +eff_sat_customer_nation`
+
 And the resulting Effectivity Satellite table will look like this:
 
 | CUSTOMER_NATION_HK | CUSTOMER_HK  | NATION_HK     | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME            | SOURCE |

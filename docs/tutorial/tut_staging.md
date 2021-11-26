@@ -138,8 +138,12 @@ In summary this model will:
 ### Running dbt
 
 With our model complete and our YAML written, we can run dbt:
-                                       
-`dbt run -m v_stg_orders`
+
+=== "< dbt v0.20.x"
+    `dbt run -m v_stg_orders`
+
+=== "> dbt v0.21.0"
+    `dbt run --select v_stg_orders`
 
 And our table will look like this:
 

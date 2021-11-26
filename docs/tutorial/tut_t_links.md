@@ -125,8 +125,12 @@ When we provide the metadata above, our model should look like the following:
 
 With our model complete and our YAML written, we can run dbt to create our `t_link_transaction` Transactional Link.
 
-`dbt run -m +t_link_transaction`
-    
+=== "< dbt v0.20.x"
+    `dbt run -m +t_link_transaction`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +t_link_transaction`
+
 And our Transactional Link table will look like this:
 
 | TRANSACTION_HK  | CUSTOMER_HK | ORDER_HK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE |
