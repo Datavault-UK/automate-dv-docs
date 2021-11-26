@@ -38,7 +38,7 @@ Create a new dbt model as before. We'll call this one `xts_customer.sql`.
 
 To create an XTS model, we will simply copy and paste the above template into a model named after the XTS we are creating. dbtvault will generate the XTS using parameters provided in the next steps.
 
-We recommend setting the `incremental` materialization on all of your Extending Tracking Satellites using the `dbt_project.yml` file:
+We recommend setting the `incremental` materialization on all of your Extended Tracking Satellites using the `dbt_project.yml` file:
 
 === "dbt_project.yml"
 
