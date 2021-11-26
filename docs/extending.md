@@ -23,7 +23,7 @@ Here is an example:
 
 This snippet defines the macro namespace as `'dbtvault'`, ensuring that this macro gets found in the list of macros implemented in the dbtvault package namespace.
 
-To override the hub macro and ensure dbt uses your own implementation of it, you simply need to provide a configuration in your `dbt_project.yml` as follows:
+To override the `hub` macro and ensure dbt uses your own implementation of it, you simply need to provide a configuration in your `dbt_project.yml` as follows:
 
 === "dbt_project.yml"
 

@@ -51,7 +51,7 @@ larger collections of metadata or certain data types (e.g. dict literals), then 
 alternative to using `set`. This approach takes advantage of the `fromyaml()` built-in jinja function provided by dbt, 
 which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
 
-The below example for a hub is a little excessive for the small amount of metadata provided, so there is also a stage 
+The below example for a Hub is a little excessive for the small amount of metadata provided, so there is also a stage 
 example provided to help better convey the difference.
 
 !!! warning
@@ -751,7 +751,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
                         source_model=source_model) }}
     ```
 
-### Multi Active Satellites (MAS)
+### Multi-Active Satellites (MAS)
 
 #### Parameters
 
@@ -962,7 +962,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 ___
 
-### Point-in-Time (PIT) Tables 
+### Point-In-Time (PIT) Tables 
 
 #### Parameters
 

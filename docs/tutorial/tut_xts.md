@@ -1,17 +1,17 @@
 # Extended Tracking Satellites (XTS)
 
-XTS tables are an integral part of incorporating out of sequence loads. An XTS will link to numerous satellites and keep track of all records loaded to the satellite. This is particularly useful for correcting the timeline of an out of sequence satellite.
-For example, when an unexpected record gets loaded late it can cause an inaccuracy in the satellite's history. By tracking all record updates for that satellite, we can discern the correct timeline to reconstruct to incorporate the unexpected record.
+XTS tables are an integral part of incorporating out of sequence loads. An XTS will link to numerous Satellites and keep track of all records loaded to the Satellite. This is particularly useful for correcting the timeline of an Out Of Sequence Satellite.
+For example, when an unexpected record gets loaded late it can cause an inaccuracy in the Satellite's history. By tracking all record updates for that Satellite, we can discern the correct timeline to reconstruct to incorporate the unexpected record.
 
 #### Structure
 
-Our extended tracking satellites structures will contain:
+Our Extended Tracking Satellite structures will contain:
 
 ##### Primary Key ( src_pk )
-A primary key (or surrogate key) which is usually a hashed representation of the natural key. For an XTS we would expect this to be the same as the corresponding link or hub PK.
+A primary key (or surrogate key) which is usually a hashed representation of the natural key. For an XTS we would expect this to be the same as the corresponding Hub or Link PK.
 
 ##### Satellite name ( src_satellite.sat_name )
-The name of the satellite that the payload is being staged to. This allows us to use one XTS table to track records for many satellites and accurately maintain their timelines.
+The name of the Satellite that the payload is being staged to. This allows us to use one XTS table to track records for many Satellites and accurately maintain their timelines.
 
 ##### Hashdiff ( src_satellite.hashdiff)
 A hashed representation of the record's payload. An XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
@@ -38,7 +38,7 @@ Create a new dbt model as before. We'll call this one `xts_customer.sql`.
 
 To create an XTS model, we will simply copy and paste the above template into a model named after the XTS we are creating. dbtvault will generate the XTS using parameters provided in the next steps.
 
-We recommend setting the `incremental` materialization on all of your satellites using the `dbt_project.yml` file:
+We recommend setting the `incremental` materialization on all of your Extending Tracking Satellites using the `dbt_project.yml` file:
 
 === "dbt_project.yml"
 
@@ -77,11 +77,11 @@ all we need to do is provide the name of the model for the stage table as a stri
 #### Source columns
 
 Next we need to define the column heading that the XTS shall use from the source table.
-Here we set columns from the `stg_customer` table to variables using in the xts macro:
+Here we set columns from the `stg_customer` table to variables using in the `xts` macro:
 
 1. A primary key,
-2. The satellite dictionary, containing the satellite name and the hashdiff of the satellite's payload.
-3. A load ate timestamp, which is present in the staging layer as `LOAD_DATE`.
+2. The Satellite dictionary, containing the Satellite name and the hashdiff of the Satellite's payload.
+3. A load date timestamp, which is present in the staging layer as `LOAD_DATE`.
 4. A column to contain the `SOURCE`.
 
 Adding this to the metadata we should find something that resembles this:
@@ -117,7 +117,7 @@ With our model complete, and our metadata stored in our YAML. We can run dbt to 
     Using the '+' in front of `xts_customer` in the command above will get dbt to compile and run all its parent dependencies.  
     In this case, it will compile and run the staging and the hub models.
     
-Our Record Tracking Satellite table will look like this:
+Our Extended Tracking Satellite table will look like this:
 
 | CUSTOMER_PK  | HASHDIFF     | SATELLITE_NAME   | LOAD_DATE  | SOURCE       |
 | ------------ | ------------ | ---------------- | ---------- | ------------ |

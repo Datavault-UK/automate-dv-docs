@@ -13,7 +13,7 @@ from a source system or feed; the 'raw staging layer'.
 The raw staging table needs to be prepared with additional columns so that we may load our raw vault.
 Specifically, we need to add hash keys, hashdiffs, and any implied fixed-value columns (see the above diagram).
 
-We also need to ensure column names align with target hub or link table column names.
+We also need to ensure column names align with target Hub or Link table column names.
 
 !!! info
     Hash keys are optional in Snowflake. Natural/business keys alone can be used in place of hashing. 

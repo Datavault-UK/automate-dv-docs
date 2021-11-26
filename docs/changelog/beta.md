@@ -29,11 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Docs no longer available
 
 ### Added
-- Added more documentation for effectivity satellites
+- Added more documentation for Effectivity Satellites
 
 ### Improved
-- Improvements to effectivity satellites
-- Link macro now has better integration with effectivity satellites 
+- Improvements to Effectivity Satellites
+- Link macro now has better integration with Effectivity Satellites 
 
 ### Fixed
 - Fixed more macro headers (removed copyright etc.)
@@ -44,8 +44,8 @@ Docs no longer available
 
 ### Added
 
-- Effectivity satellites: The new [eff_sat](../macros.md#eff_sat) macro.
-- Limited documentation for effectivity satellites
+- Effectivity Satellites: The new [eff_sat](../macros.md#eff_sat) macro.
+- Limited documentation for Effectivity Satellites
 
 ### Updated
 - Updated required dbt version to 0.16.0

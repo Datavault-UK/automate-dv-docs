@@ -44,7 +44,7 @@ These features have been planned for the next major release.
 - Google BigQuery Support: Initially Hubs, Links and Satellites
 - SQL Server Support: Initially Hubs, Links and Satellites
     
-- We will incrementally build up big query support in v0.8.x versions
+- We will incrementally build up BigQuery support in v0.8.x versions
 
 ## Future releases
 
@@ -59,8 +59,8 @@ In future releases, we hope to include the following:
     
 ### Tables
 
-- Status tracking satellites
-- Point-in-Time tables (also known as PITs)
+- Status Tracking Satellites
+- Point-In-Time tables (also known as PITs)
 - Bridge tables
 - Reference Tables
 - Mart loading helpers

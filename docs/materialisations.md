@@ -133,8 +133,7 @@ materialisation is configured, the start and end of the load will get defined di
 
 | Configuration                | Outcome                                                                                                                  | Usage                | 
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current
-date**.                           | Manual Load range #1 |
+| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current date**.                           | Manual Load range #1 |
 | `start_date` and `stop_date` |  The load will start at `start_date`, and stop at `stop_date`                                                            | Manual Load range #2 |                  
 | `date_source_models`         |  The models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field` | Inferred Load range  |                 
 | All three config options     |  Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    

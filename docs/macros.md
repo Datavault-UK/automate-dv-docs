@@ -50,7 +50,7 @@ stg_customer:
 The mapping provided for the source style, is in the form `source_name: table_name` which mimics the syntax for
 the `source()` macro.
 
-For all other structures (hub, link, satellite, etc.) the `source_model` argument must be a string to denote a single
+For all other structures (Hub, Link, Satellite, etc.) the `source_model` argument must be a string to denote a single
 staging source, or a list of strings to denote multiple staging sources, which must be names of models (minus
 the `.sql`).
 
@@ -112,7 +112,7 @@ for your Data Vault.
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/hub.sql))
 
-Generates SQL to build a hub table using the provided parameters.
+Generates SQL to build a Hub table using the provided parameters.
 
 #### Usage
 
@@ -297,7 +297,7 @@ ___
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/link.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/link.sql))
 
-Generates sql to build a link table using the provided parameters.
+Generates SQL to build a Link table using the provided parameters.
 
 #### Usage
 
@@ -484,7 +484,7 @@ ___
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/t_link.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/t_link.sql))
 
-Generates sql to build a transactional link table using the provided parameters.
+Generates SQL to build a Transactional Link table using the provided parameters.
 
 #### Usage
 
@@ -560,7 +560,7 @@ ___
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/sat.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/sat.sql))
 
-Generates sql to build a satellite table using the provided parameters.
+Generates SQL to build a Satellite table using the provided parameters.
 
 #### Usage
 
@@ -653,7 +653,7 @@ Generates sql to build a satellite table using the provided parameters.
 
 #### Hashdiff Aliasing
 
-If you have multiple satellites using a single stage as its data source, then you will need to
+If you have multiple Satellites using a single stage as its data source, then you will need to
 use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
 
 ___
@@ -663,7 +663,7 @@ ___
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/eff_sat.sql))
 
-Generates sql to build an effectivity satellite table using the provided parameters.
+Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
 #### Usage
 
@@ -906,7 +906,7 @@ will aid business logic and creation of presentation layer structures downstream
 In most cases where Effectivity Satellites are recording 1-1 or 1-M relationships, this feature can be safely enabled.
 In situations where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This
 feature is disabled by default because it could be considered an application of a business rule:
-The definition of the 'end' of a relationship is considered business logic which should happen in the business vault.
+The definition of the 'end' of a relationship is considered business logic which should happen in the Business Vault.
 
 [Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
 
@@ -922,7 +922,7 @@ ___
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/ma_sat.sql))
 
-Generates SQL to build a multi-active satellite table (MAS).
+Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 #### Usage
 
@@ -1058,7 +1058,7 @@ Generates SQL to build a multi-active satellite table (MAS).
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
 
-Generates SQL to build an Extended Tracking Satellite table using the provided parameters
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
 
 #### Usage
@@ -1213,9 +1213,7 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/pit.sql))
 
-Generates SQL to build a point-in-time (PIT) table.
-
-Generates SQL to build an Extended Tracking Satellite table using the provided parameters
+Generates SQL to build a Point-In-Time (PIT) table.
 
 ``` jinja
 {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
@@ -1481,10 +1479,10 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/bridge.sql)))
 
-Generates SQL to build a simple bridge table, starting from a hub and 'walking' through one or 
-more associated links (and their effectivity satellites), using the provided parameters.
+Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or 
+more associated Links (and their Effectivity Satellites), using the provided parameters.
 
-For the current version effectivity satellite auto end dating must be enabled.
+For the current version, Effectivity Satellite auto end dating must be enabled.
 
 #### Usage
 
@@ -1737,7 +1735,7 @@ ___
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/stage.sql))
 
-Generates sql to build a staging area using the provided parameters.
+Generates SQL to build a staging area using the provided parameters.
 
 #### Usage
 

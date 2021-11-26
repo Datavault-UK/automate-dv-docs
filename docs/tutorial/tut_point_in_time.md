@@ -10,7 +10,7 @@ have different rates of update.
 
 #### Structure
 
-Our point-in-time structures will contain:
+Our Point-In-Time structures will contain:
 
 ##### Source Model (source_model)
 This is the name of the parent Hub that contains the primary key (src_pk) and to which the Satellites are connected to. 

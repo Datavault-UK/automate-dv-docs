@@ -84,7 +84,7 @@ one to many relationships were not getting handled as intended.
 add the natural key to the hashdiff, but it is still recommended. [Read More](../best_practices.md#hashdiff-components)
 
 ### Quality of Life
-- Payload in Transactional (Non-Historised) links now optional
+- Payload in Transactional (Non-Historised) Links now optional
 - Effective From in Satellites now optional
 
 
@@ -305,7 +305,7 @@ _**multi_hash**_, [staging](../macros.md#staging-macros)).
 ### Worked example
 
 - Transactional Links
-    - Added a transactional link model using a simulated transaction feed.
+    - Added a Transactional Link model using a simulated transaction feed.
     
 ### Documentation
 
@@ -326,7 +326,7 @@ is using dbt 0.14 currently (we will be updating to 0.15 soon!)
 
 ### Bug Fixes
 
-- Fixed a bug where the logic for performing a base-load (loading for the first time) on a union-based hub or link was incorrect, causing a load failure.
+- Fixed a bug where the logic for performing a base-load (loading for the first time) on a union-based Hub or Link was incorrect, causing a load failure.
 
 ### Documentation
 
@@ -354,14 +354,14 @@ The option to provide a mapping is still available.
 ### Documentation
 
 - Updated code samples and explanations according to new functionality
-- Added a best practises page
+- Added a best practices page
 - Various clarifications added and errors fixed
 
 ## [v0.2.4-pre] - 2019-10-17
 
 ### Bug Fixes
 
-- Fixed a bug where the target alias would be used instead of the source alias when incrementally loading a hub or link,
+- Fixed a bug where the target alias would be used instead of the source alias when incrementally loading a Hub or Link,
 causing subsequent loads after the initial load, to fail.
 
 
