@@ -287,6 +287,52 @@ A rank column can be created one of three ways:
     It is important that once a rank column is created, it should be sense checked for correct and expected ordering. If your ranking is incorrect according to
     the business, then loading will not be executed correctly.
 
+### pit_incremental (Incremental PIT)
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_pit_materialization.sql))
+
+The `pit_incremental` custom materialisation is the required materialisation for the [PIT table](macros.md#pit) as it
+allows for a continuous reconstruction of the PIT table. 
+
+Since PITs are not historized, but query helper tables, they have to be reconstructed (at least) once every reporting 
+cycle. 
+
+So, this materialisation simply ensures that the old contents of the PIT table are removed before the new version 
+populates the target table, upon each run of the PIT model.
+
+#### Usage
+
+```jinja
+{{ config(materialized='pit_incremental') }}
+
+{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+                    as_of_dates_table=as_of_dates_table,
+                    satellites=satellites,
+                    stage_tables=stage_tables,
+                    src_ldts=src_ldts) }}                    
+```
+
 ### bridge_incremental (Incremental Bridge)
 
-### pit_incremental (Incremental PIT)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_bridge_materialization.sql))
+
+The `bridge_incremental` custom materialisation is the required materialisation for the [Bridge table](macros.md#bridge)
+as it allows for a continuous reconstruction of the Bridge table. 
+
+Since Bridges are not historized, but query helper tables, they have to be reconstructed (at least) once every reporting
+cycle. 
+
+So, this materialisation simply ensures that the old contents of the Bridge table are removed before the new version 
+populates the target table, upon each run of the Bridge model. 
+
+#### Usage
+
+```jinja
+{{ config(materialized='bridge_incremental') }}
+
+{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+                       bridge_walk=bridge_walk,
+                       as_of_dates_table=as_of_dates_table,
+                       stage_tables_ldts=stage_tables_ldts,
+                       src_ldts=src_ldts) }}
+```
