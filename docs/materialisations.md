@@ -297,8 +297,8 @@ allows for a continuous reconstruction of the PIT table.
 Since PITs are not historized, but query helper tables, they have to be reconstructed (at least) once every reporting 
 cycle. 
 
-So, this materialisation simply ensures that the old contents of the PIT table are removed before the new version 
-populates the target table, upon each run of the PIT model.
+This materialisation simply ensures that the old contents of the PIT table are removed before the new version 
+populates the target table, for each run of the PIT model.
 
 #### Usage
 
@@ -322,8 +322,8 @@ as it allows for a continuous reconstruction of the Bridge table.
 Since Bridges are not historized, but query helper tables, they have to be reconstructed (at least) once every reporting
 cycle. 
 
-So, this materialisation simply ensures that the old contents of the Bridge table are removed before the new version 
-populates the target table, upon each run of the Bridge model. 
+This materialisation simply ensures that the old contents of the Bridge table are removed before the new version 
+populates the target table, for each run of the Bridge model. 
 
 #### Usage
 
