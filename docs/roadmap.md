@@ -24,8 +24,6 @@ Development is still ongoing, and we are continually adding more and more featur
 If you have any ideas, or are interested in hearing more, contact Datavault directly via Slack or email or submit an 
 issue on our GitHub.
 
-
-
 ## Releases Roadmap
 
 ### v0.7.9
@@ -44,9 +42,9 @@ issue on our GitHub.
 These features have been planned for the next major release.
 
 - Google BigQuery Support: Initially Hubs, Links and Satellites
-- SQL Server Support: Initially Hubs, Links and Satellites
+- MS SQL Server Support: Initially Hubs, Links and Satellites
     
-- We will incrementally build up big query support in v0.8.x versions
+- We will incrementally increase support for BigQuery and MS SQL Server v0.8.x versions
 
 ## Future releases
 
@@ -54,15 +52,14 @@ In future releases, we hope to include the following:
 
 ### Platform support
 
-- Microsoft SQL Server
 - Amazon Redshift
 - Postgres
 - Databricks
     
 ### Tables
 
-- Status tracking satellites
-- Point-in-Time tables (also known as PITs)
+- Status Tracking Satellites
+- Point-In-Time tables (also known as PITs)
 - Bridge tables
 - Reference Tables
 - Mart loading helpers

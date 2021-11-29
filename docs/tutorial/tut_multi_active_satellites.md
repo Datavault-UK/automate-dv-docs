@@ -1,6 +1,6 @@
-# Multi Active Satellites (MAS)
+# Multi-Active Satellites (MAS)
 
-Multi Active Satellites (MAS) contain point-in-time payload data related to their parent hub or link records that
+Multi-Active Satellites (MAS) contain point-in-time payload data related to their parent Hub or Link records that
 allow for multiple records to be valid at the same time. Some example use cases could be when customers have multiple active 
 phone numbers or addresses. 
 
@@ -9,15 +9,15 @@ need to be included in the Primary Key alongside the Hash Key and the Load Date/
 
 ### Structure
 
-Our multi active satellite structures will contain:
+Our Multi-Active Satellite structures will contain:
 
 #### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key.
-For a multi active satellite, this should be the same as the corresponding link or hub PK, concatenated with the load timestamp.
+For a Multi-Active Satellite, this should be the same as the corresponding Hub or Link PK, concatenated with the load timestamp.
 
 #### Child Dependent Key(s) (src_cdk)
 The child dependent keys are a subset of the payload (below) that helps with identifying the different valid records 
-for each entity inside the multi active satellite. For example, a customer could have different valid phone number valid
+for each entity inside the Multi-Active Satellite. For example, a customer could have different valid phone number valid
 at the same time. The phone number attribute will be selected as a child dependent key that helps the natural key keep 
 records unique and identifiable. If the customer has only one phone number, but multiple extensions associated with that 
 phone number, then both the phone number, and the extension attribute will be considered a child dependent key. 
@@ -30,11 +30,11 @@ will change as a result of the payload changing.
 #### Payload (src_payload)
 The payload consists of concrete data for an entity (e.g. A customer). This could be
 a name, a phone number, a date of birth, nationality, age, gender or more. The payload will contain some or all of the
-concrete data for an entity, depending on the purpose of the satellite. 
+concrete data for an entity, depending on the purpose of the Satellite. 
 
 #### Effective From (src_eff)
-An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a multi active
-satellite record. It records that a record is valid from a specific point in time.
+An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a Multi-Active
+Satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
 longer have the most recent `EFFECTIVE_FROM` value. 
 
@@ -47,20 +47,20 @@ or a string directly naming the source system.
 
 ### Load date vs. Effective From Date
 `LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different, 
-holding the business effectivity date of the record (i.e. When it actually happened in the real world) and will usually 
+holding the business effectivity date of the record (i.e. when it actually happened in the real world) and will usually 
 hold a different value, especially if there is a batch processing delay between when a business event happens and the 
 record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
 and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
 
 The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
-in our experience we have found it useful for processing and applying business rules in downstream business vault, for 
+in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 
 use in presentation layers.
 
 ### Creating MAS models
 
-Create a new dbt model as before. We'll call this one `ma_sat_customer_details`.
+Create a new dbt model as before. We'll call this one `ma_sat_customer_detail`.
 
-=== "ma_sat_customer_details.sql"
+=== "ma_sat_customer_detail.sql"
 
     ```jinja
     {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
@@ -74,7 +74,7 @@ Let's look at the metadata we need to provide to the [ma_sat](../macros.md#ma_sa
 
 #### Materialisation
 
-The recommended materialisation for **satellites** is `incremental`, as we load and add new records to the existing data set.
+The recommended materialisation for **Multi-Active Satellites** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
@@ -82,7 +82,7 @@ Let's look at the metadata we need to provide to the [multi-active satellite mac
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our [knowledge](#structure) of what columns we need in our `ma_sat_customer_details` multi-active satellite, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `ma_sat_customer_detail` Multi-Active Satellite, we can identify columns in our
 staging layer which map to them:
 
 | Parameter      | Value                                                | 
@@ -98,44 +98,50 @@ staging layer which map to them:
 
 When we provide the metadata above, our model should look like the following:
 
-```jinja
-{{ config(materialized='incremental') }}
+=== "ma_sat_customer_detail.sql"
 
-{%- set yaml_metadata -%}
-source_model: 'v_stg_orders'
-src_pk: 'CUSTOMER_HK'
-src_cdk: 
-  - 'CUSTOMER_PHONE'
-src_payload:
-  - 'CUSTOMER_NAME'
-src_hashdiff: 'HASHDIFF'
-src_eff: 'EFFECTIVE_FROM'
-src_ldts: 'LOAD_DATETIME'
-src_source: 'RECORD_SOURCE'
-{%- endset -%}
-
-{% set metadata_dict = fromyaml(yaml_metadata) %}
-
-{{ dbtvault.ma_sat(src_pk=metadata_dict['src_pk'],
-                   src_cdk=metadata_dict['src_cdk'],
-                   src_payload=metadata_dict['src_payload'],
-                   src_hashdiff=metadata_dict['src_hashdiff'],
-                   src_eff=metadata_dict['src_eff'],
-                   src_ldts=metadata_dict['src_ldts'],
-                   src_source=metadata_dict['src_source'],
-                   source_model=metadata_dict['source_model']) }}
-```
+    ```jinja
+    {{ config(materialized='incremental') }}
+    
+    {%- set yaml_metadata -%}
+    source_model: 'v_stg_orders'
+    src_pk: 'CUSTOMER_HK'
+    src_cdk: 
+      - 'CUSTOMER_PHONE'
+    src_payload:
+      - 'CUSTOMER_NAME'
+    src_hashdiff: 'HASHDIFF'
+    src_eff: 'EFFECTIVE_FROM'
+    src_ldts: 'LOAD_DATETIME'
+    src_source: 'RECORD_SOURCE'
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.ma_sat(src_pk=metadata_dict['src_pk'],
+                       src_cdk=metadata_dict['src_cdk'],
+                       src_payload=metadata_dict['src_payload'],
+                       src_hashdiff=metadata_dict['src_hashdiff'],
+                       src_eff=metadata_dict['src_eff'],
+                       src_ldts=metadata_dict['src_ldts'],
+                       src_source=metadata_dict['src_source'],
+                       source_model=metadata_dict['source_model']) }}
+    ```
 
 !!! Note
-    See our [metadata reference](../metadata.md#multi-active-satellites-mas) for more detail on how to provide metadata to multi-active satellites.
+    See our [metadata reference](../metadata.md#multi-active-satellites-mas) for more detail on how to provide metadata to Multi-Active Satellites.
 
 ### Running dbt
 
-With our model complete and our YAML written, we can run dbt to create our `ma_sat_customer_details` multi active satellite.
+With our model complete and our YAML written, we can run dbt to create our `ma_sat_customer_detail` Multi-Active Satellite.
 
-`dbt run -m +ma_sat_customer_details`
+=== "< dbt v0.20.x"
+    `dbt run -m +ma_sat_customer_detail`
 
-And our table will look like this:
+=== "> dbt v0.21.0"
+    `dbt run --select +ma_sat_customer_detail`
+
+And our MAS table will look like this:
 
 | CUSTOMER_HK  | HASHDIFF     | CUSTOMER_NAME | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE | 
 | ------------ | ------------ | ----------    | --------------- | -------------- | ------------------------ | ------ | 

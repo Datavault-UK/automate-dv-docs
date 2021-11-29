@@ -51,7 +51,7 @@ larger collections of metadata or certain data types (e.g. dict literals), then 
 alternative to using `set`. This approach takes advantage of the `fromyaml()` built-in jinja function provided by dbt, 
 which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
 
-The below example for a hub is a little excessive for the small amount of metadata provided, so there is also a stage 
+The below example for a Hub is a little excessive for the small amount of metadata provided, so there is also a stage 
 example provided to help better convey the difference.
 
 !!! warning
@@ -751,7 +751,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
                         source_model=source_model) }}
     ```
 
-### Multi Active Satellites (MAS)
+### Multi-Active Satellites (MAS)
 
 #### Parameters
 
@@ -806,7 +806,163 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 ___
 
-### Extended Record Tracking Satellites (XTS)
+
+### Extended Tracking Satellites (XTS)
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
+
+Generates SQL to build an Extended Tracking Satellite table using the provided parameters
+
+
+#### Usage
+
+``` jinja
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter      | Description                                                    | Type             | Required?                                    |
+| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
+| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
+| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
+| src_ldts       | Source load date/timestamp column                              | String           | <i class="fas fa-check-circle required"></i> |
+| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
+| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+
+!!! tip
+[Read the tutorial](tutorial/tut_xts.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#extended-tracking-satellites-xts)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Single-Source"
+
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * 
+            FROM satellite_a
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* 
+            FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_c AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_d AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+            UNION ALL
+            SELECT * FROM satellite_c
+            UNION ALL
+            SELECT * FROM satellite_d
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+___
+
+### Point-In-Time (PIT) Tables 
 
 #### Parameters
 
@@ -818,8 +974,29 @@ ___
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: 'STG_CUSTOMER'
-    src_pk: 'CUSTOMER_PK'
+    source_model: HUB_CUSTOMER
+    src_pk: CUSTOMER_PK
+    as_of_dates_table: AS_OF_DATE
+    satellites: 
+      SAT_CUSTOMER_DETAILS:
+        pk:
+          'PK': 'CUSTOMER_PK'
+        ldts:
+           'LDTS': 'LOAD_DATE'
+      SAT_CUSTOMER_LOGIN:
+        pk:
+           'PK': 'CUSTOMER_PK'
+        ldts:
+           'LDTS': 'LOAD_DATE'
+      SAT_CUSTOMER_PROFILE:
+        pk:
+           'PK': 'CUSTOMER_PK'
+        ldts:
+           'LDTS': 'LOAD_DATE'
+    stage_tables:
+      'STG_CUSTOMER_DETAILS': 'LOAD_DATE',
+      'STG_CUSTOMER_LOGIN': 'LOAD_DATE',
+      'STG_CUSTOMER_PROFILE': 'LOAD_DATE'
     src_ldts: 'LOAD_DATE'
     src_satellite:
       SATELLITE_CUSTOMER:
@@ -838,46 +1015,62 @@ ___
                     src_source=metadata_dict["src_source"],
                     source_model=metadata_dict["source_model"]) }}
     ```
+___
 
-=== "Per-Model - Variables"
+### Bridge tables
+
+#### Parameters
+
+[bridge macro parameters](macros.md#bridge)
+
+#### Metadata
+
+=== "Per-Model - YAML String"
 
     ```jinja
-    {%- set source_model = "STG_CUSTOMER" -%}
-    {%- set src_pk = "CUSTOMER_PK" -%}
-    {%- set src_satellites = { 
-            "SATELLITE_CUSTOMER": {
-                "sat_name": {
-                    "SATELLITE_NAME": "SATELLITE_1"
-                },
-                "hashdiff": {
-                    "HASHDIFF": "HASHDIFF_1"
-                }
-            }
-        } -%}
-    {%- set src_ldts = "LOAD_DATE" -%}
-    {%- set src_source = "SOURCE" -%}
-    
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model)              }}
-    ```
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATETIME"
+    as_of_dates_table: "AS_OF_DATE"
+    bridge_walk:
+      CUSTOMER_ORDER:
+        bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
+        bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
+        bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
+        link_table: "LINK_CUSTOMER_ORDER"
+        link_pk: "CUSTOMER_ORDER_PK"
+        link_fk1: "CUSTOMER_FK"
+        link_fk2: "ORDER_FK"
+        eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
+        eff_sat_pk: "CUSTOMER_ORDER_PK"
+        eff_sat_end_date: "END_DATE"
+        eff_sat_load_date: "LOAD_DATETIME"
+      ORDER_PRODUCT:
+        bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
+        bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
+        bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
+        link_table: "LINK_ORDER_PRODUCT"
+        link_pk: "ORDER_PRODUCT_PK"
+        link_fk1: "ORDER_FK"
+        link_fk2: "PRODUCT_FK"
+        eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
+        eff_sat_pk: "ORDER_PRODUCT_PK"
+        eff_sat_end_date: "END_DATE"
+        eff_sat_load_date: "LOAD_DATETIME"
+    stage_tables_ldts:
+      STG_CUSTOMER_ORDER: "LOAD_DATETIME"
+      STG_ORDER_PRODUCT: "LOAD_DATETIME"
+    {%- endset -%}
 
-=== "dbt_project.yml"
+    {% set metadata_dict = fromyaml(yaml_metadata) %}   
 
-    !!! warning "Only available with dbt config-version: 1"
-
-    ```yaml
-    xts_customer:
-      vars:
-        source_model: 'STG_CUSTOMER'
-        src_pk: 'CUSTOMER_PK'
-        src_satellite: 
-            'SATELLITE_CUSTOMER':
-                'sat_name': 
-                    'SATELLITE_NAME': 'SATELLITE_1'
-                'hashdiff':
-                    'HASHDIFF': 'HASHDIFF_1'
-        src_ldts: 'LOAD_DATE'
-        src_source: 'SOURCE'
+    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], 
+                            src_pk=metadata_dict['src_pk'],
+                            src_ldts=metadata_dict['src_ldts'],
+                            bridge_walk=metadata_dict['bridge_walk'],
+                            as_of_dates_table=metadata_dict['as_of_dates_table'],
+                            stage_tables_ldts=metadata_dict['stage_tables_ldts']) }}
     ```
 ___
 

@@ -17,40 +17,40 @@ order number (can be multi-column).
 
 ### Deploying Hubs
 
-To compile and load the provided hub models, run the following command:
+To compile and load the provided Hub models, run the following command:
 
 `dbt run -m tag:hub`
 
-This will run all models with the hub tag.
+This will run all models with the `hub` tag.
 
 ## Links
 
 Links are another fundamental component in a Data Vault. 
 
 Links model an association or link, between two business keys. They commonly hold business transactions or structural 
-information. A link specifically contains the structural information.
+information. A Link specifically contains the structural information.
 
-Our links will contain:
+Our Links will contain:
 
-1. A primary key. For links, we take the natural keys (prior to hashing) represented by the foreign key columns
+1. A primary key. For Links, we take the natural keys (prior to hashing) represented by the foreign key columns
 and create a hash on a concatenation of them. 
-2. Foreign keys holding the primary key for each hub referenced in the link (2 or more depending on the number of hubs 
+2. Foreign keys holding the primary key for each Hub referenced in the Link (2 or more depending on the number of Hubs 
 referenced) 
 3. The load date or load date timestamp.
 4. The source for the record
 
 ### Deploying Links
 
-To compile and load the provided link models, run the following command:
+To compile and load the provided Link models, run the following command:
 
 `dbt run -m tag:link`
 
-This will run all models with the link tag.
+This will run all models with the `link` tag.
 
 ## Satellites
 
-Satellites contain point-in-time payload data related to their parent hub or link records. 
-Each hub or link record may have one or more child satellite records, allowing us to record changes in 
+Satellites contain point-in-time payload data related to their parent Hub or Link records. 
+Each Hub or Link record may have one or more child Satellite records, allowing us to record changes in 
 the data as they happen. 
 
 They will usually consist of the following columns:
@@ -66,7 +66,7 @@ a name, a date of birth, nationality, age, gender or more. The payload will cont
 concrete data for an entity, depending on the purpose of the satellite. 
 
 4. An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
-satellite record. It records that a record is valid from a specific point in time.
+Satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no longer 
 have the most recent `EFFECTIVE_FROM` value. 
 
@@ -82,37 +82,37 @@ have the most recent `EFFECTIVE_FROM` value.
 
 ### Deploying Satellites
 
-To compile and load the provided satellite models, run the following command:
+To compile and load the provided Satellite models, run the following command:
 
 `dbt run -m tag:satellite` 
 
-This will run all models with the satellite tag.
+This will run all models with the `satellite` tag.
 
 ## Transactional Links
 
 Transactional Links are used to model transactions between entities in a Data Vault. 
 
 Links model an association or link, between two business keys. They commonly hold business transactions or structural 
-information. A transactional link specifically contains the business transactions.
+information. A Transactional Link specifically contains the business transactions.
 
-Our transactional links will contain:
+Our Transactional Links will contain:
 
-1. A primary key. For transactional links, we use the transaction number. If this is not already present in the dataset
+1. A primary key. For Transactional Links, we use the transaction number. If this is not already present in the dataset
 then we create this by concatenating the foreign keys and hashing them. 
-2. Foreign keys holding the primary key for each hub referenced in the transactional link (2 or more depending on the number of hubs 
+2. Foreign keys holding the primary key for each hub referenced in the Transactional Link (2 or more depending on the number of Hubs 
 referenced) 
 3. A payload. This will be data about the transaction itself e.g. the amount, type, date or non-hashed transaction number.
 4. An `EFFECTIVE_FROM` date. This will usually be the date of the transaction.
 5. The load date or load date timestamp.
 6. The source for the record
 
-### Deploying transactional links
+### Deploying Transactional Links
 
-To compile and load the provided t_link models, run the following command:
+To compile and load the provided Transactional Link models, run the following command:
 
 `dbt run -m tag:t_link`
 
-This will run all models with the t_link tag.
+This will run all models with the `t_link` tag.
 
 ## Loading the full system
 

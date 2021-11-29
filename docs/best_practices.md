@@ -3,11 +3,11 @@ We advise you follow these best practises when using dbtvault.
 ## Single record per key, per load (incremental)
 
 At the current time, dbtvault will load discrete records with the same primary key (hash key) simultaneously. This means
-that any deltas formed by loading these records in individual cycles get lost. For hubs and links this is not a problem,
-as there are no temporal attributes, but for structures such as satellites this will produce erroneous loads.
+that any deltas formed by loading these records in individual cycles get lost. For Hubs and Links this is not a problem,
+as there are no temporal attributes, but for structures such as Satellites this will produce erroneous loads.
 
 Until a future release solves this limitation for structures configured with the built-in **incremental materialisation**,
-we advise that you use one of our provided custom [insert_by materialisations](macros.md#materialisations). 
+we advise that you use one of our provided [custom materialisations](materialisations.md). 
 
 These materialisations are fully configurable and automatically iterate over records, to load each batch/iteration separately.
 
@@ -86,7 +86,7 @@ If the driving key column(s) or secondary foreign key (sfk) column(s) are null t
 ## Materialisations
 
 All raw vault structures support both the built-in dbt incremental materialisation and dbtvault's [custom 
-materialisations](macros.md#materialisations). 
+materialisations](materialisations.md). 
 
 [Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
@@ -116,18 +116,18 @@ Data Vault 2.0 standards.
 | Link                           | :material-check:     |
 | Transactional Link             | :material-check:     |
 | Satellite                      | :material-check:     |
-| Effectivity Satellites         | :material-check:     |
-| Multi-Active Satellites        | :material-check:     |
+| Effectivity Satellite          | :material-check:     |
+| Multi-Active Satellite         | :material-check:     |
 
 ## Hashing
 
 !!! seealso "See Also"
-    - [hash](macros.md#hash)
+    - [hash](macros.md#hash-macro)
     - [hash_columns](macros.md#hash_columns)
  
 ### The drawbacks of using MD5
 
-By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros.md#hash)
+By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros.md#hash-macro)
 and [hash_columns](macros.md#hash_columns). If your table contains more than a few billion rows, then there is a chance
 of a clash: where two different values generate the same hash value
 (see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collision_vulnerabilities)).
@@ -167,8 +167,8 @@ as it is a single column, same data type, it supports pattern-based loading.
 
 #### Hashdiffs
 
-Used to finger-print the payload of a satellite (similar to a checksum), so that it is easier to detect if there has
-been a change in the payload. This triggers the load of a new satellite record. This simplifies the SQL as otherwise
+Used to finger-print the payload of a Satellite (similar to a checksum), so that it is easier to detect if there has
+been a change in the payload. This triggers the load of a new Satellite record. This simplifies the SQL as otherwise
 we'd have to compare each column in turn and handle nulls to see if a change had occurred.
 
 Hashing is sensitive to column ordering. If you provide the `is_hashdiff: true` flag to your column specification in
@@ -277,7 +277,7 @@ Best practices for hashing include:
 - Alpha sorting Hashdiff columns. As mentioned, dbtvault can do this for us, so no worries!
   Refer to the [stage](macros.md#stage) docs for details on how to do this.
 
-- Ensure all **hub** columns used to calculate a primary key hash get presented in the same order across all staging
+- Ensure all **Hub** columns used to calculate a primary key hash get presented in the same order across all staging
   tables
 
 !!! note 
@@ -285,8 +285,8 @@ Best practices for hashing include:
     Some tables may use different column names for primary key components, so you generally **should not** use the
     sorting functionality for primary keys.
 
-- For **links**, columns must be sorted by the primary key of the hub and arranged alphabetically by the hub name. The
-  order must also be the same as each hub.
+- For **Links**, columns must be sorted by the primary key of the Hub and arranged alphabetically by the Hub name. The
+  order must also be the same as each Hub.
 
 ### Hashdiff Aliasing
 
@@ -294,7 +294,7 @@ Best practices for hashing include:
 staging layer for the raw vault, we cannot have multiple columns sharing the same name. This means we have to name each
 of our `HASHDIFF` columns differently.
 
-Below is an example satellite YAML config from a satellite model:
+Below is an example satellite YAML config from a Satellite model:
 
 === "sat_customer_details"
 
