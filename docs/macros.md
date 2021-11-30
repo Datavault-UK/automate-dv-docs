@@ -288,7 +288,157 @@ Generates SQL to build a Hub table using the provided parameters.
         ```
 
 === "Google BigQuery"
-    Coming soon!
+    
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+            LEFT JOIN DBTVAULT.TEST.hub AS d
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE 
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        row_rank_2 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE_2
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        stage_union AS (
+            SELECT * FROM row_rank_1
+            UNION ALL
+            SELECT * FROM row_rank_2
+        ),
+        
+        row_rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
+                   ) AS row_rank_number
+            FROM stage_union
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_rank_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        row_rank_2 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE_2
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        stage_union AS (
+            SELECT * FROM row_rank_1
+            UNION ALL
+            SELECT * FROM row_rank_2
+        ),
+        
+        row_rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
+                   ) AS row_rank_number
+            FROM stage_union
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_rank_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
+            LEFT JOIN DBTVAULT.TEST.hub AS d
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    
 
 ___
 
