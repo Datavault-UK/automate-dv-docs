@@ -310,6 +310,7 @@ Generates SQL to build a Hub table using the provided parameters.
 
         SELECT * FROM records_to_insert
         ```
+
     === "Single-Source (Subsequent Loads)"
     
         ```sql
