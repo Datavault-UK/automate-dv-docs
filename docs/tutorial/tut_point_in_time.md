@@ -1,39 +1,52 @@
-A Point-In-Time table is one of two business-vault query-helper tables (the other being Bridge tables) designed for loading and creating the presentation marts.
-The PIT table will the bolster the query performance of the raw vault when the satellites do not have the same cadence.
-It will act as 'window in time' which references data valid at a specific point in time in history listed in an 
-[as of dates table](../macros.md#as-of-date-table-structures). To create a PIT table, a minimum of two satellites will be required, though PIT tables are more 
-beneficial when referencing a greater number of satellites. 
+A Point-In-Time table is a query assistant structure, part of the Business Vault, meant to improve the performance of 
+loading and creating the information marts. Given a supplied list of dates/timestamps in an 
+[As of Date table](../macros.md#as-of-date-tables), the PIT table will identify the relevant records from 
+each Satellite for that specific date/timestamp and record the Hash Key and the LDTS value of that Satellite record. 
+By identifying the "coordinates" of the relevant records at each point-in-time a priori, the information marts queries 
+can make use of equi-joins which offer a significant boost in performance.    
 
-### Structure
+The recommendation is to use the PIT table when referencing at least two Satellites and especially when the Satellites
+have different rates of update. 
 
-Our point-in-time structures will contain:
+#### Structure
 
-#### Primary Key (src_pk)
+Our Point-In-Time structures will contain:
+
+##### Source Model (source_model)
+This is the name of the parent Hub that contains the primary key (src_pk) and to which the Satellites are connected to. 
+
+##### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. This will be the primary key used
-by the Hub.
+by the parent Hub.
 
-#### as_of_dates_table 
-The as_of_dates_table describes the history needed to construct the PIT table as a list of dates. This is where you would 
-supply the name of your as of date table.
+##### Load Date/Timestamp (src_ldts)
+This is a string with the name of the Hub's Load Date/Timestamp column 
 
-#### Satellites
-This is a dictionary of the satellites that is used to define their metadata. Each satellite entry will be its name exactly and will contain
-two nested dictionaries pk and ldts. which will define the satellite key and the date column used to compare to the as of table. 
-These will contain a key pair described below.
+##### As of Date Table (as_of_dates_table) 
+The `as_of_dates_table` describes the history needed to construct the PIT table as a list of dates. This is where you would 
+supply the name of your As of Date table.
 
-The satellite_key is the hashed key in the satellite that directly corresponds to the Hub_PK. These should be the exact same.
-The only difference being the key may not be defined as the primary_key in the satellite it could be defined as a foreign key
-or a hashed key. It is described by a key pair, 'the suffix desired for this key (eg:PK, FK, HK)' : 'name of the key in the satellite'
+##### Satellites (satellites)
+This is a dictionary that contains the metadata for the Satellites in subject. It will have three levels of keys. 
 
-The satellite_date_column. This is the column used to compare to the as of dates column when deciding what is the valid entry.
-Typically, the Load_date is used, but the effective_from can also be used. You must keep in mind however when using effective from
-although the entry may be the most valid for that date it may not have been a representation of the data vault on that day as the load date could be
-further in the future. The key pair will be defined by 'the suffix for date type column used (eg: LDTS, EF)' : 'name of the date column you want to use'
+The first level key is the name of the Satellite in uppercase.
 
-#### source_model
-This is the name of the Hub that contains the primary key (src_pk) and that the satellites are connected to. 
+The second level keys will be _pk_ and _ldts_.
 
-### Creating PIT models
+The third level key will be _'PK'_ and _'LDTS'_. The expected value for the _'PK'_ key is the Hash Key column name of the Satellite (e.g. CUSTOMER_PK). 
+The expected value for the _'LDTS'_ key is the Load Date/Timestamp column name of the Satellite (e.g. LOAD_DATE).
+
+##### Stage Models (stage_tables)
+This is a dictionary that contains the names of the Load Date/Timestamp columns for each stage table sourcing the Satellites.
+
+The keys in the dictionary will be the stage table names (e.g. 'STG_CUSTOMER_DETAILS), whereas the values will be 
+the name of the Load Date/Timestamp column for that stage table (e.g. 'LOAD_DATE')
+
+!!! tip
+    To see a full example of how the metadata needs to be defined for a PIT object, please check the PIT section on the [metadata](../metadata.md#point-in-time-pit-tables) page.
+
+
+### Setting up PIT models
 
 Create a new dbt model as before. We'll call this one `pit_customer`. 
 
@@ -50,62 +63,212 @@ Create a new dbt model as before. We'll call this one `pit_customer`.
 To create a PIT model, we simply copy and paste the above template into a model named after the PIT we
 are creating. dbtvault will generate a PIT using parameters provided in the next steps.
 
-PITS should use the pit_incremental materialization, as the pit is remade with every new as of dates table. 
+#### Materialisation
 
-ADD METADATA SECTION
+PIT tables should use the `pit_incremental` materialisation, as they will be remade with every new As of Date table. 
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [pit](../macros.md#pit) macro.
+Let's look at the metadata we need to provide to the [pit](../metadata.md#point-in-time-pit-tables) macro.
+
+| Parameter         | Value                                             | 
+| ----------------- | ------------------------------------------------- | 
+| source_model      | HUB_CUSTOMER                                      | 
+| src_pk            | CUSTOMER_PK                                       |
+| src_ldts          | LOAD_DATE                                         |
+| as_of_dates_table | AS_OF_DATE                                        |
+| satellites        | {'SAT_CUSTOMER_DETAILS':                          |
+|                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         | 
+|                   | &emsp;&emsp;&nbsp;'ldts': {'LDTS': 'LOAD_DATE'}}, |
+|                   | &nbsp;'SAT_CUSTOMER_LOGIN':                       |
+|                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         |
+|                   | &emsp;&emsp;&nbsp;'ldts': {'LDTS': 'LOAD_DATE'}}} |
+| stage_tables      | {'STG_CUSTOMER_DETAILS': 'LOAD_DATE',             |
+|                   | &nbsp;'STG_CUSTOMER_LOGIN': 'LOAD_DATE'}          |
 
 #### Source table
+
 Here we will define the metadata for the source_model. We will use the HUB_CUSTOMER that we built before.
 
-`dbt_project.yml`
+=== "pit_customer.yml"
 
-```yaml
-PIT_CUSTOMER:
-    vars:
-        source_model: HUB_CUSTOMER
-```
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    ...
+    ```
 
-#### Source columns
+#### Primary Key
 
-Next we need to choose which source columns we will use but also what satellites to incorporate in our `PIT_CUSTOMER` :
+Next we need add the Hub's Primary Key column 
 
-1. The primary key of the parent hub, which is a hashed natural key. 
-The `CUSTOMER_PK` we created earlier in the [hub](tut_hubs.md) section will be used for `PIT_CUSTOMER`.
+=== "pit_customer.yml"
 
-2. `AS_OF_DATE` column which represents the date the row is valid for. This is obtained by giving the source information of the [as of dates table](../macros.md#As-Of-Date-Table-Structures).
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    ...
+    ```
 
-3. `satellite_key` is the `src_pk` taken from the satellite and aliased as the satellite name_ the type of key it is (eg: PK, HK, FK)
-there is a column for each satellite included in the PIT.
+#### Load Date/Timestamp
 
-4. `satellite_LDTS` is the column chosen from the satellite to denote the date column that is being used as to determine when the entry is
-valid from and is aliased as satellite name suffixed with an identifier of the date column, usually load date but can also be the effective from (LDTS or EF). This will be paired 
-with its respective `satellite_key` 
-   
-The `dbt_project.yml` below only defines one satellite but to add others you would follow the same method inside of satellites.
-It can be seen where the SAT_ORDERS_LOGIN would begin.
+Next, we add the Load Date/Timestamp column name of the parent Hub 
 
-`dbt_project.yml`
+=== "pit_customer.yml"
 
-```yaml hl_lines="6 7 8 9 10 11 12"
-    PIT_CUSTOMER:
-      vars:
-        source_model: HUB_CUSTOMER
-        as_of_date_table: AS_OF_DATES
-        src_pk: CUSTOMER_PK
-        satellites: 
-            SAT_CUSTOMER_DETAILS:
-                pk:
-                    'PK': 'CUSTOMER_PK'
-                ldts:
-                    'LDTS': 'LOAD_DATE'
-            SAT_ORDER_LOGIN:
-               ...
-```
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    ...
+    ```
+
+#### As of Date Table 
+
+Next, we provide the PIT's column name for the As of Date table.
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    as_of_dates_table: "AS_OF_DATE"
+    ...
+    ```
+
+#### Satellites metadata
+
+Here we add the Satellite related details (i.e. the Primary/Hash Key and the Load Date/Timestamp column names)
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    as_of_dates_table: "AS_OF_DATE"
+    satellites: 
+        SAT_CUSTOMER_DETAILS
+          pk
+            "PK": "CUSTOMER_PK"
+          ldts
+            "LDTS": "LOAD_DATE"
+        SAT_CUSTOMER_LOGIN:
+          pk:
+            "PK": "CUSTOMER_PK"
+          ldts:
+            "LDTS": "LOAD_DATE"
+    ...
+    ```
+
+#### Stage metadata 
+
+Finally, we add Satellites' stage table names and their Load Date/Timestamp column names
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"
+    as_of_dates_table: "AS_OF_DATE"
+    satellites: 
+        SAT_CUSTOMER_DETAILS
+          pk
+            "PK": "CUSTOMER_PK"
+          ldts
+            "LDTS": "LOAD_DATE"
+        SAT_CUSTOMER_LOGIN:
+          pk:
+            "PK": "CUSTOMER_PK"
+          ldts:
+            "LDTS": "LOAD_DATE"
+    stage_tables: 
+        "STG_CUSTOMER_DETAILS": "LOAD_DATE"
+        "STG_CUSTOMER_LOGIN": "LOAD_DATE"      
+    {%- endset -%}
+    ```
+
+In the end, our model should look like the following:
+
+=== "pit_customer.yml"
+
+    ```jinja
+    {{ config(materialized='pit_incremental') }}
+
+    {%- set yaml_metadata -%}
+    source_model: "HUB_CUSTOMER"
+    src_pk: "CUSTOMER_PK"
+    src_ldts: "LOAD_DATE"        
+    as_of_dates_table: "AS_OF_DATE"
+    satellites: 
+        SAT_CUSTOMER_DETAILS
+          pk:
+            "PK": "CUSTOMER_PK"
+          ldts:
+            "LDTS": "LOAD_DATE"
+        SAT_CUSTOMER_LOGIN:
+          pk:
+            "PK": "CUSTOMER_PK"
+          ldts:
+            "LDTS": "LOAD_DATE"
+    stage_tables:
+        "STG_CUSTOMER_DETAILS": "LOAD_DATE"
+        "STG_CUSTOMER_LOGIN": "LOAD_DATE"
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {% set source_model = metadata_dict['source_model'] %}
+    
+    {% set src_pk = metadata_dict['src_pk'] %}
+    
+    {% set src_ldts = metadata_dict['src_ldts'] %}
+    
+    {% set as_of_dates_table = metadata_dict['as_of_dates_table'] %}
+
+    {% set satellites = metadata_dict['satellites'] %}
+
+    {% set stage_tables = metadata_dict['stage_tables'] %}
+
+    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+                    as_of_dates_table=as_of_dates_table,
+                    satellites=satellites,
+                    stage_tables=stage_tables,
+                    src_ldts=src_ldts) }}
+    ```
+
+!!! Note 
+    
+    See our [metadata reference](../metadata.md#point-in-time-pit-tables) for more details on how to provide metadata to PITs.
 
 ### Running dbt
 
-`dbt run -m +pit_customer`
+With our model complete and our YAML written, we can run dbt to create our `pit_customer` table.
+
+=== "< dbt v0.20.x"
+    `dbt run -m +pit_customer`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +pit_customer`
+
+And our PIT table would look like this:
+
+| CUSTOMER_PK  | AS_OF_DATE | SAT_CUSTOMER_DETAILS_PK | SAT_CUSTOMER_DETAILS_LDTS | SAT_CUSTOMER_LOGIN_PK  | SAT_CUSTOMER_LOGIN_LDTS |
+| ------------ | ---------- | ----------------------- | ------------------------- | ---------------------- | ----------------------- |
+| HY67OE...    | 2021-11-01 | HY67OE...               | 2020-06-05                | 000000...              | 1900-01-01              |
+| RF57V3...    | 2021-11-01 | RF57V3...               | 2017-04-24                | RF57V3...              | 2021-04-01              |
+| .            | .          | .                       | .                         | .                      | .                       |
+| .            | .          | .                       | .                         | .                      | .                       |
+| HY67OE...    | 2021-11-15 | HY67OE...               | 2021-11-09                | HY67OE...              | 2021-11-14              |
+| RF57V3...    | 2021-11-15 | RF57V3...               | 2017-04-24                | RF57V3...              | 2021-04-01              |
+| .            | .          | .                       | .                         | .                      | .                       |
+| .            | .          | .                       | .                         | .                      | .                       |
+| HY67OE...    | 2021-11-31 | HY67OE...               | 2021-11-09                | HY67OE...              | 2021-11-30              |
+| RF57V3...    | 2021-11-31 | RF57V3...               | 2021-11-20                | RF57V3...              | 2021-04-01              |

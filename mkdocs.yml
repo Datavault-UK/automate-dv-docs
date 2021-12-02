@@ -13,8 +13,18 @@ theme:
     banner: 'assets/images/docs-banner.png'
     favicon: 'assets/images/favicon.ico'
     palette:
-      primary: 'black'
-      accent: 'indigo'
+      - scheme: material
+        primary: 'black'
+        accent: 'indigo'
+        toggle:
+          icon: material/toggle-switch-off-outline
+          name: Switch to dark mode
+      - scheme: slate
+        primary: 'black'
+        accent: 'indigo'
+        toggle:
+          icon: material/toggle-switch
+          name: Switch to light mode
     highlightjs: true
     features:
       - navigation.top
@@ -29,28 +39,39 @@ nav:
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
-      - Extended Record Tracking Satellites: 'tutorial/tut_xts.md'
-      - Point in Time (PITs): 'tutorial/tut_point_in_time.md'
-      - Bridges: 'tutorial/tut_bridges.md'
+      - Extended Tracking Satellites: 'tutorial/tut_xts.md'
+      - As of Date Tables: 'tutorial/tut_as_of_date.md'
+      - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
+      - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
       - Getting Started: 'worked_example/we_worked_example.md'
       - Project setup: 'worked_example/we_setup.md'
       - Profiling TPC-H: 'worked_example/we_tpch_profile.md'
       - Creating the stage layers: 'worked_example/we_staging.md'
       - Loading the vault: 'worked_example/we_loading.md'
-  - Migration Guides:
-      - Migrating from v0.5 to v0.6: 'migration_guides/migrating_v0.5_v0.6.md'
-      - Migrating from v0.4 to v0.5: 'migration_guides/migrating_v0.4_v0.5.md'
   - Metadata Reference: 'metadata.md'
   - Macros: 'macros.md'
+  - Materialisations: 'materialisations.md'
   - Best Practices: 'best_practices.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
   - Changelog:
       - Stable Releases: 'changelog/stable.md'
       - Beta Releases: 'changelog/beta.md'
-  - Contributing: 'contributing.md'
+  - Contributing:
+    - Getting Started: 'contributing.md'
+    - Style Guides:
+        - Tutorials: 'style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
+  - Contact Us:
+      - Github: 'https://github.com/Datavault-UK/dbtvault'
+      - Facebook: 'https://www.facebook.com/DataVaultUK/'
+      - Twitter: 'https://twitter.com/datavault_uk'
+      - LinkedIn: 'https://www.linkedin.com/company/business-thinking-limited'
+      - Slack: 'https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA'
+      - UKDVUG: 'https://www.ukdatavaultusergroup.co.uk/'
+      - YouTube: 'https://www.youtube.com/channel/UCdhSsZWTwkX1-v8EX84WLYg'
+      - Datavault: 'https://www.data-vault.co.uk/'
 
 extra:
   social:
