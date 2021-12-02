@@ -3,17 +3,18 @@ dbtvault is a dbt package that generates & executes the ETL you need to run a Da
 on a Snowflake database.
 
 !!! Note
-    You need to be running dbt to use the package. If needed, you can find out more guidance 
-    on how to get set up from their [documentation](https://docs.getdbt.com/docs/introduction).
+    You need to be running dbt to use the package. If needed, you can find get more guidance 
+    on how to get set up from the dbt [documentation](https://docs.getdbt.com/docs/introduction).
     
     [dbt](https://www.getdbt.com/) is a registered trademark of [dbt Labs](https://www.getdbt.com/dbt-labs/about-us/).
     
     Go check them out!
 
 dbt is designed for ease of use in data engineering: for when you need to develop a data pipeline. 
-They offer a command-line utility developed in Python that can run on your desktop or inside a VM in your network 
-and is free to download and use. Alternatively, you can use their web-based [dbt Cloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview)
-service for an even smoother experience.
+
+dbt offers a command-line utility developed in Python that can run on your desktop or inside a VM in your network 
+and is free to download and use. Alternatively, you can use their SaaS offering [dbt Cloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview)
+which acts as a dbt IDE (Integrated Development Environment).
 
 Our package runs inside the dbt environment, so you can use dbt to run other parts of the Data Vault pipeline, combined with the 
 dbtvault package for the Data Vault specific steps.
