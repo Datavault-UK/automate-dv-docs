@@ -55,7 +55,7 @@ customers exist without orders.
 
 #### Transactions
 
-To create transactional links in the demonstration project, we needed to simulate transactions, as there are no suitable
+To create Transactional Links in the demonstration project, we needed to simulate transactions, as there are no suitable
 or explicit transaction records present in the dataset. There are implied transactions however, as customers place orders.
 To simulate a concrete transactions, we created a raw staging layer as a view, called 
 `raw_transactions` and used the following fields:
