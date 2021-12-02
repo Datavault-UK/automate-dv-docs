@@ -20,7 +20,7 @@ The inventory consists of the `PARTSUPP`, `SUPPLIER`, `PART` and `LINEITEM` tabl
 
 ### raw_transactions
 
-The `raw_inventory` simulates transactions so that we can create transactional links. It does this by
+The `raw_inventory` simulates transactions so that we can create Transactional Links. It does this by
 making a number of calculations on orders made by customers and creating transaction records.
 
 [Read more](we_tpch_profile.md#transactions)

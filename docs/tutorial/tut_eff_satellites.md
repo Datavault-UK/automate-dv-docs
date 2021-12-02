@@ -1,5 +1,5 @@
-Effectivity Satellites are built on Links and record the time period when the corresponding link records
-start and end effectivity. The next section will explore the need for effectivity satellites and explain why we
+Effectivity Satellites are built on Links and record the time period when the corresponding Link records
+start and end effectivity. The next section will explore the need for Effectivity Satellites and explain why we
 have them and how they work.
 
 ### The Driving Key problem and why we have Effectivity Satellites
@@ -9,7 +9,7 @@ this as a Link, as follows:
 
 ![alt text](../assets/images/basic_hub_link.png "A basic hub/link model")
 
-A link does not have any temporal data; it declares that there is a relationship between A and B, but nothing about when or for how long.
+A Link does not have any temporal data; it declares that there is a relationship between A and B, but nothing about when or for how long.
 
 To solve this, we create an Effectivity Satellite from `LINK_A_B` called `EFF_SAT_A_B`. This contains information about 
 the status of `LINK_A_B`. Now we have two columns, `START_DATE` and `END_DATE`. When the Effectivity Satellite
@@ -23,7 +23,7 @@ gives us two important pieces of information: the new key and the fact that the 
 Perhaps we have a booking for a hotel room which has been cancelled, and we want to change the booking. 
 
 The load will create a new `EFF_SAT_A_B` record. The old record now needs to be end-dated so that we do not have 2 open
-Link records. Ideally, we should end-date the original link relationship inside the same transaction to avoid 2 SQL queries
+Link records. Ideally, we should end-date the original Link relationship inside the same transaction to avoid 2 SQL queries
 and possible de-syncing. 
 
 In any Link there are two FK columns, one will change over time and the other will remain constant. The one that does not change
@@ -31,15 +31,15 @@ is called the **driving key** and the one that does change is called the **drive
 
 ### Structure
 
-An effectivity satellites contains:
+An Effectivity Satellite contains:
 
 #### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key.
-For an effectivity satellite, this should be the same as the corresponding link's PK.
+For an Effectivity Satellite, this should be the same as the corresponding link's PK.
 
 #### Driving Foreign Key (src_dfk)
 
-The driving foreign key stores the primary key of the associated link, which will remain constant over time.
+The driving foreign key stores the primary key of one of the associated Hubs to the parent Link, which will remain constant over time.
 
 For example, in a relationship between a customer and an order, the order will always have occurred, but the customer
 attached to the order may change over time if the order is amended. In this case the DFK would be the `ORDER_HK` 
@@ -49,24 +49,24 @@ More on the concept of driving keys is described above.
 
 #### Secondary Foreign Key (src_sfk)
 
-The secondary foreign key stores the primary key of the associated link, which is likely to change over time.
+The secondary foreign key stores the primary key of one of the associated Hubs to the parent Link, which is likely to change over time.
 
 As per the example in the DFK section above, this would be the `CUSTOMER_HK`, derived from the `CUSTOMER_ID`. 
 
 #### Start Date (src_start_date)
 
-The start date (along with the end date) form the effectivity satellite payload, and is metadata related to the corresponding 
-link table. The start date is the start date of the relationship in the link, which is being tracked by the 
-effectivity satellite. 
+The start date (along with the end date) form the Effectivity Satellite payload, and is metadata related to the corresponding 
+Link table. The start date is the start date of the relationship in the Link, which is being tracked by the 
+Effectivity Satellite. 
 
 It is important to note than whilst this is usually the same or initialised to the same source data
 as the `EFFECTIVE_FROM`, there can be divergence over time. The start date tracks the start date of the link, whilst
-`EFFECTIVE_FROM` tracks the date that the effectivity satellite recorded a change in the relationship in the link. 
+`EFFECTIVE_FROM` tracks the date that the Effectivity Satellite recorded a change in the relationship in the Link. 
 
 #### End Date (src_end_date)
 
 The end date also forms part of the effectivity satellite payload, and is metadata related to the corresponding 
-link table, in the same way the start date is.
+Link table, in the same way the start date is.
 
 In cases of 1-1 and 1-M (One to many) relationships, this can usually be inferred. Unfortunately, 
 with M-M (Many to Many) relationships, it becomes impossible to infer the end date between a pair of specific 
@@ -93,7 +93,7 @@ record arriving in the database for load. Having both dates allows us to ask the
 and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
 
 The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
-in our experience we have found it useful for processing and applying business rules in downstream business vault, for 
+in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 
 use in presentation layers.
 
 ### Creating effectivity satellite models
@@ -109,12 +109,12 @@ Create a new dbt model as before.
                         source_model=source_model) }}
     ```
 
-To create an effectivity satellite model, we simply copy and paste the above template into a model named after the effectivity
-satellite we are creating. dbtvault will generate an effectivity satellite using parameters provided in the next steps.
+To create an Effectivity Satellite model, we simply copy and paste the above template into a model named after the Effectivity
+Satellite we are creating. dbtvault will generate an Effectivity Satellite using parameters provided in the next steps.
 
 #### Materialisation
 
-The recommended materialisation for **effectivity satellites** is `incremental`, as we load and add new records to the existing data set. 
+The recommended materialisation for **Effectivity Satellites** is `incremental`, as we load and add new records to the existing data set. 
 
 ### Adding the metadata 
 
@@ -124,7 +124,7 @@ See our [metadata reference](../metadata.md#effectivity-satellites) for more det
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our [knowledge](#structure) of what columns we need in our `eff_sat_customer_nation` effectivity satellite, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `eff_sat_customer_nation` Effectivity Satellite, we can identify columns in our
 staging layer which map to them:
 
 | Parameter      | Value               | 
@@ -141,36 +141,42 @@ staging layer which map to them:
 
 When we provide the metadata above, our model should look like the following:
 
-```jinja
-{{ config(materialized='incremental')  }}
+=== "eff_sat_customer_nation.sql"
 
-{%- set source_model = "v_stg_orders" -%}
-{%- set src_pk = "CUSTOMER_NATION_HK" -%}
-{%- set src_dfk = "CUSTOMER_HK"       -%}
-{%- set src_sfk = "NATION_HK"         -%}
-{%- set src_start_date = "START_DATE" -%}
-{%- set src_end_date = "END_DATE"     -%}
-
-{%- set src_eff = "EFFECTIVE_FROM"    -%}
-{%- set src_ldts = "LOAD_DATETIME"    -%}
-{%- set src_source = "RECORD_SOURCE"  -%}
-
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                    src_start_date=src_start_date, 
-                    src_end_date=src_end_date,
-                    src_eff=src_eff, src_ldts=src_ldts, 
-                    src_source=src_source,
-                    source_model=source_model) }}
-```
+    ```jinja
+    {{ config(materialized='incremental')  }}
+    
+    {%- set source_model = "v_stg_orders" -%}
+    {%- set src_pk = "CUSTOMER_NATION_HK" -%}
+    {%- set src_dfk = "CUSTOMER_HK"       -%}
+    {%- set src_sfk = "NATION_HK"         -%}
+    {%- set src_start_date = "START_DATE" -%}
+    {%- set src_end_date = "END_DATE"     -%}
+    
+    {%- set src_eff = "EFFECTIVE_FROM"    -%}
+    {%- set src_ldts = "LOAD_DATETIME"    -%}
+    {%- set src_source = "RECORD_SOURCE"  -%}
+    
+    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                        src_start_date=src_start_date, 
+                        src_end_date=src_end_date,
+                        src_eff=src_eff, src_ldts=src_ldts, 
+                        src_source=src_source,
+                        source_model=source_model) }}
+    ```
 
 ### Running dbt
 
 With our metadata provided and our model complete, we can run dbt to create `eff_sat_customer_nation` 
-effectivity satellite, as follows:
+Effectivity Satellite, as follows:
 
-`dbt run -m +eff_sat_customer_nation`
-    
-And the resulting effectivity satellite will look like this:
+=== "< dbt v0.20.x"
+    `dbt run -m +eff_sat_customer_nation`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +eff_sat_customer_nation`
+
+And the resulting Effectivity Satellite table will look like this:
 
 | CUSTOMER_NATION_HK | CUSTOMER_HK  | NATION_HK     | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME            | SOURCE |
 | ------------------ | ------------ | ------------- | ----------------------- | ----------------------- | ----------------------- | ------------------------ | ------ |
