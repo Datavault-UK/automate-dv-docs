@@ -64,7 +64,7 @@ packages:
 
 ### Bug Fixes
 - Fixed a bug where an Effectivity Satellite with multiple DFKs or SDKs would incorrectly handle changes in the corresponding link records, meaning
-one to many relationships were not getting handled as intended.
+one-to-many relationships were not getting handled as intended.
 
 ### Improvements
 - Added support for multiple `order_by` or `partition_by` columns when creating ranked columns in the `stage` or `ranked_columns` macros.
