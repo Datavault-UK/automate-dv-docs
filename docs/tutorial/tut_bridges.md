@@ -12,7 +12,7 @@ A basic Bridge table model for a Hub and two Links:
 
 #### Structure
 
-Our bridge structures will contain:
+Our Bridge structures will contain:
 
 ##### Hub Table Name (source_model)
 This is the name of the Hub that contains the primary key (src_pk) and to which the Links are connected to.

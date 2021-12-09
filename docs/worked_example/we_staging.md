@@ -29,7 +29,11 @@ making a number of calculations on orders made by customers and creating transac
 
 To build this layer with dbtvault, run the below command:
 
-`dbt run --models tag:raw`
+=== "< dbt v0.20.x" 
+    `dbt run --models tag:raw`
+
+=== "> dbt v0.21.0"
+    `dbt run --select tag:raw`
 
 Running this command will run all models which have the `raw` tag. We have given the `raw` tag to the
 two raw staging layer models, so this will compile and run both models.
@@ -201,7 +205,11 @@ for hashdiffs
 
 To build this layer with dbtvault, run the below command:
 
-`dbt run --models +tag:stage`
+=== "< dbt v0.20.x" 
+    `dbt run --models +tag:stage`
+
+=== "> dbt v0.21.0"
+    `dbt run --select +tag:stage`
 
 Running this command will run all models which have the `stage` tag. We have given the `stage` tag to the
 two hashed staging layer models, so this will compile and run both models.
