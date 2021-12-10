@@ -22,7 +22,7 @@ or a string directly naming the source system.
 (i.e. `1` from the [staging section](tut_staging.md#adding-the-metadata), 
 which is the code for `stg_customer`)
 
-### Creating hub models
+### Creating Hub models
 
 Create a new dbt model as before. We'll call this one `hub_customer`. 
 
@@ -133,3 +133,5 @@ will handle the rest:
 ```
 
 See the [Hub metadata reference](../metadata.md#hubs) for more examples.
+
+--8<-- "includes/abbreviations.md"

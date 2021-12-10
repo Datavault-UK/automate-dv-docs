@@ -38,7 +38,7 @@ nav:
       - Transactional Links: 'tutorial/tut_t_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
-      - Multi Active Satellites: 'tutorial/tut_multi_active_satellites.md'
+      - Multi-Active Satellites: 'tutorial/tut_multi_active_satellites.md'
       - Extended Tracking Satellites: 'tutorial/tut_xts.md'
       - As of Date Tables: 'tutorial/tut_as_of_date.md'
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
@@ -90,6 +90,8 @@ markdown_extensions:
   - admonition
   - pymdownx.tabbed
   - pymdownx.superfences
+  - abbr
+  - pymdownx.snippets
   - pymdownx.highlight:
       linenums: true
   - pymdownx.magiclink:

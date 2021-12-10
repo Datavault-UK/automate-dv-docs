@@ -139,3 +139,5 @@ The resulting Transactional Link table will look like this:
 | .              | .           | .         | .                  | .    | .      | .              | .                       | 2      |
 | .              | .           | .         | .                  | .    | .      | .              | .                       | 2      |
 | E0E7A8...      | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23 | 1993-01-28     | 1993-01-01 00:00:00.000 | 2      |
+
+--8<-- "includes/abbreviations.md"

@@ -110,7 +110,7 @@ for your Data Vault.
 
 ### hub
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql))
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -294,7 +294,7 @@ ___
 
 ### link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/link.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/link.sql))
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -480,7 +480,7 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/t_link.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/t_link.sql))
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -555,7 +555,7 @@ ___
 
 ### sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/sat.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/sat.sql))
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -657,7 +657,7 @@ ___
 
 ### eff_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql))
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -915,7 +915,7 @@ ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -1052,7 +1052,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ### xts
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/xts.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/xts.sql))
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -1460,7 +1460,7 @@ ___
 
 ### pit
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/pit.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/pit.sql))
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -1726,7 +1726,7 @@ ___
 
 ### bridge
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/bridge.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/bridge.sql))
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or 
 more associated Links (and their Effectivity Satellites), using the provided parameters.
@@ -1982,7 +1982,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/stage.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/stage.sql))
 
 Generates SQL to build a staging area using the provided parameters.
 
@@ -2771,7 +2771,7 @@ ___
 
 ### hash_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/hash_columns.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/hash_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2780,7 +2780,7 @@ Generates SQL to create hash keys for a provided mapping of columns names to the
 
 ### derive_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/derive_columns.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/derive_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2790,7 +2790,7 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/rank_columns.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/rank_columns.sql))
 
 !!! Note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -2811,7 +2811,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql)
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql)))
 
 !!! warning
 
@@ -2913,3 +2913,5 @@ ___
 
 Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to
 be called directly.
+
+--8<-- "includes/abbreviations.md"

@@ -110,3 +110,5 @@ The resulting As of Date table will look like this:
 | .          |
 | 2021-03-30 |
 | 2021-03-31 |
+
+--8<-- "includes/abbreviations.md"

@@ -1,6 +1,6 @@
 !!! info
     This walk-through intends to give you a detailed understanding of the Data Vault 2.0 
-    concepts which dbtvault supports, and how to use dbtvault to create a Data Vault 2.0 Warehouse.
+    concepts which dbtvault supports, and how to use dbtvault to create a Data Vault 2.0 Data Warehouse.
     If you're looking get started quickly with sample data in the cloud, take a look at 
     our [worked example](../worked_example/we_worked_example.md).
 
@@ -17,7 +17,7 @@ We will:
 1. Some prior knowledge of Data Vault 2.0 architecture. 
 Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
 
-2. We assume you already have a raw staging layer, PSA (Persistent Staging Area) or Data Lake.
+2. We assume you already have a raw staging layer, PSA or Data Lake.
 
 3. You should read our [best practices](../best_practices.md) guidance.
 
@@ -29,3 +29,5 @@ Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
     dbtvault currently only supports the Snowflake platform
 
 - [Install dbtvault](https://hub.getdbt.com/datavault-uk/dbtvault/latest/)
+
+--8<-- "includes/abbreviations.md"

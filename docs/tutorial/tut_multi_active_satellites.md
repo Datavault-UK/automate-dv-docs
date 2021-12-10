@@ -1,5 +1,3 @@
-# Multi-Active Satellites (MAS)
-
 Multi-Active Satellites (MAS) contain point-in-time payload data related to their parent Hub or Link records that
 allow for multiple records to be valid at the same time. Some example use cases could be when customers have multiple active 
 phone numbers or addresses. 
@@ -151,3 +149,5 @@ The resulting Multi Active Satellite table will look like this:
 | .           | .         | .             | .               | .              | .                       | 1      |
 | FED333...   | 7YT890... | Dom           | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
 | FED333...   | D8CB1F... | Dom           | 17-214-233-1227 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
+
+--8<-- "includes/abbreviations.md"

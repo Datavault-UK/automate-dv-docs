@@ -68,8 +68,8 @@ as the `EFFECTIVE_FROM`, there can be divergence over time. The start date track
 The end date also forms part of the effectivity satellite payload, and is metadata related to the corresponding 
 Link table, in the same way the start date is.
 
-In cases of 1-1 and 1-M (One to many) relationships, this can usually be inferred. Unfortunately, 
-with M-M (Many to Many) relationships, it becomes impossible to infer the end date between a pair of specific 
+In cases of 1-1 and 1-M relationships, this can usually be inferred. Unfortunately, 
+with M-M relationships, it becomes impossible to infer the end date between a pair of specific 
 business entities, so we must explicitly define it and track the end date separately. 
 
 #### Effective From (src_eff)
@@ -184,3 +184,5 @@ The resulting Effectivity Satellite table will look like this:
 | .                  | .           | .         | .                       | .                       | .                       | .                       | 1      |
 | .                  | .           | .         | .                       | .                       | .                       | .                       | 1      |
 | D8CB1F...          | FED333...   | 8FAA77... | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000 | 1      |
+
+--8<-- "includes/abbreviations.md"
