@@ -154,9 +154,9 @@ Here we add the Satellite related details (i.e. the Primary/Hash Key and the Loa
     as_of_dates_table: "AS_OF_DATE"
     satellites: 
         SAT_CUSTOMER_DETAILS
-          pk
+          pk:
             "PK": "CUSTOMER_PK"
-          ldts
+          ldts:
             "LDTS": "LOAD_DATE"
         SAT_CUSTOMER_LOGIN:
           pk:
@@ -180,9 +180,9 @@ Finally, we add Satellites' stage table names and their Load Date/Timestamp colu
     as_of_dates_table: "AS_OF_DATE"
     satellites: 
         SAT_CUSTOMER_DETAILS
-          pk
+          pk:
             "PK": "CUSTOMER_PK"
-          ldts
+          ldts:
             "LDTS": "LOAD_DATE"
         SAT_CUSTOMER_LOGIN:
           pk:
