@@ -20,8 +20,8 @@ We will:
 These pre-requisites are separate from those found on the [getting started](../tutorial/tut_getting_started.md) page and will 
 be the only necessary requirements you will need to get started with the example project. 
 
-1. Some prior knowledge of Data Vault 2.0 architecture. Have a look at
-[How can I get up to speed on Data Vault 2.0?](../index.md#how-can-i-get-up-to-speed-on-data-vault-20)
+1. Some prior knowledge of Data Vault 2.0 architecture.
+Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
 
 2. A Snowflake trial account. [Sign up for a free 30-day trial here](https://trial.snowflake.com/ab/)
 

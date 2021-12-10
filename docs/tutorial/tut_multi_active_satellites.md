@@ -85,16 +85,16 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `ma_sat_customer_detail` Multi-Active Satellite, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value                                                | 
-| -------------- | ---------------------------------------------------- | 
-| source_model   | v_stg_orders                                         | 
-| src_pk         | CUSTOMER_HK                                          |
-| src_cdk        | CUSTOMER_PHONE                                       |
-| src_payload    | CUSTOMER_NAME                                        |
-| src_hashdiff   | source_column: CUSTOMER_HASHDIFF, alias: HASHDIFF    |
-| src_eff        | EFFECTIVE_FROM                                       |
-| src_ldts       | LOAD_DATETIME                                        | 
-| src_source     | RECORD_SOURCE                                        |
+| Parameter    | Value                                             |
+|--------------|---------------------------------------------------|
+| source_model | v_stg_orders                                      |
+| src_pk       | CUSTOMER_HK                                       |
+| src_cdk      | CUSTOMER_PHONE                                    |
+| src_payload  | CUSTOMER_NAME                                     |
+| src_hashdiff | source_column: CUSTOMER_HASHDIFF, alias: HASHDIFF |
+| src_eff      | EFFECTIVE_FROM                                    |
+| src_ldts     | LOAD_DATETIME                                     |
+| src_source   | RECORD_SOURCE                                     |
 
 When we provide the metadata above, our model should look like the following:
 
@@ -143,11 +143,11 @@ With our model complete and our YAML written, we can run dbt to create our `ma_s
 
 And our MAS table will look like this:
 
-| CUSTOMER_HK  | HASHDIFF     | CUSTOMER_NAME | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE | 
-| ------------ | ------------ | ----------    | --------------- | -------------- | ------------------------ | ------ | 
-| B8C37E...    | 3C5984...    | Alice         | 17-214-233-1214 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      | 
-| B8C37E...    | A11VT9...    | Alice         | 17-214-233-1224 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      | 
-| .            | .            | .             | .               | .              | .                        | 1      | 
-| .            | .            | .             | .               | .              | .                        | 1      | 
-| FED333...    | 7YT890...    | Dom           | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |
-| FED333...    | D8CB1F...    | Dom           | 17-214-233-1227 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |
+| CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
+|-------------|-----------|---------------|-----------------|----------------|-------------------------|--------|
+| B8C37E...   | 3C5984... | Alice         | 17-214-233-1214 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
+| B8C37E...   | A11VT9... | Alice         | 17-214-233-1224 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
+| .           | .         | .             | .               | .              | .                       | 1      |
+| .           | .         | .             | .               | .              | .                       | 1      |
+| FED333...   | 7YT890... | Dom           | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
+| FED333...   | D8CB1F... | Dom           | 17-214-233-1227 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |

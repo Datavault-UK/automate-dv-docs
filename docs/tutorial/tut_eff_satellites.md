@@ -127,17 +127,17 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `eff_sat_customer_nation` Effectivity Satellite, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value               | 
-| -------------- | ------------------- | 
-| source_model   | v_stg_orders        | 
-| src_pk         | CUSTOMER_NATION_HK  | 
-| src_dfk        | CUSTOMER_HK         | 
-| src_sfk        | NATION_HK           | 
-| src_start_date | START_DATE          | 
-| src_end_date   | END_DATE            | 
-| src_eff        | EFFECTIVE_FROM      | 
-| src_ldts       | LOAD_DATETIME       | 
-| src_source     | RECORD_SOURCE       |
+| Parameter      | Value              |
+|----------------|--------------------|
+| source_model   | v_stg_orders       |
+| src_pk         | CUSTOMER_NATION_HK |
+| src_dfk        | CUSTOMER_HK        |
+| src_sfk        | NATION_HK          |
+| src_start_date | START_DATE         |
+| src_end_date   | END_DATE           |
+| src_eff        | EFFECTIVE_FROM     |
+| src_ldts       | LOAD_DATETIME      |
+| src_source     | RECORD_SOURCE      |
 
 When we provide the metadata above, our model should look like the following:
 
@@ -178,9 +178,9 @@ Effectivity Satellite, as follows:
 
 And the resulting Effectivity Satellite table will look like this:
 
-| CUSTOMER_NATION_HK | CUSTOMER_HK  | NATION_HK     | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME            | SOURCE |
-| ------------------ | ------------ | ------------- | ----------------------- | ----------------------- | ----------------------- | ------------------------ | ------ |
-| 3C5984...          | B8C37E...    | 79CBA1...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
-| .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
-| .                  | .            | .             | .                       | .                       | .                       | .                        | 1      |
-| D8CB1F...          | FED333...    | 8FAA77...     | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000  | 1      |
+| CUSTOMER_NATION_HK | CUSTOMER_HK | NATION_HK | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME           | SOURCE |
+|--------------------|-------------|-----------|-------------------------|-------------------------|-------------------------|-------------------------|--------|
+| 3C5984...          | B8C37E...   | 79CBA1... | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000 | 1      |
+| .                  | .           | .         | .                       | .                       | .                       | .                       | 1      |
+| .                  | .           | .         | .                       | .                       | .                       | .                       | 1      |
+| D8CB1F...          | FED333...   | 8FAA77... | 1993-01-01 00:00:00.000 | 9999-31-12 00:00:00.000 | 1993-01-01 00:00:00.000 | 1993-01-01 00:00:00.000 | 1      |

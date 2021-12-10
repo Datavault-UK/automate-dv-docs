@@ -22,7 +22,7 @@ A load date or load date timestamp. this identifies when the record first gets l
 ##### Record Source ( src_source )
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
-(i.e. `1` from the [staging tutorial](tut_staging.md#adding-calculated-and-derived-columns), 
+(i.e. `1` from the [staging tutorial](tut_staging.md#adding-the-metadata), 
 which is the code for `stg_customer`)
     
 ### Setting up XTS models
@@ -137,9 +137,9 @@ With our model complete, and our metadata stored in our YAML. We can run dbt to 
     
 Our Extended Tracking Satellite table will look like this:
 
-| CUSTOMER_PK  | HASHDIFF     | SATELLITE_NAME   | LOAD_DATE  | SOURCE       |
-| ------------ | ------------ | ---------------- | ---------- | ------------ |
-| B8C37E...    | 3C598...     | SAT_SAP_CUSTOMER | 1993-01-01 | *            |
-| .            | .            | .                | .          | .            |
-| .            | .            | .                | .          | .            |
-| FED333...    | 6C958...     | SAT_SAP_CUSTOMER | 1993-01-01 | *            |
+| CUSTOMER_PK | HASHDIFF | SATELLITE_NAME   | LOAD_DATE  | SOURCE |
+|-------------|----------|------------------|------------|--------|
+| B8C37E...   | 3C598... | SAT_SAP_CUSTOMER | 1993-01-01 | *      |
+| .           | .        | .                | .          | .      |
+| .           | .        | .                | .          | .      |
+| FED333...   | 6C958... | SAT_SAP_CUSTOMER | 1993-01-01 | *      |

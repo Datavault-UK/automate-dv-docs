@@ -62,7 +62,7 @@ run the dbt model again.
 Let's look at the metadata we need to provide to the As of Dates template.
 
 | Parameter      | Value                               | 
-| -------------- | ----------------------------------- | 
+|----------------|-------------------------------------|
 | datepart       | day                                 | 
 | start_date     | to_date('2021/01/01', 'yyyy/mm/dd') |
 | end_date       | to_date('2021/04/01', 'yyyy/mm/dd') |
@@ -99,11 +99,11 @@ With our metadata provided and our model complete, we can run dbt to create our 
 
 And the resulting As of Date table will look like this:
 
-| AS_OF_DATE   |
-| ------------ |
-| 2021-01-01   |
-| 2021-01-02   |
-| .            |
-| .            |
-| 2021-03-30   |
-| 2021-03-31   |
+| AS_OF_DATE |
+|------------|
+| 2021-01-01 |
+| 2021-01-02 |
+| .          |
+| .          |
+| 2021-03-30 |
+| 2021-03-31 |

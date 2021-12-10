@@ -15,7 +15,7 @@ We will:
 ## Pre-requisites 
 
 1. Some prior knowledge of Data Vault 2.0 architecture. 
-Read more: [How can I get up to speed on Data Vault 2.0?](../index.md#how-can-i-get-up-to-speed-on-data-vault-20)
+Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
 
 2. We assume you already have a raw staging layer, PSA (Persistent Staging Area) or Data Lake.
 

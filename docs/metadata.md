@@ -130,7 +130,7 @@ example provided to help better convey the difference.
 !!! Note 
     
     '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
-    [Read More](../macros.md#constants-derived-columns)
+    [Read More](macros.md#constants-derived-columns)
 
 ### Staging
 
@@ -828,13 +828,13 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 #### Parameters
 
-| Parameter      | Description                                                    | Type             | Required?                                    |
-| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
-| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load date/timestamp column                              | String           | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                                    | Type        | Required?                                    |
+|---------------|----------------------------------------------------------------|-------------|----------------------------------------------|
+| src_pk        | Source primary key column                                      | String/List | <i class="fas fa-check-circle required"></i> |
+| src_satellite | Dictionary of source satellite name column and hashdiff column | Dictionary  | <i class="fas fa-check-circle required"></i> |
+| src_ldts      | Source load date/timestamp column                              | String      | <i class="fas fa-check-circle required"></i> |
+| src_source    | Name of the column containing the source ID                    | String/List | <i class="fas fa-check-circle required"></i> |
+| source_model  | Staging model name                                             | String/List | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
 [Read the tutorial](tutorial/tut_xts.md) for more details

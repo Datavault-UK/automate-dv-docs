@@ -55,13 +55,13 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `link_customer_order` table, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value                 | 
-| -------------- | --------------------- | 
-| source_model   | v_stg_orders          |
-| src_pk         | CUSTOMER_ORDER_HK     |
-| src_fk         | CUSTOMER_ID, ORDER_ID |
-| src_ldts       | LOAD_DATETIME         | 
-| src_source     | RECORD_SOURCE         |
+| Parameter    | Value                 |
+|--------------|-----------------------|
+| source_model | v_stg_orders          |
+| src_pk       | CUSTOMER_ORDER_HK     |
+| src_fk       | CUSTOMER_ID, ORDER_ID |
+| src_ldts     | LOAD_DATETIME         |
+| src_source   | RECORD_SOURCE         |
 
 When we provide the metadata above, our model should look like the following:
 
@@ -95,12 +95,12 @@ With our metadata provided and our model complete, we can run dbt to create our 
 
 And the resulting Link table will look like this:
 
-| CUSTOMER_ORDER_HK  | CUSTOMER_HK  | ORDER_HK     | LOAD_DATETIME            | SOURCE |
-| ------------------ | ------------ | ------------ | ------------------------ | ------ |
-| 72A160...          | B8C37E...    | D89F3A...    | 1993-01-01 00:00:00.000  | 1      |
-| .                  | .            | .            | .                        | 1      |
-| .                  | .            | .            | .                        | 1      |
-| 1CE6A9...          | FED333...    | D78382...    | 1993-01-01 00:00:00.000  | 1      |
+| CUSTOMER_ORDER_HK | CUSTOMER_HK | ORDER_HK  | LOAD_DATETIME           | SOURCE |
+|-------------------|-------------|-----------|-------------------------|--------|
+| 72A160...         | B8C37E...   | D89F3A... | 1993-01-01 00:00:00.000 | 1      |
+| .                 | .           | .         | .                       | 1      |
+| .                 | .           | .         | .                       | 1      |
+| 1CE6A9...         | FED333...   | D78382... | 1993-01-01 00:00:00.000 | 1      |
 
 ### Loading links from multiple sources
 

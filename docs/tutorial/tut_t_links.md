@@ -73,15 +73,15 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `t_link_transaction` table, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value                                              | 
-| -------------- | -------------------------------------------------- | 
-| source_model   | v_stg_transactions                                 |
-| src_pk         | TRANSACTION_HK                                     |
-| src_fk         | CUSTOMER_HK, ORDER_HK                              |
-| src_payload    | TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT |
-| src_eff        | EFFECTIVE_FROM                                     | 
-| src_ldts       | LOAD_DATETIME                                      | 
-| src_source     | RECORD_SOURCE                                      |
+| Parameter    | Value                                              |
+|--------------|----------------------------------------------------|
+| source_model | v_stg_transactions                                 |
+| src_pk       | TRANSACTION_HK                                     |
+| src_fk       | CUSTOMER_HK, ORDER_HK                              |
+| src_payload  | TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT |
+| src_eff      | EFFECTIVE_FROM                                     |
+| src_ldts     | LOAD_DATETIME                                      |
+| src_source   | RECORD_SOURCE                                      |
 
 When we provide the metadata above, our model should look like the following:
 
@@ -133,9 +133,9 @@ With our model complete and our YAML written, we can run dbt to create our `t_li
 
 And our Transactional Link table will look like this:
 
-| TRANSACTION_HK  | CUSTOMER_HK | ORDER_HK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE |
-| --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ------------------------ | ------ |
-| BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-01 00:00:00.000  | 2      |
-| .               | .           | .         | .                  | .    | .       | .              | .                        | 2      |
-| .               | .           | .         | .                  | .    | .       | .              | .                        | 2      |
-| E0E7A8...       | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23  | 1993-01-28     | 1993-01-01 00:00:00.000  | 2      |
+| TRANSACTION_HK | CUSTOMER_HK | ORDER_HK  | TRANSACTION_NUMBER | TYPE | AMOUNT | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
+|----------------|-------------|-----------|--------------------|------|--------|----------------|-------------------------|--------|
+| BDEE76...      | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00 | 1993-01-28     | 1993-01-01 00:00:00.000 | 2      |
+| .              | .           | .         | .                  | .    | .      | .              | .                       | 2      |
+| .              | .           | .         | .                  | .    | .      | .              | .                       | 2      |
+| E0E7A8...      | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23 | 1993-01-28     | 1993-01-01 00:00:00.000 | 2      |
