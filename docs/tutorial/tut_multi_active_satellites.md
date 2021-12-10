@@ -139,9 +139,9 @@ With our model complete and our YAML written, we can run dbt to create our `ma_s
     `dbt run -m +ma_sat_customer_detail`
 
 === "> dbt v0.21.0"
-    `dbt run --select +ma_sat_customer_detail`
+    `dbt run -s +ma_sat_customer_detail`
 
-And our MAS table will look like this:
+The resulting Multi Active Satellite table will look like this:
 
 | CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
 |-------------|-----------|---------------|-----------------|----------------|-------------------------|--------|

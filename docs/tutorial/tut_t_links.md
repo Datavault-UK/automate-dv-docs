@@ -129,9 +129,9 @@ With our model complete and our YAML written, we can run dbt to create our `t_li
     `dbt run -m +t_link_transaction`
 
 === "> dbt v0.21.0"
-    `dbt run --select +t_link_transaction`
+    `dbt run -s +t_link_transaction`
 
-And our Transactional Link table will look like this:
+The resulting Transactional Link table will look like this:
 
 | TRANSACTION_HK | CUSTOMER_HK | ORDER_HK  | TRANSACTION_NUMBER | TYPE | AMOUNT | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
 |----------------|-------------|-----------|--------------------|------|--------|----------------|-------------------------|--------|

@@ -85,9 +85,9 @@ With our metadata provided and our model complete, we can run dbt to create our 
     `dbt run -m +hub_customer`
 
 === "> dbt v0.21.0"
-    `dbt run --select +hub_customer`
+    `dbt run -s +hub_customer`
 
-And the resulting Hub table will look like this:
+The resulting Hub table will look like this:
 
 | CUSTOMER_HK | CUSTOMER_ID | LOAD_DATETIME           | SOURCE |
 |-------------|-------------|-------------------------|--------|

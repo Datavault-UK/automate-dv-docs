@@ -91,9 +91,9 @@ With our metadata provided and our model complete, we can run dbt to create our 
     `dbt run -m +link_customer_order`
 
 === "> dbt v0.21.0"
-    `dbt run --select +link_customer_order`
+    `dbt run -s +link_customer_order`
 
-And the resulting Link table will look like this:
+The resulting Link table will look like this:
 
 | CUSTOMER_ORDER_HK | CUSTOMER_HK | ORDER_HK  | LOAD_DATETIME           | SOURCE |
 |-------------------|-------------|-----------|-------------------------|--------|

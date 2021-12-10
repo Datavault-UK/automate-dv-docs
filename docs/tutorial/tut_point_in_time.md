@@ -256,9 +256,9 @@ With our model complete and our YAML written, we can run dbt to create our `pit_
     `dbt run -m +pit_customer`
 
 === "> dbt v0.21.0"
-    `dbt run --select +pit_customer`
+    `dbt run -s +pit_customer`
 
-And our PIT table would look like this:
+The resulting Point in Time table would look like this:
 
 | CUSTOMER_PK | AS_OF_DATE | SAT_CUSTOMER_DETAILS_PK | SAT_CUSTOMER_DETAILS_LDTS | SAT_CUSTOMER_LOGIN_PK | SAT_CUSTOMER_LOGIN_LDTS |
 |-------------|------------|-------------------------|---------------------------|-----------------------|-------------------------|

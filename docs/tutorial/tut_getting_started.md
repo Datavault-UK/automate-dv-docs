@@ -24,4 +24,8 @@ Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
 ## Installation 
 
 - [Install dbt](https://docs.getdbt.com/dbt-cli/installation) and [set up dbt on your preferred platform](https://docs.getdbt.com/dbt-cli/configure-your-profile)
+
+!!! note 
+    dbtvault currently only supports the Snowflake platform
+
 - [Install dbtvault](https://hub.getdbt.com/datavault-uk/dbtvault/latest/)

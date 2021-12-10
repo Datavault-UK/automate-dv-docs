@@ -143,9 +143,9 @@ With our model complete and our YAML written, we can run dbt:
     `dbt run -m v_stg_orders`
 
 === "> dbt v0.21.0"
-    `dbt run --select v_stg_orders`
+    `dbt run -s v_stg_orders`
 
-And our table will look like this:
+The resulting stage view will look like this:
 
 | CUSTOMER_HK | NATION_HK | CUSTOMER_NATION_HK | CUSTOMER_HASHDIFF | (source table columns) | LOAD_DATETIME           | SOURCE | EFFECTIVE_FROM | START_DATE | END_DATE   |
 |-------------|-----------|--------------------|-------------------|------------------------|-------------------------|--------|----------------|------------|------------|

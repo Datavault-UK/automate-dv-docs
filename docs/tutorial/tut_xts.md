@@ -129,13 +129,13 @@ With our model complete, and our metadata stored in our YAML. We can run dbt to 
     `dbt run -m +xts_customer`
 
 === "> dbt v0.21.0"
-    `dbt run --select +xts_customer`
+    `dbt run -s +xts_customer`
 
 !!! tip
     Using the '+' in front of `xts_customer` in the command above will get dbt to compile and run all its parent dependencies.  
     In this case, it will compile and run the staging and the hub models.
     
-Our Extended Tracking Satellite table will look like this:
+The resulting Extended Tracking Satellite table will look like this:
 
 | CUSTOMER_PK | HASHDIFF | SATELLITE_NAME   | LOAD_DATE  | SOURCE |
 |-------------|----------|------------------|------------|--------|

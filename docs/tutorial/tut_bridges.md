@@ -319,7 +319,7 @@ In order to finalise the creation of the `bridge_customer_order` table we use th
     `dbt run -m +bridge_customer_order`
 
 === "> dbt v0.21.0"
-    `dbt run --select +bridge_customer_order`
+    `dbt run -s +bridge_customer_order`
 
 The resulting Bridge table should look like this:
 

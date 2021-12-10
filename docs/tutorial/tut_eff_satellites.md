@@ -174,9 +174,9 @@ Effectivity Satellite, as follows:
     `dbt run -m +eff_sat_customer_nation`
 
 === "> dbt v0.21.0"
-    `dbt run --select +eff_sat_customer_nation`
+    `dbt run -s +eff_sat_customer_nation`
 
-And the resulting Effectivity Satellite table will look like this:
+The resulting Effectivity Satellite table will look like this:
 
 | CUSTOMER_NATION_HK | CUSTOMER_HK | NATION_HK | START_DATE              | END_DATE                | EFFECTIVE_FROM          | LOAD_DATETIME           | SOURCE |
 |--------------------|-------------|-----------|-------------------------|-------------------------|-------------------------|-------------------------|--------|

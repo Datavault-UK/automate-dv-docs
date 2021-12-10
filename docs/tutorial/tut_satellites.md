@@ -134,9 +134,9 @@ With our model complete and our YAML written, we can run dbt to create our `sat_
     `dbt run -m +sat_customer_detail`
 
 === "> dbt v0.21.0"
-    `dbt run --select +sat_customer_detail`
+    `dbt run -s +sat_customer_detail`
     
-And our Satellite table will look like this:
+The resulting Satellite table will look like this:
 
 | CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
 |-------------|-----------|---------------|--------------|-----------------|----------------|-------------------------|--------|
