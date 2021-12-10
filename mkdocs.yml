@@ -63,15 +63,16 @@ nav:
     - Style Guides:
         - Tutorials: 'style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
-  - Contact Us:
-      - Github: 'https://github.com/Datavault-UK/dbtvault'
+  - Find Us:
+      - GitHub: 'https://github.com/Datavault-UK/dbtvault'
       - Facebook: 'https://www.facebook.com/DataVaultUK/'
       - Twitter: 'https://twitter.com/datavault_uk'
       - LinkedIn: 'https://www.linkedin.com/company/business-thinking-limited'
       - Slack: 'https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA'
-      - UKDVUG: 'https://www.ukdatavaultusergroup.co.uk/'
+      - Data Vault User Group: 'https://www.ukdatavaultusergroup.co.uk/'
+      - Data Vault User Group Forums: 'https://forum.ukdatavaultusergroup.co.uk/'
       - YouTube: 'https://www.youtube.com/channel/UCdhSsZWTwkX1-v8EX84WLYg'
-      - Datavault: 'https://www.data-vault.co.uk/'
+      - Datavault Website: 'https://www.data-vault.com/'
 
 extra:
   social:

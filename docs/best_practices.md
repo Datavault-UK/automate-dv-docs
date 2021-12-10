@@ -6,10 +6,11 @@ At the current time, dbtvault will load discrete records with the same primary k
 that any deltas formed by loading these records in individual cycles get lost. For Hubs and Links this is not a problem,
 as there are no temporal attributes, but for structures such as Satellites this will produce erroneous loads.
 
-Until a future release solves this limitation for structures configured with the built-in **incremental materialisation**,
-we advise that you use one of our provided [custom materialisations](materialisations.md). 
+Until a future release solves this limitation for structures configured with the built-in **incremental
+materialisation**, we advise that you use one of our provided [custom materialisations](materialisations.md).
 
-These materialisations are fully configurable and automatically iterate over records, to load each batch/iteration separately.
+These materialisations are fully configurable and automatically iterate over records, to load each batch/iteration
+separately.
 
 We are working on removing this limitation and implementing 'intra-period' loading. If you have any questions, please
 get in touch.
@@ -31,9 +32,9 @@ the [stage](macros.md#stage) macro.
 
 ## NULL Handling
 
-The handling of nulls is important in Data Vault 2.0 because - as a general rule -, nulls represent a lack of something, and
-therefore do not mean anything to the business. This means we do not want records or keys containing nulls ending up in
-our raw vault.
+The handling of nulls is important in Data Vault 2.0 because - as a general rule -, nulls represent a lack of something,
+and therefore do not mean anything to the business. This means we do not want records or keys containing nulls ending up
+in our raw vault.
 
 Nulls get handled in the built-in hashing processes in dbtvault.
 
@@ -79,18 +80,17 @@ If the primary or ANY of the foreign keys are null, then the record does not get
 
 If the driving key column(s) or secondary foreign key (sfk) column(s) are null then the record does not get loaded.
 
-!!! note 
-    There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all the
-    SFK and DFK columns (so the PK will evaluate as null if they are all null).
+!!! note There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all the
+SFK and DFK columns (so the PK will evaluate as null if they are all null).
 
 ## Materialisations
 
-All raw vault structures support both the built-in dbt incremental materialisation and dbtvault's [custom 
-materialisations](materialisations.md). 
+All raw vault structures support both the built-in dbt incremental materialisation and
+dbtvault's [custom materialisations](materialisations.md).
 
 [Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
 
-!!! bug
+!!! bug 
     Currently there exists a bug with how some dbtvault structures handle incremental materialisations.
 
     Consult the below issues to see if you are affected. These issues are priority for the dbtvault team to fix.
@@ -98,29 +98,32 @@ materialisations](materialisations.md).
     - [Issue #50](https://github.com/Datavault-UK/dbtvault/issues/50)
     - [Issue #62](https://github.com/Datavault-UK/dbtvault/issues/62)
     - [Issue #64](https://github.com/Datavault-UK/dbtvault/issues/64)
-    - [Issue #65](https://github.com/Datavault-UK/dbtvault/issues/65)
 
     Hubs and Links remain unaffected.
 
 ### Table and View
 
-dbtvault macros do not support Table or View materialisations. You will be able to create your models if these materialisations are
-set, however they will behave unpredictably. We have no plans to support these materialisations, as they fundamentally break and oppose
-Data Vault 2.0 standards.
+dbtvault macros do not support Table or View materialisations. You will be able to create your models if these
+materialisations are set, however they will behave unpredictably. We have no plans to support these materialisations, as
+they fundamentally break and oppose Data Vault 2.0 standards.
 
 ### Recommended Materialisations
 
-| Structure                    | incremental      | bridge_incremental | pit_incremental  |
-|------------------------------|------------------|--------------------|------------------|
-| Hub                          | :material-check: |                    |                  |
-| Link                         | :material-check: |                    |                  |
-| Transactional Link           | :material-check: |                    |                  |
-| Satellite                    | :material-check: |                    |                  |
-| Effectivity Satellite        | :material-check: |                    |                  |
-| Multi-Active Satellite       | :material-check: |                    |                  |
-| Extended Tracking Satellites | :material-check: |                    |                  |
-| Bridges                      |                  | :material-check:   |                  |
-| Point In Time                |                  |                    | :material-check: |
+!!! seealso "See Also"
+    - [bridge_incremental](materialisations.md#bridge_incremental)
+    - [pit_incremental](materialisations.md#pit_incremental)
+
+| Structure                    | incremental      | bridge_incremental | bridge_incremental |
+|------------------------------|------------------|--------------------|--------------------|
+| Hub                          | :material-check: |                    |                    |
+| Link                         | :material-check: |                    |                    |
+| Transactional Link           | :material-check: |                    |                    |
+| Satellite                    | :material-check: |                    |                    |
+| Effectivity Satellite        | :material-check: |                    |                    |
+| Multi-Active Satellite       | :material-check: |                    |                    |
+| Extended Tracking Satellites | :material-check: |                    |                    |
+| Bridge Tables                |                  | :material-check:   |                    |
+| Point In Time Tables         |                  |                    | :material-check:   |
 
 ## Hashing
 
@@ -143,10 +146,10 @@ possibility of collision in larger data sets.
 
 #### Personally Identifiable Information (PII)
 
-Although we do not use hashing for the purposes of security (but rather optimisation and uniqueness) using _unsalted_ MD5
-and SHA-256 could still pose a security risk for your organisation. If any of your presentation layer (marts) tables or
-views containing any hashed PII data, an attacker may be able to brute-force the hashing to gain access to the PII. For
-this reason, we highly recommend concatenating a _salt_ to your hashed columns in the staging layer using
+Although we do not use hashing for the purposes of security (but rather optimisation and uniqueness) using _unsalted_
+MD5 and SHA-256 could still pose a security risk for your organisation. If any of your presentation layer (marts) tables
+or views containing any hashed PII data, an attacker may be able to brute-force the hashing to gain access to the PII.
+For this reason, we highly recommend concatenating a _salt_ to your hashed columns in the staging layer using
 the [stage](macros.md#stage) macro.
 
 It's generally ill-advised to store this salt in the database alongside your hashed values, so we recommend injecting it
@@ -303,21 +306,21 @@ Below is an example satellite YAML config from a Satellite model:
 
     ```yaml hl_lines="4 5 6"
     {%- set yaml_metadata -%}
-    source_model: 'stg_customer_details_hashed'
-    src_pk: 'CUSTOMER_HK'
+    source_model: stg_customer_details_hashed
+    src_pk: CUSTOMER_HK
     src_hashdiff: 
-      source_column: "CUSTOMER_HASHDIFF"
-      alias: "HASHDIFF"
+      source_column: CUSTOMER_HASHDIFF
+      alias: HASHDIFF
     src_payload:
-      - 'NAME'
-      - 'ADDRESS'
-      - 'PHONE'
-      - 'ACCBAL'
-      - 'MKTSEGMENT'
-      - 'COMMENT'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOAD_DATETIME'
-    src_source: 'RECORD_SOURCE'
+      - NAME
+      - ADDRESS
+      - PHONE
+      - ACCBAL
+      - MKTSEGMENT
+      - COMMENT
+    src_eff: EFFECTIVE_FROM
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
     {%- endset -%}
     ```
 
@@ -366,7 +369,7 @@ file. We recommend you keep the hashing algorithm consistent across all tables, 
 Read the [dbt documentation](https://docs.getdbt.com/reference/dbt-jinja-functions/var) for further information on
 variable scoping.
 
-!!! warning 
+!!! warning
 
     Stick with your chosen algorithm unless you can afford to full-refresh, and you still have access to source
     data. Changing between hashing configurations when data has already been loaded will require a full-refresh of your
@@ -374,7 +377,7 @@ variable scoping.
 
 ### Configuring hash strings
 
-As previously described, the default hashing strings are as follows:
+As previously described, the **_default_** hashing strings are as follows:
 
 `concat_string` is `||`
 
@@ -406,7 +409,7 @@ The strings can be changed by the user, and this is achieved in the same way as 
 
 We plan to provide users with the ability to disable hashing entirely.
 
-In summary, the intent behind our hashing approach is to provide a robust method of ensuring consistent hashing (same
+The intent behind our hashing approach is to provide a robust method of ensuring consistent hashing (same
 input gives same output). Until we provide more configuration options, feel free to modify our macros for your needs, as
 long as you stick to a standard that makes sense to you or your organisation. If you need
 advice, [feel free to join our slack and ask our developers](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA)!
