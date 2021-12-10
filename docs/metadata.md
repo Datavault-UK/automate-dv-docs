@@ -864,7 +864,7 @@ ___
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     as_of_dates_table: AS_OF_DATE
     satellites: 
@@ -919,20 +919,20 @@ ___
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     src_ldts: LOAD_DATETIME
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     bridge_walk:
       CUSTOMER_ORDER:
         bridge_link_pk: LINK_CUSTOMER_ORDER_HK
         bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
         bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
-        link_table: LINK_CUSTOMER_ORDER
+        link_table: link_customer_order
         link_pk: CUSTOMER_ORDER_HK
         link_fk1: CUSTOMER_FK
         link_fk2: ORDER_FK
-        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_table: eff_sat_customer_order
         eff_sat_pk: CUSTOMER_ORDER_HK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
@@ -940,11 +940,11 @@ ___
         bridge_link_pk: LINK_ORDER_PRODUCT_HK
         bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
         bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
-        link_table: LINK_ORDER_PRODUCT
+        link_table: link_order_product
         link_pk: ORDER_PRODUCT_HK
         link_fk1: ORDER_FK
         link_fk2: PRODUCT_FK
-        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_table: eff_sat_order_product
         eff_sat_pk: ORDER_PRODUCT_HK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME

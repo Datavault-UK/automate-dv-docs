@@ -72,7 +72,7 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 
 | Parameter         | Value                                                                         |
 |-------------------|-------------------------------------------------------------------------------|
-| source_model      | HUB_CUSTOMER                                                                  |
+| source_model      | hub_customer                                                                  |
 | src_pk            | CUSTOMER_HK                                                                   |
 | src_ldts          | LOAD_DATETIME                                                                 |
 | as_of_dates_table | AS_OF_DATE                                                                    |
@@ -93,7 +93,7 @@ Here we will define the metadata for the source_model. We will use the HUB_CUSTO
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     ...
     ```
 
@@ -105,7 +105,7 @@ Next we need add the Hub's Primary Key column
 
     ```jinja hl_lines="3"
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     ...
     ```
@@ -118,7 +118,7 @@ Next, we add the Load Date/Timestamp column name of the parent Hub
 
     ```jinja hl_lines="4"
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     src_ldts: LOAD_DATETIME
     ...
@@ -132,7 +132,7 @@ Next, we provide the PIT's column name for the As of Date table.
 
     ```jinja hl_lines="5"
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     src_ldts: LOAD_DATETIME
     as_of_dates_table: AS_OF_DATE
@@ -147,7 +147,7 @@ Here we add the Satellite related details (i.e. the Primary/Hash Key and the Loa
 
     ```jinja hl_lines="6-16"
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     src_ldts: LOAD_DATETIME
     as_of_dates_table: AS_OF_DATE
@@ -173,7 +173,7 @@ Finally, we add Satellites' stage table names and their Load Date/Timestamp colu
 
     ```jinja hl_lines="17-20"
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     src_ldts: LOAD_DATETIME
     as_of_dates_table: AS_OF_DATE
@@ -202,7 +202,7 @@ Now, our model should look like the following:
     {{ config(materialized='pit_incremental') }}
 
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     src_ldts: LOAD_DATETIME        
     as_of_dates_table: AS_OF_DATE

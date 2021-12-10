@@ -68,9 +68,6 @@ which allow you to configure different aspects of dbtvault. These variables will
       concat_string: '||'
       null_placeholder_string: '^^'
     ```
-=== "hash"
-
-    TODO hash
 
 Configure the type of hashing.
 
@@ -85,19 +82,17 @@ This can be one of:
 
 Configure the value for the maximum datetime. 
 
-This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances. 
-
-This is currently only used in Effectivity Satellites, but will also be used in future (unreleased) structures (e.g. PITs and Bridges)
+This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances.
 
 #### concat_string
 
-Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '||'
+Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '`||'`
 
 [Read more](./best_practices.md#multi-column-hashing)
 
 #### null_placeholder_string
 
-Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret characters: '^^'
+Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret characters: '`^^`'
 
 [Read more](./best_practices.md#null-handling)
 
@@ -106,7 +101,7 @@ Configure the string value to use for replacing `NULL` values when hashing. By d
 ###### (macros/tables)
 
 These macros are the core of the package and can be called in your models to build the different types of tables needed
-for your Data Vault.
+for your Data Vault 2.0 Data Warehouse.
 
 ### hub
 
@@ -1074,7 +1069,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 | source_model  | Staging model name                                             | String/List | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-[Read the tutorial](tutorial/tut_xts.md) for more details
+    [Read the tutorial](tutorial/tut_xts.md) for more details
 
 #### Example Metadata
 
@@ -1201,262 +1196,6 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         
         SELECT * FROM records_to_insert
         ```
-
-[comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/pit.sql&#41;&#41;)
-
-Generates SQL to build a point-in-time table (PIT).
-
-#### Usage
-
-``` jinja
-{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                as_of_dates_table=as_of_dates_table,
-                satellites=satellites,
-                stage_tables=stage_tables,
-                src_ldts=src_ldts) }}
-```
-
-#### Parameters
-
-| Parameter         | Description                                  | Type    | Required?                                    |
-|-------------------|----------------------------------------------|---------|----------------------------------------------|
-| src_pk            | Source primary key column                    | String  | <i class="fas fa-check-circle required"></i> |
-| as_of_dates_table | Name for the AS OF DATE table                | String  | <i class="fas fa-check-circle required"></i> |
-| satellites        | Dictionary of satellite reference mappings   | Mapping | <i class="fas fa-check-circle required"></i> |
-| stage_tables      | Dictionary of stage table reference mappings | Mapping | <i class="fas fa-check-circle required"></i> |
-| src_ldts          | Source load date timestamp column            | String  | <i class="fas fa-check-circle required"></i> |
-| source_model      | Hub model name                               | String  | <i class="fas fa-check-circle required"></i> |
-
-!!! tip
-    [Read the tutorial](tutorial/tut_point_in_time.md) for more details
-
-#### Example Metadata
-
-[See examples](metadata.md#point-in-time-pit-tables)
-
-#### Example Output
-
-=== "Snowflake"
-
-    === "Base Load"
-
-        ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE AS a
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN as_of_dates AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-        )
-        
-        SELECT DISTINCT * FROM pit
-        ```
-
-    === "Incremental Load"
-
-        ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE
-        ),
-        
-        last_safe_load_datetime AS (
-            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME 
-            FROM (
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-            ) a
-        ),
-        
-        as_of_grain_old_entries AS (
-            SELECT DISTINCT AS_OF_DATE 
-            FROM DBTVAULT.TEST.PIT_CUSTOMER
-        ),
-        
-        as_of_grain_lost_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_grain_old_entries AS a
-            LEFT OUTER JOIN as_of_dates AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        as_of_grain_new_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_dates AS a
-            LEFT OUTER JOIN as_of_grain_old_entries AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        min_date AS (
-            SELECT min(AS_OF_DATE) AS MIN_DATE
-            FROM as_of_dates
-        ),
-        
-        backfill_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_pks AS (
-            SELECT a.CUSTOMER_PK
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-            UNION
-            SELECT AS_OF_DATE
-            FROM as_of_grain_new_entries
-        ),
-        
-        overlap AS (
-            SELECT a.*
-            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
-            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
-                ON a.CUSTOMER_PK = b.CUSTOMER_PK
-            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        -- Back-fill any newly arrived hubs, set all historical pit dates to ghost records
-        
-        backfill_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM new_rows_pks AS a
-            INNER JOIN backfill_as_of AS b
-                ON (1=1 )
-        ),
-        
-        backfill AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_DETAILS_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_LOGIN_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,        
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM backfill_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN new_rows_as_of AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-            UNION ALL
-            SELECT * FROM overlap
-            UNION ALL
-            SELECT * FROM backfill
-        )
-        
-        SELECT DISTINCT * FROM pit
-        ```
-
-#### As Of Date Table Structures
-
-An As of Date table contains a single column of dates used to construct the history in the PIT. A typical structure will 
-be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
-time after which the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
-3 months of end of week values. So the as of dates table would contain a datetime for each entry to match this. 
-As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
-Using the example history before if a week had passed since when we had created the as of dates table
-it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
-
-!!! Warning 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
-    is called correctly in the .yml, the column name must be called AS_OF_DATE.
-
-___
 
 ### pit
 
@@ -1714,7 +1453,7 @@ to reflect the current date.
 
 Think of As of Date tables as essentially a rolling window of time. 
 
-!!! Warning 
+!!! Note 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
 
@@ -1755,7 +1494,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 | stage_tables_ldts | Dictionary of stage table reference mappings and their load date timestamps | Mapping | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-[Read the tutorial](tutorial/tut_bridges.md) for more details
+    [Read the tutorial](tutorial/tut_bridges.md) for more details
 
 #### Example Metadata
 
@@ -1962,7 +1701,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 
 An As of Date table contains a single column of dates used to construct the history in the Bridge table.
 
-!!! Warning
+!!! Note
 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
@@ -2407,19 +2146,19 @@ For example:
 === "Snowflake"
 
 ```yaml hl_lines="3 12"
-source_model: "MY_STAGE"
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
   SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  EFFECTIVE_FROM: BOOKING_DATE
 hashed_columns:
-  CUSTOMER_HK: "CUSTOMER_ID"
+  CUSTOMER_HK: CUSTOMER_ID
   HASHDIFF:
     is_hashdiff: true 
     columns:
-      - "CUSTOMER_NAME"
-      - "CUSTOMER_DOB_UK"
-      - "CUSTOMER_PHONE"
+      - CUSTOMER_NAME
+      - CUSTOMER_DOB_UK
+      - CUSTOMER_PHONE
 ```
 
 Here, we create a new derived column called `CUSTOMER_DOB_UK` which formats the `CUSTOMER_DOB` column
@@ -2560,11 +2299,11 @@ listed under the `columns` key, instead of using them to create the hashdiff.
 === "Snowflake"
 
 ```yaml hl_lines="3"
-source_model: "MY_STAGE"
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
   SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  EFFECTIVE_FROM: BOOKING_DATE
 ```
 
 In the above example we can see the use of a function to convert the date format of the `CUSTOMER_DOB` to create a new
@@ -2583,11 +2322,11 @@ SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
 #### Constants (Derived Columns)
 
 ```yaml hl_lines="4"
-source_model: "MY_STAGE"
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
   RECORD_SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  EFFECTIVE_FROM: BOOKING_DATE
 ```
 
 In the above example we define a constant value for our new `SOURCE` column. We do this by prefixing our string with an
@@ -2615,15 +2354,15 @@ And the data would look like:
 
 #### Composite columns (Derived Columns)
 
-```yaml hl_lines="3 4 5 6"
-source_model: "MY_STAGE"
+```yaml hl_lines=3 4 5 6
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_NK:
-    - "CUSTOMER_ID"
-    - "CUSTOMER_NAME"
+    - CUSTOMER_ID
+    - CUSTOMER_NAME
     - "!DEV"
-  SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  SOURCE: !RAW_CUSTOMER
+  EFFECTIVE_FROM: BOOKING_DATE
 ```
 
 You can create new columns, given a list of columns to extract values from, using derived columns.
@@ -2652,14 +2391,14 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Single item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: 'CUSTOMER_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: CUSTOMER_HK
+        order_by: LOAD_DATETIME
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -2672,18 +2411,18 @@ configuration allows you to define ranked columns to generate, as follows:
 ===! "Multi-item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_HK'
-            - 'CUSTOMER_REF'
+            - CUSTOMER_HK
+            - CUSTOMER_REF
         order_by: 
-            - 'RECORD_SOURCE'
-            - 'LOAD_DATETIME'
+            - RECORD_SOURCE
+            - LOAD_DATETIME
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -2698,19 +2437,19 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Dense Rank configuration"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_HK'
-            - 'CUSTOMER_REF'
+            - CUSTOMER_HK
+            - CUSTOMER_REF
         order_by: 
-            - 'RECORD_SOURCE'
-            - 'LOAD_DATETIME'
+            - RECORD_SOURCE
+            - LOAD_DATETIME
         dense_rank: true
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -2725,15 +2464,15 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Single item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: 'CUSTOMER_HK'
+        partition_by: CUSTOMER_HK
         order_by:
            LOAD_DATETIME: DESC
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -2746,18 +2485,18 @@ configuration allows you to define ranked columns to generate, as follows:
 ===! "Multi-item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_HK'
-            - 'CUSTOMER_REF'
+          - CUSTOMER_HK
+          - CUSTOMER_REF
         order_by: 
-            - 'RECORD_SOURCE': 'DESC'
-            - 'LOAD_DATETIME': 'ASC'
+          - RECORD_SOURCE: DESC
+          - LOAD_DATETIME: ASC
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
