@@ -66,7 +66,7 @@ Let's look at the metadata we need to provide to the [bridge](../macros.md#bridg
 
 | Parameter         | Value                                                                    |
 |-------------------|--------------------------------------------------------------------------|
-| source_model      | HUB_CUSTOMER                                                             |
+| source_model      | hub_customer                                                             |
 | src_pk            | CUSTOMER_PK                                                              |
 | src_ldts          | LOAD_DATETIME                                                            |
 | as_of_dates_table | AS_OF_DATE                                                               |
@@ -106,7 +106,7 @@ Here we will define the metadata for the source_model. We will use the `HUB_CUST
 
     ```yaml
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
+    source_model: hub_customer
     ...
     ```
 
@@ -123,9 +123,9 @@ The `CUSTOMER_PK` we created earlier in the [Hub](tut_hubs.md) section will be u
 
     ```yaml hl_lines="3 4"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
     ...
     ```
 
@@ -140,10 +140,10 @@ Here we name our As of Date table `AS_OF_DATE`.
 
     ```yaml hl_lines="5"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: AS_OF_DATE
     ...
     ```
 
@@ -174,35 +174,35 @@ the `bridge_walk` metadata. For instance, it can be seen where the `PRODUCT_COMP
 
     ```yaml hl_lines="6-30"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: AS_OF_DATE
     bridge_walk:
       CUSTOMER_ORDER:
-        bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-        bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-        bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-        link_table: "LINK_CUSTOMER_ORDER"
-        link_pk: "CUSTOMER_ORDER_PK"
-        link_fk1: "CUSTOMER_FK"
-        link_fk2: "ORDER_FK"
-        eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-        eff_sat_pk: "CUSTOMER_ORDER_PK"
-        eff_sat_end_date: "END_DATE"
-        eff_sat_load_date: "LOAD_DATETIME"
+        bridge_link_pk: LINK_CUSTOMER_ORDER_PK
+        bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
+        bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
+        link_table: LINK_CUSTOMER_ORDER
+        link_pk: CUSTOMER_ORDER_PK
+        link_fk1: CUSTOMER_FK
+        link_fk2: ORDER_FK
+        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_pk: CUSTOMER_ORDER_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
       ORDER_PRODUCT:
-        bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-        bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-        bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-        link_table: "LINK_ORDER_PRODUCT"
-        link_pk: "ORDER_PRODUCT_PK"
-        link_fk1: "ORDER_FK"
-        link_fk2: "PRODUCT_FK"
-        eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-        eff_sat_pk: "ORDER_PRODUCT_PK"
-        eff_sat_end_date: "END_DATE"
-        eff_sat_load_date: "LOAD_DATETIME"
+        bridge_link_pk: LINK_ORDER_PRODUCT_PK
+        bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
+        bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
+        link_table: LINK_ORDER_PRODUCT
+        link_pk: ORDER_PRODUCT_PK
+        link_fk1: ORDER_FK
+        link_fk2: PRODUCT_FK
+        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_pk: ORDER_PRODUCT_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
     ...
     ```
 
@@ -214,38 +214,38 @@ Finally, we add the Links & Effectivity Satellites stage table names and their L
 
     ```yaml hl_lines="31-33"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: AS_OF_DATE
     bridge_walk:
       CUSTOMER_ORDER:
-        bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-        bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-        bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-        link_table: "LINK_CUSTOMER_ORDER"
-        link_pk: "CUSTOMER_ORDER_PK"
-        link_fk1: "CUSTOMER_FK"
-        link_fk2: "ORDER_FK"
-        eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-        eff_sat_pk: "CUSTOMER_ORDER_PK"
-        eff_sat_end_date: "END_DATE"
-        eff_sat_load_date: "LOAD_DATETIME"
+        bridge_link_pk: LINK_CUSTOMER_ORDER_PK
+        bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
+        bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
+        link_table: LINK_CUSTOMER_ORDER
+        link_pk: CUSTOMER_ORDER_PK
+        link_fk1: CUSTOMER_FK
+        link_fk2: ORDER_FK
+        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_pk: CUSTOMER_ORDER_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
       ORDER_PRODUCT:
-        bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-        bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-        bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-        link_table: "LINK_ORDER_PRODUCT"
-        link_pk: "ORDER_PRODUCT_PK"
-        link_fk1: "ORDER_FK"
-        link_fk2: "PRODUCT_FK"
-        eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-        eff_sat_pk: "ORDER_PRODUCT_PK"
-        eff_sat_end_date: "END_DATE"
-        eff_sat_load_date: "LOAD_DATETIME"
+        bridge_link_pk: LINK_ORDER_PRODUCT_PK
+        bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
+        bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
+        link_table: LINK_ORDER_PRODUCT
+        link_pk: ORDER_PRODUCT_PK
+        link_fk1: ORDER_FK
+        link_fk2: PRODUCT_FK
+        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_pk: ORDER_PRODUCT_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
     stage_tables_ldts:
-        STG_CUSTOMER_ORDER: "LOAD_DATETIME"
-        STG_ORDER_PRODUCT: "LOAD_DATETIME"
+        STG_CUSTOMER_ORDER: LOAD_DATETIME
+        STG_ORDER_PRODUCT: LOAD_DATETIME
     {%- endset -%} 
     ```
 
@@ -257,7 +257,7 @@ In the end, our model should look like the following:
     {{ config(materialized="bridge_incremental") }}
 
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_PK
     src_ldts: LOAD_DATETIME
     as_of_dates_table: AS_OF_DATE

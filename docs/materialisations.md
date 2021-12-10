@@ -287,7 +287,7 @@ A rank column can be created one of three ways:
     It is important that once a rank column is created, it should be sense checked for correct and expected ordering. If your ranking is incorrect according to
     the business, then loading will not be executed correctly.
 
-### pit_incremental (Incremental PIT)
+### pit_incremental
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_pit_materialization.sql))
 
@@ -312,7 +312,7 @@ populates the target table, for each run of the PIT model.
                     src_ldts=src_ldts) }}                    
 ```
 
-### bridge_incremental (Incremental Bridge)
+### bridge_incremental
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_bridge_materialization.sql))
 

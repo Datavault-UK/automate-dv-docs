@@ -15,15 +15,15 @@ and it comes down to user and organisation preference.
     Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our recommendations,
     which we hope provide a good balance of manageability and readability.  
     
-    **All examples on this page will produce the same hub structure, the only difference is how the metadata is provided.**
+    **All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
     
 
 It is worth noting that with larger projects, metadata management gets increasingly harder and can 
 become unwieldy. See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion. 
 
 We can reduce the impact of this problem by providing the metadata for a given model, in the model itself. This approach 
-does have the drawback that the creation of models is significantly less copy-and-paste, but the metadata management improvements are
-usually worth it.
+does have the drawback that the creation of models is significantly less copy-and-paste, but the metadata management 
+improvements are usually worth it.
 
 #### Per-model - Variables 
 
@@ -59,7 +59,7 @@ example provided to help better convey the difference.
     messages. If you find that variables which are extracted from the YAML string are empty, it is an indicator that the YAML
     did not compile correctly, and you should check your formatting; including indentation.
 
-##### Example
+##### Examples
 
 === "hub_customer.sql"
 
@@ -124,10 +124,10 @@ example provided to help better convey the difference.
                       ranked_columns=ranked_columns) }}
     ```
 
-!!! Note 
-    
-    '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
-    [Read More](macros.md#constants-derived-columns)
+    !!! Note 
+        
+        '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
+        [Read More](macros.md#constants-derived-columns)
 
 ### Staging
 
@@ -185,7 +185,7 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -204,7 +204,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 
-            raw_source_name: "source_table_name"
+            raw_source_name: source_table_name
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -222,22 +222,22 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         hashed_columns:
-          CUSTOMER_HK: "CUSTOMER_ID"
+          CUSTOMER_HK: CUSTOMER_ID
           CUST_CUSTOMER_HASHDIFF:
             is_hashdiff: true
             columns:
-              - "CUSTOMER_DOB"
-              - "CUSTOMER_ID"
-              - "CUSTOMER_NAME"
+              - CUSTOMER_DOB
+              - CUSTOMER_ID
+              - CUSTOMER_NAME
               - "!9999-12-31"
           CUSTOMER_HASHDIFF:
             is_hashdiff: true
             columns:
-              - "CUSTOMER_ID"
-              - "NATIONALITY"
-              - "PHONE"
+              - CUSTOMER_ID
+              - NATIONALITY
+              - PHONE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -256,10 +256,10 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         derived_columns:
             RECORD_SOURCE: "!STG_BOOKING"
-            EFFECTIVE_FROM: "BOOKING_DATE"
+            EFFECTIVE_FROM: BOOKING_DATE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -278,11 +278,11 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         ranked_columns:
           DBTVAULT_RANK:
-            partition_by: "CUSTOMER_ID"
-            order_by: "BOOKING_DATE"
+            partition_by: CUSTOMER_ID
+            order_by: BOOKING_DATE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -301,20 +301,20 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         hashed_columns:
-          CUSTOMER_HK: "CUSTOMER_ID"
+          CUSTOMER_HK: CUSTOMER_ID
           CUSTOMER_DETAILS_HASHDIFF:
             is_hashdiff: true
             exclude_columns: true
             columns:
-              - "PRICE"
+              - PRICE
           CUSTOMER_HASHDIFF:
             is_hashdiff: true
             columns:
-              - "CUSTOMER_ID"
-              - "NATIONALITY"
-              - "PHONE"
+              - CUSTOMER_ID
+              - NATIONALITY
+              - PHONE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -364,8 +364,8 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 
-            - stg_web_customer_hashed
-            - stg_crm_customer_hashed
+          - stg_web_customer_hashed
+          - stg_crm_customer_hashed
         src_pk: CUSTOMER_HK
         src_nk: CUSTOMER_ID
         src_ldts: LOAD_DATETIME
@@ -388,8 +388,8 @@ example provided to help better convey the difference.
         source_model: stg_customer_hashed
         src_pk: CUSTOMER_HK
         src_nk: 
-            - CUSTOMER_ID
-            - CUSTOMER_DOB
+          - CUSTOMER_ID
+          - CUSTOMER_DOB
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
         {%- endset -%}
@@ -460,8 +460,8 @@ example provided to help better convey the difference.
         source_model: v_stg_orders
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-            - CUSTOMER_ID
-            - NATION_HK
+          - CUSTOMER_ID
+          - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
         {%- endset -%}
@@ -479,12 +479,12 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 
-            - v_stg_orders
-            - v_stg_transactions
+          - v_stg_orders
+          - v_stg_transactions
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-            - CUSTOMER_ID
-            - NATION_HK
+          - CUSTOMER_ID
+          - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
         {%- endset -%}
@@ -540,13 +540,13 @@ example provided to help better convey the difference.
     source_model: v_stg_transactions
     src_pk: TRANSACTION_HK
     src_fk: 
-        - CUSTOMER_HK
-        - ORDER_HK
+      - CUSTOMER_HK
+      - ORDER_HK
     src_payload:
-        - TRANSACTION_NUMBER
-        - TRANSACTION_DATE
-        - TYPE
-        - AMOUNT
+      - TRANSACTION_NUMBER
+      - TRANSACTION_DATE
+      - TYPE
+      - AMOUNT
     src_eff: EFFECTIVE_FROM
     src_ldts: LOAD_DATETIME
     src_source: RECORD_SOURCE
@@ -809,7 +809,7 @@ ___
 
 #### Metadata
 
-=== "Per-model - YAML strings"
+=== "Per-model - YAML stringfs"
 
     ```jinja
     {%- set yaml_metadata -%}
@@ -864,7 +864,7 @@ ___
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     as_of_dates_table: AS_OF_DATE
     satellites: 
@@ -919,20 +919,20 @@ ___
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: HUB_CUSTOMER
+    source_model: hub_customer
     src_pk: CUSTOMER_HK
     src_ldts: LOAD_DATETIME
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     bridge_walk:
       CUSTOMER_ORDER:
         bridge_link_pk: LINK_CUSTOMER_ORDER_HK
         bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
         bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
-        link_table: LINK_CUSTOMER_ORDER
+        link_table: link_customer_order
         link_pk: CUSTOMER_ORDER_HK
         link_fk1: CUSTOMER_FK
         link_fk2: ORDER_FK
-        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_table: eff_sat_customer_order
         eff_sat_pk: CUSTOMER_ORDER_HK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
@@ -940,11 +940,11 @@ ___
         bridge_link_pk: LINK_ORDER_PRODUCT_HK
         bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
         bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
-        link_table: LINK_ORDER_PRODUCT
+        link_table: link_order_product
         link_pk: ORDER_PRODUCT_HK
         link_fk1: ORDER_FK
         link_fk2: PRODUCT_FK
-        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_table: eff_sat_order_product
         eff_sat_pk: ORDER_PRODUCT_HK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
@@ -971,7 +971,7 @@ projects. If your metadata gets defined and stored in each model, it becomes har
 but it can be easier to manage. Model-level metadata alleviates the issue, but will not completely solve it.
 
 Whichever approach gets chosen, metadata storage and retrieval is difficult without a dedicated tool. 
-To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
+To help manage large amounts of metadata, we recommend the use of third-party enterprise tools such as WhereScape, 
 Matillion, or Erwin Data Modeller. 
 
 In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a 
