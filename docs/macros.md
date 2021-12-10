@@ -111,7 +111,6 @@ for your Data Vault.
 ### hub
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/hub.sql))
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -296,7 +295,6 @@ ___
 ### link
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/link.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/link.sql))
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -483,7 +481,6 @@ ___
 ### t_link
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/t_link.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/t_link.sql))
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -559,7 +556,6 @@ ___
 ### sat
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/sat.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/sat.sql))
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -630,9 +626,9 @@ Generates SQL to build a Satellite table using the provided parameters.
         latest_records AS (
             SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE,
                 RANK() OVER (
-                   PARTITION BY c.CUSTOMER_HK
-                   ORDER BY c.LOAD_DATE DESC
-                   ) AS rank
+                    PARTITION BY c.CUSTOMER_HK
+                    ORDER BY c.LOAD_DATE DESC
+                ) AS rank
             FROM update_records as c
             QUALIFY rank = 1
         ),
@@ -640,10 +636,10 @@ Generates SQL to build a Satellite table using the provided parameters.
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-            OR latest_records.HASHDIFF IS NULL
+                LEFT JOIN latest_records
+                    ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
+                        WHERE latest_records.HASHDIFF != e.HASHDIFF
+                            OR latest_records.HASHDIFF IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -662,7 +658,6 @@ ___
 ### eff_sat
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/eff_sat.sql))
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -704,15 +699,15 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 
         ```sql
         WITH source_data AS (
-                SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-                FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-                WHERE a.ORDER_HK IS NOT NULL
-                AND a.CUSTOMER_HK IS NOT NULL
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
         ),
         
         records_to_insert AS (
-                SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-                FROM source_data AS i
+            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+            FROM source_data AS i
         )
         
         SELECT * FROM records_to_insert
@@ -730,10 +725,10 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         
         latest_records AS (
             SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                   ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                   ) AS row_num
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             QUALIFY row_num = 1
         ),
@@ -772,7 +767,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             INNER JOIN latest_closed lc
             ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
             WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-),
+        ),
         
         new_closed_records AS (
             SELECT DISTINCT
@@ -812,10 +807,10 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         
         latest_records AS (
             SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                   ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                   ) AS row_num
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             QUALIFY row_num = 1
         ),
@@ -921,7 +916,6 @@ ___
 ### ma_sat
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/ma_sat.sql))
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -993,20 +987,21 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
                 ,mas.CUSTOMER_PHONE
                 ,mas.LOAD_DATE
                 ,mas.latest_rank
-                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
-                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
-            FROM
-            (
-            SELECT inner_mas.CUSTOMER_PK
-                ,inner_mas.HASHDIFF
-                ,inner_mas.CUSTOMER_PHONE
-                ,inner_mas.LOAD_DATE
-                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
-                    ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
-            FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
-            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
-                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
-            QUALIFY latest_rank = 1
+                ,DENSE_RANK() OVER (
+                    PARTITION BY mas.CUSTOMER_PK
+                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC
+                ) AS check_rank
+            FROM (
+                SELECT inner_mas.CUSTOMER_PK
+                    ,inner_mas.HASHDIFF
+                    ,inner_mas.CUSTOMER_PHONE
+                    ,inner_mas.LOAD_DATE
+                    ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
+                        ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
+                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
+                INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
+                    ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
+                QUALIFY latest_rank = 1
             ) AS mas
         ),
         
@@ -1057,10 +1052,9 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ### xts
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/xts.sql))
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
-
 
 #### Usage
 
@@ -1466,7 +1460,7 @@ ___
 
 ### pit
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/pit.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/pit.sql))
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -1732,7 +1726,7 @@ ___
 
 ### bridge
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/bridge.sql)))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/bridge.sql))
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or 
 more associated Links (and their Effectivity Satellites), using the provided parameters.
@@ -2817,7 +2811,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql)))
 
 !!! warning
 
@@ -2919,3 +2913,5 @@ ___
 
 Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to
 be called directly.
+
+--8<-- "includes/abbreviations.md"

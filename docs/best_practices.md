@@ -374,9 +374,6 @@ variable scoping.
 
 ### Configuring hash strings
 
-!!! tip "New in 0.7.8"
-    
-
 As previously described, the default hashing strings are as follows:
 
 `concat_string` is `||`

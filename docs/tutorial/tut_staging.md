@@ -70,12 +70,12 @@ The model provided in the 'Final model' section below, shows the use of the 'sou
 
 ##### Hashed columns
 
-| Column Name        | Value                                                                                |
-|--------------------|--------------------------------------------------------------------------------------|
-| CUSTOMER_HK        | CUSTOMER_ID                                                                          |
-| NATION_HK          | NATION_ID                                                                            |
-| CUSTOMER_NATION_HK | CUSTOMER_ID, NATION_ID                                                               |
-| CUSTOMER_HASHDIFF  | is_hashdiff: true, columns: CUSTOMER_NAME, CUSTOMER_ID, CUSTOMER_PHONE, CUSTOMER_DOB |
+| Column Name        | Value                                                                                   |
+|--------------------|-----------------------------------------------------------------------------------------|
+| CUSTOMER_HK        | CUSTOMER_ID                                                                             |
+| NATION_HK          | NATION_ID                                                                               |
+| CUSTOMER_NATION_HK | CUSTOMER_ID, NATION_ID                                                                  |
+| CUSTOMER_HASHDIFF  | is_hashdiff: true<br/>columns: CUSTOMER_NAME, CUSTOMER_ID, CUSTOMER_PHONE, CUSTOMER_DOB |
 
 ##### Final Model
 
@@ -157,3 +157,5 @@ The resulting stage view will look like this:
 ### Next steps
 
 Now that we have implemented a new staging layer with all the required fields and hashes, we can start loading our vault.
+
+--8<-- "includes/abbreviations.md"
