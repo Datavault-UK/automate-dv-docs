@@ -71,14 +71,14 @@ PIT tables should use the `pit_incremental` materialisation, as they will be rem
 
 Let's look at the metadata we need to provide to the [pit](../metadata.md#point-in-time-pit-tables) macro.
 
-| Parameter         | Value                                             | 
-| ----------------- | ------------------------------------------------- | 
-| source_model      | HUB_CUSTOMER                                      | 
+| Parameter         | Value                                             |
+|-------------------|---------------------------------------------------|
+| source_model      | HUB_CUSTOMER                                      |
 | src_pk            | CUSTOMER_PK                                       |
 | src_ldts          | LOAD_DATE                                         |
 | as_of_dates_table | AS_OF_DATE                                        |
 | satellites        | {'SAT_CUSTOMER_DETAILS':                          |
-|                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         | 
+|                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         |
 |                   | &emsp;&emsp;&nbsp;'ldts': {'LDTS': 'LOAD_DATE'}}, |
 |                   | &nbsp;'SAT_CUSTOMER_LOGIN':                       |
 |                   | &emsp;&emsp;{'pk': {'PK': 'CUSTOMER_PK'},         |
@@ -256,19 +256,19 @@ With our model complete and our YAML written, we can run dbt to create our `pit_
     `dbt run -m +pit_customer`
 
 === "> dbt v0.21.0"
-    `dbt run --select +pit_customer`
+    `dbt run -s +pit_customer`
 
-And our PIT table would look like this:
+The resulting Point in Time table would look like this:
 
-| CUSTOMER_PK  | AS_OF_DATE | SAT_CUSTOMER_DETAILS_PK | SAT_CUSTOMER_DETAILS_LDTS | SAT_CUSTOMER_LOGIN_PK  | SAT_CUSTOMER_LOGIN_LDTS |
-| ------------ | ---------- | ----------------------- | ------------------------- | ---------------------- | ----------------------- |
-| HY67OE...    | 2021-11-01 | HY67OE...               | 2020-06-05                | 000000...              | 1900-01-01              |
-| RF57V3...    | 2021-11-01 | RF57V3...               | 2017-04-24                | RF57V3...              | 2021-04-01              |
-| .            | .          | .                       | .                         | .                      | .                       |
-| .            | .          | .                       | .                         | .                      | .                       |
-| HY67OE...    | 2021-11-15 | HY67OE...               | 2021-11-09                | HY67OE...              | 2021-11-14              |
-| RF57V3...    | 2021-11-15 | RF57V3...               | 2017-04-24                | RF57V3...              | 2021-04-01              |
-| .            | .          | .                       | .                         | .                      | .                       |
-| .            | .          | .                       | .                         | .                      | .                       |
-| HY67OE...    | 2021-11-31 | HY67OE...               | 2021-11-09                | HY67OE...              | 2021-11-30              |
-| RF57V3...    | 2021-11-31 | RF57V3...               | 2021-11-20                | RF57V3...              | 2021-04-01              |
+| CUSTOMER_PK | AS_OF_DATE | SAT_CUSTOMER_DETAILS_PK | SAT_CUSTOMER_DETAILS_LDTS | SAT_CUSTOMER_LOGIN_PK | SAT_CUSTOMER_LOGIN_LDTS |
+|-------------|------------|-------------------------|---------------------------|-----------------------|-------------------------|
+| HY67OE...   | 2021-11-01 | HY67OE...               | 2020-06-05                | 000000...             | 1900-01-01              |
+| RF57V3...   | 2021-11-01 | RF57V3...               | 2017-04-24                | RF57V3...             | 2021-04-01              |
+| .           | .          | .                       | .                         | .                     | .                       |
+| .           | .          | .                       | .                         | .                     | .                       |
+| HY67OE...   | 2021-11-15 | HY67OE...               | 2021-11-09                | HY67OE...             | 2021-11-14              |
+| RF57V3...   | 2021-11-15 | RF57V3...               | 2017-04-24                | RF57V3...             | 2021-04-01              |
+| .           | .          | .                       | .                         | .                     | .                       |
+| .           | .          | .                       | .                         | .                     | .                       |
+| HY67OE...   | 2021-11-31 | HY67OE...               | 2021-11-09                | HY67OE...             | 2021-11-30              |
+| RF57V3...   | 2021-11-31 | RF57V3...               | 2021-11-20                | RF57V3...             | 2021-04-01              |

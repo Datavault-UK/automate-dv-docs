@@ -23,7 +23,7 @@ development with dbt.
 
 Next, we need to install dbtvault. 
 dbtvault has already been added to the `packages.yml` file provided with the example project, so all you need to do 
-is run the following command:
+is run the following command, inside the folder where your `dbt_project.yml` resides:
  
 `dbt deps`
 

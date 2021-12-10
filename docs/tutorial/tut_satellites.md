@@ -76,15 +76,15 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `sat_customer_details` Satellite, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value                                                | 
-| -------------- | ---------------------------------------------------- | 
-| source_model   | v_stg_orders                                         | 
-| src_pk         | CUSTOMER_HK                                          |
-| src_hashdiff   | source_column: CUSTOMER_HASHDIFF, alias: HASHDIFF    |
-| src_payload    | CUSTOMER_NAME, CUSTOMER_DOB, CUSTOMER_PHONE          |
-| src_eff        | EFFECTIVE_FROM                                       |
-| src_ldts       | LOAD_DATETIME                                        | 
-| src_source     | RECORD_SOURCE                                        |
+| Parameter    | Value                                             |
+|--------------|---------------------------------------------------|
+| source_model | v_stg_orders                                      |
+| src_pk       | CUSTOMER_HK                                       |
+| src_hashdiff | source_column: CUSTOMER_HASHDIFF, alias: HASHDIFF |
+| src_payload  | CUSTOMER_NAME, CUSTOMER_DOB, CUSTOMER_PHONE       |
+| src_eff      | EFFECTIVE_FROM                                    |
+| src_ldts     | LOAD_DATETIME                                     |
+| src_source   | RECORD_SOURCE                                     |
 
 !!! Note
     We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practices.md#hashdiff-aliasing)
@@ -134,13 +134,13 @@ With our model complete and our YAML written, we can run dbt to create our `sat_
     `dbt run -m +sat_customer_detail`
 
 === "> dbt v0.21.0"
-    `dbt run --select +sat_customer_detail`
+    `dbt run -s +sat_customer_detail`
     
-And our Satellite table will look like this:
+The resulting Satellite table will look like this:
 
-| CUSTOMER_HK  | HASHDIFF   | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE |
-| ------------ | ---------- | ----------    | ------------ | --------------- | -------------- | ------------------------ | ------ |
-| B8C37E...    | 3C5984...  | Alice         | 1997-04-24   | 17-214-233-1214 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |
-| .            | .          | .             | .            | .               | .              | .                        | 1      |
-| .            | .          | .             | .            | .               | .              | .                        | 1      |
-| FED333...    | D8CB1F...  | Dom           | 2018-04-13   | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |
+| CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
+|-------------|-----------|---------------|--------------|-----------------|----------------|-------------------------|--------|
+| B8C37E...   | 3C5984... | Alice         | 1997-04-24   | 17-214-233-1214 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
+| .           | .         | .             | .            | .               | .              | .                       | 1      |
+| .           | .         | .             | .            | .               | .              | .                       | 1      |
+| FED333...   | D8CB1F... | Dom           | 2018-04-13   | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |

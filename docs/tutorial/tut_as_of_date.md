@@ -5,13 +5,16 @@ An example of a usual date range could be all dates from the last 3 months.
 
 Periodically, the As of Date table would be refreshed, to accommodate for the new reporting period.
 
+!!! note
+    As of Date tables will soon be 
+
 ### Structure
 
 The As of Date table consists of a single date/datetime column, and is currently generated using the 
 [dbt_utils.date_spine](https://github.com/dbt-labs/dbt-utils#date_spine-source) macro. 
 
 !!! note
-    dbt_utils is another package for dbt, provided by dbt Labs. The date_spine macro above is provided by this package.
+    _dbt_utils_ is another package for dbt, provided by dbt Labs. The date_spine macro above is provided by this package.
     For more information, go read the date_spine docs [here](https://github.com/dbt-labs/dbt-utils#date_spine-source).
     dbtvault includes dbt_utils as a dependency, and is installed alongside the dbtvault package. 
 
@@ -34,7 +37,7 @@ included in the list of values for `AS_OF_DATE`.
 
 ### Setting up an As of Date model
 
-Create a new dbt model as before. We'll call this one `as_of_date`.
+Create a new dbt model. We'll call this one `as_of_date`.
 
 === "as_of_date.sql"
 
@@ -62,7 +65,7 @@ run the dbt model again.
 Let's look at the metadata we need to provide to the As of Dates template.
 
 | Parameter      | Value                               | 
-| -------------- | ----------------------------------- | 
+|----------------|-------------------------------------|
 | datepart       | day                                 | 
 | start_date     | to_date('2021/01/01', 'yyyy/mm/dd') |
 | end_date       | to_date('2021/04/01', 'yyyy/mm/dd') |
@@ -75,8 +78,8 @@ When we provide the metadata above, our model should look like the following:
     {{ config(materialized='table') }}
     
     {%- set datepart = "day" -%}
-    {%- set start_date="to_date('2021/01/01', 'yyyy/mm/dd')" -%}
-    {%- set end_date="to_date('2021/04/01', 'yyyy/mm/dd')" -%}
+    {%- set start_date = "TO_DATE('2021/01/01', 'yyyy/mm/dd')" -%}
+    {%- set end_date = "TO_DATE('2021/04/01', 'yyyy/mm/dd')" -%}
     
     WITH as_of_date AS (
         {{ dbt_utils.date_spine(datepart=datepart, 
@@ -95,15 +98,15 @@ With our metadata provided and our model complete, we can run dbt to create our 
     `dbt run -m as_of_date`
 
 === "> dbt v0.21.0"
-    `dbt run --select as_of_date`
+    `dbt run -s as_of_date`
 
-And the resulting As of Date table will look like this:
+The resulting As of Date table will look like this:
 
-| AS_OF_DATE   |
-| ------------ |
-| 2021-01-01   |
-| 2021-01-02   |
-| .            |
-| .            |
-| 2021-03-30   |
-| 2021-03-31   |
+| AS_OF_DATE |
+|------------|
+| 2021-01-01 |
+| 2021-01-02 |
+| .          |
+| .          |
+| 2021-03-30 |
+| 2021-03-31 |

@@ -110,14 +110,17 @@ Data Vault 2.0 standards.
 
 ### Recommended Materialisations
 
-| Structure                      | Incremental          |
-| ------------------------------ | -------------------- |
-| Hub                            | :material-check:     |
-| Link                           | :material-check:     |
-| Transactional Link             | :material-check:     |
-| Satellite                      | :material-check:     |
-| Effectivity Satellite          | :material-check:     |
-| Multi-Active Satellite         | :material-check:     |
+| Structure                    | incremental      | bridge_incremental | pit_incremental  |
+|------------------------------|------------------|--------------------|------------------|
+| Hub                          | :material-check: |                    |                  |
+| Link                         | :material-check: |                    |                  |
+| Transactional Link           | :material-check: |                    |                  |
+| Satellite                    | :material-check: |                    |                  |
+| Effectivity Satellite        | :material-check: |                    |                  |
+| Multi-Active Satellite       | :material-check: |                    |                  |
+| Extended Tracking Satellites | :material-check: |                    |                  |
+| Bridges                      |                  | :material-check:   |                  |
+| Point In Time                |                  |                    | :material-check: |
 
 ## Hashing
 

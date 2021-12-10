@@ -49,13 +49,13 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `hub_customer` Hub, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value          | 
-| -------------- | -------------- | 
-| source_model   | v_stg_orders   | 
-| src_pk         | CUSTOMER_HK    |
-| src_nk         | CUSTOMER_ID    |
-| src_ldts       | LOAD_DATETIME  | 
-| src_source     | RECORD_SOURCE  |
+| Parameter    | Value         |
+|--------------|---------------|
+| source_model | v_stg_orders  |
+| src_pk       | CUSTOMER_HK   |
+| src_nk       | CUSTOMER_ID   |
+| src_ldts     | LOAD_DATETIME |
+| src_source   | RECORD_SOURCE |
 
 When we provide the metadata above, our model should look like the following:
 
@@ -85,16 +85,16 @@ With our metadata provided and our model complete, we can run dbt to create our 
     `dbt run -m +hub_customer`
 
 === "> dbt v0.21.0"
-    `dbt run --select +hub_customer`
+    `dbt run -s +hub_customer`
 
-And the resulting Hub table will look like this:
+The resulting Hub table will look like this:
 
-| CUSTOMER_HK  | CUSTOMER_ID  | LOAD_DATETIME            | SOURCE |
-| ------------ | ------------ | ------------------------ | ------ |
-| B8C37E...    | 1001         | 1993-01-01 00:00:00.000  | 1      |
-| .            | .            | .                        | 1      |
-| .            | .            | .                        | 1      |
-| FED333...    | 1004         | 1993-01-01 00:00:00.000  | 1      |
+| CUSTOMER_HK | CUSTOMER_ID | LOAD_DATETIME           | SOURCE |
+|-------------|-------------|-------------------------|--------|
+| B8C37E...   | 1001        | 1993-01-01 00:00:00.000 | 1      |
+| .           | .           | .                       | 1      |
+| .           | .           | .                       | 1      |
+| FED333...   | 1004        | 1993-01-01 00:00:00.000 | 1      |
 
 ### Loading hubs from multiple sources
 

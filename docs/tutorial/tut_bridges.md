@@ -63,36 +63,36 @@ Bridge tables should use the `bridge_incremental` materialisation, as the Bridge
 
 Let's look at the metadata we need to provide to the [bridge](../macros.md#bridge) macro.
 
-| Parameter         | Value                                                                    | 
-| ----------------- | ------------------------------------------------------------------------ | 
-| source_model      | HUB_CUSTOMER                                                             | 
+| Parameter         | Value                                                                    |
+|-------------------|--------------------------------------------------------------------------|
+| source_model      | HUB_CUSTOMER                                                             |
 | src_pk            | CUSTOMER_PK                                                              |
 | src_ldts          | LOAD_DATETIME                                                            |
 | as_of_dates_table | AS_OF_DATE                                                               |
 | satellites        | {'CUSTOMER_ORDER':                                                       |
-|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_CUSTOMER_ORDER_PK',                 | 
-|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_CUSTOMER_ORDER_ENDDATE',   | 
-|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_CUSTOMER_ORDER_LOADDATE', | 
-|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_CUSTOMER_ORDER',                   | 
-|                   | &emsp;&emsp;&nbsp;'link_pk': 'CUSTOMER_ORDER_PK',                        | 
-|                   | &emsp;&emsp;&nbsp;'link_fk1': 'CUSTOMER_FK',                             | 
-|                   | &emsp;&emsp;&nbsp;'link_fk2': 'ORDER_FK',                                | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_CUSTOMER_ORDER',             |  
-|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'CUSTOMER_ORDER_PK',                     | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'},                 | 
+|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_CUSTOMER_ORDER_PK',                 |
+|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_CUSTOMER_ORDER_ENDDATE',   |
+|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_CUSTOMER_ORDER_LOADDATE', |
+|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_CUSTOMER_ORDER',                   |
+|                   | &emsp;&emsp;&nbsp;'link_pk': 'CUSTOMER_ORDER_PK',                        |
+|                   | &emsp;&emsp;&nbsp;'link_fk1': 'CUSTOMER_FK',                             |
+|                   | &emsp;&emsp;&nbsp;'link_fk2': 'ORDER_FK',                                |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_CUSTOMER_ORDER',             |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'CUSTOMER_ORDER_PK',                     |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'},                 |
 |                   | &nbsp;'ORDER_PRODUCT':                                                   |
-|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_ORDER_PRODUCT_PK',                  | 
-|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_ORDER_PRODUCT_ENDDATE',    | 
-|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_ORDER_PRODUCT_LOADDATE',  | 
-|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_ORDER_PRODUCT',                    | 
-|                   | &emsp;&emsp;&nbsp;'link_pk': 'ORDER_PRODUCT_PK',                         | 
-|                   | &emsp;&emsp;&nbsp;'link_fk1': 'ORDER_FK',                                | 
-|                   | &emsp;&emsp;&nbsp;'link_fk2': 'PRODUCT_FK',                              | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_ORDER_PRODUCT',              |  
-|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'ORDER_PRODUCT_PK',                      | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'}}                 | 
+|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_ORDER_PRODUCT_PK',                  |
+|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_ORDER_PRODUCT_ENDDATE',    |
+|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_ORDER_PRODUCT_LOADDATE',  |
+|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_ORDER_PRODUCT',                    |
+|                   | &emsp;&emsp;&nbsp;'link_pk': 'ORDER_PRODUCT_PK',                         |
+|                   | &emsp;&emsp;&nbsp;'link_fk1': 'ORDER_FK',                                |
+|                   | &emsp;&emsp;&nbsp;'link_fk2': 'PRODUCT_FK',                              |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_ORDER_PRODUCT',              |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'ORDER_PRODUCT_PK',                      |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'}}                 |
 | stage_tables_ldts | {'STG_CUSTOMER_ORDER': 'LOAD_DATETIME',                                  |
 |                   | &nbsp;'STG_CUSTOMER_PRODUCT': 'LOAD_DATETIME'}                           |
 
@@ -319,13 +319,13 @@ In order to finalise the creation of the `bridge_customer_order` table we use th
     `dbt run -m +bridge_customer_order`
 
 === "> dbt v0.21.0"
-    `dbt run --select +bridge_customer_order`
+    `dbt run -s +bridge_customer_order`
 
 The resulting Bridge table should look like this:
 
- | CUSTOMER_PK | AS_OF_DATE              | LINK_CUSTOMER_ORDER_PK | LINK_ORDER_PRODUCT_PK |
- | ----------- | ----------------------- | ---------------------- | --------------------- |
- | ED5984...   | 2018-06-01 00:00:00.000 | A77BA1...              | 8A2CQA...             |
- | .           | .                       | .                      | .                     |
- | .           | .                       | .                      | .                     |
- | M67Y0U...   | 2018-06-01 12:00:00.000 | 1FA79C...              | BH5674...             |
+| CUSTOMER_PK | AS_OF_DATE              | LINK_CUSTOMER_ORDER_PK | LINK_ORDER_PRODUCT_PK |
+|-------------|-------------------------|------------------------|-----------------------|
+| ED5984...   | 2018-06-01 00:00:00.000 | A77BA1...              | 8A2CQA...             |
+| .           | .                       | .                      | .                     |
+| .           | .                       | .                      | .                     |
+| M67Y0U...   | 2018-06-01 12:00:00.000 | 1FA79C...              | BH5674...             |
