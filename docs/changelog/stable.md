@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.9] - 2021-12-13
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.9)](https://dbtvault.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
+
+### New
+
+#### Table structures
+- Point in Time tables [Tutorial](../tutorial/tut_point_in_time.md) - [Macro docs](../macros.md#pit)
+- Bridge tables [Tutorial](../tutorial/tut_bridges.md) - [Macro docs](../macros.md#bridge)
+- Extended Tracking Satellites (XTS) [Tutorial](../tutorial/tut_xts.md) - [Macro docs](../macros.md#xts)
+
+#### Materialisations
+- Custom materialisation for PITs [Docs](../materialisations.md#pit_incremental)
+- Custom materialisation for Bridges [Docs](../materialisations.md#bridge_incremental)
+
+#### Behind the Scenes
+
+- More test coverage for incremental loading.
+- Improved consistency and support for Composite PKs.
+- Significantly simplified Multi-Active Satellite (MAS) logic. 
+
+### Bug Fixes
+
+- Multi-Active Satellite record duplication under some circumstances [#50](https://github.com/Datavault-UK/dbtvault/issues/50)
+
 ## [v0.7.8] - 2021-10-25
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.8)](https://dbtvault.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
 
@@ -105,7 +129,7 @@ add the natural key to the hashdiff, but it is still recommended. [Read More](..
   
 - The hashed_columns exclude flag in staging can now be provided without a list of columns, and dbtvault will hash everything. [Docs](../macros.md#stage-macro-configurations)
 
-- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../macros.md#vault_insert_by_rank)
+- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../materialisations.md#vault_insert_by_rank-insert-by-rank)
 
 - The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros.md#stage-macro-configurations)
 
@@ -156,7 +180,7 @@ users wishing to override macro implementations. Documentation will be made avai
 
 ### Fixed
 
-- Fixed a bug in the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialization which caused orphaned temporary relations 
+- Fixed a bug in the [vault_insert_by_period](../materialisations.md#vault_insert_by_period-insert-by-period) materialization which caused orphaned temporary relations 
   under specific circumstances. [Issue #18](https://github.com/Datavault-UK/dbtvault/issues/18)
   
 - Stage macro conversion to CTE fixes [Issue #17](https://github.com/Datavault-UK/dbtvault/issues/17)
@@ -172,7 +196,7 @@ users wishing to override macro implementations. Documentation will be made avai
 [Read more](../tutorial/tut_eff_satellites.md)   
 [Macro Reference](../macros.md#eff_sat) 
 
-- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../macros.md#vault_insert_by_period)
+- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../materialisations.md#vault_insert_by_period-insert-by-period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
 - dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/dbt-labs/dbt/releases/tag/v0.18.0)
 
@@ -447,3 +471,5 @@ the new and improved features.
 ### Documentation
    
 - Numerous changes for version 0.1 release
+
+--8<-- "includes/abbreviations.md"
