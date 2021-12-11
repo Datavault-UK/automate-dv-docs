@@ -131,24 +131,24 @@ Examples of output for dbt runs using the [eff_sat](macros.md#eff_sat) macro and
 The start and finish date of the load can be configured in a number of different ways. Depending on how the
 materialisation is configured, the start and end of the load will get defined differently, as shown in the table below.
 
-| Configuration                | Outcome                                                                                                                  | Usage                | 
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| `start_date`                 |  The load will start at `start_date`, and the `stop_date` will be set to the **current date**.                           | Manual Load range #1 |
-| `start_date` and `stop_date` |  The load will start at `start_date`, and stop at `stop_date`                                                            | Manual Load range #2 |                  
-| `date_source_models`         |  The models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field` | Inferred Load range  |                 
-| All three config options     |  Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    
+| Configuration                | Outcome                                                                                                                 | Usage                | 
+|------------------------------|-------------------------------------------------------------------------------------------------------------------------|----------------------|
+| `start_date`                 | The load will start at `start_date`, and the `stop_date` will be set to the **current date**.                           | Manual Load range #1 |
+| `start_date` and `stop_date` | The load will start at `start_date`, and stop at `stop_date`                                                            | Manual Load range #2 |                  
+| `date_source_models`         | The models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field` | Inferred Load range  |                 
+| All three config options     | Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    
 
 Please refer to the _Usage_ section above to see examples.
 
 #### Configuration Options
 
-| Configuration      |  Description                                         | Type                 | Default | Required?                                          |
-| ------------------ | ---------------------------------------------------- | -------------------- | ------- | -------------------------------------------------- |
-| timestamp_field    |  A list of column names                              | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }     |
-| period             |  Time period to load over                            | String               | day     | :fontawesome-solid-minus-circle:{ .not-required }  |
-| start_date         |  The date to start the load from                     | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
-| stop_date          |  The date to stop the load on                        | String (YYYY-MM-DD)  | None    | See: Configuring the load date range (above)       |
-| date_source_models |  A list of models containing the timestamp_field     | List[String]/String  | None    | See: Configuring the load date range (above)       |
+| Configuration      | Description                                     | Type                | Default | Required?                                         |
+|--------------------|-------------------------------------------------|---------------------|---------|---------------------------------------------------|
+| timestamp_field    | A list of column names                          | List[String]        | None    | :fontawesome-solid-check-circle:{ .required }     |
+| period             | Time period to load over                        | String              | day     | :fontawesome-solid-minus-circle:{ .not-required } |
+| start_date         | The date to start the load from                 | String (YYYY-MM-DD) | None    | See: Configuring the load date range (above)      |
+| stop_date          | The date to stop the load on                    | String (YYYY-MM-DD) | None    | See: Configuring the load date range (above)      |
+| date_source_models | A list of models containing the timestamp_field | List[String]/String | None    | See: Configuring the load date range (above)      |
 
 #### Period
 
@@ -244,10 +244,10 @@ column.
 
 #### Configuration Options
 
-| Configuration      |  Description                                         | Type                 | Default | Required?                                        |
-| ------------------ | ---------------------------------------------------- | -------------------  | ------- | ------------------------------------------------ |
-| rank_column        |  The column name containing the rank values          | String               | None    | :fontawesome-solid-check-circle:{ .required }   |
-| rank_source_models |  A list of model names containing the `rank_column`  | List[String]         | None    | :fontawesome-solid-check-circle:{ .required }   |
+| Configuration      | Description                                        | Type         | Default | Required?                                     |
+|--------------------|----------------------------------------------------|--------------|---------|-----------------------------------------------|
+| rank_column        | The column name containing the rank values         | String       | None    | :fontawesome-solid-check-circle:{ .required } |
+| rank_source_models | A list of model names containing the `rank_column` | List[String] | None    | :fontawesome-solid-check-circle:{ .required } |
 
 #### Creating a rank column
 
@@ -287,7 +287,7 @@ A rank column can be created one of three ways:
     It is important that once a rank column is created, it should be sense checked for correct and expected ordering. If your ranking is incorrect according to
     the business, then loading will not be executed correctly.
 
-### pit_incremental (Incremental PIT)
+### pit_incremental
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_pit_materialization.sql))
 
@@ -312,7 +312,7 @@ populates the target table, for each run of the PIT model.
                     src_ldts=src_ldts) }}                    
 ```
 
-### bridge_incremental (Incremental Bridge)
+### bridge_incremental
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_bridge_materialization.sql))
 

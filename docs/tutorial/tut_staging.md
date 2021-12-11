@@ -56,10 +56,10 @@ The model provided in the 'Final model' section below, shows the use of the 'sou
 
 ##### Derived columns
 
-| Column Name    | Value                   | 
-| -------------- | ----------------------- | 
-| SOURCE         | !1                      | 
-| LOAD_DATETIME  | CRM_DATA_INGESTION_TIME | 
+| Column Name    | Value                   |
+|----------------|-------------------------|
+| SOURCE         | !1                      |
+| LOAD_DATETIME  | CRM_DATA_INGESTION_TIME |
 | EFFECTIVE_FROM | BOOKING_DATE            |
 | START_DATE     | BOOKING_DATE            |
 | END_DATE       | TO_DATE('9999-31-12')   |
@@ -70,12 +70,12 @@ The model provided in the 'Final model' section below, shows the use of the 'sou
 
 ##### Hashed columns
 
-| Column Name        | Value                                                                                | 
-| ------------------ | ------------------------------------------------------------------------------------ | 
-| CUSTOMER_HK        | CUSTOMER_ID                                                                          | 
-| NATION_HK          | NATION_ID                                                                            |
-| CUSTOMER_NATION_HK | CUSTOMER_ID, NATION_ID                                                               |
-| CUSTOMER_HASHDIFF  | is_hashdiff: true, columns: CUSTOMER_NAME, CUSTOMER_ID, CUSTOMER_PHONE, CUSTOMER_DOB |
+| Column Name        | Value                                                                                   |
+|--------------------|-----------------------------------------------------------------------------------------|
+| CUSTOMER_HK        | CUSTOMER_ID                                                                             |
+| NATION_HK          | NATION_ID                                                                               |
+| CUSTOMER_NATION_HK | CUSTOMER_ID, NATION_ID                                                                  |
+| CUSTOMER_HASHDIFF  | is_hashdiff: true<br/>columns: CUSTOMER_NAME, CUSTOMER_ID, CUSTOMER_PHONE, CUSTOMER_DOB |
 
 ##### Final Model
 
@@ -143,17 +143,19 @@ With our model complete and our YAML written, we can run dbt:
     `dbt run -m v_stg_orders`
 
 === "> dbt v0.21.0"
-    `dbt run --select v_stg_orders`
+    `dbt run -s v_stg_orders`
 
-And our table will look like this:
+The resulting stage view will look like this:
 
-| CUSTOMER_HK  | NATION_HK    | CUSTOMER_NATION_HK  | CUSTOMER_HASHDIFF   | (source table columns) | LOAD_DATETIME            | SOURCE | EFFECTIVE_FROM | START_DATE     | END_DATE   |
-| ------------ | ------------ | ------------------- | ------------------- | ---------------------- | ------------------------ | ------ | -------------- | -------------- | ---------- |
-| B8C37E...    | D89F3A...    | 72A160...           | .                   | .                      | 1993-01-01 00:00:00.000  | 1      | 1993-01-01     | 1993-01-01     | 9998-31-12 |
-| .            | .            | .                   | .                   | .                      | .                        | 1      | .              | .              | .          |
-| .            | .            | .                   | .                   | .                      | .                        | 1      | .              | .              | .          |
-| FED333...    | D78382...    | 1CE6A9...           | .                   | .                      | 1993-01-01 00:00:00.000  | 1      | 1993-01-01     | 1993-01-01     | 9998-31-12 |
+| CUSTOMER_HK | NATION_HK | CUSTOMER_NATION_HK | CUSTOMER_HASHDIFF | (source table columns) | LOAD_DATETIME           | SOURCE | EFFECTIVE_FROM | START_DATE | END_DATE   |
+|-------------|-----------|--------------------|-------------------|------------------------|-------------------------|--------|----------------|------------|------------|
+| B8C37E...   | D89F3A... | 72A160...          | .                 | .                      | 1993-01-01 00:00:00.000 | 1      | 1993-01-01     | 1993-01-01 | 9998-31-12 |
+| .           | .         | .                  | .                 | .                      | .                       | 1      | .              | .          | .          |
+| .           | .         | .                  | .                 | .                      | .                       | 1      | .              | .          | .          |
+| FED333...   | D78382... | 1CE6A9...          | .                 | .                      | 1993-01-01 00:00:00.000 | 1      | 1993-01-01     | 1993-01-01 | 9998-31-12 |
 
 ### Next steps
 
 Now that we have implemented a new staging layer with all the required fields and hashes, we can start loading our vault.
+
+--8<-- "includes/abbreviations.md"

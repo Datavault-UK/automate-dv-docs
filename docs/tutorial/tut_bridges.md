@@ -1,43 +1,44 @@
 Bridge tables are query assistant tables that are part of the Business Vault. Similar to PIT tables, their purpose is
 to improve performance of queries on the Raw Data Vault by reducing the number of required joins for such queries to 
-simple equi-joins. A Bridge table spans across a Hub and one or more associated Links. This means that it is essentially 
-a specialised form of Link table, containing hash keys from the Hub and the Links its spans. It does not contain 
-information from Satellites, however, it may contain computations and aggregations (according to grain) to increase 
-query performance upstream when creating virtualised data marts. Bridge tables provide a timeline for valid sets of 
-Hub and Link relationships for a given set of dates described in an [As of Date table](../macros.md#as-of-date-tables)
+simple equi-joins. A Bridge table spans across a Hub and one or more associated Links. 
 
-A basic Bridge table model for a Hub and two Links:
+This means that it is essentially a specialised form of Link table, containing hash keys from the Hub and the Links its spans. 
+It does not contain information from Satellites, however, it may contain computations and aggregations (according to grain) to increase 
+query performance upstream when creating virtualised data marts. Bridge tables provide a timeline for valid sets of 
+Hub and Link relationships for a given set of dates described in an [As of Date table](../macros.md#as-of-date-tables).
+
+Below, is a diagram showing Effectivity Satellites, Hubs and Links which would be spanned by a Bridge table:
 
 ![alt text](../assets/images/bridge_diagram.png "A basic bridge table model for a Hub and two Links")
 
-#### Structure
+### Structure
 
 Our Bridge structures will contain:
 
-##### Hub Table Name (source_model)
-This is the name of the Hub that contains the primary key (src_pk) and to which the Links are connected to.
+#### Hub Table Name (source_model)
+This is the name of the Hub that contains the primary key (`src_pk`) and to which the Links are connected to.
 
-##### Primary Key (src_pk)
+#### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. This will be the primary 
 key used by the Hub.
 
-##### As of Date Table (as_of_dates_table) 
+#### As of Date Table (as_of_dates_table) 
 The As of Date table describes the history needed to construct the Bridge table as a list of dates. This is where you 
 would supply the name of your As of Date table.
 
-##### Bridge Table Parameters (bridge_walk)
+#### Bridge Table Parameters (bridge_walk)
 This is a dictionary of Bridge table metadata subdivided into dictionaries for each link relationship. The metadata for 
-each link relationship includes Bridge table column aliases (bridge_xxxxx), Link table name and foreign key column names 
-(link_xxxxx), and the related Effectivity Satellite table details (eff_sat_xxxxx).
+each link relationship includes Bridge table column aliases (bridge_x), Link table name and foreign key column names 
+(link_x), and the related Effectivity Satellite table details (eff_sat_x).
 
-##### Stage Load Date Timestamps (stage_tables_ldts)
-List of stage table load date timestamp columns. These are used to find the waterlevel, i.e. the latest date that hasn't 
+#### Stage Load Date Timestamps (stage_tables_ldts)
+List of stage table load date timestamp columns. These are used to find the water-level, i.e. the latest date that hasn't 
 yet been impacted by the stage table.
 
-##### Hub Load Date Timestamp (src_ldts)
-Hub load date timestamp column. This is used to distinguish new key relationships when compared to the waterlevel.
+#### Hub Load Date Timestamp (src_ldts)
+Hub load date timestamp column. This is used to distinguish new key relationships when compared to the water-level.
 
-### Setting up bridge models
+### Creating Bridge models
 
 Create a new dbt model as before. We'll call this one `bridge_customer_order`. 
 
@@ -45,10 +46,10 @@ Create a new dbt model as before. We'll call this one `bridge_customer_order`.
 
     ``` jinja
     {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                            src_ldts=src_ldts,
-                            bridge_walk=bridge_walk,
-                            as_of_dates_table=as_of_dates_table,
-                            stage_tables_ldts=stage_tables_ldts) }}
+                       src_ldts=src_ldts,
+                       bridge_walk=bridge_walk,
+                       as_of_dates_table=as_of_dates_table,
+                       stage_tables_ldts=stage_tables_ldts) }}
     ```
 
 
@@ -63,36 +64,36 @@ Bridge tables should use the `bridge_incremental` materialisation, as the Bridge
 
 Let's look at the metadata we need to provide to the [bridge](../macros.md#bridge) macro.
 
-| Parameter         | Value                                                                    | 
-| ----------------- | ------------------------------------------------------------------------ | 
-| source_model      | HUB_CUSTOMER                                                             | 
+| Parameter         | Value                                                                    |
+|-------------------|--------------------------------------------------------------------------|
+| source_model      | hub_customer                                                             |
 | src_pk            | CUSTOMER_PK                                                              |
 | src_ldts          | LOAD_DATETIME                                                            |
 | as_of_dates_table | AS_OF_DATE                                                               |
 | satellites        | {'CUSTOMER_ORDER':                                                       |
-|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_CUSTOMER_ORDER_PK',                 | 
-|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_CUSTOMER_ORDER_ENDDATE',   | 
-|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_CUSTOMER_ORDER_LOADDATE', | 
-|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_CUSTOMER_ORDER',                   | 
-|                   | &emsp;&emsp;&nbsp;'link_pk': 'CUSTOMER_ORDER_PK',                        | 
-|                   | &emsp;&emsp;&nbsp;'link_fk1': 'CUSTOMER_FK',                             | 
-|                   | &emsp;&emsp;&nbsp;'link_fk2': 'ORDER_FK',                                | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_CUSTOMER_ORDER',             |  
-|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'CUSTOMER_ORDER_PK',                     | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'},                 | 
+|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_CUSTOMER_ORDER_PK',                 |
+|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_CUSTOMER_ORDER_ENDDATE',   |
+|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_CUSTOMER_ORDER_LOADDATE', |
+|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_CUSTOMER_ORDER',                   |
+|                   | &emsp;&emsp;&nbsp;'link_pk': 'CUSTOMER_ORDER_PK',                        |
+|                   | &emsp;&emsp;&nbsp;'link_fk1': 'CUSTOMER_FK',                             |
+|                   | &emsp;&emsp;&nbsp;'link_fk2': 'ORDER_FK',                                |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_CUSTOMER_ORDER',             |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'CUSTOMER_ORDER_PK',                     |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'},                 |
 |                   | &nbsp;'ORDER_PRODUCT':                                                   |
-|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_ORDER_PRODUCT_PK',                  | 
-|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_ORDER_PRODUCT_ENDDATE',    | 
-|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_ORDER_PRODUCT_LOADDATE',  | 
-|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_ORDER_PRODUCT',                    | 
-|                   | &emsp;&emsp;&nbsp;'link_pk': 'ORDER_PRODUCT_PK',                         | 
-|                   | &emsp;&emsp;&nbsp;'link_fk1': 'ORDER_FK',                                | 
-|                   | &emsp;&emsp;&nbsp;'link_fk2': 'PRODUCT_FK',                              | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_ORDER_PRODUCT',              |  
-|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'ORDER_PRODUCT_PK',                      | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        | 
-|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'}}                 | 
+|                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_ORDER_PRODUCT_PK',                  |
+|                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_ORDER_PRODUCT_ENDDATE',    |
+|                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_ORDER_PRODUCT_LOADDATE',  |
+|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_ORDER_PRODUCT',                    |
+|                   | &emsp;&emsp;&nbsp;'link_pk': 'ORDER_PRODUCT_PK',                         |
+|                   | &emsp;&emsp;&nbsp;'link_fk1': 'ORDER_FK',                                |
+|                   | &emsp;&emsp;&nbsp;'link_fk2': 'PRODUCT_FK',                              |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_ORDER_PRODUCT',              |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'ORDER_PRODUCT_PK',                      |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'}}                 |
 | stage_tables_ldts | {'STG_CUSTOMER_ORDER': 'LOAD_DATETIME',                                  |
 |                   | &nbsp;'STG_CUSTOMER_PRODUCT': 'LOAD_DATETIME'}                           |
 
@@ -105,7 +106,7 @@ Here we will define the metadata for the source_model. We will use the `HUB_CUST
 
     ```yaml
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
+    source_model: hub_customer
     ...
     ```
 
@@ -120,11 +121,11 @@ The `CUSTOMER_PK` we created earlier in the [Hub](tut_hubs.md) section will be u
 
 === "bridge_customer_order.sql"
 
-    ```yaml
+    ```yaml hl_lines="3 4"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
     ...
     ```
 
@@ -137,12 +138,12 @@ Here we name our As of Date table `AS_OF_DATE`.
 
 === "bridge_customer_order.sql"
 
-    ```yaml
+    ```yaml hl_lines="5"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: AS_OF_DATE
     ...
     ```
 
@@ -171,37 +172,37 @@ the `bridge_walk` metadata. For instance, it can be seen where the `PRODUCT_COMP
 
 === "bridge_customer_order.sql"
 
-    ```yaml
+    ```yaml hl_lines="6-30"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: AS_OF_DATE
     bridge_walk:
-        CUSTOMER_ORDER:
-            bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-            bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-            bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-            link_table: "LINK_CUSTOMER_ORDER"
-            link_pk: "CUSTOMER_ORDER_PK"
-            link_fk1: "CUSTOMER_FK"
-            link_fk2: "ORDER_FK"
-            eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-            eff_sat_pk: "CUSTOMER_ORDER_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
-        ORDER_PRODUCT:
-            bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-            bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-            bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-            link_table: "LINK_ORDER_PRODUCT"
-            link_pk: "ORDER_PRODUCT_PK"
-            link_fk1: "ORDER_FK"
-            link_fk2: "PRODUCT_FK"
-            eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-            eff_sat_pk: "ORDER_PRODUCT_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
+      CUSTOMER_ORDER:
+        bridge_link_pk: LINK_CUSTOMER_ORDER_PK
+        bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
+        bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
+        link_table: LINK_CUSTOMER_ORDER
+        link_pk: CUSTOMER_ORDER_PK
+        link_fk1: CUSTOMER_FK
+        link_fk2: ORDER_FK
+        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_pk: CUSTOMER_ORDER_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
+      ORDER_PRODUCT:
+        bridge_link_pk: LINK_ORDER_PRODUCT_PK
+        bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
+        bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
+        link_table: LINK_ORDER_PRODUCT
+        link_pk: ORDER_PRODUCT_PK
+        link_fk1: ORDER_FK
+        link_fk2: PRODUCT_FK
+        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_pk: ORDER_PRODUCT_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
     ...
     ```
 
@@ -211,40 +212,40 @@ Finally, we add the Links & Effectivity Satellites stage table names and their L
 
 === "bridge_customer_order.sql"
 
-    ```yaml
+    ```yaml hl_lines="31-33"
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: AS_OF_DATE
     bridge_walk:
-        CUSTOMER_ORDER:
-            bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-            bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-            bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-            link_table: "LINK_CUSTOMER_ORDER"
-            link_pk: "CUSTOMER_ORDER_PK"
-            link_fk1: "CUSTOMER_FK"
-            link_fk2: "ORDER_FK"
-            eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-            eff_sat_pk: "CUSTOMER_ORDER_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
-        ORDER_PRODUCT:
-            bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-            bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-            bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-            link_table: "LINK_ORDER_PRODUCT"
-            link_pk: "ORDER_PRODUCT_PK"
-            link_fk1: "ORDER_FK"
-            link_fk2: "PRODUCT_FK"
-            eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-            eff_sat_pk: "ORDER_PRODUCT_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
+      CUSTOMER_ORDER:
+        bridge_link_pk: LINK_CUSTOMER_ORDER_PK
+        bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
+        bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
+        link_table: LINK_CUSTOMER_ORDER
+        link_pk: CUSTOMER_ORDER_PK
+        link_fk1: CUSTOMER_FK
+        link_fk2: ORDER_FK
+        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_pk: CUSTOMER_ORDER_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
+      ORDER_PRODUCT:
+        bridge_link_pk: LINK_ORDER_PRODUCT_PK
+        bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
+        bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
+        link_table: LINK_ORDER_PRODUCT
+        link_pk: ORDER_PRODUCT_PK
+        link_fk1: ORDER_FK
+        link_fk2: PRODUCT_FK
+        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_pk: ORDER_PRODUCT_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
     stage_tables_ldts:
-        STG_CUSTOMER_ORDER: "LOAD_DATETIME"
-        STG_ORDER_PRODUCT: "LOAD_DATETIME"
+        STG_CUSTOMER_ORDER: LOAD_DATETIME
+        STG_ORDER_PRODUCT: LOAD_DATETIME
     {%- endset -%} 
     ```
 
@@ -253,62 +254,57 @@ In the end, our model should look like the following:
 === "bridge_customer_order.sql"
 
     ```yaml
-    {{ config(materialized='bridge_incremental') }}
+    {{ config(materialized="bridge_incremental") }}
 
     {%- set yaml_metadata -%}
-    source_model: "HUB_CUSTOMER"
-    src_pk: "CUSTOMER_PK"
-    src_ldts: "LOAD_DATETIME"
-    as_of_dates_table: "AS_OF_DATE"
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: AS_OF_DATE
     bridge_walk:
-        CUSTOMER_ORDER:
-            bridge_link_pk: "LINK_CUSTOMER_ORDER_PK"
-            bridge_end_date: "EFF_SAT_CUSTOMER_ORDER_ENDDATE"
-            bridge_load_date: "EFF_SAT_CUSTOMER_ORDER_LOADDATE"
-            link_table: "LINK_CUSTOMER_ORDER"
-            link_pk: "CUSTOMER_ORDER_PK"
-            link_fk1: "CUSTOMER_FK"
-            link_fk2: "ORDER_FK"
-            eff_sat_table: "EFF_SAT_CUSTOMER_ORDER"
-            eff_sat_pk: "CUSTOMER_ORDER_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
-        ORDER_PRODUCT:
-            bridge_link_pk: "LINK_ORDER_PRODUCT_PK"
-            bridge_end_date: "EFF_SAT_ORDER_PRODUCT_ENDDATE"
-            bridge_load_date: "EFF_SAT_ORDER_PRODUCT_LOADDATE"
-            link_table: "LINK_ORDER_PRODUCT"
-            link_pk: "ORDER_PRODUCT_PK"
-            link_fk1: "ORDER_FK"
-            link_fk2: "PRODUCT_FK"
-            eff_sat_table: "EFF_SAT_ORDER_PRODUCT"
-            eff_sat_pk: "ORDER_PRODUCT_PK"
-            eff_sat_end_date: "END_DATE"
-            eff_sat_load_date: "LOAD_DATETIME"
+      CUSTOMER_ORDER:
+        bridge_link_pk: LINK_CUSTOMER_ORDER_PK
+        bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
+        bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
+        link_table: LINK_CUSTOMER_ORDER
+        link_pk: CUSTOMER_ORDER_PK
+        link_fk1: CUSTOMER_FK
+        link_fk2: ORDER_FK
+        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_pk: CUSTOMER_ORDER_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
+      ORDER_PRODUCT:
+        bridge_link_pk: LINK_ORDER_PRODUCT_PK
+        bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
+        bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
+        link_table: LINK_ORDER_PRODUCT
+        link_pk: ORDER_PRODUCT_PK
+        link_fk1: ORDER_FK
+        link_fk2: PRODUCT_FK
+        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_pk: ORDER_PRODUCT_PK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
     stage_tables_ldts:
-        STG_CUSTOMER_ORDER: "LOAD_DATETIME"
-        STG_ORDER_PRODUCT: "LOAD_DATETIME"
+      STG_CUSTOMER_ORDER: LOAD_DATETIME
+      STG_ORDER_PRODUCT: LOAD_DATETIME
     {%- endset -%}
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}
-    
-    {% set source_model = metadata_dict['source_model'] %}
-    
-    {% set src_pk = metadata_dict['src_pk'] %}
-    
-    {% set src_ldts = metadata_dict['src_ldts'] %}
-    
-    {% set as_of_dates_table = metadata_dict['as_of_dates_table'] %}
 
-    {% set bridge_walk = metadata_dict['bridge_walk'] %}
-
-    {% set stage_tables_ldts = metadata_dict['stage_tables_ldts'] %}
+    {% set source_model = metadata_dict["source_model"] %}
+    {% set src_pk = metadata_dict["src_pk"] %}
+    {% set src_ldts = metadata_dict["src_ldts"] %}
+    {% set as_of_dates_table = metadata_dict["as_of_dates_table"] %}
+    {% set bridge_walk = metadata_dict["bridge_walk"] %}
+    {% set stage_tables_ldts = metadata_dict["stage_tables_ldts"] %}
 
     {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                            src_ldts=src_ldts,
-                            bridge_walk=bridge_walk,
-                            as_of_dates_table=as_of_dates_table,
-                            stage_tables_ldts=stage_tables_ldts) }}
+                       src_ldts=src_ldts,
+                       bridge_walk=bridge_walk,
+                       as_of_dates_table=as_of_dates_table,
+                       stage_tables_ldts=stage_tables_ldts) }}
     ```
 
 ### Running dbt
@@ -319,13 +315,15 @@ In order to finalise the creation of the `bridge_customer_order` table we use th
     `dbt run -m +bridge_customer_order`
 
 === "> dbt v0.21.0"
-    `dbt run --select +bridge_customer_order`
+    `dbt run -s +bridge_customer_order`
 
 The resulting Bridge table should look like this:
 
- | CUSTOMER_PK | AS_OF_DATE              | LINK_CUSTOMER_ORDER_PK | LINK_ORDER_PRODUCT_PK |
- | ----------- | ----------------------- | ---------------------- | --------------------- |
- | ED5984...   | 2018-06-01 00:00:00.000 | A77BA1...              | 8A2CQA...             |
- | .           | .                       | .                      | .                     |
- | .           | .                       | .                      | .                     |
- | M67Y0U...   | 2018-06-01 12:00:00.000 | 1FA79C...              | BH5674...             |
+| CUSTOMER_PK | AS_OF_DATE              | LINK_CUSTOMER_ORDER_PK | LINK_ORDER_PRODUCT_PK |
+|-------------|-------------------------|------------------------|-----------------------|
+| ED5984...   | 2018-06-01 00:00:00.000 | A77BA1...              | 8A2CQA...             |
+| .           | .                       | .                      | .                     |
+| .           | .                       | .                      | .                     |
+| M67Y0U...   | 2018-06-01 12:00:00.000 | 1FA79C...              | BH5674...             |
+
+--8<-- "includes/abbreviations.md"

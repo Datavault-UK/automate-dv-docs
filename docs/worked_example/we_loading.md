@@ -23,7 +23,7 @@ To compile and load the provided Hub models, run the following command:
     `dbt run -m tag:hub`
 
 === "> dbt v0.21.0"
-    `dbt run --select tag:hub`
+    `dbt run -s tag:hub`
 
 This will run all models with the `hub` tag.
 
@@ -51,7 +51,7 @@ To compile and load the provided Link models, run the following command:
     `dbt run -m tag:link`
 
 === "> dbt v0.21.0"
-    `dbt run --select tag:link`
+    `dbt run -s tag:link`
 
 This will run all models with the `link` tag.
 
@@ -96,7 +96,7 @@ To compile and load the provided Satellite models, run the following command:
     `dbt run -m tag:satellite`
 
 === "> dbt v0.21.0"
-    `dbt run --select tag:satellite`
+    `dbt run -s tag:satellite`
 
 This will run all models with the `satellite` tag.
 
@@ -126,7 +126,7 @@ To compile and load the provided Transactional Link models, run the following co
     `dbt run -m tag:t_link`
 
 === "> dbt v0.21.0"
-    `dbt run --select tag:t_link`
+    `dbt run -s tag:t_link`
 
 This will run all models with the `t_link` tag.
 

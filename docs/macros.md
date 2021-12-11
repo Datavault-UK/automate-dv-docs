@@ -68,9 +68,6 @@ which allow you to configure different aspects of dbtvault. These variables will
       concat_string: '||'
       null_placeholder_string: '^^'
     ```
-=== "hash"
-
-    TODO hash
 
 Configure the type of hashing.
 
@@ -85,19 +82,17 @@ This can be one of:
 
 Configure the value for the maximum datetime. 
 
-This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances. 
-
-This is currently only used in Effectivity Satellites, but will also be used in future (unreleased) structures (e.g. PITs and Bridges)
+This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances.
 
 #### concat_string
 
-Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '||'
+Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '`||'`
 
 [Read more](./best_practices.md#multi-column-hashing)
 
 #### null_placeholder_string
 
-Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret characters: '^^'
+Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret characters: '`^^`'
 
 [Read more](./best_practices.md#null-handling)
 
@@ -106,12 +101,11 @@ Configure the string value to use for replacing `NULL` values when hashing. By d
 ###### (macros/tables)
 
 These macros are the core of the package and can be called in your models to build the different types of tables needed
-for your Data Vault.
+for your Data Vault 2.0 Data Warehouse.
 
 ### hub
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/hub.sql))
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -125,13 +119,13 @@ Generates SQL to build a Hub table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                      |
-| ------------- | --------------------------------------------------- | -------------------- | ---------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
-| src_nk        | Source natural key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
-| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
-| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| Parameter    | Description                                 | Type                | Required?                                     |
+|--------------|---------------------------------------------|---------------------|-----------------------------------------------|
+| src_pk       | Source primary key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| src_nk       | Source natural key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts     | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_source   | Name of the column containing the source ID | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| source_model | Staging model name                          | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_hubs.md) for more details
@@ -447,7 +441,6 @@ ___
 ### link
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/link.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/link.sql))
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -460,13 +453,13 @@ Generates SQL to build a Link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                 | Required?                                      |
-| ------------- | --------------------------------------------------- | ---------------------| ---------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
-| src_fk        | Source foreign key column(s)                        | List[String]         | :fontawesome-solid-check-circle:{ .required } |
-| src_ldts      | Source load date timestamp column                   | String               | :fontawesome-solid-check-circle:{ .required } |
-| src_source    | Name of the column containing the source ID         | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
-| source_model  | Staging model name                                  | List[String]/String  | :fontawesome-solid-check-circle:{ .required } |
+| Parameter    | Description                                 | Type                | Required?                                     |
+|--------------|---------------------------------------------|---------------------|-----------------------------------------------|
+| src_pk       | Source primary key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| src_fk       | Source foreign key column(s)                | List[String]        | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts     | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_source   | Name of the column containing the source ID | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| source_model | Staging model name                          | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_links.md) for more details
@@ -788,7 +781,6 @@ ___
 ### t_link
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/t_link.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/t_link.sql))
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -802,15 +794,15 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type                | Required?                                         |
-| ------------- | --------------------------------------------------- | ------------------- | ------------------------------------------------- |
-| src_pk        | Source primary key column                           | List[String]/String | :fontawesome-solid-check-circle:{ .required }    |
-| src_fk        | Source foreign key column(s)                        | List[String]        | :fontawesome-solid-check-circle:{ .required }    |
-| src_payload   | Source payload column(s)                            | List[String]        | :fontawesome-solid-minus-circle:{ .not-required } |
-| src_eff       | Source effective from column                        | String              | :fontawesome-solid-check-circle:{ .required }    |
-| src_ldts      | Source load date timestamp column                   | String              | :fontawesome-solid-check-circle:{ .required }    |
-| src_source    | Name of the column containing the source ID         | String              | :fontawesome-solid-check-circle:{ .required }    |
-| source_model  | Staging model name                                  | String              | :fontawesome-solid-check-circle:{ .required }    |
+| Parameter    | Description                                 | Type                | Required?                                         |
+|--------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk       | Source primary key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
+| src_fk       | Source foreign key column(s)                | List[String]        | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload  | Source payload column(s)                    | List[String]        | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_eff      | Source effective from column                | String              | :fontawesome-solid-check-circle:{ .required }     |
+| src_ldts     | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required }     |
+| src_source   | Name of the column containing the source ID | String              | :fontawesome-solid-check-circle:{ .required }     |
+| source_model | Staging model name                          | String              | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_t_links.md) for more details
@@ -899,7 +891,6 @@ ___
 ### sat
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/sat.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/sat.sql))
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -913,15 +904,15 @@ Generates SQL to build a Satellite table using the provided parameters.
 
 #### Parameters
 
-| Parameter     | Description                                         | Type             | Required?                                          |
-| ------------- | --------------------------------------------------- | ---------------- | -------------------------------------------------- |
-| src_pk        | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
-| src_hashdiff  | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
-| src_payload   | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
-| src_eff       | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required }  |
-| src_ldts      | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
-| src_source    | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
-| source_model  | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
+| Parameter    | Description                                 | Type         | Required?                                         |
+|--------------|---------------------------------------------|--------------|---------------------------------------------------|
+| src_pk       | Source primary key column                   | String       | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff | Source hashdiff column                      | String       | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload  | Source payload column(s)                    | List[String] | :fontawesome-solid-check-circle:{ .required }     |
+| src_eff      | Source effective from column                | String       | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_ldts     | Source load date timestamp column           | String       | :fontawesome-solid-check-circle:{ .required }     |
+| src_source   | Name of the column containing the source ID | String       | :fontawesome-solid-check-circle:{ .required }     |
+| source_model | Staging model name                          | String       | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_satellites.md) for more details
@@ -965,26 +956,20 @@ Generates SQL to build a Satellite table using the provided parameters.
             FROM (
                 SELECT current_records.CUSTOMER_HK, current_records.HASHDIFF, current_records.LOAD_DATE,
                 RANK() OVER (
-                   PARTITION BY current_records.CUSTOMER_HK
-                   ORDER BY current_records.LOAD_DATE DESC
-                   ) AS rank
-                FROM DBTVAULT.TEST.MY_STAGE AS current_records
-                INNER JOIN (
-                    SELECT DISTINCT source_data.CUSTOMER_HK
-                    FROM source_data
-                ) AS source_records
-                ON current_records.CUSTOMER_HK = source_records.CUSTOMER_HK
-                ) AS c
-            WHERE c.rank = 1
+                    PARTITION BY c.CUSTOMER_HK
+                    ORDER BY c.LOAD_DATE DESC
+                ) AS rank
+            FROM update_records as c
+            QUALIFY rank = 1
         ),
         
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
+                LEFT JOIN latest_records
+                    ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
+                        WHERE latest_records.HASHDIFF != e.HASHDIFF
+                            OR latest_records.HASHDIFF IS NULL
         )
         
         SELECT * FROM records_to_insert
@@ -1058,7 +1043,6 @@ ___
 ### eff_sat
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/eff_sat.sql))
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -1073,17 +1057,17 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 
 #### Parameters
 
-| Parameter      | Description                                         | Type                    | Required?                                      |
-| -------------- | --------------------------------------------------- | ----------------------- | ---------------------------------------------- |
-| src_pk         | Source primary key column                           | String                  | :fontawesome-solid-check-circle:{ .required } |
-| src_dfk        | Source driving foreign key column                   | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
-| src_sfk        | Source secondary foreign key column                 | List[String]/String     | :fontawesome-solid-check-circle:{ .required } |
-| src_start_date | Source start date column                            | String                  | :fontawesome-solid-check-circle:{ .required } |
-| src_end_date   | Source end date column                              | String                  | :fontawesome-solid-check-circle:{ .required } |
-| src_eff        | Source effective from column                        | String                  | :fontawesome-solid-check-circle:{ .required } |
-| src_ldts       | Source load date timestamp column                   | String                  | :fontawesome-solid-check-circle:{ .required } |
-| src_source     | Name of the column containing the source ID         | String                  | :fontawesome-solid-check-circle:{ .required } |
-| source_model   | Staging model name                                  | String                  | :fontawesome-solid-check-circle:{ .required } |
+| Parameter      | Description                                 | Type                | Required?                                     |
+|----------------|---------------------------------------------|---------------------|-----------------------------------------------|
+| src_pk         | Source primary key column                   | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_dfk        | Source driving foreign key column           | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| src_sfk        | Source secondary foreign key column         | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| src_start_date | Source start date column                    | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_end_date   | Source end date column                      | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_eff        | Source effective from column                | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts       | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_source     | Name of the column containing the source ID | String              | :fontawesome-solid-check-circle:{ .required } |
+| source_model   | Staging model name                          | String              | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
@@ -1100,15 +1084,15 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 
         ```sql
         WITH source_data AS (
-                SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-                FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-                WHERE a.ORDER_HK IS NOT NULL
-                AND a.CUSTOMER_HK IS NOT NULL
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
         ),
         
         records_to_insert AS (
-                SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-                FROM source_data AS i
+            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+            FROM source_data AS i
         )
         
         SELECT * FROM records_to_insert
@@ -1126,10 +1110,10 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         
         latest_records AS (
             SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                   ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                   ) AS row_num
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             QUALIFY row_num = 1
         ),
@@ -1168,7 +1152,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             INNER JOIN latest_closed lc
             ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
             WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-),
+        ),
         
         new_closed_records AS (
             SELECT DISTINCT
@@ -1208,10 +1192,10 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         
         latest_records AS (
             SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                   ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                   ) AS row_num
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
             FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             QUALIFY row_num = 1
         ),
@@ -1317,7 +1301,6 @@ ___
 ### ma_sat
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/ma_sat.sql))
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -1331,16 +1314,16 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 #### Parameters
 
-| Parameter      | Description                                         | Type             | Required?                                         |
-| -------------- | --------------------------------------------------- | ---------------- | ------------------------------------------------- |
-| src_pk         | Source primary key column                           | String           | :fontawesome-solid-check-circle:{ .required }     |
-| src_cdk        | Source child dependent key(s) column(s)             | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
-| src_hashdiff   | Source hashdiff column                              | String           | :fontawesome-solid-check-circle:{ .required }     |
-| src_payload    | Source payload column(s)                            | List[String]     | :fontawesome-solid-check-circle:{ .required }     |
-| src_eff        | Source effective from column                        | String           | :fontawesome-solid-minus-circle:{ .not-required } |
-| src_ldts       | Source load date timestamp column                   | String           | :fontawesome-solid-check-circle:{ .required }     |
-| src_source     | Name of the column containing the source ID         | String           | :fontawesome-solid-check-circle:{ .required }     |
-| source_model   | Staging model name                                  | String           | :fontawesome-solid-check-circle:{ .required }     |
+| Parameter    | Description                                 | Type         | Required?                                         |
+|--------------|---------------------------------------------|--------------|---------------------------------------------------|
+| src_pk       | Source primary key column                   | String       | :fontawesome-solid-check-circle:{ .required }     |
+| src_cdk      | Source child dependent key(s) column(s)     | List[String] | :fontawesome-solid-check-circle:{ .required }     |
+| src_hashdiff | Source hashdiff column                      | String       | :fontawesome-solid-check-circle:{ .required }     |
+| src_payload  | Source payload column(s)                    | List[String] | :fontawesome-solid-check-circle:{ .required }     |
+| src_eff      | Source effective from column                | String       | :fontawesome-solid-minus-circle:{ .not-required } |
+| src_ldts     | Source load date timestamp column           | String       | :fontawesome-solid-check-circle:{ .required }     |
+| src_source   | Name of the column containing the source ID | String       | :fontawesome-solid-check-circle:{ .required }     |
+| source_model | Staging model name                          | String       | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
     [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
@@ -1389,20 +1372,21 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
                 ,mas.CUSTOMER_PHONE
                 ,mas.LOAD_DATE
                 ,mas.latest_rank
-                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
-                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
-            FROM
-            (
-            SELECT inner_mas.CUSTOMER_PK
-                ,inner_mas.HASHDIFF
-                ,inner_mas.CUSTOMER_PHONE
-                ,inner_mas.LOAD_DATE
-                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
-                    ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
-            FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
-            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
-                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
-            QUALIFY latest_rank = 1
+                ,DENSE_RANK() OVER (
+                    PARTITION BY mas.CUSTOMER_PK
+                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC
+                ) AS check_rank
+            FROM (
+                SELECT inner_mas.CUSTOMER_PK
+                    ,inner_mas.HASHDIFF
+                    ,inner_mas.CUSTOMER_PHONE
+                    ,inner_mas.LOAD_DATE
+                    ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
+                        ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
+                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
+                INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
+                    ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
+                QUALIFY latest_rank = 1
             ) AS mas
         ),
         
@@ -1453,10 +1437,9 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ### xts
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/xts.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/xts.sql))
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
-
 
 #### Usage
 
@@ -1467,16 +1450,16 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 #### Parameters
 
-| Parameter      | Description                                                    | Type             | Required?                                    |
-| -------------- | -------------------------------------------------------------- | ---------------- | -------------------------------------------- |
-| src_pk         | Source primary key column                                      | String/List      | <i class="fas fa-check-circle required"></i> |
-| src_satellite  | Dictionary of source satellite name column and hashdiff column | Dictionary       | <i class="fas fa-check-circle required"></i> |
-| src_ldts       | Source load date/timestamp column                              | String           | <i class="fas fa-check-circle required"></i> |
-| src_source     | Name of the column containing the source ID                    | String/List      | <i class="fas fa-check-circle required"></i> |
-| source_model   | Staging model name                                             | String/List      | <i class="fas fa-check-circle required"></i> |
+| Parameter     | Description                                                    | Type        | Required?                                    |
+|---------------|----------------------------------------------------------------|-------------|----------------------------------------------|
+| src_pk        | Source primary key column                                      | String/List | <i class="fas fa-check-circle required"></i> |
+| src_satellite | Dictionary of source satellite name column and hashdiff column | Dictionary  | <i class="fas fa-check-circle required"></i> |
+| src_ldts      | Source load date/timestamp column                              | String      | <i class="fas fa-check-circle required"></i> |
+| src_source    | Name of the column containing the source ID                    | String/List | <i class="fas fa-check-circle required"></i> |
+| source_model  | Staging model name                                             | String/List | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-[Read the tutorial](tutorial/tut_xts.md) for more details
+    [Read the tutorial](tutorial/tut_xts.md) for more details
 
 #### Example Metadata
 
@@ -1604,265 +1587,9 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         SELECT * FROM records_to_insert
         ```
 
-[comment]: <> (&#40;[view source]&#40;https://github.com/Datavault-UK/dbtvault/blob/v0.7.5/macros/tables/pit.sql&#41;&#41;)
-
-Generates SQL to build a point-in-time table (PIT).
-
-#### Usage
-
-``` jinja
-{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                as_of_dates_table=as_of_dates_table,
-                satellites=satellites,
-                stage_tables=stage_tables,
-                src_ldts=src_ldts) }}
-```
-
-#### Parameters
-
-| Parameter          | Description                                         | Type             | Required?                                    |
-| ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-|  src_pk            | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
-|  as_of_dates_table | Name for the AS OF DATE table                       |  String          | <i class="fas fa-check-circle required"></i> |
-|  satellites        | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  stage_tables      | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  src_ldts          | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
-|  source_model      | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
-
-!!! tip
-    [Read the tutorial](tutorial/tut_point_in_time.md) for more details
-
-#### Example Metadata
-
-[See examples](metadata.md#point-in-time-tables-pits)
-
-#### Example Output
-
-=== "Snowflake"
-
-    === "Base Load"
-
-        ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE AS a
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN as_of_dates AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-        )
-        
-        SELECT DISTINCT * FROM pit
-        ```
-
-    === "Incremental Load"
-
-        ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE
-        ),
-        
-        last_safe_load_datetime AS (
-            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME 
-            FROM (
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-            ) a
-        ),
-        
-        as_of_grain_old_entries AS (
-            SELECT DISTINCT AS_OF_DATE 
-            FROM DBTVAULT.TEST.PIT_CUSTOMER
-        ),
-        
-        as_of_grain_lost_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_grain_old_entries AS a
-            LEFT OUTER JOIN as_of_dates AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        as_of_grain_new_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_dates AS a
-            LEFT OUTER JOIN as_of_grain_old_entries AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        min_date AS (
-            SELECT min(AS_OF_DATE) AS MIN_DATE
-            FROM as_of_dates
-        ),
-        
-        backfill_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_pks AS (
-            SELECT a.CUSTOMER_PK
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-            UNION
-            SELECT AS_OF_DATE
-            FROM as_of_grain_new_entries
-        ),
-        
-        overlap AS (
-            SELECT a.*
-            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
-            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
-                ON a.CUSTOMER_PK = b.CUSTOMER_PK
-            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        -- Back-fill any newly arrived hubs, set all historical pit dates to ghost records
-        
-        backfill_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM new_rows_pks AS a
-            INNER JOIN backfill_as_of AS b
-                ON (1=1 )
-        ),
-        
-        backfill AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_DETAILS_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_LOGIN_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,        
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM backfill_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN new_rows_as_of AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-            UNION ALL
-            SELECT * FROM overlap
-            UNION ALL
-            SELECT * FROM backfill
-        )
-        
-        SELECT DISTINCT * FROM pit
-        ```
-
-#### As Of Date Table Structures
-
-An As of Date table contains a single column of dates used to construct the history in the PIT. A typical structure will 
-be a  date range where the date interval will be short such as every day or even every hour, followed by a period of 
-time after which the date intervals are slightly larger. An example history could be end of day values for 3 months followed by another
-3 months of end of week values. So the as of dates table would contain a datetime for each entry to match this. 
-As the days pass however the as of dates table should change to reflect this with dates being removed off the end and new dates added. 
-Using the example history before if a week had passed since when we had created the as of dates table
-it would still contain 3 months worth of end of day values followed by 3 months of end of week values  just shifted a week forward to reflect the current date.
-
-!!! Warning 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. Another caveat is that even though the As of Date table can take any name, as long as it 
-    is called correctly in the .yml, the column name must be called AS_OF_DATE.
-
-___
-
 ### pit
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/pit.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/pit.sql))
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -1876,14 +1603,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
 
 #### Parameters
 
-| Parameter          | Description                                         | Type             | Required?                                    |
-| ------------------ | --------------------------------------------------- | ---------------- | -------------------------------------------- |
-|  src_pk            | Source primary key column                           |  String          | <i class="fas fa-check-circle required"></i> |
-|  as_of_dates_table | Name for the As of Date table                       |  String          | <i class="fas fa-check-circle required"></i> |
-|  satellites        | Dictionary of satellite reference mappings          |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  stage_tables      | Dictionary of stage table reference mappings        |  Mapping         | <i class="fas fa-check-circle required"></i> |
-|  src_ldts          | Source load date timestamp column                   |  String          | <i class="fas fa-check-circle required"></i> |
-|  source_model      | Hub model name                                      |  String          | <i class="fas fa-check-circle required"></i> |
+| Parameter         | Description                                  | Type    | Required?                                    |
+|-------------------|----------------------------------------------|---------|----------------------------------------------|
+| src_pk            | Source primary key column                    | String  | <i class="fas fa-check-circle required"></i> |
+| as_of_dates_table | Name for the As of Date table                | String  | <i class="fas fa-check-circle required"></i> |
+| satellites        | Dictionary of satellite reference mappings   | Mapping | <i class="fas fa-check-circle required"></i> |
+| stage_tables      | Dictionary of stage table reference mappings | Mapping | <i class="fas fa-check-circle required"></i> |
+| src_ldts          | Source load date timestamp column            | String  | <i class="fas fa-check-circle required"></i> |
+| source_model      | Hub model name                               | String  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
     [Read the tutorial](tutorial/tut_point_in_time.md) for more details
@@ -2116,7 +1843,7 @@ to reflect the current date.
 
 Think of As of Date tables as essentially a rolling window of time. 
 
-!!! Warning 
+!!! Note 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
 
@@ -2128,7 +1855,7 @@ ___
 
 ### bridge
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/v0.7.9/macros/tables/bridge.sql)))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/bridge.sql))
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or 
 more associated Links (and their Effectivity Satellites), using the provided parameters.
@@ -2147,17 +1874,17 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 
 #### Parameters
 
-| Parameter          | Description                                                                 | Type             | Required?                                    |
-| ------------------ | --------------------------------------------------------------------------  | ---------------- | -------------------------------------------- |
-| source_model       | Starting Hub model name                                                     | String           | <i class="fas fa-check-circle required"></i> |
-| src_pk             | Starting Hub primary key column                                             | String           | <i class="fas fa-check-circle required"></i> |
-| src_ldts           | Starting Hub load date timestamp                                            | String           | <i class="fas fa-check-circle required"></i> |
-| bridge_walk        | Dictionary of bridge reference mappings                                     | Mapping          | <i class="fas fa-check-circle required"></i> |
-| as_of_dates_table  | Name for the As of Date table                                               | String           | <i class="fas fa-check-circle required"></i> |
-| stage_tables_ldts  | Dictionary of stage table reference mappings and their load date timestamps | Mapping          | <i class="fas fa-check-circle required"></i> |
+| Parameter         | Description                                                                 | Type    | Required?                                    |
+|-------------------|-----------------------------------------------------------------------------|---------|----------------------------------------------|
+| source_model      | Starting Hub model name                                                     | String  | <i class="fas fa-check-circle required"></i> |
+| src_pk            | Starting Hub primary key column                                             | String  | <i class="fas fa-check-circle required"></i> |
+| src_ldts          | Starting Hub load date timestamp                                            | String  | <i class="fas fa-check-circle required"></i> |
+| bridge_walk       | Dictionary of bridge reference mappings                                     | Mapping | <i class="fas fa-check-circle required"></i> |
+| as_of_dates_table | Name for the As of Date table                                               | String  | <i class="fas fa-check-circle required"></i> |
+| stage_tables_ldts | Dictionary of stage table reference mappings and their load date timestamps | Mapping | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-[Read the tutorial](tutorial/tut_bridges.md) for more details
+    [Read the tutorial](tutorial/tut_bridges.md) for more details
 
 #### Example Metadata
 
@@ -2364,7 +2091,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 
 An As of Date table contains a single column of dates used to construct the history in the Bridge table.
 
-!!! Warning
+!!! Note
 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
@@ -2784,13 +2511,13 @@ Generates SQL to build a staging area using the provided parameters.
 
 #### Parameters
 
-| Parameter              | Description                                                                 | Type           | Default    | Required?                                         |
-| ---------------------- | --------------------------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------- |
-| include_source_columns | If true, select all columns in the `source_model`                           | Boolean        | true       | :fontawesome-solid-minus-circle:{ .not-required } |
-| source_model           | Staging model name                                                          | Mapping        | N/A        | :fontawesome-solid-check-circle:{ .required }    |
-| derived_columns        | Mappings of column names and their value                                    | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
-| hashed_columns         | Mappings of hashes to their component columns                               | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
-| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping        | none       | :fontawesome-solid-minus-circle:{ .not-required } |
+| Parameter              | Description                                                                 | Type    | Default | Required?                                         |
+|------------------------|-----------------------------------------------------------------------------|---------|---------|---------------------------------------------------|
+| include_source_columns | If true, select all columns in the `source_model`                           | Boolean | true    | :fontawesome-solid-minus-circle:{ .not-required } |
+| source_model           | Staging model name                                                          | Mapping | N/A     | :fontawesome-solid-check-circle:{ .required }     |
+| derived_columns        | Mappings of column names and their value                                    | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
+| hashed_columns         | Mappings of hashes to their component columns                               | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
+| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
 
 [See examples](metadata.md#staging)
 
@@ -2809,19 +2536,19 @@ For example:
 === "Snowflake"
 
 ```yaml hl_lines="3 12"
-source_model: "MY_STAGE"
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
   SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  EFFECTIVE_FROM: BOOKING_DATE
 hashed_columns:
-  CUSTOMER_HK: "CUSTOMER_ID"
+  CUSTOMER_HK: CUSTOMER_ID
   HASHDIFF:
     is_hashdiff: true 
     columns:
-      - "CUSTOMER_NAME"
-      - "CUSTOMER_DOB_UK"
-      - "CUSTOMER_PHONE"
+      - CUSTOMER_NAME
+      - CUSTOMER_DOB_UK
+      - CUSTOMER_PHONE
 ```
 
 Here, we create a new derived column called `CUSTOMER_DOB_UK` which formats the `CUSTOMER_DOB` column
@@ -2962,11 +2689,11 @@ listed under the `columns` key, instead of using them to create the hashdiff.
 === "Snowflake"
 
 ```yaml hl_lines="3"
-source_model: "MY_STAGE"
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
   SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  EFFECTIVE_FROM: BOOKING_DATE
 ```
 
 In the above example we can see the use of a function to convert the date format of the `CUSTOMER_DOB` to create a new
@@ -2985,11 +2712,11 @@ SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
 #### Constants (Derived Columns)
 
 ```yaml hl_lines="4"
-source_model: "MY_STAGE"
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
   RECORD_SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  EFFECTIVE_FROM: BOOKING_DATE
 ```
 
 In the above example we define a constant value for our new `SOURCE` column. We do this by prefixing our string with an
@@ -3008,24 +2735,24 @@ SELECT
 
 And the data would look like:
 
-| CUSTOMER_DOB_UK  | RECORD_SOURCE  | EFFECTIVE_FROM  |
-| ---------------- | -------------- | --------------- |
-| 09-06-1994       | RAW_CUSTOMER   | 01-01-2021      |
-| .                | RAW_CUSTOMER   | .               |
-| .                | RAW_CUSTOMER   | .               |
-| 02-01-1986       | RAW_CUSTOMER   | 07-03-2021      |
+| CUSTOMER_DOB_UK | RECORD_SOURCE | EFFECTIVE_FROM |
+|-----------------|---------------|----------------|
+| 09-06-1994      | RAW_CUSTOMER  | 01-01-2021     |
+| .               | RAW_CUSTOMER  | .              |
+| .               | RAW_CUSTOMER  | .              |
+| 02-01-1986      | RAW_CUSTOMER  | 07-03-2021     |
 
 #### Composite columns (Derived Columns)
 
-```yaml hl_lines="3 4 5 6"
-source_model: "MY_STAGE"
+```yaml hl_lines=3 4 5 6
+source_model: MY_STAGE
 derived_columns:
   CUSTOMER_NK:
-    - "CUSTOMER_ID"
-    - "CUSTOMER_NAME"
+    - CUSTOMER_ID
+    - CUSTOMER_NAME
     - "!DEV"
-  SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: "BOOKING_DATE"
+  SOURCE: !RAW_CUSTOMER
+  EFFECTIVE_FROM: BOOKING_DATE
 ```
 
 You can create new columns, given a list of columns to extract values from, using derived columns.
@@ -3054,14 +2781,14 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Single item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: 'CUSTOMER_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: CUSTOMER_HK
+        order_by: LOAD_DATETIME
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -3074,18 +2801,18 @@ configuration allows you to define ranked columns to generate, as follows:
 ===! "Multi-item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_HK'
-            - 'CUSTOMER_REF'
+            - CUSTOMER_HK
+            - CUSTOMER_REF
         order_by: 
-            - 'RECORD_SOURCE'
-            - 'LOAD_DATETIME'
+            - RECORD_SOURCE
+            - LOAD_DATETIME
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -3100,19 +2827,19 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Dense Rank configuration"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_HK'
-            - 'CUSTOMER_REF'
+            - CUSTOMER_HK
+            - CUSTOMER_REF
         order_by: 
-            - 'RECORD_SOURCE'
-            - 'LOAD_DATETIME'
+            - RECORD_SOURCE
+            - LOAD_DATETIME
         dense_rank: true
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -3127,15 +2854,15 @@ configuration allows you to define ranked columns to generate, as follows:
 === "Single item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: 'CUSTOMER_HK'
+        partition_by: CUSTOMER_HK
         order_by:
            LOAD_DATETIME: DESC
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -3148,18 +2875,18 @@ configuration allows you to define ranked columns to generate, as follows:
 ===! "Multi-item parameters"
 
     ```yaml
-    source_model: 'MY_STAGE'
+    source_model: MY_STAGE
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: 
-            - 'CUSTOMER_HK'
-            - 'CUSTOMER_REF'
+          - CUSTOMER_HK
+          - CUSTOMER_REF
         order_by: 
-            - 'RECORD_SOURCE': 'DESC'
-            - 'LOAD_DATETIME': 'ASC'
+          - RECORD_SOURCE: DESC
+          - LOAD_DATETIME: ASC
       SAT_BOOKING_RANK:
-        partition_by: 'BOOKING_HK'
-        order_by: 'LOAD_DATETIME'
+        partition_by: BOOKING_HK
+        order_by: LOAD_DATETIME
     ```
 
 === "Generated SQL"
@@ -3213,7 +2940,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql)))
 
 !!! warning
 
@@ -3269,11 +2996,11 @@ A macro for generating hashing SQL for columns.
 
 #### Parameters
 
-| Parameter        |  Description                                     | Type                | Required?                                        |
-| ---------------- | -----------------------------------------------  | ------------------- | ------------------------------------------------ |
-| columns          |  Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
-| alias            |  The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required }     |
-| is_hashdiff      |  Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-minus-circle:{ .not-required } |      
+| Parameter   | Description                                     | Type                | Required?                                         |
+|-------------|-------------------------------------------------|---------------------|---------------------------------------------------|
+| columns     | Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
+| alias       | The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required }     |
+| is_hashdiff | Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-minus-circle:{ .not-required } |      
 
 ___
 
@@ -3285,10 +3012,10 @@ A macro for quickly prefixing a list of columns with a string.
 
 #### Parameters
 
-| Parameter        |  Description                  | Type         | Required?                                      |
-| ---------------- | ----------------------------- | ------------ | ---------------------------------------------- |
-| columns          |  A list of column names       | List[String] | :fontawesome-solid-check-circle:{ .required } |
-| prefix_str       |  The prefix for the columns   | String       | :fontawesome-solid-check-circle:{ .required } |
+| Parameter  | Description                | Type         | Required?                                     |
+|------------|----------------------------|--------------|-----------------------------------------------|
+| columns    | A list of column names     | List[String] | :fontawesome-solid-check-circle:{ .required } |
+| prefix_str | The prefix for the columns | String       | :fontawesome-solid-check-circle:{ .required } |
 
 #### Usage
 
@@ -3315,3 +3042,5 @@ ___
 
 Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to
 be called directly.
+
+--8<-- "includes/abbreviations.md"

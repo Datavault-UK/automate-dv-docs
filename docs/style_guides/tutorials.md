@@ -82,7 +82,7 @@ With our metadata provided and our model complete, we can run dbt to create our 
 
 `dbt run -m +<example structure name>`
 
-And the resulting <type of structure> will look like this:
+The resulting <type of structure> will look like this:
 
 > REMOVE ME
 > Below values are left as examples. CHANGE AS REQUIRED

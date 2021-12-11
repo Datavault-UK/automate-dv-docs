@@ -14,14 +14,13 @@ dbt is designed for ease of use in data engineering: for when you need to develo
 
 dbt offers a command-line utility developed in Python that can run on your desktop or inside a VM in your network 
 and is free to download and use. Alternatively, you can use their SaaS offering [dbt Cloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview)
-which acts as a dbt IDE (Integrated Development Environment).
+which is as a dbt IDE.
 
 Our package runs inside the dbt environment, so you can use dbt to run other parts of the Data Vault pipeline, combined with the 
-dbtvault package for the Data Vault specific steps.
+dbtvault package for the Data Vault 2.0 specific steps.
 
 !!! tip "Join our Slack community!"
-
-    [![Join now](https://img.shields.io/badge/Slack-Join-yellow?style=flat&logo=slack)](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA)
+    [Join now](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA){: .md-button }
 
 ## What is Data Vault 2.0?
 Data Vault 2.0 is an Agile method that can be used to deliver a highly scalable enterprise Data Warehouse. 
@@ -87,3 +86,5 @@ We keep an up-to-date log of past and planned changes:
 
 - [Changelog](changelog/stable.md)
 - [Roadmap](roadmap.md)
+
+--8<-- "includes/abbreviations.md"
