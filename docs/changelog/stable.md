@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.7.9] - 2021-12-13
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.9)](https://dbtvault.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
+
+### New
+
+#### Table structures
+- Point in Time tables [Tutorial](../tutorial/tut_point_in_time.md) - [Macro docs](../macros.md#pit)
+- Bridge tables [Tutorial](../tutorial/tut_bridges.md) - [Macro docs](../macros.md#bridge)
+- Extended Tracking Satellites (XTS) [Tutorial](../tutorial/tut_xts.md) - [Macro docs](../macros.md#xts)
+
+#### Materialisations
+- Custom materialisation for PITs [Docs](../materialisations.md#pit_incremental)
+- Custom materialisation for Bridges [Docs](../materialisations.md#bridge_incremental)
+
+#### Behind the Scenes
+
+- More test coverage for incremental loading.
+- Improved consistency and support for Composite PKs.
+- Significantly simplified Multi-Active Satellite (MAS) logic. 
+
+### Bug Fixes
+
+- Multi-Active Satellite record duplication under some circumstances [#50](https://github.com/Datavault-UK/dbtvault/issues/50)
+
 ## [v0.7.8] - 2021-10-25
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.8)](https://dbtvault.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
 
@@ -64,7 +88,7 @@ packages:
 
 ### Bug Fixes
 - Fixed a bug where an Effectivity Satellite with multiple DFKs or SDKs would incorrectly handle changes in the corresponding link records, meaning
-one to many relationships were not getting handled as intended.
+one-to-many relationships were not getting handled as intended.
 
 ### Improvements
 - Added support for multiple `order_by` or `partition_by` columns when creating ranked columns in the `stage` or `ranked_columns` macros.
@@ -84,7 +108,7 @@ one to many relationships were not getting handled as intended.
 add the natural key to the hashdiff, but it is still recommended. [Read More](../best_practices.md#hashdiff-components)
 
 ### Quality of Life
-- Payload in Transactional (Non-Historised) links now optional
+- Payload in Transactional (Non-Historised) Links now optional
 - Effective From in Satellites now optional
 
 
@@ -105,7 +129,7 @@ add the natural key to the hashdiff, but it is still recommended. [Read More](..
   
 - The hashed_columns exclude flag in staging can now be provided without a list of columns, and dbtvault will hash everything. [Docs](../macros.md#stage-macro-configurations)
 
-- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../macros.md#vault_insert_by_rank)
+- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../materialisations.md#vault_insert_by_rank-insert-by-rank)
 
 - The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros.md#stage-macro-configurations)
 
@@ -156,7 +180,7 @@ users wishing to override macro implementations. Documentation will be made avai
 
 ### Fixed
 
-- Fixed a bug in the [vault_insert_by_period](../macros.md#vault_insert_by_period) materialization which caused orphaned temporary relations 
+- Fixed a bug in the [vault_insert_by_period](../materialisations.md#vault_insert_by_period-insert-by-period) materialization which caused orphaned temporary relations 
   under specific circumstances. [Issue #18](https://github.com/Datavault-UK/dbtvault/issues/18)
   
 - Stage macro conversion to CTE fixes [Issue #17](https://github.com/Datavault-UK/dbtvault/issues/17)
@@ -172,7 +196,7 @@ users wishing to override macro implementations. Documentation will be made avai
 [Read more](../tutorial/tut_eff_satellites.md)   
 [Macro Reference](../macros.md#eff_sat) 
 
-- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../macros.md#vault_insert_by_period)
+- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../materialisations.md#vault_insert_by_period-insert-by-period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
 - dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/dbt-labs/dbt/releases/tag/v0.18.0)
 
@@ -234,7 +258,7 @@ this is to clarify this config option as a boolean flag.
 
 We've added a whole host of interesting new features.
 
-[Read our v0.5 to v0.6 migration guide](../migration_guides/migrating_v0.5_v0.6.md)
+[Read our v0.5 to v0.6 migration guide](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/)
 
 ### Added
 
@@ -245,7 +269,7 @@ See the new [stage](../macros.md#stage) macro and the [staging tutorial](../tuto
 A big thank you to @balmasi for this suggestion.
 
 - `HASHDIFF` aliasing is now available for Satellites
-[Read More](../migration_guides/migrating_v0.5_v0.6.md#hashdiff-aliasing)
+[Read More](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/#hashdiff-aliasing)
 
 ### Upgraded
 
@@ -269,7 +293,7 @@ We'll be updating the other macros soon, stay tuned!
 ### Added
 
 - Metadata is now provided in the `dbt_project.yml` file. This means metadata can be managed in one place. 
-Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more information.
+Read [Migrating from v0.4](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.4_v0.5/) for more information.
 
 ### Removed
 
@@ -279,8 +303,8 @@ Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more 
 
 ### Fixed
 
-- Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros.md#hash), 
-[multi_hash](../macros.md), [staging](../macros.md#staging-macros)).   
+- Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros.md#hash-macro), 
+_**multi_hash**_, [staging](../macros.md#staging-macros)).   
 
 ## [v0.4.1] - 2020-01-08
 
@@ -290,12 +314,11 @@ Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more 
 
 
 ## [v0.4] - 2019-11-27
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.4)](https://dbtvault.readthedocs.io/en/v0.4-pre/?badge=v0.4)
 
 ### Added
 
 - Table Macros:
-    - [Transactional Links](../macros.md#)
+    - Transactional Links
 
 ### Improved
 
@@ -306,7 +329,7 @@ Read [Migrating from v0.4](../migration_guides/migrating_v0.4_v0.5.md) for more 
 ### Worked example
 
 - Transactional Links
-    - Added a transactional link model using a simulated transaction feed.
+    - Added a Transactional Link model using a simulated transaction feed.
     
 ### Documentation
 
@@ -327,7 +350,7 @@ is using dbt 0.14 currently (we will be updating to 0.15 soon!)
 
 ### Bug Fixes
 
-- Fixed a bug where the logic for performing a base-load (loading for the first time) on a union-based hub or link was incorrect, causing a load failure.
+- Fixed a bug where the logic for performing a base-load (loading for the first time) on a union-based Hub or Link was incorrect, causing a load failure.
 
 ### Documentation
 
@@ -355,14 +378,14 @@ The option to provide a mapping is still available.
 ### Documentation
 
 - Updated code samples and explanations according to new functionality
-- Added a best practises page
+- Added a best practices page
 - Various clarifications added and errors fixed
 
 ## [v0.2.4-pre] - 2019-10-17
 
 ### Bug Fixes
 
-- Fixed a bug where the target alias would be used instead of the source alias when incrementally loading a hub or link,
+- Fixed a bug where the target alias would be used instead of the source alias when incrementally loading a Hub or Link,
 causing subsequent loads after the initial load, to fail.
 
 
@@ -370,15 +393,15 @@ causing subsequent loads after the initial load, to fail.
 
 ### Macros
 
-- Updated [hash](../macros.md#hash) and [multi-hash](../macros.md)
-    - [hash](../macros.md#hash) now accepts a third parameter, `sort`
+- Updated _**hash**_ and _**multi-hash**_
+    - _**hash**_ now accepts a third parameter, `sort`
     which will alpha-sort provided columns when set to true.
-    - [multi-hash](../macros.md) updated to take advantage of
-    the the [hash](../macros.md#hash) functionality.
+    - _**multi-hash updated**_ to take advantage of
+    the _**hash**_ functionality.
 
 ### Documentation
 
-- Updated [hash](../macros.md#hash) and [multi-hash](../macros.md) according to new changes.
+- Updated _**hash**_ and _**multi-hash**_ according to new changes.
 
 ## [v0.2.2-pre]  - 2019-10-08
 
@@ -390,7 +413,6 @@ causing subsequent loads after the initial load, to fail.
 - Renamed `stg_orders_hashed` back to `stg_customers_hashed`
 
 ## [v0.2.1-pre] - 2019-10-07
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.2.1-pre)](https://dbtvault.readthedocs.io/en/v0.2.1-pre/?badge=v0.2.1-pre)
 
 ### Documentation
 
@@ -400,8 +422,6 @@ causing subsequent loads after the initial load, to fail.
     - Corrected version in dbt_project.yml
 
 ## [v0.2-pre] - 2019-10-07
-
-[Feedback is welcome!](https://github.com/Datavault-UK/dbtvault/issues)
  
 ### Improved
 Read the linked documentation for more detail on how to take advantage of
@@ -413,19 +433,18 @@ the new and improved features.
     creating tables much simpler.
     
 - Supporting Macros:
-    - [add_columns](../macros.md)
+    - _**add_columns**_
         - Simplified the process of adding constants.
         - Can now optionally provide a [dbt source](https://docs.getdbt.com/docs/using-sources) to automatically
         retrieve all source columns without needing to type them all manually.
         - If not adding any calculated columns or constants, column pairs can be omitted, enabling you to provide the 
         source parameter above only.
-    - [hash](../macros.md#hash) now alpha-sorts columns prior to hashing, as
+    - _**hash**_ now alpha-sorts columns prior to hashing, as
     per best practises. 
    
 - Staging Macros:
-    - staging_footer renamed to [from](../macros.md) and functionality for adding constants moved to
-    [add_columns](../macros.md)
-    - [multi-hash](../macros.md)
+    - staging_footer renamed to _**from**_ and functionality for adding constants moved to _**add_columns**_
+    - multi-hash
         - Formatting of output now more readable
         - Now alpha-sorts columns prior to hashing, as
           per best practises. 
@@ -441,14 +460,16 @@ the new and improved features.
 
 - Supporting Macros:
     - cast
-    - hash
+    - hash (renamed from md5_binary)
     - prefix
 
 - Staging Macros:
     - add_columns
-    - multi_hash
+    - multi_hash (renamed from gen_hashing)
     - staging_footer
 
 ### Documentation
    
 - Numerous changes for version 0.1 release
+
+--8<-- "includes/abbreviations.md"

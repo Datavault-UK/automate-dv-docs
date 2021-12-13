@@ -22,7 +22,7 @@ or a string directly naming the source system.
 (i.e. `1` from the [staging section](tut_staging.md#adding-the-metadata), 
 which is the code for `stg_customer`)
 
-### Creating hub models
+### Creating Hub models
 
 Create a new dbt model as before. We'll call this one `hub_customer`. 
 
@@ -33,12 +33,12 @@ Create a new dbt model as before. We'll call this one `hub_customer`.
                     src_source=src_source, source_model=source_model) }}
     ```
 
-To create a hub model, we simply copy and paste the above template into a model named after the hub we
-are creating. dbtvault will generate a hub using parameters provided in the next steps.
+To create a Hub model, we simply copy and paste the above template into a model named after the Hub we
+are creating. dbtvault will generate a Hub using parameters provided in the next steps.
 
 #### Materialisation
 
-The recommended materialisation for **hubs** is `incremental`, as we load and add new records to the existing data set.
+The recommended materialisation for **Hubs** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
@@ -46,62 +46,68 @@ Let's look at the metadata we need to provide to the [hub macro](../macros.md#hu
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our [knowledge](#structure) of what columns we need in our `hub_customer` hub, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `hub_customer` Hub, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value          | 
-| -------------- | -------------- | 
-| source_model   | v_stg_orders | 
-| src_pk         | CUSTOMER_HK    |
-| src_nk         | CUSTOMER_ID    |
-| src_ldts       | LOAD_DATETIME  | 
-| src_source     | RECORD_SOURCE  |
+| Parameter    | Value         |
+|--------------|---------------|
+| source_model | v_stg_orders  |
+| src_pk       | CUSTOMER_HK   |
+| src_nk       | CUSTOMER_ID   |
+| src_ldts     | LOAD_DATETIME |
+| src_source   | RECORD_SOURCE |
 
 When we provide the metadata above, our model should look like the following:
 
-```jinja
-{{ config(materialized='incremental')    }}
+=== "hub_customer.sql"
 
-{%- set source_model = "v_stg_orders"   -%}
-{%- set src_pk = "CUSTOMER_HK"          -%}
-{%- set src_nk = "CUSTOMER_ID"          -%}
-{%- set src_ldts = "LOAD_DATETIME"      -%}
-{%- set src_source = "RECORD_SOURCE"    -%}
-
-{{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
-```
+    ```jinja
+    {{ config(materialized='incremental')    }}
+    
+    {%- set source_model = "v_stg_orders"   -%}
+    {%- set src_pk = "CUSTOMER_HK"          -%}
+    {%- set src_nk = "CUSTOMER_ID"          -%}
+    {%- set src_ldts = "LOAD_DATETIME"      -%}
+    {%- set src_source = "RECORD_SOURCE"    -%}
+    
+    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
+    ```
 
 !!! Note
-    See our [metadata reference](../metadata.md#hubs) for more detail on how to provide metadata to hubs.
+    See our [metadata reference](../metadata.md#hubs) for more detail on how to provide metadata to Hubs.
 
 ### Running dbt
 
-With our metadata provided and our model complete, we can run dbt to create our `hub_customer` hub, as follows:
+With our metadata provided and our model complete, we can run dbt to create our `hub_customer` Hub, as follows:
 
-`dbt run -m +hub_customer`
+=== "< dbt v0.20.x"
+    `dbt run -m +hub_customer`
 
-And the resulting hub will look like this:
+=== "> dbt v0.21.0"
+    `dbt run -s +hub_customer`
 
-| CUSTOMER_HK  | CUSTOMER_ID  | LOAD_DATETIME            | SOURCE |
-| ------------ | ------------ | ------------------------ | ------ |
-| B8C37E...    | 1001         | 1993-01-01 00:00:00.000  | 1      |
-| .            | .            | .                        | 1      |
-| .            | .            | .                        | 1      |
-| FED333...    | 1004         | 1993-01-01 00:00:00.000  | 1      |
+The resulting Hub table will look like this:
+
+| CUSTOMER_HK | CUSTOMER_ID | LOAD_DATETIME           | SOURCE |
+|-------------|-------------|-------------------------|--------|
+| B8C37E...   | 1001        | 1993-01-01 00:00:00.000 | 1      |
+| .           | .           | .                       | 1      |
+| .           | .           | .                       | 1      |
+| FED333...   | 1004        | 1993-01-01 00:00:00.000 | 1      |
 
 ### Loading hubs from multiple sources
 
-In some cases, we may need to load hubs from multiple sources, instead of a single source as we have seen so far.
-This may be because we have multiple source staging tables, each of which contains a natural key for the hub. 
+In some cases, we may need to load Hubs from multiple sources, instead of a single source as we have seen so far.
+This may be because we have multiple source staging tables, each of which contains a natural key for the Hub. 
 This would require multiple feeds into one table: dbt prefers one feed, 
 so we perform a union operation on the separate sources together and load them as one. 
 
 The data can and should be combined because these records have a truly identical key (same business meaning).
-The hub macro will perform a union operation to combine the tables using that key, and create a hub containing
+The `hub` macro will perform a union operation to combine the tables using that key, and create a Hub containing
 a complete record set.
 
-The metadata needed to create a multi-source hub is identical to a single-source hub, we just provide a 
+The metadata needed to create a multi-source Hub is identical to a single-source Hub, we just provide a 
 list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [hub](../macros.md#hub) macro 
 will handle the rest:
 
@@ -126,4 +132,6 @@ will handle the rest:
                 src_source=src_source, source_model=source_model) }}
 ```
 
-See the [hub metadata reference](../metadata.md#hubs) for more examples.
+See the [Hub metadata reference](../metadata.md#hubs) for more examples.
+
+--8<-- "includes/abbreviations.md"

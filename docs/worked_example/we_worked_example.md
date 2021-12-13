@@ -13,15 +13,15 @@ We will:
 - examine and profile the TPCH dataset to explore how we can map it to the Data Vault architecture.
 - create a raw staging layer.
 - process the raw staging layer.
-- create a Data Vault with hubs, links, satellites and transactional links using dbtvault and pre-written models.
+- create a Data Vault with Hubs, Links, Satellites and Transactional Links using dbtvault and pre-written models.
 
 ## Pre-requisites
 
 These pre-requisites are separate from those found on the [getting started](../tutorial/tut_getting_started.md) page and will 
 be the only necessary requirements you will need to get started with the example project. 
 
-1. Some prior knowledge of Data Vault 2.0 architecture. Have a look at
-[How can I get up to speed on Data Vault 2.0?](../index.md#how-can-i-get-up-to-speed-on-data-vault-20)
+1. Some prior knowledge of Data Vault 2.0 architecture.
+Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
 
 2. A Snowflake trial account. [Sign up for a free 30-day trial here](https://trial.snowflake.com/ab/)
 
@@ -47,7 +47,7 @@ Only a subset of the data contains dates which allow us to simulate daily feeds.
 filtered by date, unfortunately the `v_stg_inventory` view cannot be filtered by date, so it ends up being a feed of 
 the entire contents of the view each cycle. 
 
-This means that inventory related hubs, links and satellites are populated once during the initial load cycle with 
+This means that inventory related Hubs, Links and Satellites are populated once during the initial load cycle with 
 everything and later cycles insert 0 new records in their left outer joins. 
 
 As the dataset increases in size, e.g. if you run with a larger TPC-H dataset (100, 1000 etc.) then be aware you are 

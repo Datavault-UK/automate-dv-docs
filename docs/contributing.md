@@ -29,7 +29,7 @@ at a minimum (or use the issue templates), so we can fix it faster:
 
 ### If it's a feature request
 We'd love to add new features to make this package even more useful for the community,
-please feel free to submit ideas and thoughts!
+so please feel free to submit ideas and thoughts!
 
 ### If it's an idea, feedback or a general inquiry
-Create a post with as much detail as possible; We'll be happy to reply and work with you.
+Create a post with as much detail as possible. We'll be happy to reply and work with you.

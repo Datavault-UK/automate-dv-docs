@@ -2,7 +2,7 @@ dbtvault is metadata driven. On this page, we provide an overview of how to prov
 
 For all other metadata and configurations, please refer to the [dbt configurations reference](https://docs.getdbt.com/reference/dbt_project.yml).
 
-For further detail about how to use the macros in this section, see [table templates](macros.md#table-templates).
+For further details about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
 ### Approaches
 
@@ -15,15 +15,15 @@ and it comes down to user and organisation preference.
     Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our recommendations,
     which we hope provide a good balance of manageability and readability.  
     
-    **All examples on this page will produce the same hub structure, the only difference is how the metadata is provided.**
+    **All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
     
 
 It is worth noting that with larger projects, metadata management gets increasingly harder and can 
 become unwieldy. See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion. 
 
 We can reduce the impact of this problem by providing the metadata for a given model, in the model itself. This approach 
-does have the drawback that the creation of models is significantly less copy-and-paste, but the metadata management improvements are
-usually worth it.
+does have the drawback that the creation of models is significantly less copy-and-paste, but the metadata management 
+improvements are usually worth it.
 
 #### Per-model - Variables 
 
@@ -47,11 +47,11 @@ You may also provide metadata on a per-model basis. This is useful if you have a
 #### Per-Model - YAML strings 
 
 If you want to provide metadata inside the model itself, but find yourself disliking the format for 
-larger collections of metadata or certain data types (e.g. dict literals), then providing a YAML String is a good 
-alternative to using `set`. This approach takes advantage of the `fromyaml()` built-in jinja function provided by dbt, 
-which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
+larger collections of metadata or certain data types (e.g. dict literals), then providing a YAML String inside a block 
+`set` assignment is a good alternative to using multiple individual `set` assignments. This approach takes advantage of 
+the `fromyaml()` built-in jinja function provided by dbt, which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
 
-The below example for a hub is a little excessive for the small amount of metadata provided, so there is also a stage 
+The below example for a Hub is a little excessive for the small amount of metadata provided, so there is also a stage 
 example provided to help better convey the difference.
 
 !!! warning
@@ -59,17 +59,17 @@ example provided to help better convey the difference.
     messages. If you find that variables which are extracted from the YAML string are empty, it is an indicator that the YAML
     did not compile correctly, and you should check your formatting; including indentation.
 
-##### Example
+##### Examples
 
 === "hub_customer.sql"
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: 'stg_web_customer_hashed'
-    src_pk: 'CUSTOMER_HK'
-    src_nk: 'CUSTOMER_ID'
-    src_ldts: 'LOAD_DATETIME'
-    src_source: 'RECORD_SOURCE'
+    source_model: stg_web_customer_hashed
+    src_pk: CUSTOMER_HK
+    src_nk: CUSTOMER_ID
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
     {%- endset -%}
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -85,40 +85,37 @@ example provided to help better convey the difference.
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: "raw_source"
+    source_model: raw_source
     hashed_columns:
-      CUSTOMER_HK: "CUSTOMER_ID"
+      CUSTOMER_HK: CUSTOMER_ID
       CUST_CUSTOMER_HASHDIFF:
         is_hashdiff: true
         columns:
-          - "CUSTOMER_DOB"
-          - "CUSTOMER_ID"
-          - "CUSTOMER_NAME"
+          - CUSTOMER_DOB
+          - CUSTOMER_ID
+          - CUSTOMER_NAME
           - "!9999-12-31"
       CUSTOMER_HASHDIFF:
         is_hashdiff: true
         columns:
-          - "CUSTOMER_ID"
-          - "NATIONALITY"
-          - "PHONE"
+          - CUSTOMER_ID
+          - NATIONALITY
+          - PHONE
     derived_columns:
       RECORD_SOURCE: "!STG_BOOKING"
-      EFFECTIVE_FROM: "BOOKING_DATE"
+      EFFECTIVE_FROM: BOOKING_DATE
     ranked_columns:
       DBTVAULT_RANK:
-        partition_by: "CUSTOMER_ID"
-        order_by: "BOOKING_DATE"
+        partition_by: CUSTOMER_ID
+        order_by: BOOKING_DATE
     {% endset %}
        
     {% set metadata_dict = fromyaml(yaml_metadata) %}
-       
-    {% set source_model = metadata_dict['source_model'] %}
-       
-    {% set derived_columns = metadata_dict['derived_columns'] %}
 
-    {% set hashed_columns = metadata_dict['hashed_columns'] %}
-       
-    {% set ranked_columns = metadata_dict['ranked_columns'] %}
+    {% set source_model = metadata_dict["source_model"] %}
+    {% set derived_columns = metadata_dict["derived_columns"] %}
+    {% set hashed_columns = metadata_dict["hashed_columns"] %}
+    {% set ranked_columns = metadata_dict["ranked_columns"] %}
     
     {{ dbtvault.stage(include_source_columns=true,
                       source_model=source_model,
@@ -126,6 +123,11 @@ example provided to help better convey the difference.
                       hashed_columns=hashed_columns,
                       ranked_columns=ranked_columns) }}
     ```
+
+    !!! Note 
+        
+        '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
+        [Read More](macros.md#constants-derived-columns)
 
 ### Staging
 
@@ -140,40 +142,37 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         hashed_columns:
-        CUSTOMER_HK: "CUSTOMER_ID"
-        CUST_CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_DOB"
-            - "CUSTOMER_ID"
-            - "CUSTOMER_NAME"
-            - "!9999-12-31"
-        CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_ID"
-            - "NATIONALITY"
-            - "PHONE"
+          CUSTOMER_HK: CUSTOMER_ID
+          CUST_CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - CUSTOMER_DOB
+              - CUSTOMER_ID
+              - CUSTOMER_NAME
+              - "!9999-12-31"
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - CUSTOMER_ID
+              - NATIONALITY
+              - PHONE
         derived_columns:
           RECORD_SOURCE: "!STG_BOOKING"
-          EFFECTIVE_FROM: "BOOKING_DATE"
+          EFFECTIVE_FROM: BOOKING_DATE
         ranked_columns:
           DBTVAULT_RANK:
-            partition_by: "CUSTOMER_ID"
-            order_by: "BOOKING_DATE"
+            partition_by: CUSTOMER_ID
+            order_by: BOOKING_DATE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
-        
-        {% set source_model = metadata_dict['source_model'] %}
-        
-        {% set derived_columns = metadata_dict['derived_columns'] %}
-        
-        {% set hashed_columns = metadata_dict['hashed_columns'] %}
 
-        {% set ranked_columns = metadata_dict['ranked_columns'] %}
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set derived_columns = metadata_dict["derived_columns"] %}
+        {% set hashed_columns = metadata_dict["hashed_columns"] %}
+        {% set ranked_columns = metadata_dict["ranked_columns"] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
@@ -186,12 +185,12 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {% set source_model = metadata_dict['source_model'] %}
+        {% set source_model = metadata_dict["source_model"] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
@@ -205,12 +204,12 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 
-            raw_source_name: "source_table_name"
+            raw_source_name: source_table_name
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {% set source_model = metadata_dict['source_model'] %}
+        {% set source_model = metadata_dict["source_model"] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
@@ -223,29 +222,28 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         hashed_columns:
-        CUSTOMER_HK: "CUSTOMER_ID"
-        CUST_CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_DOB"
-            - "CUSTOMER_ID"
-            - "CUSTOMER_NAME"
-            - "!9999-12-31"
-        CUSTOMER_HASHDIFF:
-          is_hashdiff: true
-          columns:
-            - "CUSTOMER_ID"
-            - "NATIONALITY"
-            - "PHONE"
+          CUSTOMER_HK: CUSTOMER_ID
+          CUST_CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - CUSTOMER_DOB
+              - CUSTOMER_ID
+              - CUSTOMER_NAME
+              - "!9999-12-31"
+          CUSTOMER_HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - CUSTOMER_ID
+              - NATIONALITY
+              - PHONE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {% set source_model = metadata_dict['source_model'] %}
-        
-        {% set hashed_columns = metadata_dict['hashed_columns'] %}
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set hashed_columns = metadata_dict["hashed_columns"] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
@@ -258,17 +256,16 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         derived_columns:
             RECORD_SOURCE: "!STG_BOOKING"
-            EFFECTIVE_FROM: "BOOKING_DATE"
+            EFFECTIVE_FROM: BOOKING_DATE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {% set source_model = metadata_dict['source_model'] %}
-        
-        {% set derived_columns = metadata_dict['derived_columns'] %}
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set derived_columns = metadata_dict["derived_columns"] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
@@ -281,18 +278,17 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         ranked_columns:
           DBTVAULT_RANK:
-            partition_by: "CUSTOMER_ID"
-            order_by: "BOOKING_DATE"
+            partition_by: CUSTOMER_ID
+            order_by: BOOKING_DATE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {% set source_model = metadata_dict['source_model'] %}
-        
-        {% set derived_columns = metadata_dict['derived_columns'] %}
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set ranked_columns = metadata_dict["ranked_columns"] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
@@ -305,27 +301,26 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: "raw_source"
+        source_model: raw_source
         hashed_columns:
-          CUSTOMER_HK: "CUSTOMER_ID"
+          CUSTOMER_HK: CUSTOMER_ID
           CUSTOMER_DETAILS_HASHDIFF:
             is_hashdiff: true
             exclude_columns: true
             columns:
-              - "PRICE"
+              - PRICE
           CUSTOMER_HASHDIFF:
             is_hashdiff: true
             columns:
-              - "CUSTOMER_ID"
-              - "NATIONALITY"
-              - "PHONE"
+              - CUSTOMER_ID
+              - NATIONALITY
+              - PHONE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {% set source_model = metadata_dict['source_model'] %}
-        
-        {% set hashed_columns = metadata_dict['hashed_columns'] %}
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set hashed_columns = metadata_dict["hashed_columns"] %}
         
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
@@ -348,11 +343,11 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: 'stg_web_customer_hashed'
-        src_pk: 'CUSTOMER_HK'
-        src_nk: 'CUSTOMER_ID'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
+        source_model: stg_web_customer_hashed
+        src_pk: CUSTOMER_HK
+        src_nk: CUSTOMER_ID
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -369,12 +364,12 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 
-            - 'stg_web_customer_hashed'
-            - 'stg_crm_customer_hashed'
-        src_pk: 'CUSTOMER_HK'
-        src_nk: 'CUSTOMER_ID'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
+          - stg_web_customer_hashed
+          - stg_crm_customer_hashed
+        src_pk: CUSTOMER_HK
+        src_nk: CUSTOMER_ID
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
         {%- endset -%}
 
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -390,13 +385,13 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: 'stg_customer_hashed'
-        src_pk: 'CUSTOMER_HK'
+        source_model: stg_customer_hashed
+        src_pk: CUSTOMER_HK
         src_nk: 
-            - 'CUSTOMER_ID'
-            - 'CUSTOMER_DOB'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
+          - CUSTOMER_ID
+          - CUSTOMER_DOB
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
         {%- endset -%}
 
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -462,13 +457,13 @@ example provided to help better convey the difference.
     === "Single Source"
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: 'v_stg_orders'
-        src_pk: 'LINK_CUSTOMER_NATION_HK'
+        source_model: v_stg_orders
+        src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-            - 'CUSTOMER_ID'
-            - 'NATION_HK'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
+          - CUSTOMER_ID
+          - NATION_HK
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -484,14 +479,14 @@ example provided to help better convey the difference.
         ```jinja
         {%- set yaml_metadata -%}
         source_model: 
-            - 'v_stg_orders'
-            - 'v_stg_transactions'
-        src_pk: 'LINK_CUSTOMER_NATION_HK'
+          - v_stg_orders
+          - v_stg_transactions
+        src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-            - 'CUSTOMER_ID'
-            - 'NATION_HK'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
+          - CUSTOMER_ID
+          - NATION_HK
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -542,19 +537,19 @@ example provided to help better convey the difference.
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: 'v_stg_transactions'
-    src_pk: 'TRANSACTION_HK'
+    source_model: v_stg_transactions
+    src_pk: TRANSACTION_HK
     src_fk: 
-        - 'CUSTOMER_HK'
-        - 'ORDER_HK'
+      - CUSTOMER_HK
+      - ORDER_HK
     src_payload:
-        - 'TRANSACTION_NUMBER'
-        - 'TRANSACTION_DATE'
-        - 'TYPE'
-        - 'AMOUNT'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOAD_DATETIME'
-    src_source: 'RECORD_SOURCE'
+      - TRANSACTION_NUMBER
+      - TRANSACTION_DATE
+      - TYPE
+      - AMOUNT
+    src_eff: EFFECTIVE_FROM
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
     {%- endset -%}
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
@@ -598,27 +593,27 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: 'v_stg_orders'
-        src_pk: 'CUSTOMER_HK'
-        src_hashdiff: 'CUSTOMER_HASHDIFF'
+        source_model: v_stg_orders
+        src_pk: CUSTOMER_HK
+        src_hashdiff: CUSTOMER_HASHDIFF
         src_payload:
-          - 'NAME'
-          - 'ADDRESS'
-          - 'PHONE'
-          - 'ACCBAL'
-          - 'MKTSEGMENT'
-          - 'COMMENT'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
+          - NAME
+          - ADDRESS
+          - PHONE
+          - ACCBAL
+          - MKTSEGMENT
+          - COMMENT
+        src_eff: EFFECTIVE_FROM
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-        {{ dbtvault.sat(src_pk=metadata_dict['src_pk'],
-                        src_hashdiff=metadata_dict['src_hashdiff'],
-                        src_payload=metadata_dict['src_payload'],
-                        src_eff=metadata_dict['src_eff'],
+        {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+                        src_hashdiff=metadata_dict["src_hashdiff"],
+                        src_payload=metadata_dict["src_payload"],
+                        src_eff=metadata_dict["src_eff"],
                         src_ldts=metadata_dict["src_ldts"],
                         src_source=metadata_dict["src_source"],
                         source_model=metadata_dict["source_model"]) }}
@@ -628,29 +623,29 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: 'v_stg_orders'
-        src_pk: 'CUSTOMER_HK'
+        source_model: v_stg_orders
+        src_pk: CUSTOMER_HK
         src_hashdiff: 
-          source_column: "CUSTOMER_HASHDIFF"
-          alias: "HASHDIFF"
+          source_column: CUSTOMER_HASHDIFF
+          alias: HASHDIFF
         src_payload:
-          - 'NAME'
-          - 'ADDRESS'
-          - 'PHONE'
-          - 'ACCBAL'
-          - 'MKTSEGMENT'
-          - 'COMMENT'
-        src_eff: 'EFFECTIVE_FROM'
-        src_ldts: 'LOAD_DATETIME'
-        src_source: 'RECORD_SOURCE'
+          - NAME
+          - ADDRESS
+          - PHONE
+          - ACCBAL
+          - MKTSEGMENT
+          - COMMENT
+        src_eff: EFFECTIVE_FROM
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-        {{ dbtvault.sat(src_pk=metadata_dict['src_pk'],
-                        src_hashdiff=metadata_dict['src_hashdiff'],
-                        src_payload=metadata_dict['src_payload'],
-                        src_eff=metadata_dict['src_eff'],
+        {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+                        src_hashdiff=metadata_dict["src_hashdiff"],
+                        src_payload=metadata_dict["src_payload"],
+                        src_eff=metadata_dict["src_eff"],
                         src_ldts=metadata_dict["src_ldts"],
                         src_source=metadata_dict["src_source"],
                         source_model=metadata_dict["source_model"]) }}
@@ -680,7 +675,7 @@ example provided to help better convey the difference.
         ```jinja
         {%- set source_model = "v_stg_orders" -%}
         {%- set src_pk = "CUSTOMER_HK" -%}
-        {%- set src_hashdiff = {'source_column': "CUSTOMER_HASHDIFF", 'alias': "HASHDIFF"} -%}
+        {%- set src_hashdiff = {"source_column": "CUSTOMER_HASHDIFF", "alias": "HASHDIFF"} -%}
         {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
         {%- set src_eff = "EFFECTIVE_FROM" -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
@@ -707,41 +702,40 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: 'v_stg_order_customer'
-    src_pk: 'CUSTOMER_ORDER_HK'
+    source_model: v_stg_order_customer
+    src_pk: ORDER_CUSTOMER_HK
     src_dfk: 
-      - 'ORDER_HK'
-    src_sfk: 'CUSTOMER_HK'
-    src_start_date: 'START_DATE'
-    src_end_date: 'END_DATE'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOAD_DATETIME'
-    src_source: 'RECORD_SOURCE'
+      - ORDER_HK
+    src_sfk: CUSTOMER_HK
+    src_start_date: START_DATE
+    src_end_date: END_DATE
+    src_eff: EFFECTIVE_FROM
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
     {%- endset -%}
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.eff_sat(src_pk=metadata_dict['src_pk'],
-                        src_dfk=metadata_dict['src_dfk'],
-                        src_sfk=metadata_dict['src_sfk'],
-                        src_start_date=metadata_dict['src_start_date'],
-                        src_end_date=metadata_dict['src_end_date'],
-                        src_eff=metadata_dict['src_eff'],
-                        src_ldts=metadata_dict['src_ldts'],
-                        src_source=metadata_dict['src_source'],
-                        source_model=metadata_dict['source_model']) }}
+    {{ dbtvault.eff_sat(src_pk=metadata_dict["src_pk"],
+                        src_dfk=metadata_dict["src_dfk"],
+                        src_sfk=metadata_dict["src_sfk"],
+                        src_start_date=metadata_dict["src_start_date"],
+                        src_end_date=metadata_dict["src_end_date"],
+                        src_eff=metadata_dict["src_eff"],
+                        src_ldts=metadata_dict["src_ldts"],
+                        src_source=metadata_dict["src_source"],
+                        source_model=metadata_dict["source_model"]) }}
     ```
 
 === "Per-Model - Variables"
 
     ```jinja
-    {%- set source_model = "v_stg_orders" -%}
-    {%- set src_pk = "TRANSACTION_HK" -%}
-    {%- set src_dfk = "CUSTOMER_HK" -%}
-    {%- set src_sfk = "NATION_HK" -%}
+    {%- set source_model = "v_stg_order_customer" -%}
+    {%- set src_pk = "ORDER_CUSTOMER_HK" -%}
+    {%- set src_dfk = ["ORDER_HK"] -%}
+    {%- set src_sfk = "CUSTOMER_HK" -%}
     {%- set src_start_date = "START_DATE" -%}
     {%- set src_end_date = "END_DATE" -%}
-
     {%- set src_eff = "EFFECTIVE_FROM" -%}
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
@@ -752,7 +746,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
                         source_model=source_model) }}
     ```
 
-### Multi Active Satellites (MAS)
+### Multi-Active Satellites (MAS)
 
 #### Parameters
 
@@ -764,28 +758,28 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
     ```jinja
     {%- set yaml_metadata -%}
-    source_model: 'v_stg_orders'
-    src_pk: 'CUSTOMER_HK'
+    source_model: v_stg_orders
+    src_pk: CUSTOMER_HK
     src_cdk: 
-      - 'CUSTOMER_PHONE'
+      - CUSTOMER_PHONE
     src_payload:
-      - 'CUSTOMER_NAME'
-    src_hashdiff: 'HASHDIFF'
-    src_eff: 'EFFECTIVE_FROM'
-    src_ldts: 'LOAD_DATETIME'
-    src_source: 'RECORD_SOURCE'
+      - CUSTOMER_NAME
+    src_hashdiff: HASHDIFF
+    src_eff: EFFECTIVE_FROM
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
     {%- endset -%}
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.ma_sat(src_pk=metadata_dict['src_pk'],
-                       src_cdk=metadata_dict['src_cdk'],
-                       src_payload=metadata_dict['src_payload'],
-                       src_hashdiff=metadata_dict['src_hashdiff'],
-                       src_eff=metadata_dict['src_eff'],
-                       src_ldts=metadata_dict['src_ldts'],
-                       src_source=metadata_dict['src_source'],
-                       source_model=metadata_dict['source_model']) }}
+    {{ dbtvault.ma_sat(src_pk=metadata_dict["src_pk"],
+                       src_cdk=metadata_dict["src_cdk"],
+                       src_payload=metadata_dict["src_payload"],
+                       src_hashdiff=metadata_dict["src_hashdiff"],
+                       src_eff=metadata_dict["src_eff"],
+                       src_ldts=metadata_dict["src_ldts"],
+                       src_source=metadata_dict["src_source"],
+                       source_model=metadata_dict["source_model"]) }}
     ```
 
 === "Per-Model - Variables"
@@ -807,6 +801,169 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 ___
 
+### Extended Tracking Satellites (XTS)
+
+#### Parameters
+
+[xts macro parameters](macros.md#xts)
+
+#### Metadata
+
+=== "Per-model - YAML stringfs"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: v_stg_customer
+    src_pk: CUSTOMER_HK
+    src_satellite:
+      SATELLITE_CUSTOMER:
+        sat_name:
+          SATELLITE_NAME: SAT_SAP_CUSTOMER
+        hashdiff:                
+          HASHDIFF: CUSTOMER_HASHDIFF
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+
+    {% set source_model = metadata_dict["source_model"] %}
+    {% set src_pk = metadata_dict["src_pk"] %}
+    {% set src_ldts = metadata_dict["src_ldts"] %}
+    {% set src_satellite = metadata_dict["src_satellite"] %}
+    {% set src_source = metadata_dict["src_source"] %}
+
+    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
+    ```
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_customer" -%}
+    {%- set src_pk = "CUSTOMER_HK" -%}
+    {%- set src_satellite = {"SATELLITE_CUSTOMER": {"sat_name": {"SATELLITE_NAME": "SAT_SAP_CUSTOMER"}, "hashdiff": {"HASHDIFF": "CUSTOMER_HASHDIFF"}}}
+    {%- set src_ldts = "LOAD_DATETIME" -%}
+    {%- set src_source = "RECORD_SOURCE" -%}
+    
+    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
+    ```
+
+___
+
+### Point-In-Time (PIT) Tables 
+
+#### Parameters
+
+[pit macro parameters](macros.md#pit)
+
+#### Metadata
+
+=== "Per-model - YAML strings"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: hub_customer
+    src_pk: CUSTOMER_HK
+    as_of_dates_table: AS_OF_DATE
+    satellites: 
+      SAT_CUSTOMER_DETAILS:
+        pk:
+          PK: CUSTOMER_HK
+        ldts:
+          LDTS: LOAD_DATETIME
+      SAT_CUSTOMER_LOGIN:
+        pk:
+          PK: CUSTOMER_HK
+        ldts:
+          LDTS: LOAD_DATETIME
+      SAT_CUSTOMER_PROFILE:
+        pk:
+          PK: CUSTOMER_HK
+        ldts:
+          LDTS: LOAD_DATETIME
+    stage_tables:
+      STG_CUSTOMER_DETAILS: LOAD_DATETIME
+      STG_CUSTOMER_LOGIN: LOAD_DATETIME
+      STG_CUSTOMER_PROFILE: LOAD_DATETIME
+    src_ldts: LOAD_DATETIME
+    src_satellite:
+      SATELLITE_CUSTOMER:
+        sat_name:
+          SATELLITE_NAME: SATELLITE_1
+        hashdiff:
+          HASHDIFF: HASHDIFF_1
+    src_source: RECORD_SOURCE
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+
+    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+                    as_of_dates_table=as_of_dates_table,
+                    satellites=satellites,
+                    stage_tables=stage_tables,
+                    src_ldts=src_ldts) }}
+    ```
+___
+
+### Bridge tables
+
+#### Parameters
+
+[bridge macro parameters](macros.md#bridge)
+
+#### Metadata
+
+=== "Per-Model - YAML String"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: hub_customer
+    src_pk: CUSTOMER_HK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: as_of_date
+    bridge_walk:
+      CUSTOMER_ORDER:
+        bridge_link_pk: LINK_CUSTOMER_ORDER_HK
+        bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
+        bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
+        link_table: link_customer_order
+        link_pk: CUSTOMER_ORDER_HK
+        link_fk1: CUSTOMER_FK
+        link_fk2: ORDER_FK
+        eff_sat_table: eff_sat_customer_order
+        eff_sat_pk: CUSTOMER_ORDER_HK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
+      ORDER_PRODUCT:
+        bridge_link_pk: LINK_ORDER_PRODUCT_HK
+        bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
+        bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
+        link_table: link_order_product
+        link_pk: ORDER_PRODUCT_HK
+        link_fk1: ORDER_FK
+        link_fk2: PRODUCT_FK
+        eff_sat_table: eff_sat_order_product
+        eff_sat_pk: ORDER_PRODUCT_HK
+        eff_sat_end_date: END_DATE
+        eff_sat_load_date: LOAD_DATETIME
+    stage_tables_ldts:
+      STG_CUSTOMER_ORDER: LOAD_DATETIME
+      STG_ORDER_PRODUCT: LOAD_DATETIME
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}   
+
+    {{ dbtvault.bridge(source_model=metadata_dict["source_model"], 
+                       src_pk=metadata_dict["src_pk"],
+                       src_ldts=metadata_dict["src_ldts"],
+                       bridge_walk=metadata_dict["bridge_walk"],
+                       as_of_dates_table=metadata_dict["as_of_dates_table"],
+                       stage_tables_ldts=metadata_dict["stage_tables_ldts"]) }}
+    ```
+___
+
 ### The problem with metadata
 
 When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
@@ -814,7 +971,7 @@ projects. If your metadata gets defined and stored in each model, it becomes har
 but it can be easier to manage. Model-level metadata alleviates the issue, but will not completely solve it.
 
 Whichever approach gets chosen, metadata storage and retrieval is difficult without a dedicated tool. 
-To help manage large amounts of metadata, we recommend the use of external corporate tools such as WhereScape, 
+To help manage large amounts of metadata, we recommend the use of third-party enterprise tools such as WhereScape, 
 Matillion, or Erwin Data Modeller. 
 
 In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a 

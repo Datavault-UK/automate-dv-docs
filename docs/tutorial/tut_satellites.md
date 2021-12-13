@@ -1,15 +1,15 @@
-Satellites contain point-in-time payload data related to their parent hub or link records. Satellites are where the 
-concrete data for our business entities in the hubs and links, reside.
-Each hub or link record may have one or more child satellite records, which form a history of changes to that hubs 
-or link record as they happen. 
+Satellites contain point-in-time payload data related to their parent Hub or Link records. Satellites are where the 
+concrete data for our business entities in the Hubs and Links, reside.
+Each Hub or Link record may have one or more child Satellite records, which form a history of changes to that Hubs 
+or Link record as they happen. 
 
 ### Structure
 
-Each component of a satellite is described below.
+Each component of a Satellite is described below.
 
 #### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key.
-For a satellite, this should be the same as the corresponding link or hub PK, concatenated with the load timestamp. 
+For a Satellite, this should be the same as the corresponding Link or Hub PK, concatenated with the load timestamp. 
 
 #### Hashdiff (src_hashdiff)
 This is a concatenation of the payload (below) and the primary key. This allows us to 
@@ -23,7 +23,7 @@ concrete data for an entity, depending on the purpose of the satellite.
 
 #### Effective From (src_eff) - optional
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
-satellite record. It records that a record is valid from a specific point in time.
+Satellite record. It records that a record is valid from a specific point in time.
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
 longer have the most recent `EFFECTIVE_FROM` value.
 
@@ -39,20 +39,20 @@ or a string directly naming the source system.
 
 ### Load date vs. Effective From Date
 `LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different, 
-holding the business effectivity date of the record (i.e. When it actually happened in the real world) and will usually 
+holding the business effectivity date of the record (i.e. when it actually happened in the real world) and will usually 
 hold a different value, especially if there is a batch processing delay between when a business event happens and the 
 record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
 and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
 
 The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
-in our experience we have found it useful for processing and applying business rules in downstream business vault, for 
+in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 
 use in presentation layers.
 
-### Creating satellite models
+### Creating Satellite models
 
-Create a new dbt model as before. We'll call this one `sat_customer_details`. 
+Create a new dbt model as before. We'll call this one `sat_customer_detail`. 
 
-=== "sat_customer_details.sql"
+=== "sat_customer_detail.sql"
 
     ```jinja
     {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
@@ -60,12 +60,12 @@ Create a new dbt model as before. We'll call this one `sat_customer_details`.
                     source_model=source_model)                                        }}
     ```
 
-To create a satellite model, we simply copy and paste the above template into a model named after the satellite we
-are creating. dbtvault will generate a satellite using parameters provided in the next steps.
+To create a Satellite model, we simply copy and paste the above template into a model named after the Satellite we
+are creating. dbtvault will generate a Satellite using parameters provided in the next steps.
 
 #### Materialisation
 
-The recommended materialisation for **satellites** is `incremental`, as we load and add new records to the existing data set.
+The recommended materialisation for **Satellites** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
@@ -73,67 +73,75 @@ Let's look at the metadata we need to provide to the [satellite macro](../macros
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our [knowledge](#structure) of what columns we need in our `sat_customer_details` satellite, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `sat_customer_details` Satellite, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value                                                | 
-| -------------- | ---------------------------------------------------- | 
-| source_model   | v_stg_orders                                         | 
-| src_pk         | CUSTOMER_HK                                          |
-| src_hashdiff   | source_column: CUSTOMER_HASHDIFF, alias: HASHDIFF    |
-| src_payload    | CUSTOMER_NAME, CUSTOMER_DOB, CUSTOMER_PHONE          |
-| src_eff        | EFFECTIVE_FROM                                       |
-| src_ldts       | LOAD_DATETIME                                        | 
-| src_source     | RECORD_SOURCE                                        |
+| Parameter    | Value                                                |
+|--------------|------------------------------------------------------|
+| source_model | v_stg_orders                                         |
+| src_pk       | CUSTOMER_HK                                          |
+| src_hashdiff | source_column: CUSTOMER_HASHDIFF<br/>alias: HASHDIFF |
+| src_payload  | CUSTOMER_NAME, CUSTOMER_DOB, CUSTOMER_PHONE          |
+| src_eff      | EFFECTIVE_FROM                                       |
+| src_ldts     | LOAD_DATETIME                                        |
+| src_source   | RECORD_SOURCE                                        |
 
 !!! Note
     We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practices.md#hashdiff-aliasing)
 
 When we provide the metadata above, our model should look like the following:
 
-```jinja
-{{ config(materialized='incremental') }}
+=== "sat_customer_detail.sql"
 
-{%- set yaml_metadata -%}
-source_model: "v_stg_orders"
-src_pk: "CUSTOMER_HK"
-src_hashdiff: 
-  source_column: "CUSTOMER_HASHDIFF"
-  alias: "HASHDIFF"
-src_payload:
-  - "CUSTOMER_NAME"
-  - "CUSTOMER_DOB"
-  - "CUSTOMER_PHONE"
-src_eff: "EFFECTIVE_FROM"
-src_ldts: "LOAD_DATETIME"
-src_source: "RECORD_SOURCE"
-{%- endset -%}
-
-{% set metadata_dict = fromyaml(yaml_metadata) %}
-
-{{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
-                src_hashdiff=metadata_dict["src_hashdiff"],
-                src_payload=metadata_dict["src_payload"],
-                src_eff=metadata_dict["src_eff"],
-                src_ldts=metadata_dict["src_ldts"],
-                src_source=metadata_dict["src_source"],
-                source_model=metadata_dict["source_model"])   }}
-```
+    ```jinja
+    {{ config(materialized='incremental') }}
+    
+    {%- set yaml_metadata -%}
+    source_model: "v_stg_orders"
+    src_pk: "CUSTOMER_HK"
+    src_hashdiff: 
+      source_column: "CUSTOMER_HASHDIFF"
+      alias: "HASHDIFF"
+    src_payload:
+      - "CUSTOMER_NAME"
+      - "CUSTOMER_DOB"
+      - "CUSTOMER_PHONE"
+    src_eff: "EFFECTIVE_FROM"
+    src_ldts: "LOAD_DATETIME"
+    src_source: "RECORD_SOURCE"
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+                    src_hashdiff=metadata_dict["src_hashdiff"],
+                    src_payload=metadata_dict["src_payload"],
+                    src_eff=metadata_dict["src_eff"],
+                    src_ldts=metadata_dict["src_ldts"],
+                    src_source=metadata_dict["src_source"],
+                    source_model=metadata_dict["source_model"])   }}
+    ```
 
 !!! Note
-    See our [metadata reference](../metadata.md#satellites) for more detail on how to provide metadata to satellites.
+    See our [metadata reference](../metadata.md#satellites) for more detail on how to provide metadata to Satellites.
 
 ### Running dbt
 
-With our model complete and our YAML written, we can run dbt to create our `sat_customer_details` satellite.
+With our model complete and our YAML written, we can run dbt to create our `sat_customer_detail` Satellite.
 
-`dbt run -m +sat_customer_details`
+=== "< dbt v0.20.x"
+    `dbt run -m +sat_customer_detail`
+
+=== "> dbt v0.21.0"
+    `dbt run -s +sat_customer_detail`
     
-And our table will look like this:
+The resulting Satellite table will look like this:
 
-| CUSTOMER_HK  | HASHDIFF   | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE |
-| ------------ | ---------- | ----------    | ------------ | --------------- | -------------- | ------------------------ | ------ |
-| B8C37E...    | 3C5984...  | Alice         | 1997-04-24   | 17-214-233-1214 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |
-| .            | .          | .             | .            | .               | .              | .                        | 1      |
-| .            | .          | .             | .            | .               | .              | .                        | 1      |
-| FED333...    | D8CB1F...  | Dom           | 2018-04-13   | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000  | 1      |
+| CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE  | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
+|-------------|-----------|---------------|--------------|-----------------|----------------|-------------------------|--------|
+| B8C37E...   | 3C5984... | Alice         | 1997-04-24   | 17-214-233-1214 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
+| .           | .         | .             | .            | .               | .              | .                       | 1      |
+| .           | .         | .             | .            | .               | .              | .                       | 1      |
+| FED333...   | D8CB1F... | Dom           | 2018-04-13   | 17-214-233-1217 | 1993-01-01     | 1993-01-01 00:00:00.000 | 1      |
+
+--8<-- "includes/abbreviations.md"

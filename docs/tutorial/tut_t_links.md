@@ -1,7 +1,7 @@
 # Transactional Links
 
-Also known as non-historized or no-history links, transactional links record the transaction or 'event' components of 
-their referenced hub tables. They allow us to model the more granular relationships between entities. Some prime examples
+Also known as non-historized or no-history Links, Transactional Links record the transaction or 'event' components of 
+their referenced Hub tables. They allow us to model the more granular relationships between entities. Some prime examples
 are purchases, flights or emails; there is a record in the table for every event or transaction between the entities 
 instead of just one record per relation.
 
@@ -9,22 +9,22 @@ instead of just one record per relation.
 
 #### Primary Key (src_pk)
 A primary key (or surrogate key) which is usually a hashed representation of the natural key. 
-For t-links, we take the natural keys (prior to hashing) represented by the foreign key columns below 
+For Transactional Links, we take the natural keys (prior to hashing) represented by the foreign key columns below 
 and create a hash on a concatenation of them. 
 
 #### Foreign Keys (src_fk)
-Foreign keys referencing the primary key for each hub referenced in the t-link (2 or more depending on the number of hubs 
+Foreign keys referencing the primary key for each Hub referenced in the Transactional Link (2 or more depending on the number of hubs 
 referenced) 
 
 #### Payload (src_payload) - optional
-A t-link payload consists of concrete data for the transaction record. This could be
+A Transactional Link payload consists of concrete data for the transaction record. This could be
 a transaction number, an amount paid, transaction type or more. The payload will contain all the
-concrete data for a transaction. This field is optional because you may want to model your transactions as a T-Link, and multiple satellites (off of the T-Link).
+concrete data for a transaction. This field is optional because you may want to model your transactions as a Transactional Link, and multiple Satellites (off of the Transactional Link).
 This modelling approach can be useful if there are many fields, and these fields comprise multiple rates of change or types of data.
 
 #### Effective From (src_eff)
 An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a 
-transaction record. It records that a record is valid from a specific point in time. For a t-link, this
+transaction record. It records that a record is valid from a specific point in time. For a Transactional Link, this
 is usually the date on which the transaction occurred. 
 
 #### Load date (src_ldts)
@@ -42,14 +42,14 @@ record arriving in the database for load. Having both dates allows us to ask the
 and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
 
 The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
-in our experience we have found it useful for processing and applying business rules in downstream business vault, for 
+in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 
 use in presentation layers.
 
-### Creating t-link models
+### Creating Transactional Link models
 
-Create a new dbt model as before. We'll call this one `t_link_transactions`. 
+Create a new dbt model as before. We'll call this one `t_link_transaction`. 
 
-=== "t_link_transactions.sql"
+=== "t_link_transaction.sql"
 
     ```jinja
     {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
@@ -57,79 +57,87 @@ Create a new dbt model as before. We'll call this one `t_link_transactions`.
                        source_model=source_model)                                 }}
     ```
 
-To create a t-link model, we simply copy and paste the above template into a model named after the t-link we
-are creating. dbtvault will generate a t-link using parameters provided in the next steps.
+To create a Transactional Link model, we simply copy and paste the above template into a model named after the Transactional Link we
+are creating. dbtvault will generate a Transactional Link using parameters provided in the next steps.
 
 #### Materialisation
 
-The recommended materialisation for **t-links** is `incremental`, as we load and add new records to the existing data set.
+The recommended materialisation for **Transactional Links** is `incremental`, as we load and add new records to the existing data set.
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [t-link macro](../macros.md#t_link).
+Let's look at the metadata we need to provide to the [t_link macro](../macros.md#t_link).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
-Using our [knowledge](#structure) of what columns we need in our `t_link_transactions` table, we can identify columns in our
+Using our [knowledge](#structure) of what columns we need in our `t_link_transaction` table, we can identify columns in our
 staging layer which map to them:
 
-| Parameter      | Value                                              | 
-| -------------- | -------------------------------------------------- | 
-| source_model   | v_stg_transactions                                 |
-| src_pk         | TRANSACTION_HK                                     |
-| src_fk         | CUSTOMER_HK, ORDER_HK                              |
-| src_payload    | TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT |
-| src_eff        | EFFECTIVE_FROM                                     | 
-| src_ldts       | LOAD_DATETIME                                      | 
-| src_source     | RECORD_SOURCE                                      |
+| Parameter    | Value                                              |
+|--------------|----------------------------------------------------|
+| source_model | v_stg_transactions                                 |
+| src_pk       | TRANSACTION_HK                                     |
+| src_fk       | CUSTOMER_HK, ORDER_HK                              |
+| src_payload  | TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT |
+| src_eff      | EFFECTIVE_FROM                                     |
+| src_ldts     | LOAD_DATETIME                                      |
+| src_source   | RECORD_SOURCE                                      |
 
 When we provide the metadata above, our model should look like the following:
 
-```jinja
-{{ config(materialized='incremental') }}
+=== "t_link_transaction.sql"
 
-{%- set yaml_metadata -%}
-source_model: 'v_stg_transactions'
-src_pk: 'TRANSACTION_HK'
-src_fk: 
-    - 'CUSTOMER_HK'
-    - 'ORDER_HK'
-src_payload:
-    - 'TRANSACTION_NUMBER'
-    - 'TRANSACTION_DATE'
-    - 'TYPE'
-    - 'AMOUNT'
-src_eff: 'EFFECTIVE_FROM'
-src_ldts: 'LOAD_DATETIME'
-src_source: 'RECORD_SOURCE'
-{%- endset -%}
-
-{% set metadata_dict = fromyaml(yaml_metadata) %}
-
-{{ dbtvault.t_link(src_pk=metadata_dict["src_pk"],
-                   src_fk=metadata_dict["src_fk"],
-                   src_payload=metadata_dict["src_payload"],
-                   src_eff=metadata_dict["src_eff"],
-                   src_ldts=metadata_dict["src_ldts"],
-                   src_source=metadata_dict["src_source"],
-                   source_model=metadata_dict["source_model"]) }}
-```
+    ```jinja
+    {{ config(materialized='incremental') }}
+    
+    {%- set yaml_metadata -%}
+    source_model: 'v_stg_transactions'
+    src_pk: 'TRANSACTION_HK'
+    src_fk: 
+        - 'CUSTOMER_HK'
+        - 'ORDER_HK'
+    src_payload:
+        - 'TRANSACTION_NUMBER'
+        - 'TRANSACTION_DATE'
+        - 'TYPE'
+        - 'AMOUNT'
+    src_eff: 'EFFECTIVE_FROM'
+    src_ldts: 'LOAD_DATETIME'
+    src_source: 'RECORD_SOURCE'
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.t_link(src_pk=metadata_dict["src_pk"],
+                       src_fk=metadata_dict["src_fk"],
+                       src_payload=metadata_dict["src_payload"],
+                       src_eff=metadata_dict["src_eff"],
+                       src_ldts=metadata_dict["src_ldts"],
+                       src_source=metadata_dict["src_source"],
+                       source_model=metadata_dict["source_model"]) }}
+    ```
 
 !!! Note
     See our [metadata reference](../metadata.md#transactional-links) for more detail on how to provide metadata to 
-    transactional links.
+    Transactional Links.
 
 ### Running dbt
 
-With our model complete and our YAML written, we can run dbt to create our `t_link_transactions` transactional link.
+With our model complete and our YAML written, we can run dbt to create our `t_link_transaction` Transactional Link.
 
-`dbt run -m +t_link_transactions`
-    
-And our table will look like this:
+=== "< dbt v0.20.x"
+    `dbt run -m +t_link_transaction`
 
-| TRANSACTION_HK  | CUSTOMER_HK | ORDER_HK  | TRANSACTION_NUMBER | TYPE | AMOUNT  | EFFECTIVE_FROM | LOAD_DATETIME            | SOURCE |
-| --------------- | ----------- | --------- | ------------------ | ---- | ------- | -------------- | ------------------------ | ------ |
-| BDEE76...       | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00  | 1993-01-28     | 1993-01-01 00:00:00.000  | 2      |
-| .               | .           | .         | .                  | .    | .       | .              | .                        | 2      |
-| .               | .           | .         | .                  | .    | .       | .              | .                        | 2      |
-| E0E7A8...       | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23  | 1993-01-28     | 1993-01-01 00:00:00.000  | 2      |
+=== "> dbt v0.21.0"
+    `dbt run -s +t_link_transaction`
+
+The resulting Transactional Link table will look like this:
+
+| TRANSACTION_HK | CUSTOMER_HK | ORDER_HK  | TRANSACTION_NUMBER | TYPE | AMOUNT | EFFECTIVE_FROM | LOAD_DATETIME           | SOURCE |
+|----------------|-------------|-----------|--------------------|------|--------|----------------|-------------------------|--------|
+| BDEE76...      | CA02D6...   | CF97F1... | 123456789101       | CR   | 100.00 | 1993-01-28     | 1993-01-01 00:00:00.000 | 2      |
+| .              | .           | .         | .                  | .    | .      | .              | .                       | 2      |
+| .              | .           | .         | .                  | .    | .      | .              | .                       | 2      |
+| E0E7A8...      | F67DF4...   | 2C95D4... | 123456789104       | CR   | 678.23 | 1993-01-28     | 1993-01-01 00:00:00.000 | 2      |
+
+--8<-- "includes/abbreviations.md"
