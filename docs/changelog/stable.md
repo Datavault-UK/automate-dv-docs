@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.7.9] - 2021-12-13
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.9)](https://dbtvault.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
 
+### Dependencies
+
+#### Breaking
+- dbt v1.0.0 Support
+   - Support for earlier dbt versions (dbt <=0.21.0) removed. This is as a result of the upgrade to dbt v1.0.0. 
+   [How do I upgrade my project?](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-1-0-0)
+- Updated to dbt_utils v0.8.0 (for dbt 1.0.0 compatibility) 
+
 ### New
 
 #### Table structures
