@@ -56,8 +56,6 @@ In future releases, we hope to include the following:
 ### Tables
 
 - Status Tracking Satellites
-- Point-In-Time tables (also known as PITs)
-- Bridge tables
 - Reference Tables
 - Mart loading helpers
 - And more!
