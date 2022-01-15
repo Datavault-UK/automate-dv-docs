@@ -293,7 +293,8 @@ We'll be updating the other macros soon, stay tuned!
 ### Removed
 
 - Deprecated macros (old table template macros) 
-- A handful of now unused internal macros- Documentation website from main repository (this makes the package smaller!) 
+- A handful of now unused internal macros
+- Documentation website from main repository (this makes the package smaller!) 
 [New docs repo](https://github.com/Datavault-UK/dbtvault-docs)
 
 ## [v0.5] - 2020-02-24
