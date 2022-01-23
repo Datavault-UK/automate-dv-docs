@@ -1071,6 +1071,10 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 !!! tip
     [Read the tutorial](tutorial/tut_xts.md) for more details
 
+!!! note "Understanding the src_satellite parameter"
+    [Read More](metadata.md#understanding-the-src_satellite-parameter)
+
+
 #### Example Metadata
 
 [See examples](metadata.md#extended-tracking-satellites-xts)

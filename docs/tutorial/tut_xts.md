@@ -11,6 +11,11 @@ A primary key (or surrogate key) which is usually a hashed representation of the
 #### Satellite name (src_satellite.sat_name)
 The name of the Satellite that the payload is being staged to. This allows us to use one XTS table to track records for many Satellites and accurately maintain their timelines.
 
+
+!!! note "Understanding the src_satellite parameter"
+    [Read More](../metadata.md#understanding-the-src_satellite-parameter)
+
+
 #### Hashdiff (src_satellite.hashdiff)
 A hashed representation of the record's payload. An XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
 
@@ -108,7 +113,7 @@ With our model complete, and our metadata stored in our YAML. We can run dbt to 
     
 The resulting Extended Tracking Satellite table will look like this:
 
-| CUSTOMER_PK | HASHDIFF | SATELLITE_NAME   | LOAD_DATE  | SOURCE |
+| CUSTOMER_HK | HASHDIFF | SATELLITE_NAME   | LOAD_DATE  | SOURCE |
 |-------------|----------|------------------|------------|--------|
 | B8C37E...   | 3C598... | SAT_SAP_CUSTOMER | 1993-01-01 | *      |
 | .           | .        | .                | .          | .      |
