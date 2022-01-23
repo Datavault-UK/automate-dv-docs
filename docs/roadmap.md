@@ -30,10 +30,6 @@ If you have any ideas, or are interested in hearing more, contact Datavault dire
 
 ## Releases Roadmap
 
-### 0.7.10
-- Effectivity Satellite improvements (simplification and more)
-- More to come
-
 ### v0.8.x
 
 These features have been planned for the next major release.
@@ -56,8 +52,6 @@ In future releases, we hope to include the following:
 ### Tables
 
 - Status Tracking Satellites
-- Point-In-Time tables (also known as PITs)
-- Bridge tables
 - Reference Tables
 - Mart loading helpers
 - And more!
@@ -65,6 +59,7 @@ In future releases, we hope to include the following:
 ### Additional features
 
 - Specialised Data Vault 2.0 specific custom schema tests
+- Effectivity Satellite improvements (simplification)
 - Business vault structures and helper macros
 - Auditing 
 - Logging
