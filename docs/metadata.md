@@ -910,7 +910,7 @@ ___
 
 The `src_satellite` parameter provides the means to define the satellites which the XTS tracks.
 
-The mapping matches a column in the stage layer (using the `stage` macro) to the `SATELLITE_NAME` column in the XTS.
+The mapping matches columns in the stage layer (using the `stage` macro) to the `SATELLITE_NAME` and `HASHDIFF` columns in the XTS.
 
 ```
 ...
