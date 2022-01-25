@@ -74,7 +74,6 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 |-------------------|-------------------------------------------------------------------------------|
 | source_model      | hub_customer                                                                  |
 | src_pk            | CUSTOMER_HK                                                                   |
-| src_ldts          | LOAD_DATETIME                                                                 |
 | as_of_dates_table | AS_OF_DATE                                                                    |
 | satellites        | {"SAT_CUSTOMER_DETAILS":                                                      |
 |                   | &emsp;&emsp;{"pk": {"PK": "CUSTOMER_HK"}, {"ldts": {"LDTS": "LOAD_DATETIME"}} |
@@ -84,6 +83,7 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 |                   | }                                                                             |
 | stage_tables      | {"STG_CUSTOMER_DETAILS": "LOAD_DATETIME",                                     |
 |                   | "STG_CUSTOMER_LOGIN": "LOAD_DATETIME"}                                        |
+| src_ldts          | LOAD_DATETIME                                                                 |
 
 #### Source table
 
@@ -130,12 +130,12 @@ Next, we provide the PIT's column name for the As of Date table.
 
 === "pit_customer.yml"
 
-    ```jinja hl_lines="5"
+    ```jinja hl_lines="4"
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    src_ldts: LOAD_DATETIME
     as_of_dates_table: AS_OF_DATE
+    src_ldts: LOAD_DATETIME
     ...
     ```
 
@@ -145,14 +145,13 @@ Here we add the Satellite related details (i.e. the Primary/Hash Key and the Loa
 
 === "pit_customer.yml"
 
-    ```jinja hl_lines="6-16"
+    ```jinja hl_lines="5-15"
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    src_ldts: LOAD_DATETIME
     as_of_dates_table: AS_OF_DATE
     satellites: 
-      SAT_CUSTOMER_DETAILS
+      SAT_CUSTOMER_DETAILS:
         pk:
           PK: CUSTOMER_HK
         ldts:
@@ -162,6 +161,7 @@ Here we add the Satellite related details (i.e. the Primary/Hash Key and the Loa
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
+    src_ldts: LOAD_DATETIME
     ...
     ```
 
@@ -171,14 +171,13 @@ Finally, we add Satellites' stage table names and their Load Date/Timestamp colu
 
 === "pit_customer.yml"
 
-    ```jinja hl_lines="17-20"
+    ```jinja hl_lines="16-18"
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    src_ldts: LOAD_DATETIME
     as_of_dates_table: AS_OF_DATE
     satellites: 
-      SAT_CUSTOMER_DETAILS
+      SAT_CUSTOMER_DETAILS:
         pk:
           PK: CUSTOMER_HK
         ldts:
@@ -190,7 +189,8 @@ Finally, we add Satellites' stage table names and their Load Date/Timestamp colu
           LDTS: LOAD_DATETIME
     stage_tables: 
       STG_CUSTOMER_DETAILS: LOAD_DATETIME
-      STG_CUSTOMER_LOGIN: LOAD_DATETIME      
+      STG_CUSTOMER_LOGIN: LOAD_DATETIME    
+    src_ldts: LOAD_DATETIME
     {%- endset -%}
     ```
 
@@ -204,10 +204,9 @@ Now, our model should look like the following:
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    src_ldts: LOAD_DATETIME        
     as_of_dates_table: AS_OF_DATE
     satellites: 
-      SAT_CUSTOMER_DETAILS
+      SAT_CUSTOMER_DETAILS:
         pk:
           PK: CUSTOMER_HK
         ldts:
@@ -217,19 +216,20 @@ Now, our model should look like the following:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
-    stage_tables:
+    stage_tables: 
       STG_CUSTOMER_DETAILS: LOAD_DATETIME
-      STG_CUSTOMER_LOGIN: LOAD_DATETIME
+      STG_CUSTOMER_LOGIN: LOAD_DATETIME    
+    src_ldts: LOAD_DATETIME
     {%- endset -%}
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {% set source_model = metadata_dict[source_model] %}
-    {% set src_pk = metadata_dict[src_pk] %}
-    {% set src_ldts = metadata_dict[src_ldts] %}
-    {% set as_of_dates_table = metadata_dict[as_of_dates_table] %}
-    {% set satellites = metadata_dict[satellites] %}
-    {% set stage_tables = metadata_dict[stage_tables] %}
+    {% set source_model = metadata_dict['source_model'] %}
+    {% set src_pk = metadata_dict['src_pk'] %}
+    {% set as_of_dates_table = metadata_dict['as_of_dates_table'] %}
+    {% set satellites = metadata_dict['satellites'] %}
+    {% set stage_tables = metadata_dict['stage_tables'] %}
+    {% set src_ldts = metadata_dict['src_ldts'] %}
 
     {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
                     as_of_dates_table=as_of_dates_table,
@@ -267,4 +267,4 @@ The resulting Point in Time table would look like this:
 | HY67OE...   | 2021-11-31 | HY67OE...               | 2021-11-09                | HY67OE...             | 2021-11-30              |
 | RF57V3...   | 2021-11-31 | RF57V3...               | 2021-11-20                | RF57V3...             | 2021-04-01              |
 
---8<-- includes/abbreviations.md
+--8<-- "includes/abbreviations.md"

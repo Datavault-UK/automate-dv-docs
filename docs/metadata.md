@@ -15,7 +15,7 @@ down to user and organisation preference.
 Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our
 recommendations, which we hope provide a good balance of manageability and readability.
 
-    **All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
+**All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
 
 It is worth noting that with larger projects, metadata management gets increasingly harder and can become unwieldy.
 See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
@@ -991,22 +991,16 @@ ___
       STG_CUSTOMER_LOGIN: LOAD_DATETIME
       STG_CUSTOMER_PROFILE: LOAD_DATETIME
     src_ldts: LOAD_DATETIME
-    src_satellite:
-      SATELLITE_CUSTOMER:
-        sat_name:
-          SATELLITE_NAME: SATELLITE_1
-        hashdiff:
-          HASHDIFF: HASHDIFF_1
-    src_source: RECORD_SOURCE
     {%- endset -%}
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                    as_of_dates_table=as_of_dates_table,
-                    satellites=satellites,
-                    stage_tables=stage_tables,
-                    src_ldts=src_ldts) }}
+    {{ dbtvault.pit(source_model=metadata_dict['source_model'], 
+                    src_pk=metadata_dict['src_pk'],
+                    as_of_dates_table=metadata_dict['as_of_dates_table'],
+                    satellites=metadata_dict['satellites'],
+                    stage_tables=metadata_dict['stage_tables'],
+                    src_ldts=metadata_dict['src_ldts']) }}
     ```
 
 ___
@@ -1059,12 +1053,12 @@ ___
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}   
 
-    {{ dbtvault.bridge(source_model=metadata_dict["source_model"], 
-                       src_pk=metadata_dict["src_pk"],
-                       src_ldts=metadata_dict["src_ldts"],
-                       bridge_walk=metadata_dict["bridge_walk"],
-                       as_of_dates_table=metadata_dict["as_of_dates_table"],
-                       stage_tables_ldts=metadata_dict["stage_tables_ldts"]) }}
+    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], 
+                       src_pk=metadata_dict['src_pk'],
+                       src_ldts=metadata_dict['src_ldts'],
+                       bridge_walk=metadata_dict['bridge_walk'],
+                       as_of_dates_table=metadata_dict['as_of_dates_table'],
+                       stage_tables_ldts=metadata_dict['stage_tables_ldts']) }}
     ```
 
 ___
