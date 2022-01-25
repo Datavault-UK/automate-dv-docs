@@ -14,7 +14,7 @@ dbt is designed for ease of use in data engineering: for when you need to develo
 
 dbt offers a command-line utility developed in Python that can run on your desktop or inside a VM in your network 
 and is free to download and use. Alternatively, you can use their SaaS offering [dbt Cloud](https://docs.getdbt.com/docs/dbt-cloud/cloud-overview)
-which is as a dbt IDE.
+which functions as a dbt IDE.
 
 Our package runs inside the dbt environment, so you can use dbt to run other parts of the Data Vault pipeline, combined with the 
 dbtvault package for the Data Vault 2.0 specific steps.

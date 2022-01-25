@@ -210,8 +210,20 @@ the `timestamp_field`, and the provided or inferred `start_date` and sets the `s
 to whatever is larger (more recent). This means that any aborted loads will continue where they left off, and any
 duplicate loads will not have any effect (if using dbtvault macros).
 
-If you wish support idempotent loads in your own models using this materialisation, the best approach is to
-use `LEFT OUTER JOINS` to ensure duplicate records do not get loaded.
+If you wish support idempotent loads in your own models which do not use dbtvault macros and use this materialisation, 
+the best approach is to use `LEFT OUTER JOINS` in your incremental logic to ensure duplicate records do not get loaded.
+
+Example incremental logic containing a `LEFT OUTER JOIN` (taken from dbtvault's hub macro):
+
+=== "hub Macro LEFT OUTER JOIN"
+
+    ```jinja
+    {%- if is_incremental() %}
+    LEFT JOIN {{ this }} AS d
+    ON a.CUSTOMER_HK = d.CUSTOMER_HK
+    WHERE d.CUSTOMER_HK IS NULL
+    {%- endif %}
+    ```
 
 ### vault_insert_by_rank (Insert by Rank)
 
