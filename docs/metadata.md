@@ -11,9 +11,10 @@ For further details about how to use the macros in this section, see [table temp
 This page will describe just *one* way of providing metadata to the macros. There are many ways to do it, and it comes
 down to user and organisation preference.
 
-!!! note The macros **do not care** how the metadata parameters get provided, as long as they are of the correct type.
-Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our
-recommendations, which we hope provide a good balance of manageability and readability.
+!!! note
+    The macros **do not care** how the metadata parameters get provided, as long as they are of the correct type.
+    Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our
+    recommendations, which we hope provide a good balance of manageability and readability.
 
 **All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
 
