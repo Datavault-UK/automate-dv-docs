@@ -55,9 +55,11 @@ documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml
 The below example for a Hub is a little excessive for the small amount of metadata provided, so there is also a stage
 example provided to help better convey the difference.
 
-!!! warning dbt does not yet provide any syntax checking in these YAML strings, often leading to confusing and
-misleading error messages. If you find that variables which are extracted from the YAML string are empty, it is an
-indicator that the YAML did not compile correctly, and you should check your formatting; including indentation.
+!!! warning 
+
+    dbt does not yet provide any syntax checking in these YAML strings, often leading to confusing and
+    misleading error messages. If you find that variables which are extracted from the YAML string are empty, it is an
+    indicator that the YAML did not compile correctly, and you should check your formatting; including indentation.
 
 ##### Examples
 
@@ -124,8 +126,7 @@ indicator that the YAML did not compile correctly, and you should check your for
                       ranked_columns=ranked_columns) }}
     ```
 
-    !!! Note 
-        
+    !!! note
         '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
         [Read More](macros.md#constants-derived-columns)
 
