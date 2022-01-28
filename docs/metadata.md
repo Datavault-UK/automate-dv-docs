@@ -470,7 +470,7 @@ example provided to help better convey the difference.
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
         {{ dbtvault.link(src_pk=metadata_dict["src_pk"],
-                         src_fk=metadata_dict["src_nk"], 
+                         src_fk=metadata_dict["src_fk"], 
                          src_ldts=metadata_dict["src_ldts"],
                          src_source=metadata_dict["src_source"], 
                          source_model=metadata_dict["source_model"]) }}
@@ -493,7 +493,7 @@ example provided to help better convey the difference.
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
         {{ dbtvault.link(src_pk=metadata_dict["src_pk"],
-                         src_fk=metadata_dict["src_nk"], 
+                         src_fk=metadata_dict["src_fk"], 
                          src_ldts=metadata_dict["src_ldts"],
                          src_source=metadata_dict["src_source"], 
                          source_model=metadata_dict["source_model"]) }}
