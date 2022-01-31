@@ -1042,6 +1042,65 @@ Generates SQL to build a Satellite table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+=== "MS SQL Server"
+
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_HK IS NOT NULL
+        ),
+
+        records_to_insert AS (
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.LOAD_DATE
+            FROM
+            (
+                SELECT current_records.CUSTOMER_PK, current_records.HASHDIFF, current_records.LOAD_DATE,
+                    RANK() OVER (
+                       PARTITION BY current_records.CUSTOMER_PK
+                       ORDER BY current_records.LOAD_DATE DESC
+                    ) AS rank
+                FROM DBTVAULT_DEV.TEST_TIM_WILSON.SATELLITE AS current_records
+                JOIN (
+                    SELECT DISTINCT source_data.CUSTOMER_PK
+                    FROM source_data
+                ) AS source_records
+                ON current_records.CUSTOMER_PK = source_records.CUSTOMER_PK
+            ) AS a
+            WHERE a.rank = 1
+        ),
+
+        records_to_insert AS (
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+            LEFT JOIN latest_records
+            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
+            WHERE latest_records.HASHDIFF != e.HASHDIFF
+                OR latest_records.HASHDIFF IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
 === "Google BigQuery"
     Coming soon!
 
