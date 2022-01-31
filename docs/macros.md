@@ -918,7 +918,10 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.MY_STAGE
+            WHERE TRANSACTION_HK IS NOT NULL
+            AND CUSTOMER_FK IS NOT NULL
         ),
+
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
@@ -933,7 +936,51 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
             FROM DBTVAULT.TEST.raw_stage_hashed
+            WHERE TRANSACTION_HK IS NOT NULL
+            AND CUSTOMER_FK IS NOT NULL
         ),
+
+        records_to_insert AS (
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            FROM stage AS stg
+            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
+            WHERE tgt.TRANSACTION_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+=== "MS SQL Server"
+
+    === "Base Load"
+    
+        ```sql
+        WITH stage AS (
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE TRANSACTION_HK IS NOT NULL
+            AND CUSTOMER_FK IS NOT NULL
+        ),
+
+        records_to_insert AS (
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            FROM stage AS stg
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH stage AS (
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.raw_stage_hashed
+            WHERE TRANSACTION_HK IS NOT NULL
+            AND CUSTOMER_FK IS NOT NULL
+        ),
+
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
