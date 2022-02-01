@@ -1078,10 +1078,10 @@ Generates SQL to build a Satellite table using the provided parameters.
         records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
-                LEFT JOIN latest_records
-                    ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-                        WHERE latest_records.HASHDIFF != e.HASHDIFF
-                            OR latest_records.HASHDIFF IS NULL
+            LEFT JOIN latest_records
+                ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
+            WHERE latest_records.HASHDIFF != e.HASHDIFF
+                OR latest_records.HASHDIFF IS NULL
         )
         
         SELECT * FROM records_to_insert
