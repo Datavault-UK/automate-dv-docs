@@ -3138,7 +3138,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_8,
             TEST_COLUMN_9,
             BOOKING_DATE,
-            'STG_BOOKING' AS SOURCE,
+            'STG_BOOKING' AS RECORD_SOURCE,
             BOOKING_DATE AS EFFECTIVE_FROM
         
             FROM source_data
@@ -3311,7 +3311,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_8,
             TEST_COLUMN_9,
             BOOKING_DATE,
-            'STG_BOOKING' AS SOURCE,
+            'STG_BOOKING' AS RECORD_SOURCE,
             LOAD_DATE AS EFFECTIVE_FROM
         
             FROM source_data
@@ -3520,7 +3520,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_8,
             TEST_COLUMN_9,
             BOOKING_DATE,
-            'STG_BOOKING' AS SOURCE,
+            'STG_BOOKING' AS RECORD_SOURCE,
             BOOKING_DATE AS EFFECTIVE_FROM
         
             FROM source_data
@@ -3693,7 +3693,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_8,
             TEST_COLUMN_9,
             BOOKING_DATE,
-            'STG_BOOKING' AS SOURCE,
+            'STG_BOOKING' AS RECORD_SOURCE,
             LOAD_DATE AS EFFECTIVE_FROM
         
             FROM source_data
@@ -3861,39 +3861,39 @@ For example:
 
 === "Snowflake"
 
-```yaml hl_lines="3 12"
-source_model: MY_STAGE
-derived_columns:
-  CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-  SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: BOOKING_DATE
-hashed_columns:
-  CUSTOMER_HK: CUSTOMER_ID
-  HASHDIFF:
-    is_hashdiff: true 
-    columns:
-      - CUSTOMER_NAME
-      - CUSTOMER_DOB_UK
-      - CUSTOMER_PHONE
-```
+    ```yaml hl_lines="3 12"
+    source_model: MY_STAGE
+    derived_columns:
+      CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
+      RECORD_SOURCE: "!RAW_CUSTOMER"
+      EFFECTIVE_FROM: BOOKING_DATE
+    hashed_columns:
+      CUSTOMER_HK: CUSTOMER_ID
+      HASHDIFF:
+        is_hashdiff: true 
+        columns:
+          - CUSTOMER_NAME
+          - CUSTOMER_DOB_UK
+          - CUSTOMER_PHONE
+    ```
 
 === "MS SQL Server"
 
-```yaml hl_lines="3 12"
-source_model: MY_STAGE
-derived_columns:
-  CUSTOMER_DOB_UK: "SELECT CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
-  SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: BOOKING_DATE
-hashed_columns:
-  CUSTOMER_HK: CUSTOMER_ID
-  HASHDIFF:
-    is_hashdiff: true 
-    columns:
-      - CUSTOMER_NAME
-      - CUSTOMER_DOB_UK
-      - CUSTOMER_PHONE
-```
+    ```yaml hl_lines="3 12"
+    source_model: MY_STAGE
+    derived_columns:
+      CUSTOMER_DOB_UK: "CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
+      RECORD_SOURCE: "!RAW_CUSTOMER"
+      EFFECTIVE_FROM: BOOKING_DATE
+    hashed_columns:
+      CUSTOMER_HK: CUSTOMER_ID
+      HASHDIFF:
+        is_hashdiff: true 
+        columns:
+          - CUSTOMER_NAME
+          - CUSTOMER_DOB_UK
+          - CUSTOMER_PHONE
+    ```
 
 Here, we create a new derived column called `CUSTOMER_DOB_UK` which formats the `CUSTOMER_DOB` column
 (contained in our source) to use the UK date format, using a function. We then use the new `CUSTOMER_DOB_UK` as a
@@ -4032,13 +4032,23 @@ listed under the `columns` key, instead of using them to create the hashdiff.
 
 === "Snowflake"
 
-```yaml hl_lines="3"
-source_model: MY_STAGE
-derived_columns:
-  CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-  SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: BOOKING_DATE
-```
+    ```yaml hl_lines="3"
+    source_model: MY_STAGE
+    derived_columns:
+      CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
+      RECORD_SOURCE: "!RAW_CUSTOMER"
+      EFFECTIVE_FROM: BOOKING_DATE
+    ```
+
+=== "MS SQL Server"
+
+    ```yaml hl_lines="3"
+    source_model: MY_STAGE
+    derived_columns:
+      CUSTOMER_DOB_UK: "CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
+      RECORD_SOURCE: "!RAW_CUSTOMER"
+      EFFECTIVE_FROM: BOOKING_DATE
+    ```
 
 In the above example we can see the use of a function to convert the date format of the `CUSTOMER_DOB` to create a new
 column `CUSTOMER_DOB_UK`. Functions are incredibly useful for calculating values for new columns in derived column
@@ -4057,13 +4067,23 @@ SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
 
 === "Snowflake"
 
-```yaml hl_lines="4"
-source_model: MY_STAGE
-derived_columns:
-  CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-  RECORD_SOURCE: "!RAW_CUSTOMER"
-  EFFECTIVE_FROM: BOOKING_DATE
-```
+    ```yaml hl_lines="4"
+    source_model: MY_STAGE
+    derived_columns:
+      CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
+      RECORD_SOURCE: "!RAW_CUSTOMER"
+      EFFECTIVE_FROM: BOOKING_DATE
+    ```
+
+=== "MS SQL Server"
+
+    ```yaml hl_lines="4"
+    source_model: MY_STAGE
+    derived_columns:
+      CUSTOMER_DOB_UK: "CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
+      RECORD_SOURCE: "!RAW_CUSTOMER"
+      EFFECTIVE_FROM: BOOKING_DATE
+    ```
 
 In the above example we define a constant value for our new `SOURCE` column. We do this by prefixing our string with an
 exclamation mark: `!`. This is syntactic sugar provided by dbtvault to avoid having to escape quotes and other
@@ -4074,12 +4094,21 @@ the following:
 
 === "Snowflake"
 
-```sql hl_lines="3"
-SELECT 
-    TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK,
-    'RAW_CUSTOMER' AS RECORD_SOURCE,
-    BOOKING_DATE AS EFFECTIVE_FROM
-```
+    ```sql hl_lines="3"
+    SELECT 
+        TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK,
+        'RAW_CUSTOMER' AS RECORD_SOURCE,
+        BOOKING_DATE AS EFFECTIVE_FROM
+    ```
+
+=== "MS SQL Server"
+
+    ```sql hl_lines="3"
+    SELECT 
+        CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105) AS CUSTOMER_DOB_UK,
+        'RAW_CUSTOMER' AS RECORD_SOURCE,
+        BOOKING_DATE AS EFFECTIVE_FROM
+    ```
 
 And the data would look like:
 
@@ -4100,7 +4129,7 @@ derived_columns:
     - CUSTOMER_ID
     - CUSTOMER_NAME
     - "!DEV"
-  SOURCE: !RAW_CUSTOMER
+  RECORD_SOURCE: !RAW_CUSTOMER
   EFFECTIVE_FROM: BOOKING_DATE
 ```
 
