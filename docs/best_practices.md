@@ -274,7 +274,7 @@ of the record, and the payload of the record.
 
     Prior to dbtvault v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
     In dbtvault v0.7.4, macros have been updated to include logic to ensure the primary key is checked
-    in addition to the hashdiff when detecting new records. It is still best practise to include the natural keys, however. 
+    in addition to the hashdiff when detecting new records. It is still best practice to include the natural keys, however. 
 
 ### Hashing best practices
 
