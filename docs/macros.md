@@ -3877,6 +3877,24 @@ hashed_columns:
       - CUSTOMER_PHONE
 ```
 
+=== "MS SQL Server"
+
+```yaml hl_lines="3 12"
+source_model: MY_STAGE
+derived_columns:
+  CUSTOMER_DOB_UK: "SELECT CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
+  SOURCE: "!RAW_CUSTOMER"
+  EFFECTIVE_FROM: BOOKING_DATE
+hashed_columns:
+  CUSTOMER_HK: CUSTOMER_ID
+  HASHDIFF:
+    is_hashdiff: true 
+    columns:
+      - CUSTOMER_NAME
+      - CUSTOMER_DOB_UK
+      - CUSTOMER_PHONE
+```
+
 Here, we create a new derived column called `CUSTOMER_DOB_UK` which formats the `CUSTOMER_DOB` column
 (contained in our source) to use the UK date format, using a function. We then use the new `CUSTOMER_DOB_UK` as a
 component of the `HASHDIFF` column in our `hashed_columns` configuration.
@@ -4037,6 +4055,8 @@ SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
 
 #### Constants (Derived Columns)
 
+=== "Snowflake"
+
 ```yaml hl_lines="4"
 source_model: MY_STAGE
 derived_columns:
@@ -4051,6 +4071,8 @@ characters.
 
 As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like
 the following:
+
+=== "Snowflake"
 
 ```sql hl_lines="3"
 SELECT 
@@ -4279,7 +4301,7 @@ ___
 
 !!! seealso "See Also"
     - [hash_columns](#hash_columns)
-    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
+    - Read [Hashing best practices and why we hash](best_practices.md#hashing)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
     [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
@@ -4314,6 +4336,27 @@ A macro for generating hashing SQL for columns.
         IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
         IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), 
         IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
+        )) AS BINARY(32)) AS HASHDIFF
+        ```
+=== "Output (MS SQL Server)"
+
+    === "MD5"
+
+        ```sql
+        CAST(HASHBYTES('MD5', (CONCAT_WS('||',
+        ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), ''), '^^'),
+        ISNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR(max)))), ''), '^^'),
+        ISNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR(max)))), ''), '^^')
+        )) AS BINARY(16)) AS HASHDIFF
+        ```
+
+    === "SHA"
+
+        ```sql
+        CAST(HASHBYTES('SHA2_256', (CONCAT_WS('||',
+        ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), ''), '^^'),
+        ISNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR(max)))), ''), '^^'), 
+        ISNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR(max)))), ''), '^^')
         )) AS BINARY(32)) AS HASHDIFF
         ```
 
