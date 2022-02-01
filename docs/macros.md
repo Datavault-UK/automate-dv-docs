@@ -2636,19 +2636,19 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 
 #### Example Metadata
 
-[See examples](metadata.md#extended-tracking-satellites-xts)
+[See examples](metadata.md#bridge-tables)
 
 #### Example Output
 
 === "Snowflake"
 
-    === "Single-Source"
+    === "Base Load"
 
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
-            WHERE CUSTOMER_PK IS NOT NULL
+        WITH as_of AS (
+             SELECT a.AS_OF_DATE
+             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
+             WHERE a.AS_OF_DATE <= CURRENT_DATE()
         ),
         
         new_rows AS (
@@ -2657,12 +2657,12 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
                 b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
                             ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
                             ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
             INNER JOIN AS_OF AS b
                 ON (1=1)
-            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
                 ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
                 ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
                 AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
         ),
@@ -2685,32 +2685,34 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         
         bridge AS (
             SELECT
-                CUSTOMER_PK,
-                AS_OF_DATE,LINK_CUSTOMER_ORDER_PK
-            FROM candidate_rows
-            WHERE TO_DATE(EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
+                c.CUSTOMER_PK,
+                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
+            FROM candidate_rows AS c
+            WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
         )
         
         SELECT * FROM bridge
         ```
 
-    === "Single-Source with Multiple Satellite Feeds"
+    === "Subsequent Loads"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
+        WITH as_of AS (
+             SELECT a.AS_OF_DATE
+             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
+             WHERE a.AS_OF_DATE <= CURRENT_DATE()
         ),
         
         last_safe_load_datetime AS (
             SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
-            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_ORDER) 
+            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT_DEV.TEST.STG_CUSTOMER_ORDER
+                        
+                    ) AS l
         ),
         
         as_of_grain_old_entries AS (
             SELECT DISTINCT AS_OF_DATE
-            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER
+            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER
         ),
         
         as_of_grain_lost_entries AS (
@@ -2736,7 +2738,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         
         new_rows_pks AS (
             SELECT h.CUSTOMER_PK
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS h
+            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS h
             WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
         ),
         
@@ -2751,8 +2753,8 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         
         overlap_pks AS (
             SELECT p.CUSTOMER_PK
-            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER AS p
-            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as h
+            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER AS p
+            INNER JOIN DBTVAULT_DEV.TEST.HUB_CUSTOMER as h
                 ON p.CUSTOMER_PK = h.CUSTOMER_PK
             WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
                 AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
@@ -2770,16 +2772,16 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         overlap AS (
             SELECT
                 a.CUSTOMER_PK,
-                b.AS_OF_DATE,
-                LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK,
-                EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE,
-                EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+                b.AS_OF_DATE
+                            ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
+                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
+                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
             FROM overlap_pks AS a
             INNER JOIN overlap_as_of AS b
                 ON (1=1)
-            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
                 ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
                 ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
                 AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
         ),
@@ -2787,16 +2789,15 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         new_rows AS (
             SELECT
                 a.CUSTOMER_PK,
-                b.AS_OF_DATE,
-                LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK,
-                EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE,
-                EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
+                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
+                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
             INNER JOIN NEW_ROWS_AS_OF AS b
                 ON (1=1)
-            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
                 ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
                 ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
                 AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
         ),
@@ -2804,11 +2805,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         all_rows AS (
             SELECT * FROM new_rows
             UNION ALL
-            SELECT * FROM satellite_b
-            UNION ALL
-            SELECT * FROM satellite_c
-            UNION ALL
-            SELECT * FROM satellite_d
+            SELECT * FROM overlap
         ),
         
         candidate_rows AS (
@@ -2825,11 +2822,208 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         
         bridge AS (
             SELECT
-                CUSTOMER_PK,
-                AS_OF_DATE,
-                LINK_CUSTOMER_ORDER_PK
-            FROM candidate_rows
-            WHERE TO_DATE(EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
+                c.CUSTOMER_PK,
+                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
+            FROM candidate_rows AS c
+            WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
+        )
+        
+        SELECT * FROM bridge
+        ```
+
+=== "MS SQL Server"
+
+    === "Base Load"
+
+        ```sql
+        WITH as_of AS (
+             SELECT a.AS_OF_DATE
+             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
+             WHERE a.AS_OF_DATE <= GETDATE()
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
+                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
+                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
+            INNER JOIN AS_OF AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
+            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
+                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
+        ),
+        
+        all_rows AS (
+            SELECT * FROM new_rows
+        ),
+        
+        candidate_rows AS (
+            SELECT *
+            FROM
+            (
+            SELECT *,
+                ROW_NUMBER() OVER (
+                    PARTITION BY AS_OF_DATE,
+                        LINK_CUSTOMER_ORDER_PK
+                    ORDER BY
+                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
+                    ) AS row_num
+            FROM all_rows
+            ) AS a
+            WHERE a.row_num = 1
+        ),
+        
+        bridge AS (
+            SELECT
+                c.CUSTOMER_PK,
+                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
+            FROM candidate_rows AS c
+            WHERE CONVERT(DATE, c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
+        )
+        
+        SELECT * FROM bridge
+        ```
+
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH as_of AS (
+             SELECT a.AS_OF_DATE
+             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
+             WHERE a.AS_OF_DATE <= GETDATE()
+        ),
+        
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
+            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT_DEV.TEST.STG_CUSTOMER_ORDER
+                    ) AS l
+        ),
+        
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE
+            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER
+        ),
+        
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        min_date AS (
+            SELECT min(AS_OF_DATE) AS MIN_DATE
+            FROM as_of
+        ),
+        
+        new_rows_pks AS (
+            SELECT h.CUSTOMER_PK
+            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS h
+            WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of
+            WHERE as_of.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+            UNION
+            SELECT as_of_date
+            FROM as_of_grain_new_entries
+        ),
+        
+        overlap_pks AS (
+            SELECT p.CUSTOMER_PK
+            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER AS p
+            INNER JOIN DBTVAULT_DEV.TEST.HUB_CUSTOMER as h
+                ON p.CUSTOMER_PK = h.CUSTOMER_PK
+            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        overlap_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of AS p
+            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        overlap AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+                            ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
+                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
+                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+            FROM overlap_pks AS a
+            INNER JOIN overlap_as_of AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
+            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
+                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
+                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
+                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
+            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
+            INNER JOIN NEW_ROWS_AS_OF AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
+            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
+                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
+        ),
+        
+        all_rows AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap
+        ),
+        
+        candidate_rows AS (
+            SELECT *
+            FROM
+            (
+            SELECT *,
+                ROW_NUMBER() OVER (
+                    PARTITION BY AS_OF_DATE,
+                        LINK_CUSTOMER_ORDER_PK
+                    ORDER BY
+                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
+                    ) AS row_num
+            FROM all_rows
+            ) AS a
+            WHERE a.row_num = 1
+        ),
+        
+        bridge AS (
+            SELECT
+                c.CUSTOMER_PK,
+                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
+            FROM candidate_rows AS c
+            WHERE CONVERT(DATE, c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
         )
         
         SELECT * FROM bridge
