@@ -4,7 +4,7 @@
 
 dbt itself supports references to data via
 the `ref()` [function](https://docs.getdbt.com/reference/dbt-jinja-functions/ref/) for models, and the `source()`
-function for [dbt sources](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources/).
+[function](https://docs.getdbt.com/reference/dbt-jinja-functions/source) for [dbt sources](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources/).
 
 dbtvault provides the means for specifying sources for Data Vault structures with a `source_model` argument.
 
