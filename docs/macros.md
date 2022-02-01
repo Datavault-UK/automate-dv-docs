@@ -1124,7 +1124,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                        PARTITION BY current_records.CUSTOMER_PK
                        ORDER BY current_records.LOAD_DATE DESC
                     ) AS rank
-                FROM DBTVAULT_DEV.TEST_TIM_WILSON.SATELLITE AS current_records
+                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
                 JOIN (
                     SELECT DISTINCT source_data.CUSTOMER_PK
                     FROM source_data
@@ -1380,6 +1380,200 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         SELECT * FROM records_to_insert
         ```
 
+=== "MS SQL Server"
+
+    === "Base Load"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        records_to_insert AS (
+            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+            FROM source_data AS i
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "With auto end-dating (Subsequent)"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT *
+            FROM
+            (
+                SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY b.ORDER_CUSTOMER_HK
+                        ORDER BY b.LOAD_DATETIME DESC
+                    ) AS row_num
+                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            ) l
+            WHERE l.row_num = 1
+        ),
+        
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE CONVERT(DATE, c.END_DATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE CONVERT(DATE, d.END_DATE) != CONVERT(DATE, '9999-12-31 23:59:59.9999999')
+        ),
+        
+        new_open_records AS (
+            SELECT DISTINCT
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE CAST((g."END_DATE") AS DATE) = CAST(('9999-12-31 23:59:59.9999999') AS DATE)
+        ),
+        
+        new_closed_records AS (
+            SELECT DISTINCT
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            INNER JOIN latest_open AS lo
+            ON lo.ORDER_HK = h.ORDER_HK
+            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
+        ),
+        
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+            UNION
+            SELECT * FROM new_reopened_records
+            UNION
+            SELECT * FROM new_closed_records
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+        
+    === "Without auto end-dating (Subsequent)"   
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT *
+            FROM
+            (
+                SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY b.ORDER_CUSTOMER_HK
+                        ORDER BY b.LOAD_DATETIME DESC
+                    ) AS row_num
+                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            ) l
+            WHERE l.row_num = 1
+        ),
+        
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE CONVERT(DATE, c.END_DATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE CONVERT(DATE, d."END_DATE") != CONVERT(DATE, '9999-12-31 23:59:59.9999999')
+        ),
+        
+        new_open_records AS (
+            SELECT DISTINCT
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE CAST((g.END_DATE) AS DATE) = CAST(('9999-12-31 23:59:59.9999999') AS DATE)
+        ),
+        
+        new_closed_records AS (
+            SELECT DISTINCT
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            LEFT JOIN Latest_open AS lo
+            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            LEFT JOIN latest_closed AS lc
+            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            WHERE CAST((h.END_DATE) AS DATE) != CAST(('9999-12-31 23:59:59.9999999') AS DATE)
+            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
+            AND lc.ORDER_CUSTOMER_HK IS NULL
+        ),
+
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+            UNION
+            SELECT * FROM new_reopened_records
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
 === "Google BigQuery"
     Coming soon!
 
@@ -1548,6 +1742,115 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         SELECT * FROM records_to_insert
         ```
 
+=== "MS SQL Server"
+
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
+        ),
+        
+        records_to_insert AS (
+            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
+            FROM source_data
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATETIME, s.SOURCE
+            FROM DBTVAULT_DEV.TEST.STG_CUSTOMER AS s
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
+        ),
+        
+        source_data_with_count AS (
+            SELECT a.*
+                ,b.source_count
+            FROM source_data a
+            INNER JOIN
+            (
+                SELECT t.CUSTOMER_PK
+                    ,COUNT(*) AS source_count
+                FROM (SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE FROM source_data AS s) AS t
+                GROUP BY t.CUSTOMER_PK
+            ) AS b
+            ON a.CUSTOMER_PK = b.CUSTOMER_PK
+        ),
+        
+        latest_records AS (
+            SELECT mas.CUSTOMER_PK
+                ,mas.HASHDIFF
+                ,mas.CUSTOMER_PHONE
+                ,mas.LOAD_DATETIME
+                ,mas.latest_rank
+                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
+                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
+            FROM
+            (
+            SELECT inner_mas.CUSTOMER_PK
+                ,inner_mas.HASHDIFF
+                ,inner_mas.CUSTOMER_PHONE
+                ,inner_mas.LOAD_DATETIME
+                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
+                    ORDER BY inner_mas.LOAD_DATETIME DESC) AS latest_rank
+            FROM DBTVAULT_DEV.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
+            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
+                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK
+            ) AS mas
+            WHERE latest_rank = 1
+        ),
+        
+        latest_group_details AS (
+            SELECT lr.CUSTOMER_PK
+                ,lr.LOAD_DATETIME
+                ,MAX(lr.check_rank) AS latest_count
+            FROM latest_records AS lr
+            GROUP BY lr.CUSTOMER_PK, lr.LOAD_DATETIME
+        ),
+        
+        records_to_insert AS (
+            SELECT source_data_with_count.CUSTOMER_PK, source_data_with_count.HASHDIFF, source_data_with_count.CUSTOMER_PHONE, source_data_with_count.CUSTOMER_NAME, source_data_with_count.EFFECTIVE_FROM, source_data_with_count.LOAD_DATETIME, source_data_with_count.SOURCE
+            FROM source_data_with_count
+            WHERE EXISTS
+            (
+                SELECT 1
+                FROM source_data_with_count AS stage
+                WHERE NOT EXISTS
+                (
+                    SELECT 1
+                    FROM
+                    (
+                        SELECT lr.CUSTOMER_PK
+                        ,lr.HASHDIFF
+                        ,lr.CUSTOMER_PHONE
+                        ,lr.LOAD_DATETIME
+                        ,lg.latest_count
+                        FROM latest_records AS lr
+                        INNER JOIN latest_group_details AS lg
+                            ON lr.CUSTOMER_PK = lg.CUSTOMER_PK
+                            AND lr.LOAD_DATETIME = lg.LOAD_DATETIME
+                    ) AS active_records
+                    WHERE stage.CUSTOMER_PK = active_records.CUSTOMER_PK
+                        AND stage.HASHDIFF = active_records.HASHDIFF
+                        AND stage.CUSTOMER_PHONE = active_records.CUSTOMER_PHONE
+                        AND stage.source_count = active_records.latest_count
+                )
+                AND source_data_with_count.CUSTOMER_PK = stage.CUSTOMER_PK
+            )
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
 === "Google BigQuery"
     Coming soon!
 
@@ -1588,6 +1891,126 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 #### Example Output
 
 === "Snowflake"
+
+    === "Single-Source"
+
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * 
+            FROM satellite_a
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* 
+            FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_b AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_c AS (
+            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        satellite_d AS (
+            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+            UNION ALL
+            SELECT * FROM satellite_c
+            UNION ALL
+            SELECT * FROM satellite_d
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+=== "MS SQL Server"
 
     === "Single-Source"
 
@@ -1921,6 +2344,211 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
                 COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
                 COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
+            FROM new_rows_as_of_dates AS a
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
+                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
+                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap
+            UNION ALL
+            SELECT * FROM backfill
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
+
+=== "MS SQL Server"
+
+    === "Base Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * 
+            FROM DBTVAULT.TEST.AS_OF_DATE AS a
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN as_of_dates AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CONVERT(BINARY(16), '0000000000000000', 2)) AS SAT_CUSTOMER_DETAILS_PK,
+                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS datetime2)) AS SAT_CUSTOMER_DETAILS_LDTS,
+                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CONVERT(BINARY(16), '0000000000000000', 2)) AS SAT_CUSTOMER_LOGIN_PK,
+                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS datetime2)) AS SAT_CUSTOMER_LOGIN_LDTS,
+                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CONVERT(BINARY(16), '0000000000000000', 2)) AS SAT_CUSTOMER_PROFILE_PK,
+                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS datetime2)) AS SAT_CUSTOMER_PROFILE_LDTS
+            FROM new_rows_as_of_dates AS a
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
+                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
+                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
+
+    === "Incremental Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * 
+            FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+        
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME 
+            FROM (
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
+                UNION ALL
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
+                UNION ALL
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
+            ) a
+        ),
+        
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE 
+            FROM DBTVAULT.TEST.PIT_CUSTOMER
+        ),
+        
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of_dates AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_dates AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        min_date AS (
+            SELECT min(AS_OF_DATE) AS MIN_DATE
+            FROM as_of_dates
+        ),
+        
+        backfill_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_pks AS (
+            SELECT a.CUSTOMER_PK
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+            UNION
+            SELECT AS_OF_DATE
+            FROM as_of_grain_new_entries
+        ),
+        
+        overlap AS (
+            SELECT a.*
+            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
+            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
+                ON a.CUSTOMER_PK = b.CUSTOMER_PK
+            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        -- Back-fill any newly arrived hubs, set all historical pit dates to ghost records
+        
+        backfill_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM new_rows_pks AS a
+            INNER JOIN backfill_as_of AS b
+                ON (1=1 )
+        ),
+        
+        backfill AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                CONVERT(BINARY(16), '0000000000000000', 2) AS SAT_CUSTOMER_DETAILS_PK,
+                CAST('1900-01-01 00:00:00.000' AS datetime2) AS SAT_CUSTOMER_DETAILS_LDTS,
+                CONVERT(BINARY(16), '0000000000000000', 2) AS SAT_CUSTOMER_LOGIN_PK,
+                CAST('1900-01-01 00:00:00.000' AS datetime2) AS SAT_CUSTOMER_LOGIN_LDTS,
+                CONVERT(BINARY(16), '0000000000000000', 2) AS SAT_CUSTOMER_PROFILE_PK,        
+                CAST('1900-01-01 00:00:00.000' AS datetime2) AS SAT_CUSTOMER_PROFILE_LDTS
+            FROM backfill_rows_as_of_dates AS a
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
+                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
+                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN new_rows_as_of AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CONVERT(BINARY(16), '0000000000000000', 2)) AS SAT_CUSTOMER_DETAILS_PK,
+                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS datetime2)) AS SAT_CUSTOMER_DETAILS_LDTS,
+                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CONVERT(BINARY(16), '0000000000000000', 2)) AS SAT_CUSTOMER_LOGIN_PK,
+                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS datetime2)) AS SAT_CUSTOMER_LOGIN_LDTS,
+                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CONVERT(BINARY(16), '0000000000000000', 2)) AS SAT_CUSTOMER_PROFILE_PK,
+                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS datetime2)) AS SAT_CUSTOMER_PROFILE_LDTS
             FROM new_rows_as_of_dates AS a
             LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
