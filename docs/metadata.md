@@ -1,31 +1,30 @@
-dbtvault is metadata driven. On this page, we provide an overview of how to provide and store the data for **dbtvault macros**.
+dbtvault is metadata driven. On this page, we provide an overview of how to provide and store the data for **dbtvault
+macros**.
 
-For all other metadata and configurations, please refer to the [dbt configurations reference](https://docs.getdbt.com/reference/dbt_project.yml).
+For all other metadata and configurations, please refer to
+the [dbt configurations reference](https://docs.getdbt.com/reference/dbt_project.yml).
 
 For further details about how to use the macros in this section, see [table templates](macros.md#table-templates).
 
 ### Approaches
 
-This page will describe just *one* way of providing metadata to the macros. There are many ways to do it, 
-and it comes down to user and organisation preference.
+This page will describe just *one* way of providing metadata to the macros. There are many ways to do it, and it comes
+down to user and organisation preference.
 
+!!! note The macros **do not care** how the metadata parameters get provided, as long as they are of the correct type.
+Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our
+recommendations, which we hope provide a good balance of manageability and readability.
 
-!!! note
-    The macros **do not care** how the metadata parameters get provided, as long as they are of the correct type.
-    Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our recommendations,
-    which we hope provide a good balance of manageability and readability.  
-    
-    **All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
-    
+**All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
 
-It is worth noting that with larger projects, metadata management gets increasingly harder and can 
-become unwieldy. See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion. 
+It is worth noting that with larger projects, metadata management gets increasingly harder and can become unwieldy.
+See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
 
-We can reduce the impact of this problem by providing the metadata for a given model, in the model itself. This approach 
-does have the drawback that the creation of models is significantly less copy-and-paste, but the metadata management 
+We can reduce the impact of this problem by providing the metadata for a given model, in the model itself. This approach
+does have the drawback that the creation of models is significantly less copy-and-paste, but the metadata management
 improvements are usually worth it.
 
-#### Per-model - Variables 
+#### Per-model - Variables
 
 You may also provide metadata on a per-model basis. This is useful if you have a large amount of metadata.
 
@@ -44,20 +43,20 @@ You may also provide metadata on a per-model basis. This is useful if you have a
                     src_source=src_source, source_model=source_model) }}
     ```
 
-#### Per-Model - YAML strings 
+#### Per-Model - YAML strings
 
-If you want to provide metadata inside the model itself, but find yourself disliking the format for 
-larger collections of metadata or certain data types (e.g. dict literals), then providing a YAML String inside a block 
-`set` assignment is a good alternative to using multiple individual `set` assignments. This approach takes advantage of 
-the `fromyaml()` built-in jinja function provided by dbt, which is documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/). 
+If you want to provide metadata inside the model itself, but find yourself disliking the format for larger collections
+of metadata or certain data types (e.g. dict literals), then providing a YAML String inside a block
+`set` assignment is a good alternative to using multiple individual `set` assignments. This approach takes advantage of
+the `fromyaml()` built-in jinja function provided by dbt, which is
+documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/).
 
-The below example for a Hub is a little excessive for the small amount of metadata provided, so there is also a stage 
+The below example for a Hub is a little excessive for the small amount of metadata provided, so there is also a stage
 example provided to help better convey the difference.
 
-!!! warning
-    dbt does not yet provide any syntax checking in these YAML strings, often leading to confusing and misleading error
-    messages. If you find that variables which are extracted from the YAML string are empty, it is an indicator that the YAML
-    did not compile correctly, and you should check your formatting; including indentation.
+!!! warning dbt does not yet provide any syntax checking in these YAML strings, often leading to confusing and
+misleading error messages. If you find that variables which are extracted from the YAML string are empty, it is an
+indicator that the YAML did not compile correctly, and you should check your formatting; including indentation.
 
 ##### Examples
 
@@ -138,7 +137,7 @@ example provided to help better convey the difference.
 #### Metadata
 
 === "Per-model - YAML strings"
-    === "All components"
+=== "All components"
 
         ```jinja
         {%- set yaml_metadata -%}
@@ -338,7 +337,7 @@ example provided to help better convey the difference.
 #### Metadata
 
 === "Per-model - YAML strings"
-    
+
     === "Single Source"
 
         ```jinja
@@ -453,7 +452,7 @@ example provided to help better convey the difference.
 #### Metadata
 
 === "Per-model - YAML strings"
-    
+
     === "Single Source"
         ```jinja
         {%- set yaml_metadata -%}
@@ -525,6 +524,7 @@ example provided to help better convey the difference.
         ```
 
 ### Transactional links
+
 ###### (also known as non-historised links)
 
 #### Parameters
@@ -809,50 +809,153 @@ ___
 
 #### Metadata
 
-=== "Per-model - YAML stringfs"
+=== "Per-model - YAML strings"
 
-    ```jinja
-    {%- set yaml_metadata -%}
-    source_model: v_stg_customer
-    src_pk: CUSTOMER_HK
-    src_satellite:
-      SATELLITE_CUSTOMER:
-        sat_name:
-          SATELLITE_NAME: SAT_SAP_CUSTOMER
-        hashdiff:                
-          HASHDIFF: CUSTOMER_HASHDIFF
-    src_ldts: LOAD_DATETIME
-    src_source: RECORD_SOURCE
-    {%- endset -%}
+    === "Tracking a single satellite"
+
+        ```sql
+        {%- set yaml_metadata -%}
+        source_model: v_stg_customer
+        src_pk: CUSTOMER_HK
+        src_satellite:
+          SATELLITE_CUSTOMER:
+            sat_name:
+              SATELLITE_NAME: SATELLITE_NAME_1
+            hashdiff:                
+              HASHDIFF: CUSTOMER_HASHDIFF
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {% set metadata_dict = fromyaml(yaml_metadata) %}
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set src_pk = metadata_dict["src_pk"] %}
+        {% set src_ldts = metadata_dict["src_ldts"] %}
+        {% set src_satellite = metadata_dict["src_satellite"] %}
+        {% set src_source = metadata_dict["src_source"] %}
+    
+        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
 
-    {% set source_model = metadata_dict["source_model"] %}
-    {% set src_pk = metadata_dict["src_pk"] %}
-    {% set src_ldts = metadata_dict["src_ldts"] %}
-    {% set src_satellite = metadata_dict["src_satellite"] %}
-    {% set src_source = metadata_dict["src_source"] %}
+    === "Tracking multiple satellites"
 
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
-    ```
+        ```sql
+        {%- set yaml_metadata -%}
+        source_model: v_stg_customer
+        src_pk: CUSTOMER_HK
+        src_satellite:
+          SAT_CUSTOMER_DETAILS: 
+            sat_name:
+              SATELLITE_NAME: SATELLITE_NAME_1
+            hashdiff
+              HASHDIFF: CUSTOMER_HASHDIFF
+          SAT_CUSTOMER_DETAILS: 
+            sat_name:
+              SATELLITE_NAME: SATELLITE_NAME_2
+            hashdiff
+              HASHDIFF: ORDER_HASHDIFF
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set src_pk = metadata_dict["src_pk"] %}
+        {% set src_ldts = metadata_dict["src_ldts"] %}
+        {% set src_satellite = metadata_dict["src_satellite"] %}
+        {% set src_source = metadata_dict["src_source"] %}
+    
+        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
 
 === "Per-Model - Variables"
 
-    ```jinja
-    {%- set source_model = "v_stg_customer" -%}
-    {%- set src_pk = "CUSTOMER_HK" -%}
-    {%- set src_satellite = {"SATELLITE_CUSTOMER": {"sat_name": {"SATELLITE_NAME": "SAT_SAP_CUSTOMER"}, "hashdiff": {"HASHDIFF": "CUSTOMER_HASHDIFF"}}}
-    {%- set src_ldts = "LOAD_DATETIME" -%}
-    {%- set src_source = "RECORD_SOURCE" -%}
-    
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
-    ```
+    === "Tracking a single satellite"
+
+        ```sql
+        {%- set source_model = "v_stg_customer" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
+        {%- set src_satellite = {"SATELLITE_CUSTOMER": {"sat_name": {"SATELLITE_NAME": "SATELLITE_NAME_1"}, "hashdiff": {"HASHDIFF": "CUSTOMER_HASHDIFF"}}}
+        {%- set src_ldts = "LOAD_DATETIME" -%}
+        {%- set src_source = "RECORD_SOURCE" -%}
+        
+        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
+
+    === "Tracking multiple satellites"
+
+        ```sql
+        {%- set source_model = "v_stg_customer" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
+        {%- set src_satellite = "SAT_CUSTOMER_DETAILS": {
+                                  "sat_name": {"SATELLITE_NAME": "SATELLITE_NAME_1"}, 
+                                  "hashdiff": {"HASHDIFF": "CUSTOMER_HASHDIFF"}
+                                }, "SAT_ORDER_DETAILS": {
+                                  "sat_name": {"SATELLITE_NAME": "SATELLITE_NAME_2"},
+                                  "hashdiff": {"HASHDIFF": "ORDER_HASHDIFF"}
+                                }} -%}
+        {%- set src_ldts = "LOAD_DATETIME" -%}
+        {%- set src_source = "RECORD_SOURCE" -%}
+        
+        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
+        ```
+
+#### Understanding the `src_satellite` parameter
+
+The `src_satellite` parameter provides the means to define the satellites which the XTS tracks.
+
+The mapping matches columns in the stage layer (using the `stage` macro) to the `SATELLITE_NAME` and `HASHDIFF` columns in the XTS.
+
+```
+...
+"sat_name": {"SATELLITE_NAME": "SATELLITE_NAME_1"}
+...
+```
+
+In the above example we expect a `SATELLITE_NAME_1` column in the Stage, defined as follows:
+
+```
+...
+derived_columns:
+    SATELLITE_NAME_1: "!SAT_CUSTOMER_DETAILS"
+...
+```
+
+This works exactly the same way for the `HASHDIFF` column, as defined by:
+
+```
+...
+"hashdiff": {"HASHDIFF": "ORDER_HASHDIFF"}
+...
+```
+
+For example, the 'Tracking multiple satellites' metadata examples above would produce the XTS in the table below, given
+the following derived columns:
+
+```
+...
+derived_columns:
+    SATELLITE_NAME_1: "!SAT_CUSTOMER_DETAILS"
+    SATELLITE_NAME_2: "!SAT_ORDER_DETAILS"
+...
+```
+
+| CUSTOMER_HK | HASHDIFF | SATELLITE_NAME       | LOAD_DATE  | SOURCE |
+|-------------|----------|----------------------|------------|--------|
+| B8C37E...   | 3C598... | SAT_CUSTOMER_DETAILS | 1993-01-01 | *      |
+| .           | .        | .                    | .          | .      |
+| .           | .        | .                    | .          | .      |
+| FED333...   | 6C958... | SAT_ORDER_DETAILS    | 1993-01-01 | *      |
 
 ___
 
-### Point-In-Time (PIT) Tables 
+### Point-In-Time (PIT) Tables
 
 #### Parameters
 
@@ -888,23 +991,18 @@ ___
       STG_CUSTOMER_LOGIN: LOAD_DATETIME
       STG_CUSTOMER_PROFILE: LOAD_DATETIME
     src_ldts: LOAD_DATETIME
-    src_satellite:
-      SATELLITE_CUSTOMER:
-        sat_name:
-          SATELLITE_NAME: SATELLITE_1
-        hashdiff:
-          HASHDIFF: HASHDIFF_1
-    src_source: RECORD_SOURCE
     {%- endset -%}
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                    as_of_dates_table=as_of_dates_table,
-                    satellites=satellites,
-                    stage_tables=stage_tables,
-                    src_ldts=src_ldts) }}
+    {{ dbtvault.pit(source_model=metadata_dict['source_model'], 
+                    src_pk=metadata_dict['src_pk'],
+                    as_of_dates_table=metadata_dict['as_of_dates_table'],
+                    satellites=metadata_dict['satellites'],
+                    stage_tables=metadata_dict['stage_tables'],
+                    src_ldts=metadata_dict['src_ldts']) }}
     ```
+
 ___
 
 ### Bridge tables
@@ -955,25 +1053,28 @@ ___
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}   
 
-    {{ dbtvault.bridge(source_model=metadata_dict["source_model"], 
-                       src_pk=metadata_dict["src_pk"],
-                       src_ldts=metadata_dict["src_ldts"],
-                       bridge_walk=metadata_dict["bridge_walk"],
-                       as_of_dates_table=metadata_dict["as_of_dates_table"],
-                       stage_tables_ldts=metadata_dict["stage_tables_ldts"]) }}
+    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], 
+                       src_pk=metadata_dict['src_pk'],
+                       src_ldts=metadata_dict['src_ldts'],
+                       bridge_walk=metadata_dict['bridge_walk'],
+                       as_of_dates_table=metadata_dict['as_of_dates_table'],
+                       stage_tables_ldts=metadata_dict['stage_tables_ldts']) }}
     ```
+
 ___
 
 ### The problem with metadata
 
-When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger 
-projects. If your metadata gets defined and stored in each model, it becomes harder to generate and develop with, 
-but it can be easier to manage. Model-level metadata alleviates the issue, but will not completely solve it.
+When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger
+projects. If your metadata gets defined and stored in each model, it becomes harder to generate and develop with, but it
+can be easier to manage. Model-level metadata alleviates the issue, but will not completely solve it.
 
-Whichever approach gets chosen, metadata storage and retrieval is difficult without a dedicated tool. 
-To help manage large amounts of metadata, we recommend the use of third-party enterprise tools such as WhereScape, 
-Matillion, or Erwin Data Modeller. 
+Whichever approach gets chosen, metadata storage and retrieval is difficult without a dedicated tool. To help manage
+large amounts of metadata, we recommend the use of third-party enterprise tools such as WhereScape, Matillion, or Erwin
+Data Modeller.
 
-In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a 
-little longer. Discussions are [already ongoing](https://github.com/dbt-labs/dbt/issues/2401), and we hope
-to be able to advise on better ways to manage metadata in the future. 
+In the future, dbt will likely support better ways to manage metadata at this level, to put off the need for a tool a
+little longer. Discussions are [already ongoing](https://github.com/dbt-labs/dbt/issues/2401), and we hope to be able to
+advise on better ways to manage metadata in the future. 
+
+--8<-- "includes/abbreviations.md"

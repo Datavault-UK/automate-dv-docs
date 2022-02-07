@@ -1757,6 +1757,10 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 !!! tip
     [Read the tutorial](tutorial/tut_xts.md) for more details
 
+!!! note "Understanding the src_satellite parameter"
+    [Read More](metadata.md#understanding-the-src_satellite-parameter)
+
+
 #### Example Metadata
 
 [See examples](metadata.md#extended-tracking-satellites-xts)
@@ -2413,17 +2417,31 @@ Generates SQL to build a staging area using the provided parameters.
 
 #### Usage
 
-=== "Input"
+``` jinja 
+{{ dbtvault.stage(include_source_columns=true,
+                  source_model=source_model,
+                  hashed_columns=hashed_columns,
+                  derived_columns=derived_columns,
+                  ranked_columns=ranked_columns) }}
+```
 
-    ``` jinja 
-    {{ dbtvault.stage(include_source_columns=true,
-                      source_model=source_model,
-                      hashed_columns=hashed_columns,
-                      derived_columns=derived_columns,
-                      ranked_columns=ranked_columns) }}
-    ```
+#### Parameters
 
-=== "Example Output (Snowflake)"
+| Parameter              | Description                                                                 | Type    | Default | Required?                                         |
+|------------------------|-----------------------------------------------------------------------------|---------|---------|---------------------------------------------------|
+| include_source_columns | If true, select all columns in the `source_model`                           | Boolean | true    | :fontawesome-solid-minus-circle:{ .not-required } |
+| source_model           | Staging model name                                                          | Mapping | N/A     | :fontawesome-solid-check-circle:{ .required }     |
+| derived_columns        | Mappings of column names and their value                                    | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
+| hashed_columns         | Mappings of hashes to their component columns                               | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
+| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
+
+#### Example Metadata
+
+[See examples](metadata.md#staging)
+
+#### Example Output
+
+=== "Snowflake"
 
     === "All variables"
 
@@ -2805,17 +2823,6 @@ Generates SQL to build a staging area using the provided parameters.
         SELECT * FROM columns_to_select
         ```
 
-#### Parameters
-
-| Parameter              | Description                                                                 | Type    | Default | Required?                                         |
-|------------------------|-----------------------------------------------------------------------------|---------|---------|---------------------------------------------------|
-| include_source_columns | If true, select all columns in the `source_model`                           | Boolean | true    | :fontawesome-solid-minus-circle:{ .not-required } |
-| source_model           | Staging model name                                                          | Mapping | N/A     | :fontawesome-solid-check-circle:{ .required }     |
-| derived_columns        | Mappings of column names and their value                                    | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
-| hashed_columns         | Mappings of hashes to their component columns                               | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
-| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
-
-[See examples](metadata.md#staging)
 
 ### stage macro configurations
 
@@ -3040,7 +3047,8 @@ And the data would look like:
 
 #### Composite columns (Derived Columns)
 
-```yaml hl_lines=3 4 5 6
+
+```yaml hl_lines="3 4 5 6"
 source_model: MY_STAGE
 derived_columns:
   CUSTOMER_NK:

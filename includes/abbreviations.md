@@ -1,4 +1,5 @@
 *[SQL]: Structured Query Language
+*[CLI]: Command Line Interface
 *[MSSQL]: Microsoft Structured Query Language
 *[PITs]: Point in Time tables
 *[PIT]: Point in Time tables
