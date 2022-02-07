@@ -1620,7 +1620,116 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         ```
 
 === "Google BigQuery"
-    Coming soon!
+    
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE`, s.`CUSTOMER_NAME`, s.EFFECTIVE_FROM, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+                AND s.`CUSTOMER_PHONE` IS NOT NULL
+        ),
+        
+        records_to_insert AS (
+            SELECT source_data.`CUSTOMER_PK`, source_data.`HASHDIFF`, source_data.`CUSTOMER_PHONE`, source_data.`CUSTOMER_NAME`, source_data.EFFECTIVE_FROM, source_data.`LOAD_DATE`, source_data.`SOURCE`
+            FROM source_data
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE`, s.`CUSTOMER_NAME`, s.EFFECTIVE_FROM, s.`LOAD_DATETIME`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+                AND s.`CUSTOMER_PHONE` IS NOT NULL
+        ),
+
+
+
+        source_data_with_count AS (
+            SELECT a.*
+                ,b.source_count
+            FROM source_data a
+            INNER JOIN
+            (
+                SELECT t.`CUSTOMER_PK`
+                    ,COUNT(*) AS source_count
+                FROM (SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE` FROM source_data AS s) AS t
+                GROUP BY t.`CUSTOMER_PK`
+            ) AS b
+            ON a.`CUSTOMER_PK` = b.`CUSTOMER_PK`
+        ),
+
+        latest_records AS (
+            SELECT mas.`CUSTOMER_PK`
+                ,mas.`HASHDIFF`
+                ,mas.`CUSTOMER_PHONE`
+                ,mas.`LOAD_DATETIME`
+                ,mas.latest_rank
+                ,DENSE_RANK() OVER (PARTITION BY mas.`CUSTOMER_PK`
+                    ORDER BY mas.`HASHDIFF`, mas.`CUSTOMER_PHONE` ASC) AS check_rank
+            FROM
+            (
+            SELECT inner_mas.`CUSTOMER_PK`
+                ,inner_mas.`HASHDIFF`
+                ,inner_mas.`CUSTOMER_PHONE`
+                ,inner_mas.`LOAD_DATETIME`
+                ,RANK() OVER (PARTITION BY inner_mas.`CUSTOMER_PK`
+                    ORDER BY inner_mas.`LOAD_DATETIME` DESC) AS latest_rank
+            FROM `flash-bazaar-332912`.`DBTVAULT_FLASH_BAZAAR_332912`.`MULTI_ACTIVE_SATELLITE_TS` AS inner_mas
+            INNER JOIN (SELECT DISTINCT s.`CUSTOMER_PK` FROM source_data as s ) AS spk
+                ON inner_mas.`CUSTOMER_PK` = spk.`CUSTOMER_PK`
+            ) AS mas
+            WHERE latest_rank = 1
+        ),
+
+        latest_group_details AS (
+            SELECT lr.`CUSTOMER_PK`
+                ,lr.`LOAD_DATETIME`
+                ,MAX(lr.check_rank) AS latest_count
+            FROM latest_records AS lr
+            GROUP BY lr.`CUSTOMER_PK`, lr.`LOAD_DATETIME`
+        ),
+
+
+
+        records_to_insert AS (
+            SELECT source_data_with_count.`CUSTOMER_PK`, source_data_with_count.`HASHDIFF`, source_data_with_count.`CUSTOMER_PHONE`, source_data_with_count.`CUSTOMER_NAME`, source_data_with_count.EFFECTIVE_FROM, source_data_with_count.`LOAD_DATETIME`, source_data_with_count.`SOURCE`
+            FROM source_data_with_count
+            WHERE EXISTS
+            (
+                SELECT 1
+                FROM source_data_with_count AS stage
+                WHERE NOT EXISTS
+                (
+                    SELECT 1
+                    FROM
+                    (
+                        SELECT lr.`CUSTOMER_PK`
+                        ,lr.`HASHDIFF`
+                        ,lr.`CUSTOMER_PHONE`
+                        ,lr.`LOAD_DATETIME`
+                        ,lg.latest_count
+                        FROM latest_records AS lr
+                        INNER JOIN latest_group_details AS lg
+                            ON lr.`CUSTOMER_PK` = lg.`CUSTOMER_PK`
+                            AND lr.`LOAD_DATETIME` = lg.`LOAD_DATETIME`
+                    ) AS active_records
+                    WHERE stage.`CUSTOMER_PK` = active_records.`CUSTOMER_PK`
+                        AND stage.`HASHDIFF` = active_records.`HASHDIFF`
+                        AND stage.`CUSTOMER_PHONE` = active_records.`CUSTOMER_PHONE`
+                        AND stage.source_count = active_records.latest_count
+                )
+                AND source_data_with_count.`CUSTOMER_PK` = stage.`CUSTOMER_PK`
+            )
+
+        )
+
+        SELECT * FROM records_to_insert
 
 ### xts
 
