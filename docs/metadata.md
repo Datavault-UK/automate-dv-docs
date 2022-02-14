@@ -748,6 +748,76 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
                         source_model=source_model) }}
     ```
 
+### Effectivity Satellites 2
+
+#### Parameters
+
+[eff_sat macro parameters](macros.md#eff_sat_2)
+
+#### Metadata
+
+=== "stg_order_customer HASHDIFF metadata definition"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    ...
+    hashed_columns:
+      HASHDIFF:
+        is_hashdiff: true
+        columns:
+          - STATUS::BOOLEAN
+     ...
+    {% endset %}
+    ```
+
+=== "Per-model - YAML strings"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: v_stg_order_customer
+    src_pk: ORDER_CUSTOMER_HK
+    src_dfk: 
+      - ORDER_HK
+    src_sfk: CUSTOMER_HK
+    src_status: STATUS
+    src_hashdiff: HASHDIFF
+    src_eff: EFFECTIVE_FROM
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.eff_sat_2(src_pk=metadata_dict["src_pk"],
+                        src_dfk=metadata_dict["src_dfk"],
+                        src_sfk=metadata_dict["src_sfk"],
+                        src_status=metadata_dict["src_status"],
+                        src_hashdiff=metadata_dict["src_hashdiff"],
+                        src_eff=metadata_dict["src_eff"],
+                        src_ldts=metadata_dict["src_ldts"],
+                        src_source=metadata_dict["src_source"],
+                        source_model=metadata_dict["source_model"]) }}
+    ```
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_order_customer" -%}
+    {%- set src_pk = "ORDER_CUSTOMER_HK" -%}
+    {%- set src_dfk = ["ORDER_HK"] -%}
+    {%- set src_sfk = "CUSTOMER_HK" -%}
+    {%- set src_status = "STATUS" -%}
+    {%- set src_hashdiff = "HASHDIFF" -%}
+    {%- set src_eff = "EFFECTIVE_FROM" -%}
+    {%- set src_ldts = "LOAD_DATETIME" -%}
+    {%- set src_source = "RECORD_SOURCE" -%}
+    
+    {{ dbtvault.eff_sat_2(src_pk={src_pk}, src_dfk={src_dfk}, src_sfk={src_sfk},
+                              src_status={src_status}, src_hashdiff={src_hashdiff},
+                              src_eff={src_eff}, src_ldts={src_ldts}, 
+                              src_source={src_source}, source_model={source_model}) }}
+    ```
+
 ### Multi-Active Satellites (MAS)
 
 #### Parameters

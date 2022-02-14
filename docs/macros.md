@@ -906,6 +906,272 @@ The definition of the 'end' of a relationship is considered business logic which
 
 ___
 
+### eff_sat_2
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql))
+
+Generates SQL to build an Effectivity Satellite table using the provided parameters.
+
+!!! Note
+
+    This is an alternative implementation of the effectivity satellite using status and hashdiff columns instead of start and end dates.
+    
+    In the examples below the column name STATUS is used for illustration purposes, however it is not recommended to use this name in practice as it is a reserved word on most SQL platforms.
+
+#### Usage
+
+``` jinja
+{{ dbtvault.eff_sat_2(src_pk={src_pk}, src_dfk={src_dfk}, src_sfk={src_sfk},
+                          src_status={src_status}, src_hashdiff={src_hashdiff},
+                          src_eff={src_eff}, src_ldts={src_ldts}, 
+                          src_source={src_source}, source_model={source_model}) }}
+```
+
+#### Parameters
+
+| Parameter    | Description                                 | Type                | Required?                                     |
+|--------------|---------------------------------------------|---------------------|-----------------------------------------------|
+| src_pk       | Source primary key column                   | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_dfk      | Source driving foreign key column           | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| src_sfk      | Source secondary foreign key column         | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| src_status   | Source status column                        | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_hashdiff | Source hashdiff column                      | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_eff      | Source effective from column                | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts     | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required } |
+| src_source   | Name of the column containing the source ID | String              | :fontawesome-solid-check-circle:{ .required } |
+| source_model | Staging model name                          | String              | :fontawesome-solid-check-circle:{ .required } |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#effectivity-satellites-2)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Base Load"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.STATUS, a.HASHDIFF, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        records_to_insert AS (
+            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.STATUS, i.HASHDIFF, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+            FROM source_data AS i
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "With auto end-dating (Subsequent)"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.STATUS, a.HASHDIFF, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.STATUS, b.HASHDIFF, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            QUALIFY row_num = 1
+        ),
+        
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.STATUS, c.HASHDIFF, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE c.STATUS = 'TRUE'::BOOLEAN
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.STATUS, d.HASHDIFF, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE d.STATUS = 'FALSE'::BOOLEAN
+        ),
+        
+        new_open_records AS (
+            SELECT DISTINCT
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.STATUS, f.HASHDIFF, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
+                lc.STATUS,
+                g.HASHDIFF,
+                g.EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE g.STATUS = 'TRUE'::BOOLEAN
+        ),
+        
+        new_closed_records AS (
+            SELECT DISTINCT
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
+                'FALSE'::BOOLEAN AS STATUS,
+                CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST('0' AS VARCHAR))), ''))) AS BINARY(16)) AS HASHDIFF,
+                h.EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            INNER JOIN latest_open AS lo
+            ON lo.ORDER_HK = h.ORDER_HK
+            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
+        ),
+        
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+            UNION
+            SELECT * FROM new_reopened_records
+            UNION
+            SELECT * FROM new_closed_records
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+        
+    === "Without auto end-dating (Subsequent)"   
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.STATUS, a.HASHDIFF, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.STATUS, b.HASHDIFF, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            QUALIFY row_num = 1
+        ),
+        
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.STATUS, c.HASHDIFF, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE c.STATUS = 'TRUE'::BOOLEAN
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.STATUS, d.HASHDIFF, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE c.STATUS = 'FALSE'::BOOLEAN
+        ),
+        
+        new_open_records AS (
+            SELECT DISTINCT
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.STATUS, f.HASHDIFF, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
+                lc.STATUS,
+                g.HASHDIFF,
+                g.EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE g.STATUS = 'TRUE'::BOOLEAN
+        ),
+        
+        new_closed_records AS (
+            SELECT DISTINCT
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
+                h.STATUS,
+                h.HASHDIFF,
+                h.EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            LEFT JOIN Latest_open AS lo
+            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            LEFT JOIN latest_closed AS lc
+            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            WHERE h.STATUS = 'FALSE'::BOOLEAN
+            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
+            AND lc.ORDER_CUSTOMER_HK IS NULL
+        ),
+
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+            UNION
+            SELECT * FROM new_reopened_records
+            UNION
+            SELECT * FROM new_closed_records
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+=== "Google BigQuery"
+    Coming soon!
+
+#### Auto end-dating
+
+Auto end-dating is enabled by providing a config option as below:
+
+``` jinja
+{{ config(is_auto_end_dating=true) }}
+
+{{ dbtvault.eff_sat_2(src_pk={src_pk}, src_dfk={src_dfk}, src_sfk={src_sfk},
+                          src_status={src_status}, src_hashdiff={src_hashdiff},
+                          src_eff={src_eff}, src_ldts={src_ldts}, 
+                          src_source={src_source}, source_model={source_model}) }}
+```
+
+This will enable 3 extra CTEs in the Effectivity Satellite SQL generated by the macro. Examples of this SQL are in the
+Example Output section above. The result of this will be additional effectivity records with end dates included, which
+will aid business logic and creation of presentation layer structures downstream.
+
+In most cases where Effectivity Satellites are recording 1-1 or 1-M relationships, this feature can be safely enabled.
+In situations where a M-M relationship is being modelled/recorded, it becomes impossible to infer end dates. This
+feature is disabled by default because it could be considered an application of a business rule:
+The definition of the 'end' of a relationship is considered business logic which should happen in the Business Vault.
+
+[Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
+
+!!! warning
+
+    We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
+    exercised if you are unsure.
+
+___
+
 ### ma_sat
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
