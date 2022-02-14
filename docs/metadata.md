@@ -752,7 +752,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Parameters
 
-[eff_sat macro parameters](macros.md#eff_sat_2)
+[eff_sat 2 macro parameters](macros.md#eff_sat_2)
 
 #### Metadata
 
