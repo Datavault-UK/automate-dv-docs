@@ -74,16 +74,26 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 |-------------------|-------------------------------------------------------------------------------|
 | source_model      | hub_customer                                                                  |
 | src_pk            | CUSTOMER_HK                                                                   |
-| as_of_dates_table | AS_OF_DATE                                                                    |
-| satellites        | {"SAT_CUSTOMER_DETAILS":                                                      |
+| as_of_dates_table | as_of_date                                                                    |
+| satellites        | {"sat_customer_details":                                                      |
 |                   | &emsp;&emsp;{"pk": {"PK": "CUSTOMER_HK"}, {"ldts": {"LDTS": "LOAD_DATETIME"}} |
 |                   | }                                                                             |
-|                   | {"SAT_CUSTOMER_LOGIN":                                                        |
+|                   | {"sat_customer_login":                                                        |
 |                   | &emsp;&emsp;{"pk": {"PK": "CUSTOMER_HK"}, {"ldts": {"LDTS": "LOAD_DATETIME"}} |
 |                   | }                                                                             |
-| stage_tables      | {"STG_CUSTOMER_DETAILS": "LOAD_DATETIME",                                     |
-|                   | "STG_CUSTOMER_LOGIN": "LOAD_DATETIME"}                                        |
+| stage_tables      | {"stg_customer_details": "LOAD_DATETIME",                                     |
+|                   | "stg_customer_login": "LOAD_DATETIME"}                                        |
 | src_ldts          | LOAD_DATETIME                                                                 |
+
+!!! Note "Formatting of model names in metadata dictionary"
+
+    Model names (e.g. as_of_date, sat_customer_details, stg_customer_details) are provided in lower case under the assumption
+    that most people will give their models names in lower case. 
+    If you intend on using UPPERCASE for your model names (e.g. STG_CUSTOMER_DETAILS.sql) make sure to reference these 
+    in UPPERCASE in the PIT metadata dictionary too.
+    This is because dbt allows for case sensitive model names (e.g. STG_CUSTOMER_DETAILS.sql and stg_customer_details.sql 
+    are considered two distinct models by dbt). 
+
 
 #### Source table
 
@@ -134,7 +144,7 @@ Next, we provide the PIT's column name for the As of Date table.
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     src_ldts: LOAD_DATETIME
     ...
     ```
@@ -149,14 +159,14 @@ Here we add the Satellite related details (i.e. the Primary/Hash Key and the Loa
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     satellites: 
-      SAT_CUSTOMER_DETAILS:
+      sat_customer_details:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
-      SAT_CUSTOMER_LOGIN:
+      sat_customer_login:
         pk:
           PK: CUSTOMER_HK
         ldts:
@@ -175,21 +185,21 @@ Finally, we add Satellites' stage table names and their Load Date/Timestamp colu
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     satellites: 
-      SAT_CUSTOMER_DETAILS:
+      sat_customer_details:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
-      SAT_CUSTOMER_LOGIN:
+      sat_customer_login:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
     stage_tables: 
-      STG_CUSTOMER_DETAILS: LOAD_DATETIME
-      STG_CUSTOMER_LOGIN: LOAD_DATETIME    
+      stg_customer_details: LOAD_DATETIME
+      stg_customer_login: LOAD_DATETIME    
     src_ldts: LOAD_DATETIME
     {%- endset -%}
     ```
@@ -204,21 +214,21 @@ Now, our model should look like the following:
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     satellites: 
-      SAT_CUSTOMER_DETAILS:
+      sat_customer_details:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
-      SAT_CUSTOMER_LOGIN:
+      sat_customer_login:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
     stage_tables: 
-      STG_CUSTOMER_DETAILS: LOAD_DATETIME
-      STG_CUSTOMER_LOGIN: LOAD_DATETIME    
+      stg_customer_details: LOAD_DATETIME
+      stg_customer_login: LOAD_DATETIME    
     src_ldts: LOAD_DATETIME
     {%- endset -%}
 

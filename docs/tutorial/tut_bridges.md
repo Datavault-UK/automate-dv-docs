@@ -69,16 +69,16 @@ Let's look at the metadata we need to provide to the [bridge](../macros.md#bridg
 | source_model      | hub_customer                                                             |
 | src_pk            | CUSTOMER_PK                                                              |
 | src_ldts          | LOAD_DATETIME                                                            |
-| as_of_dates_table | AS_OF_DATE                                                               |
+| as_of_dates_table | as_of_date                                                               |
 | satellites        | {'CUSTOMER_ORDER':                                                       |
 |                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_CUSTOMER_ORDER_PK',                 |
 |                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_CUSTOMER_ORDER_ENDDATE',   |
 |                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_CUSTOMER_ORDER_LOADDATE', |
-|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_CUSTOMER_ORDER',                   |
+|                   | &emsp;&emsp;&nbsp;'link_table': 'link_customer_order',                   |
 |                   | &emsp;&emsp;&nbsp;'link_pk': 'CUSTOMER_ORDER_PK',                        |
 |                   | &emsp;&emsp;&nbsp;'link_fk1': 'CUSTOMER_FK',                             |
 |                   | &emsp;&emsp;&nbsp;'link_fk2': 'ORDER_FK',                                |
-|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_CUSTOMER_ORDER',             |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'eff_sat_customer_order',             |
 |                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'CUSTOMER_ORDER_PK',                     |
 |                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        |
 |                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'},                 |
@@ -86,17 +86,26 @@ Let's look at the metadata we need to provide to the [bridge](../macros.md#bridg
 |                   | &emsp;&emsp;{'bridge_link_pk': 'LINK_ORDER_PRODUCT_PK',                  |
 |                   | &emsp;&emsp;&nbsp;'bridge_end_date': 'EFF_SAT_ORDER_PRODUCT_ENDDATE',    |
 |                   | &emsp;&emsp;&nbsp;'bridge_load_date': 'EFF_SAT_ORDER_PRODUCT_LOADDATE',  |
-|                   | &emsp;&emsp;&nbsp;'link_table': 'LINK_ORDER_PRODUCT',                    |
+|                   | &emsp;&emsp;&nbsp;'link_table': 'link_order_product',                    |
 |                   | &emsp;&emsp;&nbsp;'link_pk': 'ORDER_PRODUCT_PK',                         |
 |                   | &emsp;&emsp;&nbsp;'link_fk1': 'ORDER_FK',                                |
 |                   | &emsp;&emsp;&nbsp;'link_fk2': 'PRODUCT_FK',                              |
-|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'EFF_SAT_ORDER_PRODUCT',              |
+|                   | &emsp;&emsp;&nbsp;'eff_sat_table': 'eff_sat_order_product',              |
 |                   | &emsp;&emsp;&nbsp;'eff_sat_pk': 'ORDER_PRODUCT_PK',                      |
 |                   | &emsp;&emsp;&nbsp;'eff_sat_end_date': 'END_DATE',                        |
 |                   | &emsp;&emsp;&nbsp;'eff_sat_load_date': 'LOAD_DATETIME'}}                 |
-| stage_tables_ldts | {'STG_CUSTOMER_ORDER': 'LOAD_DATETIME',                                  |
-|                   | &nbsp;'STG_CUSTOMER_PRODUCT': 'LOAD_DATETIME'}                           |
+| stage_tables_ldts | {'stg_customer_order': 'LOAD_DATETIME',                                  |
+|                   | &nbsp;'stg_customer_product': 'LOAD_DATETIME'}                           |
 
+
+!!! Note "Formatting of model names in metadata dictionary"
+
+    Model names (e.g. as_of_date, link_customer_order, eff_sat_customer_order, stg_customer_order) are provided in lower 
+    case under the assumption that most people will give their models names in lower case. 
+    If you intend on using UPPERCASE for your model names (e.g. STG_CUSTOMER_ORDER.sql) make sure to reference these 
+    in UPPERCASE in the Bridge metadata dictionary too. 
+    This is because dbt allows for case sensitive model names (e.g. STG_CUSTOMER_ORDER.sql and stg_customer_order.sql 
+    are considered two distinct models by dbt). 
 
 #### Source table
 
@@ -134,7 +143,7 @@ The `CUSTOMER_PK` we created earlier in the [Hub](tut_hubs.md) section will be u
 The As of Date table is the source information of the [As of Dates](tut_as_of_date.md).
 This will provide the dates for which to generate the Bridge table.
 
-Here we name our As of Date table `AS_OF_DATE`. 
+Here we name our As of Date table `as_of_date`. 
 
 === "bridge_customer_order.sql"
 
@@ -143,7 +152,7 @@ Here we name our As of Date table `AS_OF_DATE`.
     source_model: hub_customer
     src_pk: CUSTOMER_PK
     src_ldts: LOAD_DATETIME
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     ...
     ```
 
@@ -177,17 +186,17 @@ the `bridge_walk` metadata. For instance, it can be seen where the `PRODUCT_COMP
     source_model: hub_customer
     src_pk: CUSTOMER_PK
     src_ldts: LOAD_DATETIME
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     bridge_walk:
       CUSTOMER_ORDER:
         bridge_link_pk: LINK_CUSTOMER_ORDER_PK
         bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
         bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
-        link_table: LINK_CUSTOMER_ORDER
+        link_table: link_customer_order
         link_pk: CUSTOMER_ORDER_PK
         link_fk1: CUSTOMER_FK
         link_fk2: ORDER_FK
-        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_table: eff_sat_customer_order
         eff_sat_pk: CUSTOMER_ORDER_PK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
@@ -195,11 +204,11 @@ the `bridge_walk` metadata. For instance, it can be seen where the `PRODUCT_COMP
         bridge_link_pk: LINK_ORDER_PRODUCT_PK
         bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
         bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
-        link_table: LINK_ORDER_PRODUCT
+        link_table: link_customer_order
         link_pk: ORDER_PRODUCT_PK
         link_fk1: ORDER_FK
         link_fk2: PRODUCT_FK
-        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_table: eff_sat_order_product
         eff_sat_pk: ORDER_PRODUCT_PK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
@@ -217,17 +226,17 @@ Finally, we add the Links & Effectivity Satellites stage table names and their L
     source_model: hub_customer
     src_pk: CUSTOMER_PK
     src_ldts: LOAD_DATETIME
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     bridge_walk:
       CUSTOMER_ORDER:
         bridge_link_pk: LINK_CUSTOMER_ORDER_PK
         bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
         bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
-        link_table: LINK_CUSTOMER_ORDER
+        link_table: link_customer_order
         link_pk: CUSTOMER_ORDER_PK
         link_fk1: CUSTOMER_FK
         link_fk2: ORDER_FK
-        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_table: eff_sat_customer_order
         eff_sat_pk: CUSTOMER_ORDER_PK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
@@ -235,17 +244,17 @@ Finally, we add the Links & Effectivity Satellites stage table names and their L
         bridge_link_pk: LINK_ORDER_PRODUCT_PK
         bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
         bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
-        link_table: LINK_ORDER_PRODUCT
+        link_table: link_customer_order
         link_pk: ORDER_PRODUCT_PK
         link_fk1: ORDER_FK
         link_fk2: PRODUCT_FK
-        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_table: eff_sat_order_product
         eff_sat_pk: ORDER_PRODUCT_PK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
     stage_tables_ldts:
-        STG_CUSTOMER_ORDER: LOAD_DATETIME
-        STG_ORDER_PRODUCT: LOAD_DATETIME
+        stg_customer_order: LOAD_DATETIME
+        stg_order_product: LOAD_DATETIME
     {%- endset -%} 
     ```
 
@@ -260,17 +269,17 @@ In the end, our model should look like the following:
     source_model: hub_customer
     src_pk: CUSTOMER_PK
     src_ldts: LOAD_DATETIME
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     bridge_walk:
       CUSTOMER_ORDER:
         bridge_link_pk: LINK_CUSTOMER_ORDER_PK
         bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
         bridge_load_date: EFF_SAT_CUSTOMER_ORDER_LOADDATE
-        link_table: LINK_CUSTOMER_ORDER
+        link_table: link_customer_order
         link_pk: CUSTOMER_ORDER_PK
         link_fk1: CUSTOMER_FK
         link_fk2: ORDER_FK
-        eff_sat_table: EFF_SAT_CUSTOMER_ORDER
+        eff_sat_table: eff_sat_customer_order
         eff_sat_pk: CUSTOMER_ORDER_PK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
@@ -278,17 +287,17 @@ In the end, our model should look like the following:
         bridge_link_pk: LINK_ORDER_PRODUCT_PK
         bridge_end_date: EFF_SAT_ORDER_PRODUCT_ENDDATE
         bridge_load_date: EFF_SAT_ORDER_PRODUCT_LOADDATE
-        link_table: LINK_ORDER_PRODUCT
+        link_table: link_customer_order
         link_pk: ORDER_PRODUCT_PK
         link_fk1: ORDER_FK
         link_fk2: PRODUCT_FK
-        eff_sat_table: EFF_SAT_ORDER_PRODUCT
+        eff_sat_table: eff_sat_order_product
         eff_sat_pk: ORDER_PRODUCT_PK
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
     stage_tables_ldts:
-      STG_CUSTOMER_ORDER: LOAD_DATETIME
-      STG_ORDER_PRODUCT: LOAD_DATETIME
+      stg_customer_order: LOAD_DATETIME
+      stg_order_product: LOAD_DATETIME
     {%- endset -%}
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}
