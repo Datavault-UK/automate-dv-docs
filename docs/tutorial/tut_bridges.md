@@ -145,7 +145,7 @@ This will provide the dates for which to generate the Bridge table.
 
 Here we name our As of Date table `as_of_date`. 
 
-=== "bridge_customer_order.sql"
+=== "bridge_customer_order.sql - as_of_date is a dbt model"
 
     ```yaml hl_lines="5"
     {%- set yaml_metadata -%}
@@ -155,6 +155,23 @@ Here we name our As of Date table `as_of_date`.
     as_of_dates_table: as_of_date
     ...
     ```
+
+=== "bridge_customer_order.sql - as_of_date is a source" 
+
+    ```yaml hl_lines="5"
+    {%- set yaml_metadata -%}
+    source_model: hub_customer
+    src_pk: CUSTOMER_PK
+    src_ldts: LOAD_DATETIME
+    as_of_dates_table: 
+        my_sources: "as_of_date"
+    ...
+    ```
+
+Your As of Date table can be either a dbt model or a source. If you want it as a model, you can use our [tutorial](tut_as_of_date.md)
+to create one. If you have already created it and want it as a source, make sure to define the source for the As of Date
+table in the schema.yml file (residing in your /models folder) before referencing it in the Bridge model. 
+
 
 #### Bridge table parameters (`bridge_walk`)
 
