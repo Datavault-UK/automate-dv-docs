@@ -60,7 +60,7 @@ staging layer which map to them:
 | source_model  | v_stg_customer                                                    |
 | src_pk        | CUSTOMER_HK                                                       |
 | src_satellite | {"SATELLITE_CUSTOMER":                                            |
-|               | &emsp;&emsp;{"sat_name": {"SATELLITE_NAME": "sat_sap_customer"}}, |
+|               | &emsp;&emsp;{"sat_name": {"SATELLITE_NAME": "SAT_SAP_CUSTOMER"}}, |
 |               | &emsp;&emsp;{"hashdiff": {"HASHDIFF": "CUSTOMER_HASHDIFF"}}       |
 |               | }                                                                 |
 | src_ldts      | LOAD_DATETIME                                                     |
@@ -79,7 +79,7 @@ When we provide the metadata above, our model should now look like the following
     src_satellite:
       SATELLITE_CUSTOMER:
         sat_name:
-          SATELLITE_NAME: sat_sap_customer
+          SATELLITE_NAME: SAT_SAP_CUSTOMER
         hashdiff:                
           HASHDIFF: CUSTOMER_HASHDIFF
     src_ldts: LOAD_DATETIME
