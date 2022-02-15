@@ -55,16 +55,16 @@ We provide the column names which we would like to select from the staging area 
 Using our [knowledge](#structure) of what columns we need in our `xts_customer` XTS, we can identify columns in our
 staging layer which map to them:
 
-| Parameter     | Value                                                           |
-|---------------|-----------------------------------------------------------------|
-| source_model  | v_stg_customer                                                  |
-| src_pk        | CUSTOMER_HK                                                     |
-| src_satellite | {"SATELLITE_CUSTOMER":                                          |
-|               | &emsp;&emsp;{"sat_name": "SATELLITE_NAME": "SAT_SAP_CUSTOMER"}, |
-|               | &emsp;&emsp;{"hashdiff": "HASHDIFF": "CUSTOMER_HASHDIFF"}       |
-|               | }                                                               |
-| src_ldts      | LOAD_DATETIME                                                   |
-| src_source    | RECORD_SOURCE                                                   |
+| Parameter     | Value                                                             |
+|---------------|-------------------------------------------------------------------|
+| source_model  | v_stg_customer                                                    |
+| src_pk        | CUSTOMER_HK                                                       |
+| src_satellite | {"SATELLITE_CUSTOMER":                                            |
+|               | &emsp;&emsp;{"sat_name": {"SATELLITE_NAME": "sat_sap_customer"}}, |
+|               | &emsp;&emsp;{"hashdiff": {"HASHDIFF": "CUSTOMER_HASHDIFF"}}       |
+|               | }                                                                 |
+| src_ldts      | LOAD_DATETIME                                                     |
+| src_source    | RECORD_SOURCE                                                     |
 
 When we provide the metadata above, our model should now look like the following:
 
@@ -79,7 +79,7 @@ When we provide the metadata above, our model should now look like the following
     src_satellite:
       SATELLITE_CUSTOMER:
         sat_name:
-          SATELLITE_NAME: SAT_SAP_CUSTOMER
+          SATELLITE_NAME: sat_sap_customer
         hashdiff:                
           HASHDIFF: CUSTOMER_HASHDIFF
     src_ldts: LOAD_DATETIME
