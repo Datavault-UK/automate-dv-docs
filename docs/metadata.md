@@ -61,6 +61,13 @@ example provided to help better convey the difference.
     misleading error messages. If you find that variables which are extracted from the YAML string are empty, it is an
     indicator that the YAML did not compile correctly, and you should check your formatting; including indentation.
 
+!!! Note "Model names formatting"
+
+    You may observe below that model names are referenced in lower case in the example metadata dictionaries below.
+    This is because dbt model names are case sensitive (i.e. you can have both HUB.sql and hub.sql as distinct models). 
+    So, when referencing them in the metadata dictionaries it is important to use the correct name format, otherwise dbt 
+    would throw an error.
+
 ##### Examples
 
 === "hub_customer.sql"
@@ -822,7 +829,7 @@ ___
         src_satellite:
           SATELLITE_CUSTOMER:
             sat_name:
-              SATELLITE_NAME: SATELLITE_NAME_1
+              SATELLITE_NAME: satellite_name_1
             hashdiff:                
               HASHDIFF: CUSTOMER_HASHDIFF
         src_ldts: LOAD_DATETIME
@@ -971,27 +978,27 @@ ___
     {%- set yaml_metadata -%}
     source_model: hub_customer
     src_pk: CUSTOMER_HK
-    as_of_dates_table: AS_OF_DATE
+    as_of_dates_table: as_of_date
     satellites: 
-      SAT_CUSTOMER_DETAILS:
+      sat_customer_details:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
-      SAT_CUSTOMER_LOGIN:
+      sat_customer_login:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
-      SAT_CUSTOMER_PROFILE:
+      sat_customer_profile:
         pk:
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
     stage_tables:
-      STG_CUSTOMER_DETAILS: LOAD_DATETIME
-      STG_CUSTOMER_LOGIN: LOAD_DATETIME
-      STG_CUSTOMER_PROFILE: LOAD_DATETIME
+      stg_customer_details: LOAD_DATETIME
+      stg_customer_login: LOAD_DATETIME
+      stg_customer_profile: LOAD_DATETIME
     src_ldts: LOAD_DATETIME
     {%- endset -%}
     
@@ -1049,8 +1056,8 @@ ___
         eff_sat_end_date: END_DATE
         eff_sat_load_date: LOAD_DATETIME
     stage_tables_ldts:
-      STG_CUSTOMER_ORDER: LOAD_DATETIME
-      STG_ORDER_PRODUCT: LOAD_DATETIME
+      stg_customer_order: LOAD_DATETIME
+      stg_order_product: LOAD_DATETIME
     {%- endset -%}
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}   
