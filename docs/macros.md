@@ -916,7 +916,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 
     This is an alternative implementation of the effectivity satellite using status and hashdiff columns instead of start and end dates.
     
-    In the examples below the column name STATUS is used for illustration purposes, however it is not recommended to use this name in practice as it is a reserved word on most SQL platforms.
+    In the examples below the column name STATUS is used for illustration purposes, however it is not recommended to use this name in practice because it is a reserved word on many SQL platforms.
 
 #### Usage
 
@@ -2633,7 +2633,7 @@ derived_columns:
     - CUSTOMER_ID
     - CUSTOMER_NAME
     - "!DEV"
-  SOURCE: !RAW_CUSTOMER
+  SOURCE: "!RAW_CUSTOMER"
   EFFECTIVE_FROM: BOOKING_DATE
 ```
 
@@ -2834,7 +2834,7 @@ ___
 
 !!! seealso "See Also"
     - [hash_columns](#hash_columns)
-    - Read [Hashing best practises and why we hash](best_practices.md#hashing)
+    - Read [Hashing best practices and why we hash](best_practices.md#hashing)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
     [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)

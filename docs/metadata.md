@@ -756,7 +756,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Metadata
 
-=== "stg_order_customer HASHDIFF metadata definition"
+=== "stg_order_customer.sql  HASHDIFF column metadata definition"
 
     ```jinja
     {%- set yaml_metadata -%}
