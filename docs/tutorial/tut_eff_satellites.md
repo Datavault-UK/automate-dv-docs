@@ -90,7 +90,7 @@ or a string directly naming the source system.
 holding the business effectivity date of the record (i.e. When it actually happened in the real world) and will usually 
 hold a different value, especially if there is a batch processing delay between when a business event happens and the 
 record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
-and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
+and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` dates accordingly. 
 
 The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
 in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 

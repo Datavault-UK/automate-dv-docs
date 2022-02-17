@@ -79,12 +79,24 @@ A load date or load date timestamp. This identifies when the record was first lo
 The source for the record. This can be a code which is assigned to a source name in an external lookup table, 
 or a string directly naming the source system.
 
-### Load date vs. Effective From Date
+### Load date vs. Effective From Date - Bitemporality
 `LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different, 
 holding the business effectivity date of the record (i.e. When it actually happened in the real world) and will usually 
 hold a different value, especially if there is a batch processing delay between when a business event happens and the 
 record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when' 
-and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly. 
+and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` dates accordingly. 
+
+#### What do we know at the current time?
+![alt text](../assets/images/Latest_Effective_From_Date_Record_At_Time_now.jpg "A basic hub/link model")
+For each HK select the record with MAX(EFFECTIVE_FROM), so the record with E3 in the diagram.
+
+#### What did we know at time t?
+![alt text](../assets/images/Latest_Effective_From_Date_Record_At_Time_t.jpg "A basic hub/link model")
+For each HK select the record with MAX(EFFECTIVE_FROM) where LOAD_DATETIME <= TIME(t), so once again the record with E3 in the diagram.
+
+#### What should we have known at time t?
+![alt text](../assets/images/What_should_we_have_known_at_Time_t.jpg "A basic hub/link model")
+For each HK select the record with MAX(EFFECTIVE_FROM) where EFFECTIVE_FROM <= TIME(t), so the record with E5 in the diagram.
 
 The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
 in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 
