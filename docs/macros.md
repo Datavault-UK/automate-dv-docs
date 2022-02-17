@@ -2527,7 +2527,67 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         
         SELECT * FROM bridge
         ```
+=== "Google Bigquery"
 
+    === "Single-Source"
+
+        ```sql
+        
+        WITH as_of AS (
+            SELECT a.AS_OF_DATE
+            FROM DBTVAULT.TEST.AS_OF_DATE AS a
+            WHERE a.AS_OF_DATE <= CURRENT_DATE()
+        ),
+
+        new_rows AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                b.AS_OF_DATE,`LINK_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK` AS `LINK_CUSTOMER_ORDER_PK`
+                    ,`EFF_SAT_CUSTOMER_ORDER`.`END_DATE` AS `EFF_SAT_CUSTOMER_ORDER_ENDDATE`
+                    ,`EFF_SAT_CUSTOMER_ORDER`.`LOAD_DATETIME` AS `EFF_SAT_CUSTOMER_ORDER_LOADDATE`
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN AS_OF AS b
+                ON (1=1)
+            LEFT JOIN `DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS `LINK_CUSTOMER_ORDER`
+                ON a.`CUSTOMER_PK` = `LINK_CUSTOMER_ORDER`.`CUSTOMER_FK`
+            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS `EFF_SAT_CUSTOMER_ORDER`
+                ON `EFF_SAT_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK` = `LINK_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK`
+                AND `EFF_SAT_CUSTOMER_ORDER`.`LOAD_DATETIME` <= b.AS_OF_DATE
+        ),
+
+        all_rows AS (
+            SELECT * FROM new_rows
+        ),
+
+        candidate_rows AS (
+            SELECT *
+            FROM (
+                SELECT *,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY AS_OF_DATE,
+                            `LINK_CUSTOMER_ORDER_PK`
+                        ORDER BY
+                            `EFF_SAT_CUSTOMER_ORDER_LOADDATE` DESC
+                        ) AS row_num
+                FROM all_rows
+            ) AS a
+            WHERE a.row_num = 1
+        ),
+
+        bridge AS (
+            SELECT
+                c.`CUSTOMER_PK`,
+                c.AS_OF_DATE,c.`LINK_CUSTOMER_ORDER_PK`
+            FROM candidate_rows AS c
+            WHERE DATE(c.`EFF_SAT_CUSTOMER_ORDER_ENDDATE`) = DATE('9999-12-31 23:59:59.999')
+        )
+
+        SELECT * FROM bridge
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
 #### As Of Date Table Structures
 
 An As of Date table contains a single column of dates used to construct the history in the Bridge table.
