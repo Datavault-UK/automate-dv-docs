@@ -71,6 +71,8 @@ which allow you to configure different aspects of dbtvault. These variables will
       escape_char_right: '"'
     ```
 
+#### hash
+
 Configure the type of hashing.
 
 This can be one of: 
