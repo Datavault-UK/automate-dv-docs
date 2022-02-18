@@ -38,9 +38,9 @@ In future releases, we hope to include the following:
 
 ### Platform support
 
-- Amazon Redshift
-- Postgres
 - Databricks
+- Postgres
+- Amazon Redshift
     
 ### Tables
 
