@@ -1511,7 +1511,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
-    === "Subsequent Load"
+    === "Subsequent Loads"
 
         ```sql
         WITH source_data AS (
