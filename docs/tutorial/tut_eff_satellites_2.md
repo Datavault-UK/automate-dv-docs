@@ -72,6 +72,10 @@ satellite record. It records that a record is valid from a specific point in tim
 If the link relationship changes, then the record with the old relation should no longer be valid, and it will no 
 longer have the most recent `EFFECTIVE_FROM` value. 
 
+The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
+in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 
+use in presentation layers.
+
 #### Load date (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
@@ -98,10 +102,6 @@ For each HK select the record with MAX(EFFECTIVE_FROM) where LOAD_DATETIME <= TI
 ![alt text](../assets/images/What_should_we_have_known_at_Time_t.jpg "A basic hub/link model")
 For each HK select the record with MAX(EFFECTIVE_FROM) where EFFECTIVE_FROM <= TIME(t), so the record with E5 in the diagram.
 
-The `EFFECTIVE_FROM` field is **not** part of the Data Vault 2.0 standard, and as such it is an optional field, however,
-in our experience we have found it useful for processing and applying business rules in downstream Business Vault, for 
-use in presentation layers.
-
 ### Creating effectivity satellite models
 
 Create a new dbt model as before.
@@ -109,7 +109,7 @@ Create a new dbt model as before.
 === "eff_sat_customer_nation.sql"
 
     ```jinja
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+    {{ dbtvault.eff_sat_2(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_status_date=src_status, src_hashdiff=src_hashdiff,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
                         source_model=source_model) }}
@@ -163,7 +163,7 @@ When we provide the metadata above, our model should look like the following:
     {%- set src_ldts = "LOAD_DATETIME"    -%}
     {%- set src_source = "RECORD_SOURCE"  -%}
     
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+    {{ dbtvault.eff_sat_2(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_status=src_status, 
                         src_hashdiff=src_hashdiff,
                         src_eff=src_eff, src_ldts=src_ldts, 
