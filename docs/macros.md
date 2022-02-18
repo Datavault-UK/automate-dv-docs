@@ -108,17 +108,15 @@ characters: '`^^`'
 #### escape_char_left/escape_char_right
 
 Configure the characters to use to delimit SQL column names. All column names are delimited, and by default both the
-delimiting characters are double quotes following the SQL:1999 standard. For example for BigQuery this default can be
-overridden by specifying backticks:
+delimiting characters are double quotes following the SQL:1999 standard. 
+
+Here are some examples for different platforms:
 
 === "BigQuery"
 
     ```yaml
+    ...
     vars:
-      hash: MD5
-      max_datetime: '{{ dbtvault.max_datetime() }}'
-      concat_string: '||'
-      null_placeholder_string: '^^'
       escape_char_left: '`'
       escape_char_right: '`'
     ```
@@ -126,11 +124,8 @@ overridden by specifying backticks:
 === "MS SQL Server"
 
     ```yaml
+    ...
     vars:
-      hash: MD5
-      max_datetime: '{{ dbtvault.max_datetime() }}'
-      concat_string: '||'
-      null_placeholder_string: '^^'
       escape_char_left: '['
       escape_char_right: ']'
     ```
@@ -138,14 +133,36 @@ overridden by specifying backticks:
 === "MS SQL Server with QUOTED_IDENTIFIER ON"
 
     ```yaml
+    ...
     vars:
-      hash: MD5
-      max_datetime: '{{ dbtvault.max_datetime() }}'
-      concat_string: '||'
-      null_placeholder_string: '^^'
       escape_char_left: '"'
       escape_char_right: '"'
     ```
+
+## Platform Support
+
+dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
+
+Most of the time this will be at the same time as the Snowflake release unless it is a snowflake-only addition. 
+
+!!! note
+    We are currently back-filling support for structures on other platforms as we have been Snowflake-only prior to dbtvault v0.8. 
+    Thanks for your patience and continued support!
+
+| Macro/Template | Snowflake                                     | Google BigQuery                                   | MS SQL Server                                     | Databricks                                        | Postgres                                          |
+|----------------|-----------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|
+| hash           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| stage          | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| hub            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| link           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| sat            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| t_link         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| eff_sat        | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| ma_sat         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| xts            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| pit            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| bridge         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+
 
 ## Table templates
 
@@ -153,20 +170,6 @@ overridden by specifying backticks:
 
 These macros are the core of the package and can be called in your models to build the different types of tables needed
 for your Data Vault 2.0 Data Warehouse.
-
-| Macro/Template | Snowflake                                     | Google BigQuery                                   | SQLServer                                         | Databricks                                         | Postgres                                          |  
-|----------------|-----------------------------------------------|---------------------------------------------------|---------------------------------------------------|----------------------------------------------------|---------------------------------------------------|  
-| hash           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| stage          | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| hub            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| link           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| sat            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| t_link         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| eff_sat        | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| ma_sat         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| xts            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| pit            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
-| bridge         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |  
 
 ### hub
 
