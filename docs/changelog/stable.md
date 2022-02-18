@@ -449,14 +449,14 @@ the new and improved features.
         - If not adding any calculated columns or constants, column pairs can be omitted, enabling you to provide the 
         source parameter above only.
     - _**hash**_ now alpha-sorts columns prior to hashing, as
-    per best practises. 
+    per best practices. 
    
 - Staging Macros:
     - staging_footer renamed to _**from**_ and functionality for adding constants moved to _**add_columns**_
     - multi-hash
         - Formatting of output now more readable
         - Now alpha-sorts columns prior to hashing, as
-          per best practises. 
+          per best practices. 
 
 ## [v0.1-pre] - 2019-09 / 2019-10
 
