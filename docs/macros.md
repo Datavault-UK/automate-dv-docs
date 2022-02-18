@@ -511,7 +511,158 @@ Generates SQL to build a Hub table using the provided parameters.
 
 
 === "Google BigQuery"
-    Coming soon!
+    
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+            LEFT JOIN DBTVAULT.TEST.hub AS d
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE 
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        row_rank_2 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE_2
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        stage_union AS (
+            SELECT * FROM row_rank_1
+            UNION ALL
+            SELECT * FROM row_rank_2
+        ),
+        
+        row_rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
+                   ) AS row_rank_number
+            FROM stage_union
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_rank_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        row_rank_2 AS (
+            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE_2
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        stage_union AS (
+            SELECT * FROM row_rank_1
+            UNION ALL
+            SELECT * FROM row_rank_2
+        ),
+        
+        row_rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
+                   ) AS row_rank_number
+            FROM stage_union
+            WHERE CUSTOMER_HK IS NOT NULL
+            QUALIFY row_rank_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
+            LEFT JOIN DBTVAULT.TEST.hub AS d
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    
 
 ___
 
@@ -914,7 +1065,161 @@ Generates SQL to build a Link table using the provided parameters.
         ```
 
 === "Google BigQuery"
-    Coming soon!
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            AND ORDER_FK IS NOT NULL
+            AND BOOKING_FK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE CUSTOMER_HK IS NOT NULL
+            AND ORDER_FK IS NOT NULL
+            AND BOOKING_FK IS NOT NULL
+            QUALIFY row_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_1 AS a
+            LEFT JOIN DBTVAULT.TEST.link AS d
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+                
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+        ),
+        
+        row_rank_2 AS (
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE_2
+        ),
+        
+        stage_union AS (
+            SELECT * FROM row_rank_1
+            WHERE row_number = 1
+            UNION ALL
+            SELECT * FROM row_rank_2
+            WHERE row_number = 1
+        ),
+        
+        row_rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
+                   ) AS row_rank_number
+            FROM stage_union
+            WHERE CUSTOMER_HK IS NOT NULL
+            AND ORDER_FK IS NOT NULL
+            AND BOOKING_FK IS NOT NULL
+            QUALIFY row_rank_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        WITH row_rank_1 AS (
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE
+        ),
+        
+        row_rank_2 AS (
+            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE
+                   ) AS row_number
+            FROM DBTVAULT.TEST.MY_STAGE_2
+        ),
+        
+        stage_union AS (
+            SELECT * FROM row_rank_1
+            WHERE row_number = 1
+            UNION ALL
+            SELECT * FROM row_rank_2
+            WHERE row_number = 1
+        ),
+        
+        row_rank_union AS (
+            SELECT *,
+                   ROW_NUMBER() OVER(
+                       PARTITION BY CUSTOMER_HK
+                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
+                   ) AS row_rank_number
+            FROM stage_union
+            WHERE CUSTOMER_HK IS NOT NULL
+            AND ORDER_FK IS NOT NULL
+            AND BOOKING_FK IS NOT NULL
+            QUALIFY row_rank_number = 1
+        ),
+        
+        records_to_insert AS (
+            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM row_rank_union AS a
+            LEFT JOIN DBTVAULT.TEST.link AS d
+            ON a.CUSTOMER_HK = d.CUSTOMER_HK
+            WHERE d.CUSTOMER_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 
 ___
 
@@ -1036,8 +1341,43 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```
 
 === "Google BigQuery"
-    Coming soon!
 
+    === "Base Load"
+    
+        ```sql
+        WITH stage AS (
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE
+            WHERE TRANSACTION_HK IS NOT NULL
+            AND CUSTOMER_FK IS NOT NULL
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            FROM stage AS stg
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH stage AS (
+            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.raw_stage_hashed
+            WHERE TRANSACTION_HK IS NOT NULL
+            AND CUSTOMER_FK IS NOT NULL
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
+            FROM stage AS stg
+            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
+            WHERE tgt.TRANSACTION_HK IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 ___
 
 ### sat
@@ -1104,7 +1444,9 @@ Generates SQL to build a Satellite table using the provided parameters.
         ),
         
         latest_records AS (
-            SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE,
+            SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE
+            FROM (
+                SELECT current_records.CUSTOMER_HK, current_records.HASHDIFF, current_records.LOAD_DATE,
                 RANK() OVER (
                     PARTITION BY c.CUSTOMER_HK
                     ORDER BY c.LOAD_DATE DESC
@@ -1190,7 +1532,62 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```
 
 === "Google BigQuery"
-    Coming soon!
+
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_HK IS NOT NULL
+        ),
+
+        records_to_insert AS (
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Subsequent Load"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_HK IS NOT NULL
+        ),
+
+        latest_records AS (
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.LOAD_DATE
+            FROM (
+                SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE, 
+                RANK() OVER (
+                PARTITION BY c.CUSTOMER_HK
+                ORDER BY c.LOAD_DATE DESC
+                ) AS rank
+                FROM DBTVAULT.TEST.SATELLITE AS c
+                JOIN (  
+                SELECT DISTICT source_data.CUSTOMER_HK
+                FROM source_data
+                ) AS source_records
+                ON c.CUSTOMER_HK = source_records.CUSTOMER_HK
+                ) AS a
+            WHERE a.rank = 1
+        ),
+
+        records_to_insert AS (
+            SELECT DISTICT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+            LEFT JOIN latest_records
+            ON latest_recods.CUSTOMER_HK = e.CUSTOMER_HK
+            WHERE latest_records.HASHDIFF != e.HASHDIFF
+            OR latest_records.HASHDIFF IS NULL
+        )
+
+        SELECT * FROM records_to_insert
+        ```
 
 #### Hashdiff Aliasing
 
@@ -1618,7 +2015,194 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```
 
 === "Google BigQuery"
-    Coming soon!
+
+    === "Base Load"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        records_to_insert AS (
+            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
+            FROM source_data AS i
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "With auto end-dating (Subsequent)"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            WHERE b.ORDER_HK IS NOT NULL
+            QUALIFY row_num = 1
+        ),
+        
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE DATE(c.END_DATE) = DATE('9999-12-31 23:59:59.999')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE DATE(d.END_DATE) != DATE('9999-12-31 23:59:59.999')
+        ),
+        
+        new_open_records AS (
+            SELECT DISTINCT
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE DATE(g.END_DATE) = DATE('9999-12-31 23:59:59.999')
+        ),
+        
+        new_closed_records AS (
+            SELECT DISTINCT
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            INNER JOIN latest_open AS lo
+            ON lo.ORDER_HK = h.ORDER_HK
+            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
+        ),
+        
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+            UNION DISTINCT
+            SELECT * FROM new_reopened_records
+            UNION DISTINCT
+            SELECT * FROM new_closed_records
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+        
+    === "Without auto end-dating (Subsequent)"   
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
+            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            WHERE a.ORDER_HK IS NOT NULL
+            AND a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
+                ROW_NUMBER() OVER (
+                    PARTITION BY b.ORDER_CUSTOMER_HK
+                    ORDER BY b.LOAD_DATETIME DESC
+                ) AS row_num
+            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            WHERE b.ORDER_HK IS NOT NULL
+            QUALIFY row_num = 1
+        ),
+        
+        latest_open AS (
+            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
+            FROM latest_records AS c
+            WHERE DATE(c.END_DATE) = DATE('9999-12-31 23:59:59.999')
+        ),
+        
+        latest_closed AS (
+            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
+            FROM latest_records AS d
+            WHERE DATE(d.END_DATE) != DATE('9999-12-31 23:59:59.999')
+        ),
+        
+        new_open_records AS (
+            SELECT DISTINCT
+                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
+            FROM source_data AS f
+            LEFT JOIN latest_records AS lr
+            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
+            WHERE lr.ORDER_CUSTOMER_HK IS NULL
+        ),
+        
+        new_reopened_records AS (
+            SELECT DISTINCT
+                lc.ORDER_CUSTOMER_HK,
+                lc.ORDER_HK, lc.CUSTOMER_HK,
+                lc.START_DATE AS START_DATE,
+                g.END_DATE AS END_DATE,
+                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                g.LOAD_DATETIME,
+                g.SOURCE
+            FROM source_data AS g
+            INNER JOIN latest_closed lc
+            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
+            WHERE DATE(g.END_DATE) = DATE('9999-12-31 23:59:59.999')
+        ),
+        
+        new_closed_records AS (
+            SELECT DISTINCT
+                lo.ORDER_CUSTOMER_HK,
+                lo.ORDER_HK, lo.CUSTOMER_HK,
+                lo.START_DATE AS START_DATE,
+                h.EFFECTIVE_FROM AS END_DATE,
+                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
+                h.LOAD_DATETIME,
+                lo.SOURCE
+            FROM source_data AS h
+            LEFT JOIN Latest_open AS lo
+            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            LEFT JOIN latest_closed AS lc
+            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
+            WHERE DATE(h.END_DATE) != DATE('9999-12-31 23:59:59.999')
+            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
+            AND lc.ORDER_CUSTOMER_HK IS NULL
+        ),
+
+        records_to_insert AS (
+            SELECT * FROM new_open_records
+            UNION DISTINCT
+            SELECT * FROM new_reopened_records
+            UNION DISTINCT
+            SELECT * FROM new_closed_records
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 
 #### Auto end-dating
 
@@ -1895,7 +2479,117 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         ```
 
 === "Google BigQuery"
-    Coming soon!
+    
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE`, s.`CUSTOMER_NAME`, s.EFFECTIVE_FROM, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+                AND s.`CUSTOMER_PHONE` IS NOT NULL
+        ),
+        
+        records_to_insert AS (
+            SELECT source_data.`CUSTOMER_PK`, source_data.`HASHDIFF`, source_data.`CUSTOMER_PHONE`, source_data.`CUSTOMER_NAME`, source_data.EFFECTIVE_FROM, source_data.`LOAD_DATE`, source_data.`SOURCE`
+            FROM source_data
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE`, s.`CUSTOMER_NAME`, s.EFFECTIVE_FROM, s.`LOAD_DATETIME`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+                AND s.`CUSTOMER_PHONE` IS NOT NULL
+        ),
+
+
+
+        source_data_with_count AS (
+            SELECT a.*
+                ,b.source_count
+            FROM source_data a
+            INNER JOIN
+            (
+                SELECT t.`CUSTOMER_PK`
+                    ,COUNT(*) AS source_count
+                FROM (SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE` FROM source_data AS s) AS t
+                GROUP BY t.`CUSTOMER_PK`
+            ) AS b
+            ON a.`CUSTOMER_PK` = b.`CUSTOMER_PK`
+        ),
+
+        latest_records AS (
+            SELECT mas.`CUSTOMER_PK`
+                ,mas.`HASHDIFF`
+                ,mas.`CUSTOMER_PHONE`
+                ,mas.`LOAD_DATETIME`
+                ,mas.latest_rank
+                ,DENSE_RANK() OVER (PARTITION BY mas.`CUSTOMER_PK`
+                    ORDER BY mas.`HASHDIFF`, mas.`CUSTOMER_PHONE` ASC) AS check_rank
+            FROM
+            (
+            SELECT inner_mas.`CUSTOMER_PK`
+                ,inner_mas.`HASHDIFF`
+                ,inner_mas.`CUSTOMER_PHONE`
+                ,inner_mas.`LOAD_DATETIME`
+                ,RANK() OVER (PARTITION BY inner_mas.`CUSTOMER_PK`
+                    ORDER BY inner_mas.`LOAD_DATETIME` DESC) AS latest_rank
+            FROM `flash-bazaar-332912`.`DBTVAULT_FLASH_BAZAAR_332912`.`MULTI_ACTIVE_SATELLITE_TS` AS inner_mas
+            INNER JOIN (SELECT DISTINCT s.`CUSTOMER_PK` FROM source_data as s ) AS spk
+                ON inner_mas.`CUSTOMER_PK` = spk.`CUSTOMER_PK`
+            ) AS mas
+            WHERE latest_rank = 1
+        ),
+
+        latest_group_details AS (
+            SELECT lr.`CUSTOMER_PK`
+                ,lr.`LOAD_DATETIME`
+                ,MAX(lr.check_rank) AS latest_count
+            FROM latest_records AS lr
+            GROUP BY lr.`CUSTOMER_PK`, lr.`LOAD_DATETIME`
+        ),
+
+
+
+        records_to_insert AS (
+            SELECT source_data_with_count.`CUSTOMER_PK`, source_data_with_count.`HASHDIFF`, source_data_with_count.`CUSTOMER_PHONE`, source_data_with_count.`CUSTOMER_NAME`, source_data_with_count.EFFECTIVE_FROM, source_data_with_count.`LOAD_DATETIME`, source_data_with_count.`SOURCE`
+            FROM source_data_with_count
+            WHERE EXISTS
+            (
+                SELECT 1
+                FROM source_data_with_count AS stage
+                WHERE NOT EXISTS
+                (
+                    SELECT 1
+                    FROM
+                    (
+                        SELECT lr.`CUSTOMER_PK`
+                        ,lr.`HASHDIFF`
+                        ,lr.`CUSTOMER_PHONE`
+                        ,lr.`LOAD_DATETIME`
+                        ,lg.latest_count
+                        FROM latest_records AS lr
+                        INNER JOIN latest_group_details AS lg
+                            ON lr.`CUSTOMER_PK` = lg.`CUSTOMER_PK`
+                            AND lr.`LOAD_DATETIME` = lg.`LOAD_DATETIME`
+                    ) AS active_records
+                    WHERE stage.`CUSTOMER_PK` = active_records.`CUSTOMER_PK`
+                        AND stage.`HASHDIFF` = active_records.`HASHDIFF`
+                        AND stage.`CUSTOMER_PHONE` = active_records.`CUSTOMER_PHONE`
+                        AND stage.source_count = active_records.latest_count
+                )
+                AND source_data_with_count.`CUSTOMER_PK` = stage.`CUSTOMER_PK`
+            )
+
+        )
+
+        SELECT * FROM records_to_insert
+        ```
 
 ### xts
 
@@ -2052,6 +2746,146 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         
         SELECT * FROM records_to_insert
         ```
+=== "Google Bigquery"
+    
+    === "Single-Source"
+
+        ```sql
+        WITH satellite_a AS (
+            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER
+            WHERE CUSTOMER_PK IS NOT NULL
+        ),
+        
+        union_satellites AS (
+            SELECT * 
+            FROM satellite_a
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* 
+            FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+                AND d.LOAD_DATE IS NULL
+                AND d.SATELLITE_NAME IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
+        
+        ```sql
+        WITH 
+
+        satellite_a AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        satellite_b AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+        ),
+
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.`LOAD_DATE` = d.`LOAD_DATE`
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+            )
+            WHERE d.HASHDIFF IS NULL
+            AND d.`LOAD_DATE` IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Multi-Source"
+        
+        ```sql
+        
+        WITH 
+
+        satellite_a AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        satellite_b AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        satellite_c AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        satellite_d AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        satellite_e AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        satellite_f AS (
+            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
+            WHERE s.`CUSTOMER_PK` IS NOT NULL
+        ),
+
+        union_satellites AS (
+            SELECT * FROM satellite_a
+            UNION ALL
+            SELECT * FROM satellite_b
+            UNION ALL
+            SELECT * FROM satellite_c
+            UNION ALL
+            SELECT * FROM satellite_d
+            UNION ALL
+            SELECT * FROM satellite_e
+            UNION ALL
+            SELECT * FROM satellite_f
+        ),
+
+        records_to_insert AS (
+            SELECT DISTINCT union_satellites.* FROM union_satellites
+            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+                ON (union_satellites.HASHDIFF = d.HASHDIFF
+                AND union_satellites.`LOAD_DATE` = d.`LOAD_DATE`
+                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
+                )
+            WHERE d.HASHDIFF IS NULL
+            AND d.`LOAD_DATE` IS NULL
+            AND d.SATELLITE_NAME IS NULL
+        )
+
+    SELECT * FROM records_to_insert
+    ```
 
 === "MS SQL Server"
 
