@@ -67,6 +67,8 @@ which allow you to configure different aspects of dbtvault. These variables will
       max_datetime: '{{ dbtvault.max_datetime() }}'
       concat_string: '||'
       null_placeholder_string: '^^'
+      escape_char_left: '"'
+      escape_char_right: '"'
     ```
 
 Configure the type of hashing.
@@ -86,7 +88,7 @@ This value will be used for showing that a record's effectivity is 'open' or 'cu
 
 #### concat_string
 
-Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '`||'`
+Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe characters: '`||`'
 
 [Read more](./best_practices.md#multi-column-hashing)
 
@@ -95,6 +97,47 @@ Configure the string value to use for concatenating strings together when hashin
 Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret characters: '`^^`'
 
 [Read more](./best_practices.md#null-handling)
+
+#### escape_char_left
+#### escape_char_right
+
+Configure the characters to use to delimit SQL column names. All column names are delimited, and by default both the delimiting characters are double quotes following the SQL:1999 standard. For example for BigQuery this default can be overridden by specifying backticks:
+
+=== "BigQuery"
+
+    ```yaml
+    vars:
+      hash: MD5
+      max_datetime: '{{ dbtvault.max_datetime() }}'
+      concat_string: '||'
+      null_placeholder_string: '^^'
+      escape_char_left: '`'
+      escape_char_right: '`'
+    ```
+
+=== "MS SQL Server"
+
+    ```yaml
+    vars:
+      hash: MD5
+      max_datetime: '{{ dbtvault.max_datetime() }}'
+      concat_string: '||'
+      null_placeholder_string: '^^'
+      escape_char_left: '['
+      escape_char_right: ']'
+    ```
+
+=== "MS SQL Server with QUOTED_IDENTIFIER ON"
+
+    ```yaml
+    vars:
+      hash: MD5
+      max_datetime: '{{ dbtvault.max_datetime() }}'
+      concat_string: '||'
+      null_placeholder_string: '^^'
+      escape_char_left: '"'
+      escape_char_right: '"'
+    ```
 
 ## Table templates
 
