@@ -55,6 +55,7 @@ nav:
   - Best Practices: 'best_practices.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
+  - Versions: 'versions.md'
   - Changelog:
       - Stable Releases: 'changelog/stable.md'
       - Beta Releases: 'changelog/beta.md'
