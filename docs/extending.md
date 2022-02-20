@@ -88,5 +88,6 @@ Here are some further examples, showing how to override a platform-specific impl
 
 ...and that's it! Yay!
 
-Please ensure you read the dbt [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) and
-[dispatch config](https://next.docs.getdbt.com/reference/project-configs/dispatch-config) docs for more details.
+!!! note "Further reading"
+    Please ensure you read the dbt [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) and
+    [dispatch config](https://next.docs.getdbt.com/reference/project-configs/dispatch-config) docs for more details.
