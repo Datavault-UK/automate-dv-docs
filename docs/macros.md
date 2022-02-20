@@ -706,7 +706,7 @@ Generates SQL to build a Link table using the provided parameters.
 
 ``` jinja
 {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                 src_source=src_source, source_model=source_model) }}
+                 src_source=src_source, source_model=source_mo20del) }}
 ```                                             
 
 #### Parameters
