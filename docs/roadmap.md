@@ -9,7 +9,7 @@ We will be releasing changes incrementally, so you can reap the benefits as soon
 - Do you have some ideas? [Let us know what you want added](https://github.com/Datavault-UK/dbtvault/issues)
 - Want to contribute your own work? [Read our contribution guidelines](https://github.com/Datavault-UK/dbtvault/blob/master/CONTRIBUTING.md)
 
-## Manage metadata at scale
+## Automate more
 
 We are developing a new CLI utility to generate and automate more of your Data Vault 2.0 and dbtvault project. 
  

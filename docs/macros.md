@@ -141,13 +141,15 @@ Here are some examples for different platforms:
 
 ## Platform Support
 
-dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
+The table below indicates which macros and templates are officially available for each platform.
 
-Most of the time this will be at the same time as the Snowflake release unless it is a snowflake-only addition. 
+We have been Snowflake-only prior to dbtvault v0.8, and we are currently back-filling support for structures on other platforms.
+
+Thanks for your patience and continued support!
 
 !!! note
-    We are currently back-filling support for structures on other platforms as we have been Snowflake-only prior to dbtvault v0.8. 
-    Thanks for your patience and continued support!
+    dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
+    Most of the time this will be at the same time as the Snowflake release unless it is a snowflake-only addition. 
 
 | Macro/Template | Snowflake                                     | Google BigQuery                                   | MS SQL Server                                     | Databricks                                        | Postgres                                          |
 |----------------|-----------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|
