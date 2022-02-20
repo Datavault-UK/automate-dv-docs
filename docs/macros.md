@@ -175,7 +175,10 @@ for your Data Vault 2.0 Data Warehouse.
 
 ### hub
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/hub.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/bigquery/hub.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/sqlserver/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -692,7 +695,10 @@ ___
 
 ### link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/link.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/link.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/bigquery/link.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/sqlserver/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -1249,7 +1255,8 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/t_link.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/link.sql)
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -1333,7 +1340,10 @@ ___
 
 ### sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/sat.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/sat.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/bigquery/sat.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/sqlserver/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -1549,7 +1559,8 @@ ___
 
 ### eff_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/eff_sat.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -1809,7 +1820,8 @@ ___
 
 ### ma_sat
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/ma_sat.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -1949,7 +1961,8 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ### xts
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/xts.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -2110,7 +2123,8 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 ### pit
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/pit.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -2383,7 +2397,8 @@ ___
 
 ### bridge
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/bridge.sql))
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/tables/snowflake/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
@@ -2641,7 +2656,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/staging/stage.sql))
 
 Generates SQL to build a staging area using the provided parameters.
 
@@ -3885,7 +3900,7 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/staging/rank_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/staging/rank_columns.sql))
 
 !!! note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -3906,7 +3921,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/supporting/hash.sql))
 
 !!! warning
     This macro ***should not be*** used for cryptographic purposes.
@@ -3991,7 +4006,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.0/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
