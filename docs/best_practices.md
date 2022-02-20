@@ -80,8 +80,9 @@ If the primary or ANY of the foreign keys are null, then the record does not get
 
 If the driving key column(s) or secondary foreign key (sfk) column(s) are null then the record does not get loaded.
 
-!!! note There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all the
-SFK and DFK columns (so the PK will evaluate as null if they are all null).
+!!! note 
+    There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all the
+    SFK and DFK columns (so the PK will evaluate as null if they are all null).
 
 ## Materialisations
 
@@ -89,17 +90,6 @@ All raw vault structures support both the built-in dbt incremental materialisati
 dbtvault's [custom materialisations](materialisations.md).
 
 [Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
-
-!!! bug 
-    Currently there exists a bug with how some dbtvault structures handle incremental materialisations.
-
-    Consult the below issues to see if you are affected. These issues are priority for the dbtvault team to fix.
-
-    - [Issue #50](https://github.com/Datavault-UK/dbtvault/issues/50)
-    - [Issue #62](https://github.com/Datavault-UK/dbtvault/issues/62)
-    - [Issue #64](https://github.com/Datavault-UK/dbtvault/issues/64)
-
-    Hubs and Links remain unaffected.
 
 ### Table and View
 

@@ -1,6 +1,5 @@
 # Welcome to dbtvault!
-dbtvault is a dbt package that generates & executes the ETL you need to run a Data Vault 2.0 Data Warehouse
-on a Snowflake database.
+dbtvault is a dbt package that generates & executes the ETL you need to build a Data Vault 2.0 Data Warehouse.
 
 !!! Note
     You need to be running dbt to use the package. If needed, you can find get more guidance 
@@ -40,13 +39,14 @@ fewer mistakes, and greatly improved productivity: i.e. Agility.
 ## Where does dbtvault fit in?
 The dbtvault package generates and runs Data Vault ETL code from your metadata (table names and mapping details) which is 
 then provided to your dbt models contains calls to dbtvault macros.
-The macro does the rest of the work: it processes the metadata, generates Snowflake SQL and then dbt executes the load 
+The macro does the rest of the work: it processes the metadata, generates SQL and then dbt executes the load 
 respecting any and all dependencies. 
 
-dbt even runs the load in parallel. As Data Vault 2.0 is designed for parallel load and Snowflake is highly performant, 
-your ETL load will finish in rapid time. 
+dbt even runs the load in parallel. As Data Vault 2.0 is designed for parallel load and Snowflake is highly parallelised, 
+your ETL load will finish in rapid time. Your experience may vary form platform to platform, however we aim to be as
+consistent as possible.
 
-dbtvault reduces the need to write Snowflake SQL by hand to load the Data Vault, which is a repetitive, time-consuming 
+dbtvault reduces the need to write SQL by hand to load the Data Vault, which is a repetitive, time-consuming 
 and potentially error-prone task.
 
 
