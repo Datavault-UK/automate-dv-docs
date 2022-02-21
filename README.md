@@ -15,7 +15,7 @@ the [material for mkdocs](https://squidfunk.github.io/mkdocs-material/) theme.
 To update any docs, simply edit the corresponding `.md` files in the `docs/` directory.
 
 ### Running locally
-- Ensure that depdendencies are installed from the provided `Pipfile`. 
+- Ensure that dependencies are installed from the provided `Pipfile`. 
 Note: Ignore the `docs/requirements.txt` file for local development. This dependency file is for automated builders.
 - Run `mkdocs serve` from the terminal
-- This local webiste will automatically re-generate itself as you make changes, so no need to close it down.
+- This local website will automatically re-generate itself as you make changes, so no need to close it down.
