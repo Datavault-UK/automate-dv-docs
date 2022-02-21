@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This is a big release for dbtvault. It's the first time we are releasing support for new platforms! 
 Please welcome to the dbtvault family, Google BigQuery and MS SQL Server!
 
-This is just the start, and we're excited to bring even more platforms (and support for existing platforms) 
+This is just the start, and we're excited to bring even more platforms (and further support for existing platforms) 
 to you in the future!
 
 ### New
@@ -27,13 +27,15 @@ to you in the future!
 - Links (link macro)
 - Satellites (sat macro)
 
-!!! new
+!!! tip "New"
     [Platform support matrix](../macros.md#platform-support)
 
 #### All platforms
 
-- Column Escaping ([#28](https://github.com/Datavault-UK/dbtvault/issues/28), [#23](https://github.com/Datavault-UK/dbtvault/issues/23)) - [Docs](../macros.md#escape_char_leftescape_char_right)
-  dbtvault now automatically surrounds all column names with quotes. The type of quotes is configurable, please refer to the docs linked above.  
+- Column Escaping ([#28](https://github.com/Datavault-UK/dbtvault/issues/28), [#23](https://github.com/Datavault-UK/dbtvault/issues/23)) - [Docs](../macros.md#escape_char_leftescape_char_right):
+  dbtvault now automatically surrounds all column names with quotes. This is to allow for columns with reserved words, spaces, and other oddities. 
+  The type of quotes is configurable, please refer to the docs linked above.  
+
 
 ## [v0.7.9] - 2021-12-13
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.9)](https://dbtvault.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
