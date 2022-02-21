@@ -51,7 +51,43 @@ With this configuration change, an implementation of the `hub` macro could be de
     {%- endmacro -%}
     ```
 
+Here are some further examples, showing how to override a platform-specific implementation:
+
+=== "my_hub_macro.sql"
+
+    === "Snowflake"
+
+        ```jinja
+        {%- macro default__hub(src_pk, src_nk, src_ldts, src_source, source_model) -%}
+            
+            {%- do log("My super amazing implementation of a hub macro for Snowflake will be coming soon!", true) -%}
+    
+        {%- endmacro -%}
+        ```
+
+    === "Google BigQuery"
+
+        ```jinja
+        {%- macro bigquery__hub(src_pk, src_nk, src_ldts, src_source, source_model) -%}
+            
+            {%- do log("My super amazing implementation of a hub macro for BigQuery will be coming soon!", true) -%}
+    
+        {%- endmacro -%}
+        ```
+
+    === "MS SQL Server"
+
+        ```jinja
+        {%- macro sqlserver__hub(src_pk, src_nk, src_ldts, src_source, source_model) -%}
+            
+            {%- do log("My super amazing implementation of a hub macro for MS SQL Server will be coming soon!", true) -%}
+    
+        {%- endmacro -%}
+        ```
+
+
 ...and that's it! Yay!
 
-Please ensure you read the [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) and
-[dispatch config](https://next.docs.getdbt.com/reference/project-configs/dispatch-config) docs for more details.
+!!! note "Further reading"
+    Please ensure you read the dbt [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) and
+    [dispatch config](https://next.docs.getdbt.com/reference/project-configs/dispatch-config) docs for more details.

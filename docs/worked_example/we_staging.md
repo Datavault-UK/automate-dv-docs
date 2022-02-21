@@ -194,7 +194,7 @@ In the `v_stg_orders` view we can also see an example of a hashdiff column, `CUS
 These work very similarly to multi-column hashes (like `TRANSACTION_HK`) except that we provide an `is_hashdiff` flag 
 with the value `true` and provide the list of columns under a `columns` key. 
 
-Defining a hashdiff using this syntax will ensure the columns are automatically alpha-sorted, which is standard practise
+Defining a hashdiff using this syntax will ensure the columns are automatically alpha-sorted, which is standard practice
 for hashdiffs
 
 !!! tip

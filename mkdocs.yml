@@ -55,6 +55,7 @@ nav:
   - Best Practices: 'best_practices.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
+  - Versions: 'versions.md'
   - Changelog:
       - Stable Releases: 'changelog/stable.md'
       - Beta Releases: 'changelog/beta.md'
@@ -110,13 +111,9 @@ plugins:
   - search
   - git-revision-date-localized:
       type: timeago
-#  - with-pdf:
-#      copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021
-#      cover_title: dbtvault Docs
-#      cover_subtitle: By Datavault
 
 extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2021 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
+copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2022 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
