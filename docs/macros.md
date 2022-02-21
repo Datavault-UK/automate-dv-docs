@@ -2266,6 +2266,210 @@ Generates SQL to build a Point-In-Time (PIT) table.
         
         SELECT DISTINCT * FROM pit
         ```
+=== "Google Bigquery"
+    
+    === "Base Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+
+        new_rows_as_of_dates AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN as_of_dates AS b
+            ON (1=1)
+        ),
+
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(`sat_customer_details_src`.`CUSTOMER_PK`), '0x0000000000000000') AS SAT_CUSTOMER_DETAILS_PK,
+                COALESCE(MAX(`sat_customer_details_src`.`LOAD_DATE`), PARSE_DATETIME('%F %H:%M:%E6S',  '1900-01-01 00:00:00.000')) AS SAT_CUSTOMER_DETAILS_LDTS,
+                COALESCE(MAX(`sat_customer_login_src`.`CUSTOMER_PK`), '0x0000000000000000') AS SAT_CUSTOMER_LOGIN_PK,
+                COALESCE(MAX(`sat_customer_login_src`.`LOAD_DATE`), PARSE_DATETIME('%F %H:%M:%E6S',  '1900-01-01 00:00:00.000')) AS SAT_CUSTOMER_LOGIN_LDTS,
+                COALESCE(MAX(`sat_customer_profile_src`.`CUSTOMER_PK`), '0x0000000000000000') AS SAT_CUSTOMER_PROFILE_PK,
+                COALESCE(MAX(`sat_customer_profile_src`.`LOAD_DATE`), PARSE_DATETIME('%F %H:%M:%E6S',  '1900-01-01 00:00:00.000')) AS SAT_CUSTOMER_PROFILE_LDTS
+            FROM new_rows_as_of_dates AS a
+
+
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS `sat_customer_details_src`
+                ON a.`CUSTOMER_PK` = `sat_customer_details_src`.`CUSTOMER_PK`
+                AND `sat_customer_details_src`.`LOAD_DATE` <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS `sat_customer_login_src`
+                ON a.`CUSTOMER_PK` = `sat_customer_login_src`.`CUSTOMER_PK`
+                AND `sat_customer_login_src`.`LOAD_DATE` <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS `sat_customer_profile_src`
+                ON a.`CUSTOMER_PK` = `sat_customer_profile_src`.`CUSTOMER_PK`
+                AND `sat_customer_profile_src`.`LOAD_DATE` <= a.AS_OF_DATE
+            GROUP BY
+                a.`CUSTOMER_PK`, a.AS_OF_DATE
+            ORDER BY (1)
+        ),
+
+        pit AS (
+            SELECT * FROM new_rows
+        )
+
+        SELECT DISTINCT * FROM pit
+
+        ```
+
+    === "Incremental Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME FROM (
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
+                UNION ALL
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
+            )
+        ),
+
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE FROM DBTVAULT.TEST.PIT_CUSTOMER
+        ),
+
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of_dates AS b
+            ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_dates AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+            ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+
+        min_date AS (
+            SELECT min(AS_OF_DATE) AS MIN_DATE
+            FROM as_of_dates
+        ),
+
+        backfill_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            INNER JOIN last_safe_load_datetime as l
+            ON a.AS_OF_DATE < l.LAST_SAFE_LOAD_DATETIME
+        ),
+
+        new_rows_pks AS (
+            SELECT a.`CUSTOMER_PK`
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN last_safe_load_datetime as l
+            ON a.`LOAD_DATE` >= l.LAST_SAFE_LOAD_DATETIME
+        ),
+
+        new_rows_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            INNER JOIN last_safe_load_datetime as l
+            ON a.AS_OF_DATE >= l.LAST_SAFE_LOAD_DATETIME
+            UNION DISTINCT
+            SELECT AS_OF_DATE
+            FROM as_of_grain_new_entries
+        ),
+
+        overlap AS (
+            SELECT a.*
+            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
+            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
+            ON a.`CUSTOMER_PK` = b.`CUSTOMER_PK`
+            INNER JOIN min_date
+            ON 1 = 1
+            INNER JOIN last_safe_load_datetime
+            ON 1 = 1
+	        LEFT OUTER JOIN as_of_grain_lost_entries
+	        ON a.AS_OF_DATE = as_of_grain_lost_entries.AS_OF_DATE
+            WHERE a.AS_OF_DATE >= min_date.MIN_DATE
+                AND a.AS_OF_DATE < last_safe_load_datetime.LAST_SAFE_LOAD_DATETIME
+		        AND as_of_grain_lost_entries.AS_OF_DATE IS NULL
+        ),
+
+        backfill_rows_as_of_dates AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                b.AS_OF_DATE
+            FROM new_rows_pks AS a
+            INNER JOIN backfill_as_of AS b
+                ON (1=1 )
+        ),
+    
+        backfill AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                a.AS_OF_DATE,
+                '0x0000000000000000' AS `SAT_CUSTOMER_DETAILS_PK`, 
+                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000') AS `SAT_CUSTOMER_DETAILS_LDTS`,
+                '0x0000000000000000' AS `SAT_CUSTOMER_LOGIN_PK`,
+                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000') AS `SAT_CUSTOMER_LOGIN_LDTS`
+            FROM backfill_rows_as_of_dates AS a
+
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS `sat_customer_details_src`
+                ON a.`CUSTOMER_PK` = `sat_customer_details_src`.`CUSTOMER_PK`
+                AND `sat_customer_details_src`.`LOAD_DATE` <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS `sat_customer_login_src`
+                ON a.`CUSTOMER_PK` = `sat_customer_login_src`.`CUSTOMER_PK`
+                AND `sat_customer_login_src`.`LOAD_DATE` <= a.AS_OF_DATE
+            GROUP BY
+                a.`CUSTOMER_PK`, a.AS_OF_DATE
+            ORDER BY (1)
+        ),
+
+        new_rows_as_of_dates AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN new_rows_as_of AS b
+            ON (1=1)
+        ),
+
+        new_rows AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                a.AS_OF_DATE,
+                COALESCE(MAX(`sat_customer_details_src`.`CUSTOMER_PK`), '0x0000000000000000') AS SAT_CUSTOMER_DETAILS_PK,
+                COALESCE(MAX(`sat_customer_details_src`.`LOAD_DATE`), PARSE_DATETIME('%F %H:%M:%E6S',  '1900-01-01 00:00:00.000')) AS SAT_CUSTOMER_DETAILS_LDTS,
+                COALESCE(MAX(`sat_customer_login_src`.`CUSTOMER_PK`), '0x0000000000000000') AS SAT_CUSTOMER_LOGIN_PK,
+                COALESCE(MAX(`sat_customer_login_src`.`LOAD_DATE`), PARSE_DATETIME('%F %H:%M:%E6S',  '1900-01-01 00:00:00.000')) AS SAT_CUSTOMER_LOGIN_LDTS
+            FROM new_rows_as_of_dates AS a
+
+
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS `sat_customer_details_src`
+                ON a.`CUSTOMER_PK` = `sat_customer_details_src`.`CUSTOMER_PK`
+                AND `sat_customer_details_src`.`LOAD_DATE` <= a.AS_OF_DATE
+            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS `sat_customer_login_src`
+                ON a.`CUSTOMER_PK` = `sat_customer_login_src`.`CUSTOMER_PK`
+                AND `sat_customer_login_src`.`LOAD_DATE` <= a.AS_OF_DATE
+            GROUP BY
+                a.`CUSTOMER_PK`, a.AS_OF_DATE
+            ORDER BY (1)
+        ),
+
+        pit AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap
+            UNION ALL
+            SELECT * FROM backfill
+        )
+
+        SELECT DISTINCT * FROM pit
+        ```
 
 #### As Of Date Tables
 
