@@ -217,7 +217,7 @@ When we hash multiple columns, we take the following approach:
         ```sql 
         CAST(MD5_BINARY(NULLIF(CONCAT_WS('||', 
             IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'),
             IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
         ), '^^||^^||^^')) AS BINARY(16)) AS CUSTOMER_HK
         ```
@@ -227,7 +227,7 @@ When we hash multiple columns, we take the following approach:
         ```sql 
         CAST(MD5_BINARY(CONCAT_WS('||',
             IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'), '||',
+            IFNULL(NULLIF(UPPER(TRIM(CAST(DOB AS VARCHAR))), ''), '^^'),
             IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
         )) AS BINARY(16)) AS HASHDIFF
         ```
