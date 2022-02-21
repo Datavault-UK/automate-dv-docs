@@ -2792,6 +2792,157 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
+        WITH as_of AS (
+            SELECT a.AS_OF_DATE
+            FROM DBTVAULT.TEST.AS_OF_DATE AS a
+        WHERE a.AS_OF_DATE <= CURRENT_DATE()
+        ),
+
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
+            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_ORDER) AS l
+        ),
+
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE
+            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER
+        ),
+
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+
+        min_date AS (
+            SELECT min(AS_OF_DATE) AS MIN_DATE
+            FROM as_of
+        ),
+
+        new_rows_pks AS (
+            SELECT h.`CUSTOMER_PK`
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS h
+            INNER JOIN last_safe_load_datetime
+            ON 1 = 1
+            WHERE h.`LOAD_DATETIME` >= last_safe_load_datetime.LAST_SAFE_LOAD_DATETIME
+        ),
+
+        new_rows_as_of AS (
+            (SELECT AS_OF_DATE
+            FROM as_of
+            INNER JOIN last_safe_load_datetime
+            ON 1 = 1
+            WHERE as_of.AS_OF_DATE >= last_safe_load_datetime.LAST_SAFE_LOAD_DATETIME)
+            UNION DISTINCT
+            (SELECT as_of_date
+            FROM as_of_grain_new_entries)
+        ),
+
+        overlap_pks AS (
+            SELECT p.`CUSTOMER_PK`
+            FROM DBTVAULT.TEST.BRIDGE_CUSTOMER_ORDER AS p
+            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as h
+                ON p.`CUSTOMER_PK` = h.`CUSTOMER_PK`
+            INNER JOIN min_date
+            ON 1 = 1
+            INNER JOIN last_safe_load_datetime
+            ON 1 = 1
+	        LEFT OUTER JOIN as_of_grain_lost_entries
+	        ON p.AS_OF_DATE = as_of_grain_lost_entries.AS_OF_DATE
+            WHERE p.AS_OF_DATE >= min_date.MIN_DATE
+                AND p.AS_OF_DATE < last_safe_load_datetime.LAST_SAFE_LOAD_DATETIME
+		        AND as_of_grain_lost_entries.AS_OF_DATE IS NULL
+        ),
+
+        overlap_as_of AS (
+            SELECT p.AS_OF_DATE
+            FROM as_of AS p
+            INNER JOIN min_date
+            ON 1 = 1
+            INNER JOIN last_safe_load_datetime
+            ON 1 = 1
+	        LEFT OUTER JOIN as_of_grain_lost_entries
+	        ON p.AS_OF_DATE = as_of_grain_lost_entries.AS_OF_DATE
+            WHERE p.AS_OF_DATE >= min_date.MIN_DATE
+                AND p.AS_OF_DATE < last_safe_load_datetime.LAST_SAFE_LOAD_DATETIME
+		        AND as_of_grain_lost_entries.AS_OF_DATE IS NULL
+        ),
+
+        overlap AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                b.AS_OF_DATE
+                    ,`LINK_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK` AS `LINK_CUSTOMER_ORDER_PK`
+                    ,`EFF_SAT_CUSTOMER_ORDER`.`END_DATE` AS `EFF_SAT_CUSTOMER_ORDER_ENDDATE`
+                    ,`EFF_SAT_CUSTOMER_ORDER`.`LOAD_DATETIME` AS `EFF_SAT_CUSTOMER_ORDER_LOADDATE`
+            FROM overlap_pks AS a
+            INNER JOIN overlap_as_of AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS `LINK_CUSTOMER_ORDER`
+                ON a.`CUSTOMER_PK` = `LINK_CUSTOMER_ORDER`.`CUSTOMER_FK`
+            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS `EFF_SAT_CUSTOMER_ORDER`
+                ON `EFF_SAT_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK` = `LINK_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK`
+                AND `EFF_SAT_CUSTOMER_ORDER`.`LOAD_DATETIME` <= b.AS_OF_DATE
+        ),
+
+        new_rows AS (
+            SELECT
+                a.`CUSTOMER_PK`,
+                b.AS_OF_DATE,`LINK_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK` AS `LINK_CUSTOMER_ORDER_PK`
+                    ,`EFF_SAT_CUSTOMER_ORDER`.`END_DATE` AS `EFF_SAT_CUSTOMER_ORDER_ENDDATE`
+                    ,`EFF_SAT_CUSTOMER_ORDER`.`LOAD_DATETIME` AS `EFF_SAT_CUSTOMER_ORDER_LOADDATE`
+            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            INNER JOIN NEW_ROWS_AS_OF AS b
+                ON (1=1)
+            LEFT JOIN DBTVAULT.TEST.LINK_CUSTOMER_ORDER AS `LINK_CUSTOMER_ORDER`
+                ON a.`CUSTOMER_PK` = `LINK_CUSTOMER_ORDER`.`CUSTOMER_FK`
+            INNER JOIN DBTVAULT.TEST.EFF_SAT_CUSTOMER_ORDER AS `EFF_SAT_CUSTOMER_ORDER`
+                ON `EFF_SAT_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK` = `LINK_CUSTOMER_ORDER`.`CUSTOMER_ORDER_PK`
+                AND `EFF_SAT_CUSTOMER_ORDER`.`LOAD_DATETIME` <= b.AS_OF_DATE
+        ),
+
+        all_rows AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap
+        ),
+
+        candidate_rows AS (
+            SELECT *
+            FROM (
+                SELECT *,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY AS_OF_DATE,
+                            `LINK_CUSTOMER_ORDER_PK`
+                        ORDER BY
+                            `EFF_SAT_CUSTOMER_ORDER_LOADDATE` DESC
+                        ) AS row_num
+                FROM all_rows
+            ) AS a
+            WHERE a.row_num = 1
+        ),
+
+        bridge AS (
+            SELECT
+                c.`CUSTOMER_PK`,
+                c.AS_OF_DATE,c.`LINK_CUSTOMER_ORDER_PK`
+            FROM candidate_rows AS c
+            WHERE DATE(c.`EFF_SAT_CUSTOMER_ORDER_ENDDATE`) = DATE('9999-12-31 23:59:59.999')
+        )
+
+        SELECT * FROM bridge
+        ```
+
 #### As Of Date Table Structures
 
 An As of Date table contains a single column of dates used to construct the history in the Bridge table.
