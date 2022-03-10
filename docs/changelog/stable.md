@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.8.1] - 2022-02-22
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.1)](https://dbtvault.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
+
+HOTFIX RELEASE
+
+### Fixed
+
+- Fixed a bug where `vault_insert_by_rank` unintentionally used logic from `vault_insert_by_period` when in full-refresh mode or replacing an existing view. 
+
 ## [v0.8.0] - 2022-02-21
 
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.0)](https://dbtvault.readthedocs.io/en/v0.8.0/?badge=v0.8.0)
