@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.8.2] - 2022-02-22
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.2)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
+
+More Google BigQuery and MS SQL Server support, plus fixes!
+
+### New
+
+#### Google BigQuery and MS SQL Server
+
+- T-Links ([t_link macro](../macros.md#t_link))
+- Effectivity Satellites ([eff_sat macro](../macros.md#eff_sat))
+- Multi-Active Satellites ([ma_sat macro](../macros.md#ma_sat))
+- Extended Tracking Satellites ([xts macro](../macros.md#xts))
+
+
+See our [Platform support matrix](../macros.md#platform-support) for more details.
+
+### Fixed
+
+- Incorrect version number in `dbt_project.yml`
+- Fixed a bug where `vault_insert_by_period` would give an error under certain conditions ([#108](https://github.com/Datavault-UK/dbtvault/issues/108))
+
 ## [v0.8.1] - 2022-02-22
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.1)](https://dbtvault.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
 
