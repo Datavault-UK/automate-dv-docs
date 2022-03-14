@@ -5,11 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 !!! note
-    To view documentation for a specific version, please click the 'docs | passing' badges under the specific changelog entry. 
+    To view documentation for a specific version, please click the 'docs' badges under the specific changelog entry. 
 
 [View Beta Releases](beta.md){: .md-button }
 
-## [v0.8.2] - 2022-02-22
+## [v0.8.2] - 2022-03-14
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.2)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
 
 More Google BigQuery and MS SQL Server support, plus fixes!
@@ -28,8 +28,9 @@ See our [Platform support matrix](../macros.md#platform-support) for more detail
 
 ### Fixed
 
-- Incorrect version number in `dbt_project.yml`
-- Fixed a bug where `vault_insert_by_period` would give an error under certain conditions ([#108](https://github.com/Datavault-UK/dbtvault/issues/108))
+- Fixed a bug where `vault_insert_by_period` would give an error during incremental loads ([#108](https://github.com/Datavault-UK/dbtvault/issues/108))
+- Fixed `vault_insert_by_x` issues for MS SQL Server
+- Fixed (increased) datetime precision in `max_datetime` for Google BigQuery
 
 ## [v0.8.1] - 2022-02-22
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.1)](https://dbtvault.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
