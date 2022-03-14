@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
-## [v0.8.2] - 2022-02-22
+## [v0.8.2] - 2022-03-14
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.2)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
 
 More Google BigQuery and MS SQL Server support, plus fixes!
