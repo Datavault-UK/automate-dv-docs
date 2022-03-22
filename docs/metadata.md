@@ -139,8 +139,8 @@ example provided to help better convey the difference.
 #### Metadata
 
 === "Per-model - YAML strings"
-=== "All components"
-
+    === "All components"
+    
         ```jinja
         {%- set yaml_metadata -%}
         source_model: raw_source
@@ -169,7 +169,7 @@ example provided to help better convey the difference.
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
-
+    
         {% set source_model = metadata_dict["source_model"] %}
         {% set derived_columns = metadata_dict["derived_columns"] %}
         {% set hashed_columns = metadata_dict["hashed_columns"] %}
