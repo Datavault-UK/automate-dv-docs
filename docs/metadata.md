@@ -204,8 +204,8 @@ example provided to help better convey the difference.
 
         ```jinja
         {%- set yaml_metadata -%}
-        source_model: 
-            raw_source_name: source_table_name
+        source_model:
+          raw_source_name: source_table_name
         {%- endset -%}
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
