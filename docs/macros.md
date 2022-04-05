@@ -1255,7 +1255,6 @@ ___
 
 ### t_link
 
-###### view source: 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/t_link.sql))
 
 Generates SQL to build a Transactional Link table using the provided parameters.
@@ -1633,8 +1632,10 @@ ___
 
 ### eff_sat
 
-###### view source: 
+###### view source:
 [![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -2274,6 +2275,8 @@ ___
 
 ###### view source: 
 [![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -2411,14 +2414,14 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     
         ```sql
         WITH source_data AS (
-            SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE`, s.`CUSTOMER_NAME`, s.EFFECTIVE_FROM, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
-                AND s.`CUSTOMER_PHONE` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
         ),
         
         records_to_insert AS (
-            SELECT source_data.`CUSTOMER_PK`, source_data.`HASHDIFF`, source_data.`CUSTOMER_PHONE`, source_data.`CUSTOMER_NAME`, source_data.EFFECTIVE_FROM, source_data.`LOAD_DATE`, source_data.`SOURCE`
+            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
             FROM source_data
         )
         
@@ -2428,10 +2431,10 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         
         ```sql
         WITH source_data AS (
-            SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE`, s.`CUSTOMER_NAME`, s.EFFECTIVE_FROM, s.`LOAD_DATETIME`, s.`SOURCE`
+            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATETIME, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
-                AND s.`CUSTOMER_PHONE` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
+                AND s.CUSTOMER_PHONE IS NOT NULL
         ),
 
         source_data_with_count AS (
@@ -2440,49 +2443,49 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
             FROM source_data a
             INNER JOIN
             (
-                SELECT t.`CUSTOMER_PK`
+                SELECT t.CUSTOMER_PK
                     ,COUNT(*) AS source_count
-                FROM (SELECT DISTINCT s.`CUSTOMER_PK`, s.`HASHDIFF`, s.`CUSTOMER_PHONE` FROM source_data AS s) AS t
-                GROUP BY t.`CUSTOMER_PK`
+                FROM (SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE FROM source_data AS s) AS t
+                GROUP BY t.CUSTOMER_PK
             ) AS b
-            ON a.`CUSTOMER_PK` = b.`CUSTOMER_PK`
+            ON a.CUSTOMER_PK = b.CUSTOMER_PK
         ),
 
         latest_records AS (
-            SELECT mas.`CUSTOMER_PK`
-                ,mas.`HASHDIFF`
-                ,mas.`CUSTOMER_PHONE`
-                ,mas.`LOAD_DATETIME`
+            SELECT mas.CUSTOMER_PK
+                ,mas.HASHDIFF
+                ,mas.CUSTOMER_PHONE
+                ,mas.LOAD_DATETIME
                 ,mas.latest_rank
-                ,DENSE_RANK() OVER (PARTITION BY mas.`CUSTOMER_PK`
-                    ORDER BY mas.`HASHDIFF`, mas.`CUSTOMER_PHONE` ASC) AS check_rank
+                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
+                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
             FROM
             (
-            SELECT inner_mas.`CUSTOMER_PK`
-                ,inner_mas.`HASHDIFF`
-                ,inner_mas.`CUSTOMER_PHONE`
-                ,inner_mas.`LOAD_DATETIME`
-                ,RANK() OVER (PARTITION BY inner_mas.`CUSTOMER_PK`
-                    ORDER BY inner_mas.`LOAD_DATETIME` DESC) AS latest_rank
-            FROM `flash-bazaar-332912`.`DBTVAULT_FLASH_BAZAAR_332912`.`MULTI_ACTIVE_SATELLITE_TS` AS inner_mas
-            INNER JOIN (SELECT DISTINCT s.`CUSTOMER_PK` FROM source_data as s ) AS spk
-                ON inner_mas.`CUSTOMER_PK` = spk.`CUSTOMER_PK`
+            SELECT inner_mas.CUSTOMER_PK
+                ,inner_mas.HASHDIFF
+                ,inner_mas.CUSTOMER_PHONE
+                ,inner_mas.LOAD_DATETIME
+                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
+                    ORDER BY inner_mas.LOAD_DATETIME DESC) AS latest_rank
+            FROM flash-bazaar-332912.DBTVAULT_FLASH_BAZAAR_332912.MULTI_ACTIVE_SATELLITE_TS AS inner_mas
+            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
+                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK
             ) AS mas
             WHERE latest_rank = 1
         ),
 
         latest_group_details AS (
-            SELECT lr.`CUSTOMER_PK`
-                ,lr.`LOAD_DATETIME`
+            SELECT lr.CUSTOMER_PK
+                ,lr.LOAD_DATETIME
                 ,MAX(lr.check_rank) AS latest_count
             FROM latest_records AS lr
-            GROUP BY lr.`CUSTOMER_PK`, lr.`LOAD_DATETIME`
+            GROUP BY lr.CUSTOMER_PK, lr.LOAD_DATETIME
         ),
 
 
 
         records_to_insert AS (
-            SELECT source_data_with_count.`CUSTOMER_PK`, source_data_with_count.`HASHDIFF`, source_data_with_count.`CUSTOMER_PHONE`, source_data_with_count.`CUSTOMER_NAME`, source_data_with_count.EFFECTIVE_FROM, source_data_with_count.`LOAD_DATETIME`, source_data_with_count.`SOURCE`
+            SELECT source_data_with_count.CUSTOMER_PK, source_data_with_count.HASHDIFF, source_data_with_count.CUSTOMER_PHONE, source_data_with_count.CUSTOMER_NAME, source_data_with_count.EFFECTIVE_FROM, source_data_with_count.LOAD_DATETIME, source_data_with_count.SOURCE
             FROM source_data_with_count
             WHERE EXISTS
             (
@@ -2493,22 +2496,22 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
                     SELECT 1
                     FROM
                     (
-                        SELECT lr.`CUSTOMER_PK`
-                        ,lr.`HASHDIFF`
-                        ,lr.`CUSTOMER_PHONE`
-                        ,lr.`LOAD_DATETIME`
+                        SELECT lr.CUSTOMER_PK
+                        ,lr.HASHDIFF
+                        ,lr.CUSTOMER_PHONE
+                        ,lr.LOAD_DATETIME
                         ,lg.latest_count
                         FROM latest_records AS lr
                         INNER JOIN latest_group_details AS lg
-                            ON lr.`CUSTOMER_PK` = lg.`CUSTOMER_PK`
-                            AND lr.`LOAD_DATETIME` = lg.`LOAD_DATETIME`
+                            ON lr.CUSTOMER_PK = lg.CUSTOMER_PK
+                            AND lr.LOAD_DATETIME = lg.LOAD_DATETIME
                     ) AS active_records
-                    WHERE stage.`CUSTOMER_PK` = active_records.`CUSTOMER_PK`
-                        AND stage.`HASHDIFF` = active_records.`HASHDIFF`
-                        AND stage.`CUSTOMER_PHONE` = active_records.`CUSTOMER_PHONE`
+                    WHERE stage.CUSTOMER_PK = active_records.CUSTOMER_PK
+                        AND stage.HASHDIFF = active_records.HASHDIFF
+                        AND stage.CUSTOMER_PHONE = active_records.CUSTOMER_PHONE
                         AND stage.source_count = active_records.latest_count
                 )
-                AND source_data_with_count.`CUSTOMER_PK` = stage.`CUSTOMER_PK`
+                AND source_data_with_count.CUSTOMER_PK = stage.CUSTOMER_PK
             )
 
         )
@@ -2821,15 +2824,15 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         WITH 
 
         satellite_a AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_b AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         union_satellites AS (
@@ -2842,11 +2845,11 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
             SELECT DISTINCT union_satellites.* FROM union_satellites
             LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.`LOAD_DATE` = d.`LOAD_DATE`
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
             )
             WHERE d.HASHDIFF IS NULL
-            AND d.`LOAD_DATE` IS NULL
+            AND d.LOAD_DATE IS NULL
             AND d.SATELLITE_NAME IS NULL
         )
 
@@ -2860,39 +2863,39 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         WITH 
 
         satellite_a AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_b AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_c AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_d AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_e AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_1` AS HASHDIFF, s.`SATELLITE_1` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_f AS (
-            SELECT s.`CUSTOMER_PK`, s.`HASHDIFF_2` AS HASHDIFF, s.`SATELLITE_2` AS SATELLITE_NAME, s.`LOAD_DATE`, s.`SOURCE`
+            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
-            WHERE s.`CUSTOMER_PK` IS NOT NULL
+            WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         union_satellites AS (
@@ -2913,11 +2916,11 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
             SELECT DISTINCT union_satellites.* FROM union_satellites
             LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.`LOAD_DATE` = d.`LOAD_DATE`
+                AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
                 )
             WHERE d.HASHDIFF IS NULL
-            AND d.`LOAD_DATE` IS NULL
+            AND d.LOAD_DATE IS NULL
             AND d.SATELLITE_NAME IS NULL
         )
 
