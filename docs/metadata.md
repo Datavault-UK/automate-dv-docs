@@ -851,12 +851,12 @@ ___
           SAT_CUSTOMER_DETAILS: 
             sat_name:
               SATELLITE_NAME: SATELLITE_NAME_1
-            hashdiff
+            hashdiff:
               HASHDIFF: CUSTOMER_HASHDIFF
           SAT_CUSTOMER_DETAILS: 
             sat_name:
               SATELLITE_NAME: SATELLITE_NAME_2
-            hashdiff
+            hashdiff:
               HASHDIFF: ORDER_HASHDIFF
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
