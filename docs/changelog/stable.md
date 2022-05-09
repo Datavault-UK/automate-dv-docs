@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){: .md-button }
 
+## [v0.8.3] - 2022-05-10
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.3)
+
+All existing macros are now supported by all platforms!
+
+### New
+
+#### General
+- dbt 1.1.x support
+
+#### Google BigQuery and MS SQL Server
+
+- PITs ([pit macro](../macros.md#pit))
+- Bridges ([bridge macro](../macros.md#bridge))
+
+### Fixed
+
+##### Effectivity Satellites
+
+- Fixed an issue affecting auto-end-dating in flip-flop situations [eff_sat](../macros.md#eff_sat) ([#115](https://github.com/Datavault-UK/dbtvault/issues/115))
+
+##### Staging
+
+- Fixed an issue where hashed columns with lower-case columns provided to an `exclude_columns` config, behaved incorrectly ([#110](https://github.com/Datavault-UK/dbtvault/issues/110))
+
 ## [v0.8.2] - 2022-03-14
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.2)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
 
