@@ -1636,6 +1636,120 @@ use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
 
 ___
 
+### sts
+
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/sts.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/sts.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/sts.sql)
+
+Generates SQL to build a Status Tracking Satellite table using the provided parameters.
+
+#### Usage
+
+``` jinja
+{{ dbtvault.sts(src_pk=src_pk, src_ldts=src_ldts, src_source=src_source,
+                src_status=src_status, source_model=source_model }}
+```
+
+#### Parameters
+
+| Parameter    | Description                                  | Type    | Required?                                     |
+|--------------|----------------------------------------------|---------|-----------------------------------------------|
+| src_pk       | Source primary key column                    | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts     | Source load date timestamp column            | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_source   | Name of the column containing the source ID  | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_status   | Source data status column                    | String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model | Staging model name                           | String  | :fontawesome-solid-check-circle:{ .required } |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_sts.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#status-tracking-satellites)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Single-Source"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS a
+            WHERE a.CUSTOMER_PK IS NOT NULL
+        ),
+
+        latest_records AS (
+            SELECT b.CUSTOMER_PK, b.LOAD_DATE, b.SOURCE, b.STATUS
+            FROM (
+                SELECT current_records.CUSTOMER_PK, current_records.LOAD_DATE, current_records.SOURCE, current_records.STATUS,
+                    RANK() OVER (
+                        PARTITION BY current_records.CUSTOMER_PK
+                        ORDER BY current_records.LOAD_DATE DESC
+                    ) AS rank
+                FROM DBTVAULT.TEST.STS AS current_records
+            ) AS b
+            WHERE b.rank = 1
+        ),
+
+        records_to_insert AS (
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+                'I' AS "STATUS"
+            FROM source_data AS stage
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM latest_records
+                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                    AND latest_records.STATUS != 'D')
+            )
+
+            UNION ALL
+        
+            SELECT DISTINCT latest_records.CUSTOMER_PK, stage.LOAD_DATE, latest_records.SOURCE,
+                'D' AS "STATUS"
+            FROM source_data AS stage, latest_records 
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM source_data AS stage
+                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                    AND latest_records.SOURCE IS NOT NULL)
+            )
+        
+            UNION ALL
+        
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+                'U' AS "STATUS"
+            FROM source_data AS stage
+            WHERE EXISTS (
+                SELECT 1
+                FROM latest_records
+                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                    AND latest_records."STATUS" != 'D')
+            )
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+
+=== "Google BigQuery"
+
+    === "Single-Source"
+    
+        ```sql
+        
+        ```
+
+=== "MS SQL Server"
+
+    === "Single-Source"
+    
+        ```sql
+        
+        ```
+
 ### eff_sat
 
 ###### view source:

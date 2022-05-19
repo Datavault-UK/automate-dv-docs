@@ -37,6 +37,7 @@ nav:
       - Links: 'tutorial/tut_links.md'
       - Transactional Links: 'tutorial/tut_t_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
+      - Status Tracking Satellites: 'tutorial/tut_sts.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi-Active Satellites: 'tutorial/tut_multi_active_satellites.md'
       - Extended Tracking Satellites: 'tutorial/tut_xts.md'
