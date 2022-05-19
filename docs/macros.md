@@ -143,28 +143,34 @@ Here are some examples for different platforms:
 
 The table below indicates which macros and templates are officially available for each platform.
 
-We have been Snowflake-only prior to dbtvault v0.8, and we are currently back-filling support for structures on other platforms.
+dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
+Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality 
+with no equivalent in another platform. 
 
 Thanks for your patience and continued support!
 
-!!! note
-    dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
-    Most of the time this will be at the same time as the Snowflake release unless it is a snowflake-only addition. 
+| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks**                                      | Postgres**                                         | Redshift**                                        |
+|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|---------------------------------------------------|----------------------------------------------------|---------------------------------------------------|
+| hash           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| stage          | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| hub            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| link           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| sat            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| t_link         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| eff_sat        | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{  .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
+| ma_sat         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| xts            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| pit            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
+| bridge         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
 
-| Macro/Template | Snowflake                                     | Google BigQuery                                   | MS SQL Server                                     | Databricks                                        | Postgres                                          | Redshift                                          |
-|----------------|-----------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|
-| hash           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| stage          | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| hub            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| link           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| sat            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| t_link         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| eff_sat        | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| ma_sat         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| xts            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-check-circle:{ .required }     | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| pit            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| bridge         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
 
+!!! note "**"
+    These platforms are either planned or actively being worked on by the community and/or internal dbtvault team.
+    See the issues below for more information:
+
+    - [Databricks](https://github.com/Datavault-UK/dbtvault/issues/98)
+    - [PostgreSQL](https://github.com/Datavault-UK/dbtvault/issues/117)
+    - [Redshift](https://github.com/Datavault-UK/dbtvault/issues/86)
 
 ## Table templates
 
@@ -176,9 +182,9 @@ for your Data Vault 2.0 Data Warehouse.
 ### hub
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/hub.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/hub.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/hub.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/hub.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/hub.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -696,9 +702,9 @@ ___
 ### link
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/link.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/link.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/link.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/link.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/link.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -1255,7 +1261,7 @@ ___
 
 ### t_link
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/t_link.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/t_link.sql))
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -1414,9 +1420,9 @@ ___
 ### sat
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/sat.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/sat.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/sat.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/sat.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/sat.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -1633,9 +1639,9 @@ ___
 ### eff_sat
 
 ###### view source:
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/eff_sat.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/eff_sat.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/eff_sat.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -2274,9 +2280,9 @@ ___
 ### ma_sat
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/ma_sat.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/ma_sat.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/ma_sat.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -2631,9 +2637,9 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 ### xts
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/xts.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/bigquery/xts.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/sqlserver/xts.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/xts.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/xts.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -3050,7 +3056,9 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 ### pit
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/pit.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/pit.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/pit.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -3324,7 +3332,9 @@ ___
 ### bridge
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/tables/snowflake/bridge.sql)
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/bridge.sql)
+[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/bridge.sql)
+[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
@@ -3582,7 +3592,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/staging/stage.sql))
 
 Generates SQL to build a staging area using the provided parameters.
 
@@ -4826,7 +4836,7 @@ column value.
 
 ### ranked_columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/staging/rank_columns.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/staging/rank_columns.sql))
 
 !!! note 
     This is a helper macro used within the stage macro, but can be used independently.
@@ -4847,7 +4857,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/supporting/hash.sql))
 
 !!! warning
     This macro ***should not be*** used for cryptographic purposes.
@@ -4932,7 +4942,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.2/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
