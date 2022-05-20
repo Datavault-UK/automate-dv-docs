@@ -89,7 +89,7 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 
 Here we will define the metadata for the source_model. We will use the HUB_CUSTOMER that we built before.
 
-=== "pit_customer.yml"
+=== "pit_customer.sql"
 
     ```jinja
     {%- set yaml_metadata -%}
@@ -101,7 +101,7 @@ Here we will define the metadata for the source_model. We will use the HUB_CUSTO
 
 Next we need add the Hub's Primary Key column 
 
-=== "pit_customer.yml"
+=== "pit_customer.sql"
 
     ```jinja hl_lines="3"
     {%- set yaml_metadata -%}
@@ -114,7 +114,7 @@ Next we need add the Hub's Primary Key column
 
 Next, we add the Load Date/Timestamp column name of the parent Hub 
 
-=== "pit_customer.yml"
+=== "pit_customer.sql"
 
     ```jinja hl_lines="4"
     {%- set yaml_metadata -%}
@@ -128,7 +128,7 @@ Next, we add the Load Date/Timestamp column name of the parent Hub
 
 Next, we provide the PIT's column name for the As of Date table.
 
-=== "pit_customer.yml"
+=== "pit_customer.sql"
 
     ```jinja hl_lines="4"
     {%- set yaml_metadata -%}
@@ -143,7 +143,7 @@ Next, we provide the PIT's column name for the As of Date table.
 
 Here we add the Satellite related details (i.e. the Primary/Hash Key and the Load Date/Timestamp column names)
 
-=== "pit_customer.yml"
+=== "pit_customer.sql"
 
     ```jinja hl_lines="5-15"
     {%- set yaml_metadata -%}
@@ -169,7 +169,7 @@ Here we add the Satellite related details (i.e. the Primary/Hash Key and the Loa
 
 Finally, we add Satellites' stage table names and their Load Date/Timestamp column names
 
-=== "pit_customer.yml"
+=== "pit_customer.sql"
 
     ```jinja hl_lines="16-18"
     {%- set yaml_metadata -%}
@@ -196,7 +196,7 @@ Finally, we add Satellites' stage table names and their Load Date/Timestamp colu
 
 Now, our model should look like the following:
 
-=== "pit_customer.yml"
+=== "pit_customer.sql"
 
     ```jinja
     {{ config(materialized='pit_incremental') }}
