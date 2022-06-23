@@ -5,7 +5,7 @@ simple equi-joins. A Bridge table spans across a Hub and one or more associated 
 This means that it is essentially a specialised form of Link table, containing hash keys from the Hub and the Links its spans. 
 It does not contain information from Satellites, however, it may contain computations and aggregations (according to grain) to increase 
 query performance upstream when creating virtualised data marts. Bridge tables provide a timeline for valid sets of 
-Hub and Link relationships for a given set of dates described in an [As of Date table](../macros.md#as-of-date-tables).
+Hub and Link relationships for a given set of dates described in an [As of Date table](../macros.md#as-of-date-table-structures).
 
 Below, is a diagram showing Effectivity Satellites, Hubs and Links which would be spanned by a Bridge table:
 

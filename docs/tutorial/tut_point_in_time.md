@@ -126,7 +126,7 @@ Next, we add the Load Date/Timestamp column name of the parent Hub
 
 #### As of Date Table 
 
-Next, we provide the PIT's column name for the As of Date table.
+Next, we provide the table name of the PIT's As of Date table.
 
 === "pit_customer.sql"
 
