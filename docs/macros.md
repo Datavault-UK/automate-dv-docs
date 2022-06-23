@@ -1742,7 +1742,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lc.ORDER_CUSTOMER_HK,
                 lc.ORDER_HK, lc.CUSTOMER_HK,
-                lc.START_DATE AS START_DATE,
+                g.EFFECTIVE_FROM AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 g.LOAD_DATETIME,
@@ -1824,7 +1824,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lc.ORDER_CUSTOMER_HK,
                 lc.ORDER_HK, lc.CUSTOMER_HK,
-                lc.START_DATE AS START_DATE,
+                g.START_DATE AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 g.LOAD_DATETIME,
@@ -1839,7 +1839,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lo.ORDER_CUSTOMER_HK,
                 lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
+                h.START_DATE AS START_DATE,
                 h.EFFECTIVE_FROM AS END_DATE,
                 h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 h.LOAD_DATETIME,
@@ -1929,7 +1929,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lc.ORDER_CUSTOMER_HK,
                 lc.ORDER_HK, lc.CUSTOMER_HK,
-                lc.START_DATE AS START_DATE,
+                g.EFFECTIVE_FROM AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 g.LOAD_DATETIME,
@@ -2012,7 +2012,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lc.ORDER_CUSTOMER_HK,
                 lc.ORDER_HK, lc.CUSTOMER_HK,
-                lc.START_DATE AS START_DATE,
+                g.START_DATE AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 g.LOAD_DATETIME,
@@ -2027,7 +2027,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lo.ORDER_CUSTOMER_HK,
                 lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
+                h.START_DATE AS START_DATE,
                 h.EFFECTIVE_FROM AS END_DATE,
                 h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 h.LOAD_DATETIME,
@@ -2122,7 +2122,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lc.ORDER_CUSTOMER_HK,
                 lc.ORDER_HK, lc.CUSTOMER_HK,
-                lc.START_DATE AS START_DATE,
+                g.EFFECTIVE_FROM AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 g.LOAD_DATETIME,
@@ -2208,7 +2208,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lc.ORDER_CUSTOMER_HK,
                 lc.ORDER_HK, lc.CUSTOMER_HK,
-                lc.START_DATE AS START_DATE,
+                g.START_DATE AS START_DATE,
                 g.END_DATE AS END_DATE,
                 g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 g.LOAD_DATETIME,
@@ -2223,7 +2223,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
             SELECT DISTINCT
                 lo.ORDER_CUSTOMER_HK,
                 lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
+                h.START_DATE AS START_DATE,
                 h.EFFECTIVE_FROM AS END_DATE,
                 h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
                 h.LOAD_DATETIME,
