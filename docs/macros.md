@@ -112,7 +112,7 @@ delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
 
-=== "BigQuery"
+=== "Google BigQuery"
 
     ```yaml
     ...
@@ -144,7 +144,7 @@ Here are some examples for different platforms:
 The table below indicates which macros and templates are officially available for each platform.
 
 dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
-Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality 
+Most of the time this will be at the same time as the Snowflake release unless it is Snowflake-only functionality 
 with no equivalent in another platform. 
 
 Thanks for your patience and continued support!
