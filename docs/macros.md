@@ -1676,25 +1676,25 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
     
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER AS a
-            WHERE a.CUSTOMER_PK IS NOT NULL
+            WHERE a.CUSTOMER_HK IS NOT NULL
         ),
         
         records_with_status AS (
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE,
                 'I' AS STATUS
             FROM source_data AS stage
         ),
         
         records_with_status_and_hashdiff AS (
-            SELECT d.CUSTOMER_PK, d.LOAD_DATE, d.SOURCE, d.STATUS,
+            SELECT d.CUSTOMER_HK, d.LOAD_DATE, d.RECORD_SOURCE, d.STATUS,
                 CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(STATUS AS VARCHAR))), ''))) AS BINARY(16)) AS STATUS_HASHDIFF
             FROM records_with_status AS d
         ),
         
         records_to_insert AS (
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
             FROM records_with_status_and_hashdiff AS stage
         )
         
@@ -1705,9 +1705,9 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
     
         ```sql
         WITH source_data AS (
-            SELECT a.CUSTOMER_PK, a.LOAD_DATE, a.SOURCE
+            SELECT a.CUSTOMER_HK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM DBTVAULT.TEST.STG_CUSTOMER AS a
-            WHERE a.CUSTOMER_PK IS NOT NULL
+            WHERE a.CUSTOMER_HK IS NOT NULL
         ),
         
         stage_datetime AS (
@@ -1716,11 +1716,11 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
         ),
         
         latest_records AS (
-            SELECT c.CUSTOMER_PK, c.LOAD_DATE, c.SOURCE, c.STATUS, c.STATUS_HASHDIFF
+            SELECT c.CUSTOMER_HK, c.LOAD_DATE, c.RECORD_SOURCE, c.STATUS, c.STATUS_HASHDIFF
             FROM (
-                SELECT current_records.CUSTOMER_PK, current_records.LOAD_DATE, current_records.SOURCE, current_records.STATUS, current_records.STATUS_HASHDIFF,
+                SELECT current_records.CUSTOMER_HK, current_records.LOAD_DATE, current_records.RECORD_SOURCE, current_records.STATUS, current_records.STATUS_HASHDIFF,
                     RANK() OVER (
-                        PARTITION BY current_records.CUSTOMER_PK
+                        PARTITION BY current_records.CUSTOMER_HK
                         ORDER BY current_records.LOAD_DATE DESC
                     ) AS rank
                 FROM DBTVAULT_DEV.TEST_TIM_WILSON.STS AS current_records
@@ -1729,21 +1729,21 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
         ),
         
         records_with_status AS (
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE,
                 'I' AS STATUS
             FROM source_data AS stage
             WHERE NOT EXISTS (
                 SELECT 1
                 FROM latest_records
-                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                WHERE (latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
                     AND latest_records.STATUS != 'D')
             )
         
             UNION ALL
         
-            SELECT DISTINCT latest_records.CUSTOMER_PK,
+            SELECT DISTINCT latest_records.CUSTOMER_HK,
                 stage_datetime.LOAD_DATETIME AS LOAD_DATE,
-                latest_records.SOURCE,
+                latest_records.RECORD_SOURCE,
                 'D' AS STATUS
             FROM latest_records
             INNER JOIN stage_datetime
@@ -1751,36 +1751,36 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
             WHERE NOT EXISTS (
                 SELECT 1
                 FROM source_data AS stage
-                WHERE latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                WHERE latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
             )
             AND latest_records.STATUS != 'D'
             AND stage_datetime.LOAD_DATETIME IS NOT NULL
         
             UNION ALL
         
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE,
                 'U' AS STATUS
             FROM source_data AS stage
             WHERE EXISTS (
                 SELECT 1
                 FROM latest_records
-                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                WHERE (latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
                     AND latest_records.STATUS != 'D'
                     AND stage.LOAD_DATE != latest_records.LOAD_DATE)
             )
         ),
         
         records_with_status_and_hashdiff AS (
-            SELECT d.CUSTOMER_PK, d.LOAD_DATE, d.SOURCE, d.STATUS,
+            SELECT d.CUSTOMER_HK, d.LOAD_DATE, d.RECORD_SOURCE, d.STATUS,
                 CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(STATUS AS VARCHAR))), ''))) AS BINARY(16)) AS STATUS_HASHDIFF
             FROM records_with_status AS d
         ),
         
         records_to_insert AS (
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
             FROM records_with_status_and_hashdiff AS stage
             LEFT JOIN latest_records
-                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                ON latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
             WHERE latest_records.STATUS_HASHDIFF != stage.STATUS_HASHDIFF
                 OR latest_records.STATUS_HASHDIFF IS NULL
         )
