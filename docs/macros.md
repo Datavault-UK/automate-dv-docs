@@ -1673,7 +1673,7 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
 
 === "Snowflake"
 
-    === "Single-Source"
+    === "Base Load"
     
         ```sql
         WITH source_data AS (
@@ -1681,62 +1681,39 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
             FROM DBTVAULT.TEST.STG_CUSTOMER AS a
             WHERE a.CUSTOMER_PK IS NOT NULL
         ),
-
-        latest_records AS (
-            SELECT b.CUSTOMER_PK, b.LOAD_DATE, b.SOURCE, b.STATUS
-            FROM (
-                SELECT current_records.CUSTOMER_PK, current_records.LOAD_DATE, current_records.SOURCE, current_records.STATUS,
-                    RANK() OVER (
-                        PARTITION BY current_records.CUSTOMER_PK
-                        ORDER BY current_records.LOAD_DATE DESC
-                    ) AS rank
-                FROM DBTVAULT.TEST.STS AS current_records
-            ) AS b
-            WHERE b.rank = 1
+        
+        records_with_status AS (
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+                'I' AS STATUS
+            FROM source_data AS stage
         ),
-
+        
+        records_with_status_and_hashdiff AS (
+            SELECT d.CUSTOMER_PK, d.LOAD_DATE, d.SOURCE, d.STATUS,
+                CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(STATUS AS VARCHAR))), ''))) AS BINARY(16)) AS STATUS_HASHDIFF
+            FROM records_with_status AS d
+        ),
+        
         records_to_insert AS (
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
-                'I' AS "STATUS"
-            FROM source_data AS stage
-            WHERE NOT EXISTS (
-                SELECT 1
-                FROM latest_records
-                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
-                    AND latest_records.STATUS != 'D')
-            )
-
-            UNION ALL
-        
-            SELECT DISTINCT latest_records.CUSTOMER_PK, stage.LOAD_DATE, latest_records.SOURCE,
-                'D' AS "STATUS"
-            FROM source_data AS stage, latest_records 
-            WHERE NOT EXISTS (
-                SELECT 1
-                FROM source_data AS stage
-                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
-                    AND latest_records.SOURCE IS NOT NULL)
-            )
-        
-            UNION ALL
-        
-            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
-                'U' AS "STATUS"
-            FROM source_data AS stage
-            WHERE EXISTS (
-                SELECT 1
-                FROM latest_records
-                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
-                    AND latest_records."STATUS" != 'D')
-            )
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
+            FROM records_with_status_and_hashdiff AS stage
         )
-
-        SELECT * FROM records_to_insert
+        
+        SELECT * FROM records_to_insert        
         ```
+
+    === "Subsequent Loads"
+    
 
 === "Google BigQuery"
 
-    === "Single-Source"
+    === "Base Load"
+    
+        ```sql
+        
+        ```
+
+    === "Subsequent Loads"
     
         ```sql
         
@@ -1744,7 +1721,13 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
 
 === "MS SQL Server"
 
-    === "Single-Source"
+    === "Base Load"
+    
+        ```sql
+        
+        ```
+
+    === "Subsequent Loads"
     
         ```sql
         
