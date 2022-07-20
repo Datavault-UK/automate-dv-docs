@@ -3053,6 +3053,162 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         SELECT * FROM records_to_insert
         ```
 
+---
+
+### sts
+
+###### view source: 
+[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/sts.sql)
+
+Generates SQL to build a Status Tracking Satellite table using the provided parameters.
+
+#### Usage
+
+``` jinja
+{{ dbtvault.sts(src_pk=src_pk, src_ldts=src_ldts, src_source=src_source,
+                src_status=src_status, src_hashdiff=src_hashdiff, source_model=source_model }}
+```
+
+#### Parameters
+
+| Parameter    | Description                                 | Type    | Required?                                     |
+|--------------|---------------------------------------------|---------|-----------------------------------------------|
+| src_pk       | Source primary key column                   | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts     | Source load date timestamp column           | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_source   | Name of the column containing the source ID | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_status   | Source data status column                   | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_hashdiff | Name of the status hashdiff column          | String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model | Staging model name                          | String  | :fontawesome-solid-check-circle:{ .required } |
+
+!!! tip
+    [Read the tutorial](tutorial/tut_sts.md) for more details
+
+#### Example Metadata
+
+[See examples](metadata.md#status-tracking-satellites)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Base Load"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS a
+            WHERE a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        records_with_status AS (
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE,
+                'I' AS STATUS
+            FROM source_data AS stage
+        ),
+        
+        records_with_status_and_hashdiff AS (
+            SELECT d.CUSTOMER_HK, d.LOAD_DATE, d.RECORD_SOURCE, d.STATUS,
+                CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(STATUS AS VARCHAR))), ''))) AS BINARY(16)) AS STATUS_HASHDIFF
+            FROM records_with_status AS d
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
+            FROM records_with_status_and_hashdiff AS stage
+        )
+        
+        SELECT * FROM records_to_insert        
+        ```
+
+    === "Subsequent Loads"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.LOAD_DATE, a.RECORD_SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS a
+            WHERE a.CUSTOMER_HK IS NOT NULL
+        ),
+        
+        stage_datetime AS (
+            SELECT MAX(b.LOAD_DATE) AS LOAD_DATETIME
+            FROM source_data AS b
+        ),
+        
+        latest_records AS (
+            SELECT c.CUSTOMER_HK, c.LOAD_DATE, c.RECORD_SOURCE, c.STATUS, c.STATUS_HASHDIFF
+            FROM (
+                SELECT current_records.CUSTOMER_HK, current_records.LOAD_DATE, current_records.RECORD_SOURCE, current_records.STATUS, current_records.STATUS_HASHDIFF,
+                    RANK() OVER (
+                        PARTITION BY current_records.CUSTOMER_HK
+                        ORDER BY current_records.LOAD_DATE DESC
+                    ) AS rank
+                FROM DBTVAULT_DEV.TEST_TIM_WILSON.STS AS current_records
+            ) AS c
+            WHERE c.rank = 1
+        ),
+        
+        records_with_status AS (
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE,
+                'I' AS STATUS
+            FROM source_data AS stage
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM latest_records
+                WHERE (latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
+                    AND latest_records.STATUS != 'D')
+            )
+        
+            UNION ALL
+        
+            SELECT DISTINCT latest_records.CUSTOMER_HK,
+                stage_datetime.LOAD_DATETIME AS LOAD_DATE,
+                latest_records.RECORD_SOURCE,
+                'D' AS STATUS
+            FROM latest_records
+            INNER JOIN stage_datetime
+            ON 1 = 1
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM source_data AS stage
+                WHERE latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
+            )
+            AND latest_records.STATUS != 'D'
+            AND stage_datetime.LOAD_DATETIME IS NOT NULL
+        
+            UNION ALL
+        
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE,
+                'U' AS STATUS
+            FROM source_data AS stage
+            WHERE EXISTS (
+                SELECT 1
+                FROM latest_records
+                WHERE (latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
+                    AND latest_records.STATUS != 'D'
+                    AND stage.LOAD_DATE != latest_records.LOAD_DATE)
+            )
+        ),
+        
+        records_with_status_and_hashdiff AS (
+            SELECT d.CUSTOMER_HK, d.LOAD_DATE, d.RECORD_SOURCE, d.STATUS,
+                CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(STATUS AS VARCHAR))), ''))) AS BINARY(16)) AS STATUS_HASHDIFF
+            FROM records_with_status AS d
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT stage.CUSTOMER_HK, stage.LOAD_DATE, stage.RECORD_SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
+            FROM records_with_status_and_hashdiff AS stage
+            LEFT JOIN latest_records
+                ON latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
+            WHERE latest_records.STATUS_HASHDIFF != stage.STATUS_HASHDIFF
+                OR latest_records.STATUS_HASHDIFF IS NULL
+        )
+        
+        SELECT * FROM records_to_insert        
+        ```
+
+---
+
 ### pit
 
 ###### view source: 

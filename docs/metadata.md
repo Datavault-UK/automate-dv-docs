@@ -957,6 +957,52 @@ derived_columns:
 
 ___
 
+### Status Tracking Satellites
+
+#### Parameters
+
+[sts macro parameters](macros.md#sts)
+
+#### Metadata
+
+=== "Per-model - YAML strings"
+
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: v_stg_customer
+    src_pk: CUSTOMER_HK
+    src_ldts: LOAD_DATE
+    src_source: RECORD_SOURCE
+    src_status: STATUS
+    src_hashdiff: STATUS_HASHDIFF
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.sts(src_pk=metadata_dict["src_pk"],
+                        src_ldts=metadata_dict["src_ldts"],
+                        src_source=metadata_dict["src_source"],
+                        src_status=metadata_dict["src_status"],
+                        src_hashdiff=metadata_dict["src_hashdiff"],
+                        source_model=metadata_dict["source_model"]) }}
+    ```
+
+=== "Per-Model - Variables"
+
+    ```jinja
+    {%- set source_model = "v_stg_order_customer" -%}
+    {%- set src_pk = "CUSTOMER_HK" -%}
+    {%- set src_ldts = "LOAD_DATE" -%}
+    {%- set src_source = "RECORD_SOURCE" -%}
+    {%- set src_status = "STATUS" -%}
+    {%- set src_hashdiff = "STATUS_HASHDIFF" -%}
+    
+    {{ dbtvault.sts(src_pk=src_pk, src_ldts=src_ldts, src_source=src_source,
+                        src_status=src_status, src_hashdiff=src_hashdiff,
+                        source_model=source_model) }}
+    ```
+___
+
 ### Point-In-Time (PIT) Tables
 
 #### Parameters
