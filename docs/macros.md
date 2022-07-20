@@ -1640,8 +1640,6 @@ ___
 
 ###### view source: 
 [![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/sts.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/sts.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/sts.sql)
 
 Generates SQL to build a Status Tracking Satellite table using the provided parameters.
 
@@ -1654,13 +1652,14 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
 
 #### Parameters
 
-| Parameter    | Description                                  | Type    | Required?                                     |
-|--------------|----------------------------------------------|---------|-----------------------------------------------|
-| src_pk       | Source primary key column                    | String  | :fontawesome-solid-check-circle:{ .required } |
-| src_ldts     | Source load date timestamp column            | String  | :fontawesome-solid-check-circle:{ .required } |
-| src_source   | Name of the column containing the source ID  | String  | :fontawesome-solid-check-circle:{ .required } |
-| src_status   | Source data status column                    | String  | :fontawesome-solid-check-circle:{ .required } |
-| source_model | Staging model name                           | String  | :fontawesome-solid-check-circle:{ .required } |
+| Parameter    | Description                                 | Type    | Required?                                     |
+|--------------|---------------------------------------------|---------|-----------------------------------------------|
+| src_pk       | Source primary key column                   | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_ldts     | Source load date timestamp column           | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_source   | Name of the column containing the source ID | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_status   | Source data status column                   | String  | :fontawesome-solid-check-circle:{ .required } |
+| src_hashdiff | Alias name for status hashdiff column       | String  | :fontawesome-solid-check-circle:{ .required } |
+| source_model | Staging model name                          | String  | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
     [Read the tutorial](tutorial/tut_sts.md) for more details
@@ -1704,6 +1703,90 @@ Generates SQL to build a Status Tracking Satellite table using the provided para
 
     === "Subsequent Loads"
     
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_PK, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.STG_CUSTOMER AS a
+            WHERE a.CUSTOMER_PK IS NOT NULL
+        ),
+        
+        stage_datetime AS (
+            SELECT MAX(b.LOAD_DATE) AS LOAD_DATETIME
+            FROM source_data AS b
+        ),
+        
+        latest_records AS (
+            SELECT c.CUSTOMER_PK, c.LOAD_DATE, c.SOURCE, c.STATUS, c.STATUS_HASHDIFF
+            FROM (
+                SELECT current_records.CUSTOMER_PK, current_records.LOAD_DATE, current_records.SOURCE, current_records.STATUS, current_records.STATUS_HASHDIFF,
+                    RANK() OVER (
+                        PARTITION BY current_records.CUSTOMER_PK
+                        ORDER BY current_records.LOAD_DATE DESC
+                    ) AS rank
+                FROM DBTVAULT_DEV.TEST_TIM_WILSON.STS AS current_records
+            ) AS c
+            WHERE c.rank = 1
+        ),
+        
+        records_with_status AS (
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+                'I' AS STATUS
+            FROM source_data AS stage
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM latest_records
+                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                    AND latest_records.STATUS != 'D')
+            )
+        
+            UNION ALL
+        
+            SELECT DISTINCT latest_records.CUSTOMER_PK,
+                stage_datetime.LOAD_DATETIME AS LOAD_DATE,
+                latest_records.SOURCE,
+                'D' AS STATUS
+            FROM latest_records
+            INNER JOIN stage_datetime
+            ON 1 = 1
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM source_data AS stage
+                WHERE latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+            )
+            AND latest_records.STATUS != 'D'
+            AND stage_datetime.LOAD_DATETIME IS NOT NULL
+        
+            UNION ALL
+        
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE,
+                'U' AS STATUS
+            FROM source_data AS stage
+            WHERE EXISTS (
+                SELECT 1
+                FROM latest_records
+                WHERE (latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+                    AND latest_records.STATUS != 'D'
+                    AND stage.LOAD_DATE != latest_records.LOAD_DATE)
+            )
+        ),
+        
+        records_with_status_and_hashdiff AS (
+            SELECT d.CUSTOMER_PK, d.LOAD_DATE, d.SOURCE, d.STATUS,
+                CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(STATUS AS VARCHAR))), ''))) AS BINARY(16)) AS STATUS_HASHDIFF
+            FROM records_with_status AS d
+        ),
+        
+        records_to_insert AS (
+            SELECT DISTINCT stage.CUSTOMER_PK, stage.LOAD_DATE, stage.SOURCE, stage.STATUS, stage.STATUS_HASHDIFF
+            FROM records_with_status_and_hashdiff AS stage
+            LEFT JOIN latest_records
+                ON latest_records.CUSTOMER_PK = stage.CUSTOMER_PK
+            WHERE latest_records.STATUS_HASHDIFF != stage.STATUS_HASHDIFF
+                OR latest_records.STATUS_HASHDIFF IS NULL
+        )
+        
+        SELECT * FROM records_to_insert        
+        ```
 
 === "Google BigQuery"
 
