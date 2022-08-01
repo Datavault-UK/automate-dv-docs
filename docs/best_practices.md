@@ -103,7 +103,7 @@ they fundamentally break and oppose Data Vault 2.0 standards.
     - [bridge_incremental](materialisations.md#bridge_incremental)
     - [pit_incremental](materialisations.md#pit_incremental)
 
-| Structure                    | incremental      | bridge_incremental | bridge_incremental |
+| Structure                    | incremental      | bridge_incremental | pit_incremental    |
 |------------------------------|------------------|--------------------|--------------------|
 | Hub                          | :material-check: |                    |                    |
 | Link                         | :material-check: |                    |                    |
