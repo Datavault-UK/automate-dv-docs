@@ -4702,6 +4702,36 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
+#### Enabling NULL key value replacement
+
+Where key columns might have a null value in the source data and there is a requirement to import the associated records,
+the null key can be replaced by a default value and the original null value stored in an additional column. The key might
+be required, for instance where it is the basis for a hashed primary key, or it might be optional. The default replacement
+value for a required key is -1 and for an optional key is -2. The replacement process is enabled as follows:
+
+=== "Null columns configuration"
+
+    ```yaml
+    source_model: MY_STAGE
+    null_columns:
+      required: 
+        - CUSTOMER_ID
+      optional:
+        - CUSTOMER_REF
+        - CUSTOMER_DOB 
+    ```
+
+=== "Generated SQL"
+
+    ```sql
+    CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
+    IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
+    CUSTOMER_REF AS CUSTOMER_REF_ORIGINAL,
+    IFNULL(CUSTOMER_REF, '-2') AS CUSTOMER_REF_ID,
+    CUSTOMER_DOB AS CUSTOMER_DOB_ORIGINAL,
+    IFNULL(CUSTOMER_DOB, '-2') AS CUSTOMER_DOB
+    ```
+
 #### Defining and configuring Ranked columns
 
 This stage configuration is a helper for
