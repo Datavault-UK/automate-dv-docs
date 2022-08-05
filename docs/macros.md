@@ -72,6 +72,8 @@ dbtvault.
       null_placeholder_string: '^^'
       escape_char_left: '"'
       escape_char_right: '"'
+      null_key_required: '-1'
+      null_key_optional: '-2'
     ```
 
 #### hash
@@ -102,6 +104,17 @@ characters: '`||`'
 
 Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
 characters: '`^^`'
+
+[Read more](./best_practices.md#null-handling)
+
+#### null_key_required
+
+Configure the string value to use for replacing `NULL` values found in keys where a value is required, e.g. prior to hashing.
+By default, this is '-1'.
+
+#### null_key_optional
+
+Configure the string value to use for replacing `NULL` values found in optional keys. By default, this is '-2'.
 
 [Read more](./best_practices.md#null-handling)
 
