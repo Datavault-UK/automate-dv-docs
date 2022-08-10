@@ -3614,8 +3614,9 @@ Generates SQL to build a staging area using the provided parameters.
 ``` jinja 
 {{ dbtvault.stage(include_source_columns=true,
                   source_model=source_model,
-                  hashed_columns=hashed_columns,
                   derived_columns=derived_columns,
+                  null_columns=null_columns,
+                  hashed_columns=hashed_columns,
                   ranked_columns=ranked_columns) }}
 ```
 
@@ -3626,6 +3627,7 @@ Generates SQL to build a staging area using the provided parameters.
 | include_source_columns | If true, select all columns in the `source_model`                           | Boolean | true    | :fontawesome-solid-minus-circle:{ .not-required } |
 | source_model           | Staging model name                                                          | Mapping | N/A     | :fontawesome-solid-check-circle:{ .required }     |
 | derived_columns        | Mappings of column names and their value                                    | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
+| null_columns           | Mappings of columns for which null business keys should be replaced         | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
 | hashed_columns         | Mappings of hashes to their component columns                               | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
 | ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
 

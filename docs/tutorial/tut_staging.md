@@ -22,7 +22,7 @@ We also need to ensure column names align with target Hub or Link table column n
 
 ### Creating staging models
 
-To create a stage model, we simply copy and paste the above template into a model named after the staging table/view we
+To create a stage model, we simply copy and paste the below template into a model named after the staging table/view we
 are creating. dbtvault will generate a stage using parameters provided in the next steps.
 
 === "v_stg_orders.sql"
@@ -31,6 +31,7 @@ are creating. dbtvault will generate a stage using parameters provided in the ne
     {{ dbtvault.stage(include_source_columns=true,
                       source_model=source_model,
                       derived_columns=derived_columns,
+                      null_columns=null_columns,
                       hashed_columns=hashed_columns,
                       ranked_columns=ranked_columns) }}
     ```
@@ -113,6 +114,7 @@ hashed_columns:
 {{ dbtvault.stage(include_source_columns=true,
                   source_model=metadata_dict['source_model'],
                   derived_columns=metadata_dict['derived_columns'],
+                  null_columns=none,
                   hashed_columns=metadata_dict['hashed_columns'],
                   ranked_columns=none) }}
 ```
