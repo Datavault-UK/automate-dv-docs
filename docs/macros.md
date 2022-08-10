@@ -3696,6 +3696,38 @@ Generates SQL to build a staging area using the provided parameters.
             FROM source_data
         ),
         
+        null_columns AS (
+        
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_HK,
+            LOAD_DATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE,
+            RECORD_SOURCE,
+            EFFECTIVE_FROM,
+            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
+            IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
+            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
+            IFNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
+            NATIONALITY AS NATIONALITY_ORIGINAL,
+            IFNULL(NATIONALITY, '-2') AS NATIONALITY
+
+            FROM derived_columns
+        ),
+
         hashed_columns AS (
         
             SELECT
@@ -3720,6 +3752,9 @@ Generates SQL to build a staging area using the provided parameters.
             BOOKING_DATE,
             SOURCE,
             EFFECTIVE_FROM,
+            CUSTOMER_ID_ORIGINAL,
+            CUSTOMER_NAME_ORIGINAL,
+            NATIONALITY_ORIGINAL,
         
             CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
             CAST(MD5_BINARY(CONCAT_WS('||',
@@ -3760,6 +3795,9 @@ Generates SQL to build a staging area using the provided parameters.
             BOOKING_DATE,
             SOURCE,
             EFFECTIVE_FROM,
+            CUSTOMER_ID_ORIGINAL,
+            CUSTOMER_NAME_ORIGINAL,
+            NATIONALITY_ORIGINAL,
             CUSTOMER_HK,
             CUST_CUSTOMER_HASHDIFF,
             CUSTOMER_HASHDIFF
@@ -3877,6 +3915,83 @@ Generates SQL to build a staging area using the provided parameters.
             EFFECTIVE_FROM
         
             FROM derived_columns
+        )
+        
+        SELECT * FROM columns_to_select
+        ```
+
+    === "Only null columns"
+
+        ```sql
+        WITH source_data AS (
+
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_HK,
+            CUSTOMER_ID,
+            LOAD_DATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE
+        
+            FROM DBTVAULT.TEST.my_raw_stage
+        ),
+        
+        null_columns AS (
+        
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_HK,
+            LOAD_DATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE,
+            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
+            IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
+            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
+            IFNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
+            NATIONALITY AS NATIONALITY_ORIGINAL,
+            IFNULL(NATIONALITY, '-2') AS NATIONALITY
+        
+            FROM source_data
+        ),
+        
+        columns_to_select AS (
+        
+            SELECT
+        
+            CUSTOMER_ID_ORIGINAL,
+            CUSTOMER_ID,
+            CUSTOMER_NAME_ORIGINAL,
+            CUSTOMER_NAME,
+            NATIONALITY_ORIGINAL,
+            NATIONALITY
+        
+            FROM null_columns
         )
         
         SELECT * FROM columns_to_select
@@ -4078,6 +4193,38 @@ Generates SQL to build a staging area using the provided parameters.
             FROM source_data
         ),
         
+        null_columns AS (
+        
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_HK,
+            LOAD_DATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE,
+            RECORD_SOURCE,
+            EFFECTIVE_FROM,
+            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
+            ISNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
+            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
+            ISNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
+            NATIONALITY AS NATIONALITY_ORIGINAL,
+            ISNULL(NATIONALITY, '-2') AS NATIONALITY
+
+            FROM derived_columns
+        ),
+
         hashed_columns AS (
         
             SELECT
@@ -4102,6 +4249,9 @@ Generates SQL to build a staging area using the provided parameters.
             BOOKING_DATE,
             SOURCE,
             EFFECTIVE_FROM,
+            CUSTOMER_ID_ORIGINAL,
+            CUSTOMER_NAME_ORIGINAL,
+            NATIONALITY_ORIGINAL,
         
             CAST(HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), '')) AS BINARY(16)) AS CUSTOMER_HK,
             CAST(HASHBYTES('MD5', (CONCAT_WS('||',
@@ -4142,6 +4292,9 @@ Generates SQL to build a staging area using the provided parameters.
             BOOKING_DATE,
             SOURCE,
             EFFECTIVE_FROM,
+            CUSTOMER_ID_ORIGINAL,
+            CUSTOMER_NAME_ORIGINAL,
+            NATIONALITY_ORIGINAL,
             CUSTOMER_HK,
             CUST_CUSTOMER_HASHDIFF,
             CUSTOMER_HASHDIFF
@@ -4259,6 +4412,83 @@ Generates SQL to build a staging area using the provided parameters.
             EFFECTIVE_FROM
         
             FROM derived_columns
+        )
+        
+        SELECT * FROM columns_to_select
+        ```
+
+    === "Only null columns"
+
+        ```sql
+        WITH source_data AS (
+
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_HK,
+            CUSTOMER_ID,
+            LOAD_DATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            CUSTOMER_NAME,
+            NATIONALITY,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE
+        
+            FROM DBTVAULT.TEST.my_raw_stage
+        ),
+        
+        null_columns AS (
+        
+            SELECT
+        
+            BOOKING_FK,
+            ORDER_FK,
+            CUSTOMER_HK,
+            LOAD_DATE,
+            RECORD_SOURCE,
+            CUSTOMER_DOB,
+            PHONE,
+            TEST_COLUMN_2,
+            TEST_COLUMN_3,
+            TEST_COLUMN_4,
+            TEST_COLUMN_5,
+            TEST_COLUMN_6,
+            TEST_COLUMN_7,
+            TEST_COLUMN_8,
+            TEST_COLUMN_9,
+            BOOKING_DATE,
+            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
+            ISNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
+            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
+            ISNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
+            NATIONALITY AS NATIONALITY_ORIGINAL,
+            ISNULL(NATIONALITY, '-2') AS NATIONALITY
+        
+            FROM source_data
+        ),
+        
+        columns_to_select AS (
+        
+            SELECT
+        
+            CUSTOMER_ID_ORIGINAL,
+            CUSTOMER_ID,
+            CUSTOMER_NAME_ORIGINAL,
+            CUSTOMER_NAME,
+            NATIONALITY_ORIGINAL,
+            NATIONALITY
+        
+            FROM null_columns
         )
         
         SELECT * FROM columns_to_select
@@ -4718,7 +4948,7 @@ value for a required key is -1 and for an optional key is -2. The replacement pr
         - CUSTOMER_ID
       optional:
         - CUSTOMER_REF
-        - CUSTOMER_DOB 
+        - NATIONALITY 
     ```
 
 === "Generated SQL"

@@ -162,6 +162,12 @@ example provided to help better convey the difference.
         derived_columns:
           RECORD_SOURCE: "!STG_BOOKING"
           EFFECTIVE_FROM: BOOKING_DATE
+        null_columns:
+          required: 
+            - CUSTOMER_ID
+          optional:
+            - CUSTOMER_REF
+            - NATIONALITY 
         ranked_columns:
           DBTVAULT_RANK:
             partition_by: CUSTOMER_ID
@@ -172,12 +178,14 @@ example provided to help better convey the difference.
     
         {% set source_model = metadata_dict["source_model"] %}
         {% set derived_columns = metadata_dict["derived_columns"] %}
+        {% set null_columns = metadata_dict["null_columns"] %}
         {% set hashed_columns = metadata_dict["hashed_columns"] %}
         {% set ranked_columns = metadata_dict["ranked_columns"] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=derived_columns,
+                          null_columns=null_columns,
                           hashed_columns=hashed_columns,
                           ranked_columns=ranked_columns) }}
         ```
@@ -196,6 +204,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=none,
                           ranked_columns=none) }}
         ```
@@ -215,6 +224,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=none,
                           ranked_columns=none) }}
         ```
@@ -249,6 +259,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=hashed_columns,
                           ranked_columns=none) }}
         ```
@@ -271,6 +282,33 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=derived_columns,
+                          null_columns=none,
+                          hashed_columns=none,
+                          ranked_columns=none) }}
+        ```
+
+    === "Only null key columns"
+
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: raw_source
+        null_columns:
+          required: 
+            - CUSTOMER_ID
+          optional:
+            - CUSTOMER_REF
+            - NATIONALITY 
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set null_columns = metadata_dict["null_columns"] %}
+        
+        {{ dbtvault.stage(include_source_columns=false,
+                          source_model=source_model,
+                          derived_columns=none,
+                          null_columns=null_columns,
                           hashed_columns=none,
                           ranked_columns=none) }}
         ```
@@ -294,6 +332,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=none,
                           ranked_columns=ranked_columns) }}
         ```
@@ -326,6 +365,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=hashed_columns,
                           ranked_columns=none) }}
         ```
