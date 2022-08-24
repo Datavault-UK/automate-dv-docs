@@ -85,7 +85,7 @@ This can be one of:
 - MD5
 - SHA
 
-[Read more](./best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+[Read more](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
 
 #### max_datetime
 
@@ -98,14 +98,14 @@ This value will be used for showing that a record's effectivity is 'open' or 'cu
 Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe
 characters: '`||`'
 
-[Read more](./best_practices.md#multi-column-hashing)
+[Read more](../best_practices.md#multi-column-hashing)
 
 #### null_placeholder_string
 
 Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
 characters: '`^^`'
 
-[Read more](./best_practices.md#null-handling)
+[Read more](../best_practices.md#null-handling)
 
 #### null_key_required
 
@@ -116,7 +116,7 @@ By default, this is '-1'.
 
 Configure the string value to use for replacing `NULL` values found in optional keys. By default, this is '-2'.
 
-[Read more](./best_practices.md#null-handling)
+[Read more](../best_practices.md#null-handling)
 
 #### escape_char_left/escape_char_right
 
@@ -195,9 +195,9 @@ for your Data Vault 2.0 Data Warehouse.
 ### hub
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/hub.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/hub.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/hub.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/hub.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/hub.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -220,11 +220,11 @@ Generates SQL to build a Hub table using the provided parameters.
 | source_model | Staging model name                          | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_hubs.md) for more details
+    [Read the tutorial](../tutorial/tut_hubs.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#hubs)
+[See examples](../metadata.md#hubs)
 
 #### Example Output
 
@@ -715,9 +715,9 @@ ___
 ### link
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/link.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/link.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -739,11 +739,11 @@ Generates SQL to build a Link table using the provided parameters.
 | source_model | Staging model name                          | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_links.md) for more details
+    [Read the tutorial](../tutorial/tut_links.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#links)
+[See examples](../metadata.md#links)
 
 #### Example Output
 
@@ -1299,11 +1299,11 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 | source_model | Staging model name                          | String              | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_t_links.md) for more details
+    [Read the tutorial](../tutorial/tut_t_links.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#transactional-links)
+[See examples](../metadata.md#transactional-links)
 
 #### Example Output
 
@@ -1433,9 +1433,9 @@ ___
 ### sat
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/sat.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/sat.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -1460,11 +1460,11 @@ Generates SQL to build a Satellite table using the provided parameters.
 | source_model | Staging model name                          | String       | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_satellites.md) for more details
+    [Read the tutorial](../tutorial/tut_satellites.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#satellites)
+[See examples](../metadata.md#satellites)
 
 #### Example Output
 
@@ -1645,16 +1645,16 @@ Generates SQL to build a Satellite table using the provided parameters.
 #### Hashdiff Aliasing
 
 If you have multiple Satellites using a single stage as its data source, then you will need to
-use [hashdiff aliasing](best_practices.md#hashdiff-aliasing)
+use [hashdiff aliasing](../best_practices.md#hashdiff-aliasing)
 
 ___
 
 ### eff_sat
 
 ###### view source:
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/eff_sat.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/eff_sat.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/eff_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -1682,11 +1682,11 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 | source_model   | Staging model name                          | String              | :fontawesome-solid-check-circle:{ .required } |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_eff_satellites.md) for more details
+    [Read the tutorial](../tutorial/tut_eff_satellites.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#effectivity-satellites)
+[See examples](../metadata.md#effectivity-satellites)
 
 #### Example Output
 
@@ -2282,7 +2282,7 @@ In situations where a M-M relationship is being modelled/recorded, it becomes im
 feature is disabled by default because it could be considered an application of a business rule:
 The definition of the 'end' of a relationship is considered business logic which should happen in the Business Vault.
 
-[Read the Effectivity Satellite tutorial](tutorial/tut_eff_satellites.md) for more information.
+[Read the Effectivity Satellite tutorial](../tutorial/tut_eff_satellites.md) for more information.
 
 !!! warning
     We have implemented the auto end-dating feature to cover most use cases and scenarios, but caution should be
@@ -2293,9 +2293,9 @@ ___
 ### ma_sat
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/ma_sat.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/ma_sat.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/ma_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -2321,11 +2321,11 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 | source_model | Staging model name                          | String       | :fontawesome-solid-check-circle:{ .required }     |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_multi_active_satellites.md) for more details
+    [Read the tutorial](../tutorial/tut_multi_active_satellites.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#multi-active-satellites-mas)
+[See examples](../metadata.md#multi-active-satellites-mas)
 
 #### Example Output
 
@@ -2650,9 +2650,9 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 ### xts
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/xts.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/xts.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/xts.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/xts.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/xts.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -2674,14 +2674,14 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 | source_model  | Staging model name                                             | String/List | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_xts.md) for more details
+    [Read the tutorial](../tutorial/tut_xts.md) for more details
 
 !!! note "Understanding the src_satellite parameter"
-    [Read More](metadata.md#understanding-the-src_satellite-parameter)
+    [Read More](../metadata.md#understanding-the-src_satellite-parameter)
 
 #### Example Metadata
 
-[See examples](metadata.md#extended-tracking-satellites-xts)
+[See examples](../metadata.md#extended-tracking-satellites-xts)
 
 #### Example Output
 
@@ -3069,9 +3069,9 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 ### pit
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/pit.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/pit.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/pit.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/pit.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/pit.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -3095,11 +3095,11 @@ Generates SQL to build a Point-In-Time (PIT) table.
 | source_model      | Hub model name                               | String  | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_point_in_time.md) for more details
+    [Read the tutorial](../tutorial/tut_point_in_time.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#point-in-time-pit-tables)
+[See examples](../metadata.md#point-in-time-pit-tables)
 
 #### Example Output
 
@@ -3334,10 +3334,10 @@ Think of As of Date tables as essentially a rolling window of time.
 
 !!! note 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you
-    will have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
+    will have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
 
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
-    accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#point-in-time-pit-tables) 
+    accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](../metadata.md#point-in-time-pit-tables) 
     for PITs). The column name in the As of Date table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
 
 ___
@@ -3345,9 +3345,9 @@ ___
 ### bridge
 
 ###### view source: 
-[![Snowflake](./assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/bridge.sql)
-[![BigQuery](./assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/bridge.sql)
-[![SQLServer](./assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/bridge.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/bridge.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/bridge.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
@@ -3376,11 +3376,11 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 | stage_tables_ldts | Dictionary of stage table reference mappings and their load date timestamps | Mapping | <i class="fas fa-check-circle required"></i> |
 
 !!! tip
-    [Read the tutorial](tutorial/tut_bridges.md) for more details
+    [Read the tutorial](../tutorial/tut_bridges.md) for more details
 
 #### Example Metadata
 
-[See examples](metadata.md#bridge-tables)
+[See examples](../metadata.md#bridge-tables)
 
 #### Example Output
 
@@ -3588,10 +3588,10 @@ An As of Date table contains a single column of dates used to construct the hist
 !!! note
 
     At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
-    have to supply this yourself. For further information, please check the tutorial [page](tutorial/tut_as_of_date.md).
+    have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
     
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
-    accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](metadata.md#bridge-tables) 
+    accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](../metadata.md#bridge-tables) 
     for Bridges). The column name in the As of Date table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
 
 ___
@@ -3601,6 +3601,12 @@ ___
 ###### (macros/staging)
 
 These macros are intended for use in the staging layer.
+
+At dbtvault, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the 
+raw vault. It is important to understand that according to Data Vault 2.0 standards, the primed stages is
+essentially where all of our **_hard_** business rules are defined. We are not excessively transforming the data beyond
+what is reasonable prior to the raw stage, but simply creating some columns to drive audit and performance downstream.  
+
 ___
 
 ### stage
@@ -3633,7 +3639,7 @@ Generates SQL to build a staging area using the provided parameters.
 
 #### Example Metadata
 
-[See examples](metadata.md#staging)
+[See examples](../metadata.md#staging)
 
 #### Example Output
 
@@ -4631,514 +4637,9 @@ Generates SQL to build a staging area using the provided parameters.
         SELECT * FROM columns_to_select
         ```
 
-## Stage Macro configurations
+### Stage Macro Configurations
 
-The stage macro provides a variety of configurable feature. Some include syntactic sugar and shortcuts for providing metadata. 
-
-These are documented in this section.
-
-### Column definition scoping
-
-<figure markdown>
-  ![Image title](../assets/images/stage_macro_hierarchy.png){ width="700" }
-</figure>
-
-Stage configuration can inherit column definitions from each-other in the order of their definition in the stage macro 
-internal code. The diagram above describes this hierarchy and inheritance. In english, this is as follows:
-
-- Source columns are available to all configurations if `include_source_columns` is set to true, which is the default.
-- Derived columns have access to all source columns.
-- Null columns have access to all derived columns.
-- Hashed columns have access to all Derived columns and all null columns
-- Ranked columns have access to all derived, null and hashed columns
-
-The above rules open up a number of possibilities:
-
-1. Hashed column configurations may refer to columns which have been newly created in the derived
-column configuration.
-2. Derived columns are generated in addition to the source column it is derived from, so you can retain the original value for audit purposes.
-
-!!! note
-    An exception to #2 arises when [overriding source columns](./macros.md#overriding-source-column-names)
-
-#### Example
-
-=== "Snowflake"
-
-    ```yaml hl_lines="3 12"
-    source_model: MY_STAGE
-    derived_columns:
-      CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-      RECORD_SOURCE: "!RAW_CUSTOMER"
-      EFFECTIVE_FROM: BOOKING_DATE
-    hashed_columns:
-      CUSTOMER_HK: CUSTOMER_ID
-      HASHDIFF:
-        is_hashdiff: true 
-        columns:
-          - CUSTOMER_NAME
-          - CUSTOMER_DOB_UK
-          - CUSTOMER_PHONE
-    ```
-
-=== "MS SQL Server"
-
-    ```yaml hl_lines="3 12"
-    source_model: MY_STAGE
-    derived_columns:
-      CUSTOMER_DOB_UK: "CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
-      RECORD_SOURCE: "!RAW_CUSTOMER"
-      EFFECTIVE_FROM: BOOKING_DATE
-    hashed_columns:
-      CUSTOMER_HK: CUSTOMER_ID
-      HASHDIFF:
-        is_hashdiff: true 
-        columns:
-          - CUSTOMER_NAME
-          - CUSTOMER_DOB_UK
-          - CUSTOMER_PHONE
-    ```
-
-Here, we create a new derived column called `CUSTOMER_DOB_UK` which formats the `CUSTOMER_DOB` column
-(contained in our source) to use the UK date format, using a function. We then use the new `CUSTOMER_DOB_UK` as a
-component of the `HASHDIFF` column in our `hashed_columns` configuration.
-
-## derive_columns
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/derive_columns.sql))
-
-!!! note 
-    This is a helper macro used within the `stage` macro. 
-    The below documentation is relevant when using the `stage` macro.
-
-### Overriding source column names
-
-It is possible to re-use column names present in the source, for **derived and hashed columns**. This is useful if you
-wish to replace the value of a source column with a new value. For example, if you wish to cast a value:
-
-```yaml
-source_model: "MY_STAGE"
-derived_columns:
-  CUSTOMER_DOB: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-```
-
-The above snippet, which includes a `derived_columns` configuration, will re-format the date in the `CUSTOMER_DOB`
-column, and alias it to `CUSTOMER_DOB`, effectively replacing the value present in that column in this staging layer.
-
-There should not be a common need for this functionality, and it is advisable to keep the old column value around for
-auditability purposes, however this could be useful in some scenarios.
-
-Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
-column value.
-
-### Defining new columns with functions
-
-=== "Snowflake"
-
-    ```yaml hl_lines="3"
-    source_model: MY_STAGE
-    derived_columns:
-      CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-      RECORD_SOURCE: "!RAW_CUSTOMER"
-      EFFECTIVE_FROM: BOOKING_DATE
-    ```
-
-=== "MS SQL Server"
-
-    ```yaml hl_lines="3"
-    source_model: MY_STAGE
-    derived_columns:
-      CUSTOMER_DOB_UK: "CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
-      RECORD_SOURCE: "!RAW_CUSTOMER"
-      EFFECTIVE_FROM: BOOKING_DATE
-    ```
-
-In the above example we can see the use of a function to convert the date format of the `CUSTOMER_DOB` to create a new
-column `CUSTOMER_DOB_UK`. Functions are incredibly useful for calculating values for new columns in derived column
-configurations.
-
-In the highlighted derived column configuration in the snippet above, the generated SQL would be the following:
-
-```sql
-SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
-```
-
-!!! note 
-    Please ensure that your function has valid SQL syntax on your platform, for use in this context.
-
-### Defining Constants
-
-=== "Snowflake"
-
-    ```yaml hl_lines="4"
-    source_model: MY_STAGE
-    derived_columns:
-      CUSTOMER_DOB_UK: "TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY')"
-      RECORD_SOURCE: "!RAW_CUSTOMER"
-      EFFECTIVE_FROM: BOOKING_DATE
-    ```
-
-=== "MS SQL Server"
-
-    ```yaml hl_lines="4"
-    source_model: MY_STAGE
-    derived_columns:
-      CUSTOMER_DOB_UK: "CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105)"
-      RECORD_SOURCE: "!RAW_CUSTOMER"
-      EFFECTIVE_FROM: BOOKING_DATE
-    ```
-
-In the above example we define a constant value for our new `SOURCE` column. We do this by prefixing our string with an
-exclamation mark: `!`. This is syntactic sugar provided by dbtvault to avoid having to escape quotes and other
-characters.
-
-As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like
-the following:
-
-=== "Snowflake"
-
-    ```sql hl_lines="3"
-    SELECT 
-        TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK,
-        'RAW_CUSTOMER' AS RECORD_SOURCE,
-        BOOKING_DATE AS EFFECTIVE_FROM
-    ```
-
-=== "MS SQL Server"
-
-    ```sql hl_lines="3"
-    SELECT 
-        CONVERT(VARCHAR(10), CONVERT(DATE, CUSTOMER_DOB, 103), 105) AS CUSTOMER_DOB_UK,
-        'RAW_CUSTOMER' AS RECORD_SOURCE,
-        BOOKING_DATE AS EFFECTIVE_FROM
-    ```
-
-And the data would look like:
-
-| CUSTOMER_DOB_UK | RECORD_SOURCE | EFFECTIVE_FROM |
-|-----------------|---------------|----------------|
-| 09-06-1994      | RAW_CUSTOMER  | 01-01-2021     |
-| .               | RAW_CUSTOMER  | .              |
-| .               | RAW_CUSTOMER  | .              |
-| 02-01-1986      | RAW_CUSTOMER  | 07-03-2021     |
-
-### Defining Composite columns
-
-```yaml hl_lines="3 4 5 6"
-source_model: MY_STAGE
-derived_columns:
-  CUSTOMER_NK:
-    - CUSTOMER_ID
-    - CUSTOMER_NAME
-    - "!DEV"
-  RECORD_SOURCE: !RAW_CUSTOMER
-  EFFECTIVE_FROM: BOOKING_DATE
-```
-
-You can create new columns, given a list of columns to extract values from, using derived columns.
-
-Given the following values for the columns in the above example:
-
-- `CUSTOMER_ID` = 0011
-- `CUSTOMER_NAME` = Alex
-
-The new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
-double pipe `||`. Currently, this `||` join string has been hard-coded, but in future it will be user-configurable.
-
-The values provided in the list can use any of the previously described syntax (including functions and constants) to
-generate new values, as the concatenation happens in pure SQL, as follows:
-
-```sql
-SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
-FROM MY_DB.MY_SCHEMA.MY_TABLE
-```
-
-## Null Columns
-
-This stage configuration provides the user with the means to define required and optional Null keys according to business
-needs. This is a standard Data Vault 2.0 approach for ensuring that records are loaded into Hubs and Links even if they are null, 
-allowing the business to enforce meaning for these keys.
-
-### Enabling NULL key value replacement
-
-Where key columns might have a null value in the source data and there is a requirement to import the associated records,
-the null key can be replaced by a default value and the original null value stored in an additional column. The key might
-be required, for instance where it is the basis for a hashed primary key, or it might be optional. The default replacement
-value for a required key is -1 and for an optional key is -2. The replacement process is enabled as follows:
-
-=== "Null columns configuration"
-
-    ```yaml
-    source_model: MY_STAGE
-    null_columns:
-      required: 
-        - CUSTOMER_ID
-      optional:
-        - CUSTOMER_REF
-        - NATIONALITY 
-    ```
-
-=== "Generated SQL"
-
-    ```sql
-    CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
-    IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-    CUSTOMER_REF AS CUSTOMER_REF_ORIGINAL,
-    IFNULL(CUSTOMER_REF, '-2') AS CUSTOMER_REF_ID,
-    CUSTOMER_DOB AS CUSTOMER_DOB_ORIGINAL,
-    IFNULL(CUSTOMER_DOB, '-2') AS CUSTOMER_DOB
-    ```
-
-## Hashed columns
-
-Generates SQL to create hash keys for a provided mapping of columns names to the list of columns to hash.
-
-!!! Read more
-    - [Why do we hash?](./best_practices.md#why-do-we-hash)
-    - [How do we hash?](./best_practices.md#how-do-we-hash)
-
-### Exclude Flag (hashed_columns)
-
-A flag can be provided for hashdiff columns which will invert the selection of columns provided in the list of columns.
-
-This is extremely useful when a hashdiff composed of many columns needs to be generated, and you do not wish to
-individually provide all the columns.
-
-The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
-listed under the `columns` key, instead of using them to create the hashdiff.
-
-!!! tip "Hash every column without listing them all"
-    You may omit the `columns` key to hash every column. See the `Columns key not provided` example below.
-
-#### Examples:
-
-=== "Columns key provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_HK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-    
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_HK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-            columns:
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_HK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_HK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-        ```
-
-=== "Columns key not provided"
-
-    === "Columns in source model"
-    
-        ```text
-        TRANSACTION_NUMBER
-        CUSTOMER_DOB
-        PHONE_NUMBER
-        BOOKING_FK
-        ORDER_FK
-        CUSTOMER_HK
-        LOAD_DATE
-        RECORD_SOURCE
-        ```
-
-    === "hashed_columns configuration"
-        
-        ```yaml hl_lines="5"
-        hashed_columns:
-          CUSTOMER_HK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            exclude_columns: true
-        ```
-    
-    === "Equivalent hashed_columns configuration"
-    
-        ```yaml
-        hashed_columns:
-          CUSTOMER_HK: CUSTOMER_ID
-          CUSTOMER_HASHDIFF:
-            is_hashdiff: true
-            columns:
-              - TRANSACTION_NUMBER
-              - CUSTOMER_DOB
-              - PHONE_NUMBER
-              - BOOKING_FK
-              - ORDER_FK
-              - CUSTOMER_HK
-              - LOAD_DATE
-              - RECORD_SOURCE
-        ```
-
-!!! warning
-    Care should be taken if using this feature on data sources where the columns may change. 
-    If you expect columns in the data source to change for any reason, it will become hard to predict what columns 
-    are used to generate the hashdiff. If your component columns change, then your hashdiff output will also change,
-    and it will cause unpredictable results.
-
-## ranked_columns
-
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/staging/rank_columns.sql))
-
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
-
-Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function.
-
-### Defining and configuring Ranked columns
-
-This stage configuration is a helper for
-the [vault_insert_by_rank](materialisations.md#vault_insert_by_rank-insert-by-rank) materialisation.
-The `ranked_columns` configuration allows you to define ranked columns to generate, as follows:
-
-=== "Single item parameters"
-
-    ```yaml
-    source_model: MY_STAGE
-    ranked_columns:
-      DBTVAULT_RANK:
-        partition_by: CUSTOMER_HK
-        order_by: LOAD_DATETIME
-      SAT_BOOKING_RANK:
-        partition_by: BOOKING_HK
-        order_by: LOAD_DATETIME
-    ```
-
-=== "Generated SQL"
-
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-===! "Multi-item parameters"
-
-    ```yaml
-    source_model: MY_STAGE
-    ranked_columns:
-      DBTVAULT_RANK:
-        partition_by: 
-            - CUSTOMER_HK
-            - CUSTOMER_REF
-        order_by: 
-            - RECORD_SOURCE
-            - LOAD_DATETIME
-      SAT_BOOKING_RANK:
-        partition_by: BOOKING_HK
-        order_by: LOAD_DATETIME
-    ```
-
-=== "Generated SQL"
-
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-##### Dense rank
-
-=== "Dense Rank configuration"
-
-    ```yaml
-    source_model: MY_STAGE
-    ranked_columns:
-      DBTVAULT_RANK:
-        partition_by: 
-            - CUSTOMER_HK
-            - CUSTOMER_REF
-        order_by: 
-            - RECORD_SOURCE
-            - LOAD_DATETIME
-        dense_rank: true
-      SAT_BOOKING_RANK:
-        partition_by: BOOKING_HK
-        order_by: LOAD_DATETIME
-    ```
-
-=== "Generated SQL"
-
-    ```sql
-    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-#### Order by direction
-
-=== "Single item parameters"
-
-    ```yaml
-    source_model: MY_STAGE
-    ranked_columns:
-      DBTVAULT_RANK:
-        partition_by: CUSTOMER_HK
-        order_by:
-           LOAD_DATETIME: DESC
-      SAT_BOOKING_RANK:
-        partition_by: BOOKING_HK
-        order_by: LOAD_DATETIME
-    ```
-
-=== "Generated SQL"
-
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-===! "Multi-item parameters"
-
-    ```yaml
-    source_model: MY_STAGE
-    ranked_columns:
-      DBTVAULT_RANK:
-        partition_by: 
-          - CUSTOMER_HK
-          - CUSTOMER_REF
-        order_by: 
-          - RECORD_SOURCE: DESC
-          - LOAD_DATETIME: ASC
-      SAT_BOOKING_RANK:
-        partition_by: BOOKING_HK
-        order_by: LOAD_DATETIME
-    ```
-
-=== "Generated SQL"
-
-    ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
-    RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
-    ```
-
-___
+[Navigate to our dedicated Stage Macro page](stage_macro_configurations.md)
 
 ## Supporting Macros
 
@@ -5160,11 +4661,11 @@ ___
     [Read More](https://www.md5online.org/blog/why-md5-is-not-safe/)
 
 !!! seealso "See Also"
-    - [hash_columns](#hash_columns)
-    - Read [Hashing best practices and why we hash](best_practices.md#hashing)
+    - [hash_columns](stage_macro_configurations.md#hashed-columns)
+    - Read [Hashing best practices and why we hash](../best_practices.md#hashing)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
-    [Learn how](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
     
 A macro for generating hashing SQL for columns.
 
@@ -5222,7 +4723,7 @@ A macro for generating hashing SQL for columns.
         ```
 
 !!! tip 
-    The [hash_columns](#hash_columns) macro can be used to simplify the hashing process and generate multiple hashes
+    The [hash_columns](stage_macro_configurations.md#hashed-columns) macro can be used to simplify the hashing process and generate multiple hashes
     with one macro.
 
 #### Parameters

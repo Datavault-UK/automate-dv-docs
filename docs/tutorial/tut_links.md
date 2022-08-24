@@ -48,7 +48,7 @@ The recommended materialisation for **Links** is `incremental`, as we load and a
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [link macro](../macros.md#link).
+Let's look at the metadata we need to provide to the [link macro](../macros/index.md#link).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
@@ -114,13 +114,13 @@ The `link` macro will perform a union operation to combine the tables using that
 a complete record set.
 
 The metadata needed to create a multi-source Link is identical to a single-source Link, we just provide a 
-list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [link](../macros.md#link) macro 
+list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [link](../macros/index.md#link) macro 
 will handle the rest:
 
 !!! note
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
-    via a `derived column` configuration, using the [stage](../macros.md#stage) macro in the staging layer.
+    via a `derived column` configuration, using the [stage](../macros/index.md#stage) macro in the staging layer.
 
 
 

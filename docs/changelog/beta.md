@@ -44,7 +44,7 @@ Docs no longer available
 
 ### Added
 
-- Effectivity Satellites: The new [eff_sat](../macros.md#eff_sat) macro.
+- Effectivity Satellites: The new [eff_sat](../macros/index.md#eff_sat) macro.
 - Limited documentation for Effectivity Satellites
 
 ### Updated

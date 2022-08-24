@@ -21,14 +21,14 @@ All existing macros are now supported by all platforms!
 
 #### Google BigQuery and MS SQL Server
 
-- PITs ([pit macro](../macros.md#pit))
-- Bridges ([bridge macro](../macros.md#bridge))
+- PITs ([pit macro](../macros/index.md#pit))
+- Bridges ([bridge macro](../macros/index.md#bridge))
 
 ### Fixed
 
 ##### Effectivity Satellites
 
-- Fixed an issue affecting auto-end-dating in flip-flop situations [eff_sat](../macros.md#eff_sat) ([#115](https://github.com/Datavault-UK/dbtvault/issues/115))
+- Fixed an issue affecting auto-end-dating in flip-flop situations [eff_sat](../macros/index.md#eff_sat) ([#115](https://github.com/Datavault-UK/dbtvault/issues/115))
 
 ##### Staging
 
@@ -43,13 +43,13 @@ More Google BigQuery and MS SQL Server support, plus fixes!
 
 #### Google BigQuery and MS SQL Server
 
-- T-Links ([t_link macro](../macros.md#t_link))
-- Effectivity Satellites ([eff_sat macro](../macros.md#eff_sat))
-- Multi-Active Satellites ([ma_sat macro](../macros.md#ma_sat))
-- Extended Tracking Satellites ([xts macro](../macros.md#xts))
+- T-Links ([t_link macro](../macros/index.md#t_link))
+- Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
+- Multi-Active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
+- Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
 
 
-See our [Platform support matrix](../macros.md#platform-support) for more details.
+See our [Platform support matrix](../macros/index.md#platform-support) for more details.
 
 ### Fixed
 
@@ -85,11 +85,11 @@ to you in the future!
 - Satellites (sat macro)
 
 !!! tip "New"
-    [Platform support matrix](../macros.md#platform-support)
+    [Platform support matrix](../macros/index.md#platform-support)
 
 #### All platforms
 
-- Column Escaping ([#28](https://github.com/Datavault-UK/dbtvault/issues/28), [#23](https://github.com/Datavault-UK/dbtvault/issues/23)) - [Docs](../macros.md#escape_char_leftescape_char_right):
+- Column Escaping ([#28](https://github.com/Datavault-UK/dbtvault/issues/28), [#23](https://github.com/Datavault-UK/dbtvault/issues/23)) - [Docs](../macros/index.md#escape_char_leftescape_char_right):
   dbtvault now automatically surrounds all column names with quotes. This is to allow for columns with reserved words, spaces, and other oddities. 
   The type of quotes is configurable, please refer to the docs linked above.  
 
@@ -108,9 +108,9 @@ to you in the future!
 ### New
 
 #### Table structures
-- Point in Time tables [Tutorial](../tutorial/tut_point_in_time.md) - [Macro docs](../macros.md#pit)
-- Bridge tables [Tutorial](../tutorial/tut_bridges.md) - [Macro docs](../macros.md#bridge)
-- Extended Tracking Satellites (XTS) [Tutorial](../tutorial/tut_xts.md) - [Macro docs](../macros.md#xts)
+- Point in Time tables [Tutorial](../tutorial/tut_point_in_time.md) - [Macro docs](../macros/index.md#pit)
+- Bridge tables [Tutorial](../tutorial/tut_bridges.md) - [Macro docs](../macros/index.md#bridge)
+- Extended Tracking Satellites (XTS) [Tutorial](../tutorial/tut_xts.md) - [Macro docs](../macros/index.md#xts)
 
 #### Materialisations
 - Custom materialisation for PITs [Docs](../materialisations.md#pit_incremental)
@@ -143,8 +143,8 @@ as a result of loading data 'manually' end-dated by business rules.
 
 #### Rank column configurations in stage macro (ranked_columns):
 
-- Provide ASC or DESC for an `order_by` column [Read More](../macros.md#order-by-direction)
-- Configure the ranking to use `DENSE_RANK()` or `RANK()` [Read More](../macros.md#dense-rank)
+- Provide ASC or DESC for an `order_by` column [Read More](../macros/index.md#order-by-direction)
+- Configure the ranking to use `DENSE_RANK()` or `RANK()` [Read More](../macros/index.md#dense-rank)
 
 #### Configuration for hash strings
 
@@ -218,13 +218,13 @@ add the natural key to the hashdiff, but it is still recommended. [Read More](..
 ### New
 
 - Derived columns can now be provided lists, for creating composite column values. [(#20)](https://github.com/Datavault-UK/dbtvault/issues/20)
-  [Docs](../macros.md#stage-macro-configurations)
+  [Docs](../macros/index.md#stage-macro-configurations)
   
-- The hashed_columns exclude flag in staging can now be provided without a list of columns, and dbtvault will hash everything. [Docs](../macros.md#stage-macro-configurations)
+- The hashed_columns exclude flag in staging can now be provided without a list of columns, and dbtvault will hash everything. [Docs](../macros/index.md#stage-macro-configurations)
 
 - Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../materialisations.md#vault_insert_by_rank-insert-by-rank)
 
-- The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros.md#stage-macro-configurations)
+- The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros/index.md#stage-macro-configurations)
 
 ### Improved
 
@@ -257,7 +257,7 @@ This is very useful for large multi-column hashdiffs.
   
 !!! note
 
-    See the new [stage macro configurations](../macros.md#stage-macro-configurations) section of the macro docs for more information on the change above.
+    See the new [stage macro configurations](../macros/index.md#stage-macro-configurations) section of the macro docs for more information on the change above.
 
 ### Improved
 
@@ -287,7 +287,7 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - Effectivity Satellites: A newly supported Data Vault 2.0 structure.  
 [Read more](../tutorial/tut_eff_satellites.md)   
-[Macro Reference](../macros.md#eff_sat) 
+[Macro Reference](../macros/index.md#eff_sat) 
 
 - Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../materialisations.md#vault_insert_by_period-insert-by-period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
@@ -356,7 +356,7 @@ We've added a whole host of interesting new features.
 ### Added
 
 - Staging has now been moved to YAML format, meaning dbtvault is now entirely YAML and metadata driven.
-See the new [stage](../macros.md#stage) macro and the [staging tutorial](../tutorial/tut_staging.md) for more details.
+See the new [stage](../macros/index.md#stage) macro and the [staging tutorial](../tutorial/tut_staging.md) for more details.
 
 - Renamed `source` metadata configuration to `source_model` to clear up some confusion.
 A big thank you to @balmasi for this suggestion.
@@ -366,7 +366,7 @@ A big thank you to @balmasi for this suggestion.
 
 ### Upgraded
 
-- [hub](../macros.md#hub) and [link](../macros.md#link) macros have been given a makeover.
+- [hub](../macros/index.md#hub) and [link](../macros/index.md#link) macros have been given a makeover.
 They can now handle multi-day loads, meaning no more loading from single-date views.
 We'll be updating the other macros soon, stay tuned!
 
@@ -397,8 +397,8 @@ Read [Migrating from v0.4](https://dbtvault.readthedocs.io/en/v0.7.6/migration_g
 
 ### Fixed
 
-- Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros.md#hash-macro), 
-_**multi_hash**_, [staging](../macros.md#staging-macros)).   
+- Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros/index.md#hash-macro), 
+_**multi_hash**_, [staging](../macros/index.md#staging-macros)).   
 
 ## [v0.4.1] - 2020-01-08
 

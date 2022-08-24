@@ -42,7 +42,7 @@ The recommended materialisation for **Hubs** is `incremental`, as we load and ad
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [hub macro](../macros.md#hub).
+Let's look at the metadata we need to provide to the [hub macro](../macros/index.md#hub).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
@@ -108,13 +108,13 @@ The `hub` macro will perform a union operation to combine the tables using that 
 a complete record set.
 
 The metadata needed to create a multi-source Hub is identical to a single-source Hub, we just provide a 
-list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [hub](../macros.md#hub) macro 
+list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [hub](../macros/index.md#hub) macro 
 will handle the rest:
 
 !!! note
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
-    via a `derived column` configuration, using the [stage](../macros.md#stage) macro in the staging layer.
+    via a `derived column` configuration, using the [stage](../macros/index.md#stage) macro in the staging layer.
 
 ```jinja hl_lines="3 4 5"
 {{ config(materialized='incremental') }}

@@ -24,11 +24,11 @@ though usually an integer or alpha-numeric value works well. The code often gets
 a reference table.
 
 You may do this with dbtvault by providing the code as a constant in the [staging](tutorial/tut_staging.md) layer, using
-the [stage](macros.md#stage) macro. The [staging walk-through](tutorial/tut_staging.md) presents this exact use-case in
+the [stage](macros/index.md#stage) macro. The [staging walk-through](tutorial/tut_staging.md) presents this exact use-case in
 the code examples.
 
 If there is already a source in the raw staging layer, you may keep this or override it using
-the [stage](macros.md#stage) macro.
+the [stage](macros/index.md#stage) macro.
 
 ## NULL Handling
 
@@ -44,7 +44,7 @@ setting in staging.
 
 !!! tip
 
-    The null keys default values can be configured, [Read more](./macros.md#global-variables)
+    The null keys default values can be configured, [Read more](./macros/index.md#global-variables)
 
 Nulls get handled in the built-in hashing processes in dbtvault:
 
@@ -58,7 +58,7 @@ Nulls get handled in the built-in hashing processes in dbtvault:
 
 !!! tip
 
-    The concat (`||`) and null (`^^`) strings can be configured, [Read more](./macros.md#global-variables)
+    The concat (`||`) and null (`^^`) strings can be configured, [Read more](./macros/index.md#global-variables)
 
 This is described in more depth below (with code examples).
 
@@ -70,7 +70,7 @@ below for each structure:
 All records get loaded and hashes evaluated as null according to the descriptions above and details in the hashing
 sections below.
 
-Keys containing null values are replaced according to configuration settings [stage](macros.md#stage). 
+Keys containing null values are replaced according to configuration settings [stage](macros/index.md#stage). 
 
 ### Hubs
 
@@ -130,13 +130,13 @@ they fundamentally break and oppose Data Vault 2.0 standards.
 ## Hashing
 
 !!! seealso "See Also"
-    - [hash](macros.md#hash-macro)
-    - [hash_columns](macros.md#hash_columns)
+    - [hash](macros/index.md#hash-macro)
+    - [hash_columns](macros/index.md#hash_columns)
  
 ### The drawbacks of using MD5
 
-By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros.md#hash-macro)
-and [hash_columns](macros.md#hash_columns). If your table contains more than a few billion rows, then there is a chance
+By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros/index.md#hash-macro)
+and [hash_columns](macros/index.md#hash_columns). If your table contains more than a few billion rows, then there is a chance
 of a clash: where two different values generate the same hash value
 (see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collision_vulnerabilities)).
 
@@ -152,7 +152,7 @@ Although we do not use hashing for the purposes of security (but rather optimisa
 MD5 and SHA-256 could still pose a security risk for your organisation. If any of your presentation layer (marts) tables
 or views containing any hashed PII data, an attacker may be able to brute-force the hashing to gain access to the PII.
 For this reason, we highly recommend concatenating a _salt_ to your hashed columns in the staging layer using
-the [stage](macros.md#stage) macro.
+the [stage](macros/index.md#stage) macro.
 
 It's generally ill-advised to store this salt in the database alongside your hashed values, so we recommend injecting it
 as an environment variable for dbt to access via
@@ -180,7 +180,7 @@ been a change in the payload. This triggers the load of a new Satellite record. 
 we'd have to compare each column in turn and handle nulls to see if a change had occurred.
 
 Hashing is sensitive to column ordering. If you provide the `is_hashdiff: true` flag to your column specification in
-the [stage](macros.md#stage) macro, dbtvault will automatically sort the provided columns alphabetically. Columns will
+the [stage](macros/index.md#stage) macro, dbtvault will automatically sort the provided columns alphabetically. Columns will
 be sorted by their alias.
 
 ### How do we hash?
@@ -283,7 +283,7 @@ of the record, and the payload of the record.
 Best practices for hashing include:
 
 - Alpha sorting Hashdiff columns. As mentioned, dbtvault can do this for us, so no worries!
-  Refer to the [stage](macros.md#stage) docs for details on how to do this.
+  Refer to the [stage](macros/index.md#stage) docs for details on how to do this.
 
 - Ensure all **Hub** columns used to calculate a primary key hash get presented in the same order across all staging
   tables

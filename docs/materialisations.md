@@ -98,7 +98,7 @@ The first period load will be repeated but no duplicates should be inserted when
 
 ##### Run Output
 
-Examples of output for dbt runs using the [eff_sat](macros.md#eff_sat) macro and this materialisation.
+Examples of output for dbt runs using the [eff_sat](macros/index.md#eff_sat) macro and this materialisation.
 
 === "Initial/Base load"
 
@@ -187,7 +187,7 @@ as `waterlevel` (the model name).
 
 #### Using the materialisation with non-dbtvault SQL
 
-Every [table template macro](macros.md#table-templates) includes a `__PERIOD_FILTER__` string in its SQL when used in
+Every [table template macro](macros/index.md#table-templates) includes a `__PERIOD_FILTER__` string in its SQL when used in
 conjunction with this materialisation.
 
 At runtime, this string is replaced with SQL which applies conditions to filter the dates contained in
@@ -267,7 +267,7 @@ A rank column can be created one of three ways:
 
 1. Manually creating it in a model prior to the staging layer, and using this model as the stage's `source_model`.
 
-2. Using the `ranked_columns` configuration of the [stage](macros.md#stage) macro
+2. Using the `ranked_columns` configuration of the [stage](macros/index.md#stage) macro
 
     ```yaml
     source_model: "MY_STAGE"
@@ -277,7 +277,7 @@ A rank column can be created one of three ways:
         order_by: "LOAD_DATETIME"
     ```
 
-3. Using the `derived_columns` configuration of the [stage](macros.md#stage) macro
+3. Using the `derived_columns` configuration of the [stage](macros/index.md#stage) macro
 
     ```yaml
     source_model: "MY_STAGE"
@@ -286,7 +286,7 @@ A rank column can be created one of three ways:
     ```
 
 !!! note
-    [Read more](macros.md#defining-and-configuring-ranked-columns) about defining ranked columns.
+    [Read more](macros/index.md#defining-and-configuring-ranked-columns) about defining ranked columns.
 
 #### Which option?
 
@@ -303,7 +303,7 @@ A rank column can be created one of three ways:
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_pit_materialization.sql))
 
-The `pit_incremental` custom materialisation is the required materialisation for the [PIT table](macros.md#pit) as it
+The `pit_incremental` custom materialisation is the required materialisation for the [PIT table](macros/index.md#pit) as it
 allows for a continuous reconstruction of the PIT table. 
 
 Since PITs are not historized, but query helper tables, they have to be reconstructed (at least) once every reporting 
@@ -328,7 +328,7 @@ populates the target table, for each run of the PIT model.
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_bridge_materialization.sql))
 
-The `bridge_incremental` custom materialisation is the required materialisation for the [Bridge table](macros.md#bridge)
+The `bridge_incremental` custom materialisation is the required materialisation for the [Bridge table](macros/index.md#bridge)
 as it allows for a continuous reconstruction of the Bridge table. 
 
 Since Bridges are not historized, but query helper tables, they have to be reconstructed (at least) once every reporting

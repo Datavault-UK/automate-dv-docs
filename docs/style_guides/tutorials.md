@@ -37,7 +37,7 @@ The recommended materialisation for **<type of structure>s** is `<recommended ma
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [<type of structure> macro](../macros.md#<name of macro>).
+Let's look at the metadata we need to provide to the [<type of structure> macro](../macros/index.md#<name of macro>).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 

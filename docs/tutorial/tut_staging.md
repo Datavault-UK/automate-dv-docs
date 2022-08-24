@@ -44,7 +44,7 @@ can increase costs significantly for large amounts of data.
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [stage](../macros.md#stage) macro.
+Let's look at the metadata we need to provide to the [stage](../macros/index.md#stage) macro.
 
 ##### Source model
 
@@ -53,7 +53,7 @@ the raw stage via dbt models if you don't need to, and can simply reference tabl
 [dbt source](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources).
 
 The model provided in the 'Final model' section below, shows the use of the 'source style' 
-[source_model syntax](../macros.md#source_model-syntax).
+[source_model syntax](../macros/index.md#source_model-syntax).
 
 ##### Derived columns
 
@@ -66,7 +66,7 @@ The model provided in the 'Final model' section below, shows the use of the 'sou
 | END_DATE       | TO_DATE('9999-31-12')   |
 
 !!! Note "What is the '!'?"
-    This is some syntactic sugar provided by dbtvault to create constant values. [Read More](../macros.md#constants-derived-columns)
+    This is some syntactic sugar provided by dbtvault to create constant values. [Read More](../macros/index.md#constants-derived-columns)
     
 
 ##### Hashed columns
@@ -135,7 +135,7 @@ In summary this model will:
 - Generate `START_DATE` and `END_DATE` columns for use in the [effectivity satellites](tut_eff_satellites.md) later on.
 
 !!! Note "Using the staging macro"
-    Take a look at the [stage section of the macro documentation](../macros.md#stage) for a more in-depth look at what you can do with the stage macro
+    Take a look at the [stage section of the macro documentation](../macros/index.md#stage) for a more in-depth look at what you can do with the stage macro
 
 ### Running dbt
 

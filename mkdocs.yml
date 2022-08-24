@@ -5,29 +5,31 @@ repo_name: 'Datavault-UK/dbtvault'
 site_url: 'https://dbtvault.readthedocs.io/'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
 dev_addr: 127.0.0.1:8001
+
 theme:
-    name: 'material'
-    custom_dir: 'overrides'
-    show_sidebar: true
-    logo: 'assets/images/logo.png'
-    banner: 'assets/images/docs-banner.png'
-    favicon: 'assets/images/favicon.ico'
-    palette:
-      - scheme: material
-        primary: 'black'
-        accent: 'indigo'
-        toggle:
-          icon: material/toggle-switch-off-outline
-          name: Switch to dark mode
-      - scheme: slate
-        primary: 'black'
-        accent: 'indigo'
-        toggle:
-          icon: material/toggle-switch
-          name: Switch to light mode
-    highlightjs: true
-    features:
-      - navigation.top
+  name: 'material'
+  show_sidebar: true
+  logo: 'assets/images/logo.png'
+  banner: 'assets/images/docs-banner.png'
+  favicon: 'assets/images/favicon.ico'
+  palette:
+    - scheme: material
+      primary: 'black'
+      accent: 'indigo'
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: 'black'
+      accent: 'indigo'
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  highlightjs: true
+  features:
+    - navigation.top
+    - navigation.indexes
+
 nav:
   - Home: 'index.md'
   - Tutorials:
@@ -50,7 +52,9 @@ nav:
       - Creating the stage layers: 'worked_example/we_staging.md'
       - Loading the vault: 'worked_example/we_loading.md'
   - Metadata Reference: 'metadata.md'
-  - Macros: 'macros.md'
+  - Macros:
+      - 'macros/index.md'
+      - Stage Macro Configurations: 'macros/stage_macro_configurations.md'
   - Materialisations: 'materialisations.md'
   - Best Practices: 'best_practices.md'
   - Extending: 'extending.md'
@@ -60,9 +64,9 @@ nav:
       - Stable Releases: 'changelog/stable.md'
       - Beta Releases: 'changelog/beta.md'
   - Contributing:
-    - Getting Started: 'contributing.md'
-    - Style Guides:
-        - Tutorials: 'style_guides/tutorials.md'
+      - Getting Started: 'contributing.md'
+      - Style Guides:
+          - Tutorials: 'style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
   - Find Us:
       - GitHub: 'https://github.com/Datavault-UK/dbtvault'
@@ -87,7 +91,8 @@ extra:
       link: 'https://www.linkedin.com/company/business-thinking-limited'
     - icon: 'fontawesome/brands/facebook'
       link: 'https://www.facebook.com/DataVaultUK/'
-
+  version:
+    provider: mike
 markdown_extensions:
   - admonition
   - pymdownx.tabbed
