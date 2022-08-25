@@ -9,8 +9,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 
+## [v0.9.0] - 
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.0)](https://dbtvault.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
+
+### New Platform Support  
+
+#### Databricks
+
+:sparkles: Staging
+
+:sparkles: Hubs 
+
+:sparkles: Links
+
+:sparkles: Satellites
+
+#### Postgres
+
+:sparkles: Staging
+
+:sparkles: Hubs
+
+:sparkles: Links
+
+:sparkles: Satellites
+
+### New Features
+
+Introducing:
+
+:star2: Payload column exclusion: Satellite's payload can now be configured to select all columns, except a user-defined list using an `exclude` configuration (#128) 
+
+:star2: Null Business Key Handling: Now users can provide a configuration in their staging tables to handle NULL keys elegantly, according to business needs (#133)
+
+:star2: Extra Columns Parameter: All table macros now provide a `src_extra_columns` parameter which allows users to add extra columns outside of the standard template for business needs. 
+
+:star2: More logging: Hubs and Links now provide additional logging about the number of sources they are loading from. Minor but helpful! This is our first step towards giving our users more information.
+
+### Fixes
+
+:white_check_mark: Fixed an edge case for `vault_insert_by_period` when the staging table and the target table were in different databases (#121)
+
+:white_check_mark: Removed the uppercase conversion in the staging macro (#122, #134)
+
+:white_check_mark: Fixed an issue where duplicate records (same hashdiff) would sometimes be loaded into a Satellite (#126)
+
+:white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping can now be configured on a case-by-case basis for each column to escape when they are reserved words etc. (#114) (#141)
+
 ## [v0.8.3] - 2022-05-10
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.3)
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
 
 All existing macros are now supported by all platforms!
 
