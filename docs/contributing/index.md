@@ -1,6 +1,6 @@
 ## Contributing new features
 
-Please refer to our contribution guidelines over on our [development repository](https://github.com/Datavault-UK/dbtvault-dev/blob/master/CONTRIBUTING.md)
+Please refer to our contribution guidelines over on our [development repository](https://github.com/Datavault-UK/dbtvault/blob/master/CONTRIBUTING.md).
 
 ## We'd love to hear from you
 
