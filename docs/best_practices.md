@@ -36,7 +36,17 @@ The handling of nulls is important in Data Vault 2.0 because - as a general rule
 and therefore do not mean anything to the business. This means we do not want records or keys containing nulls ending up
 in our raw vault.
 
-Nulls get handled in the built-in hashing processes in dbtvault.
+Where key columns might have a null value in the source data and there is a requirement to import the associated records,
+the null key can be replaced by a default value and the original null value stored in an additional column. The key might
+be required, for instance where it is the basis for a hashed primary key, or it might be optional. The default replacement
+value for a required key is -1 and for an optional key is -2. The replacement process is enabled by a configuration
+setting in staging.
+
+!!! tip
+
+    The null keys default values can be configured, [Read more](./macros.md#global-variables)
+
+Nulls get handled in the built-in hashing processes in dbtvault:
 
 - Nulls get replaced with a placeholder; by default this is `^^`.
 - If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL.
@@ -59,6 +69,8 @@ below for each structure:
 
 All records get loaded and hashes evaluated as null according to the descriptions above and details in the hashing
 sections below.
+
+Keys containing null values are replaced according to configuration settings [stage](macros.md#stage). 
 
 ### Hubs
 

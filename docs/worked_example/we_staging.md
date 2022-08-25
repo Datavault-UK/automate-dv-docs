@@ -85,6 +85,7 @@ from the source table.
 {{ dbtvault.stage(include_source_columns=true,
                   source_model=source_model,
                   derived_columns=derived_columns,
+                  null_columns=null_columns,
                   hashed_columns=hashed_columns,
                   ranked_columns=none) }}
 ```
@@ -119,6 +120,7 @@ Let's take a look at some metadata supplied to the stage macro for the `v_stg_tr
     {{ dbtvault.stage(include_source_columns=true,
                       source_model=source_model,
                       derived_columns=derived_columns,
+                      null_columns=none,
                       hashed_columns=hashed_columns,
                       ranked_columns=none) }}
     ```
