@@ -125,7 +125,7 @@ delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
 
-=== "BigQuery"
+=== "Google BigQuery"
 
     ```yaml
     ...
@@ -157,7 +157,7 @@ Here are some examples for different platforms:
 The table below indicates which macros and templates are officially available for each platform.
 
 dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
-Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality 
+Most of the time this will be at the same time as the Snowflake release unless it is Snowflake-only functionality 
 with no equivalent in another platform. 
 
 Thanks for your patience and continued support!
@@ -4853,6 +4853,81 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
+#### Escaping column names that are not SQL compliant
+
+In general source column names are enclosed by escape characters by default during compilation. For derived columns however
+the source column names are **not** escaped by default. This is because there is too wide a range of potential inputs
+to parse in the source column detail, and it would simply be enclosed as is with escape characters.
+To override this behaviour a mapping of the source column name and an escape flag must be provided.
+Alternatively, for computed derived columns, escape characters can be explicitly coded within the function itself.
+
+!!! note 
+    The derived column name (used as a column alias) **is** enclosed by escape characters by default.
+
+Check out the following metadata examples:
+
+=== "Snowflake"
+
+    ```yaml
+    source_model: "MY_STAGE"
+    derived_columns:
+      EFFECTIVE_FROM:
+        source_column: "BOOKING DATE"
+        escape: true
+      BOOKING_DETAILS:
+        source_column:
+          - "BOOKING_DATE"
+          - "!STG_BOOKING"
+          - "CUSTOMER_NAME"
+        escape: true
+      BOOKING_FLAG: "NOT \"BOOKING COMPLETED\""
+      CREATED_DATE: "TO_VARCHAR(\"CREATED DATE\"::date, 'DD-MM-YYYY')"
+    ```
+
+    Generated SQL:
+
+    ```sql
+    ...
+    "BOOKING DATE" AS "EFFECTIVE_FROM",
+    CONCAT_WS('||', "BOOKING_DATE", 'STG_BOOKING', "CUSTOMER_ID", "CUSTOMER_NAME") AS "BOOKING_DETAILS",
+    NOT "BOOKING COMPLETED" AS "BOOKING_FLAG",
+    TO_VARCHAR("CREATED DATE"::date, 'DD-MM-YYYY') AS "CREATED_DATE",
+    ...
+    ```
+
+=== "Google BigQuery"
+
+    ```yaml
+    source_model: "MY_STAGE"
+    derived_columns:
+      EFFECTIVE_FROM:
+        source_column: "BOOKING DATE"
+        escape: true
+      BOOKING_DETAILS:
+        source_column:
+          - "BOOKING_DATE"
+          - "!STG_BOOKING"
+          - "CUSTOMER_NAME"
+        escape: true
+      BOOKING_FLAG: "NOT `BOOKING COMPLETED`"
+      CREATED_DATE: "CAST(CAST(`CREATED DATE` AS DATE) AS STRING FORMAT 'DD-MM-YYYY')"
+    ```
+
+    Generated SQL:
+
+    ```sql
+    ...
+    `BOOKING DATE` AS `EFFECTIVE_FROM`,
+    CONCAT(`BOOKING_DATE`, '||', 'STG_BOOKING', '||', `CUSTOMER_ID`, '||', `CUSTOMER_NAME`) AS `BOOKING_DETAILS`,
+    NOT `BOOKING COMPLETED` AS `BOOKING_FLAG`,
+    CAST(CAST(`CREATED DATE` AS DATE) AS STRING FORMAT 'DD-MM-YYYY') AS `CREATED_DATE`,
+    ...
+    ```
+
+!!! note 
+    Please ensure that your functions have valid SQL syntax on your platform, for use in this context.
+
+#### Defining and configuring Ranked columns
 ## Null Columns
 
 This stage configuration provides the user with the means to define required and optional Null keys according to business
@@ -5137,6 +5212,36 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
+
+___
+
+### hash_columns
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/hash_columns.sql))
+
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
+
+Generates SQL to create hash keys or hashdiff values for a provided mapping of column names to the list of columns to hash.
+
+### derive_columns
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.8/macros/staging/derive_columns.sql))
+
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
+
+Generates SQL to create columns based on the values of other columns, provided as a mapping from column name to
+column value.
+
+### ranked_columns
+
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/staging/rank_columns.sql))
+
+!!! note 
+    This is a helper macro used within the stage macro, but can be used independently.
+
+Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function.
 
 ___
 
