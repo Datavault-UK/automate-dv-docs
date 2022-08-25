@@ -111,26 +111,55 @@ The metadata needed to create a multi-source Hub is identical to a single-source
 list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [hub](../macros/index.md#hub) macro 
 will handle the rest:
 
-!!! note
+!!! warning "Important"
+
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
     via a `derived column` configuration, using the [stage](../macros/index.md#stage) macro in the staging layer.
 
-```jinja hl_lines="3 4 5"
-{{ config(materialized='incremental') }}
+#### Example
 
-{%- set source_model = ["v_stg_orders_web", 
-                        "v_stg_orders_crm", 
-                        "v_stg_orders_sap"]   -%}
+=== "Variable Metadata approach"
+    ```jinja hl_lines="3-5"
+    
+    
+    {{ config(materialized='incremental') }}
+    
+    {%- set source_model = ["v_stg_orders_web", 
+                            "v_stg_orders_crm", 
+                            "v_stg_orders_sap"]   -%}
+    
+    {%- set src_pk = "CUSTOMER_HK"                -%}
+    {%- set src_nk = "CUSTOMER_ID"                -%}
+    {%- set src_ldts = "LOAD_DATETIME"            -%}
+    {%- set src_source = "RECORD_SOURCE"          -%}
+    
+    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                    src_source=src_source, source_model=source_model) }}
+    ```
 
-{%- set src_pk = "CUSTOMER_HK"                -%}
-{%- set src_nk = "CUSTOMER_ID"                -%}
-{%- set src_ldts = "LOAD_DATETIME"            -%}
-{%- set src_source = "RECORD_SOURCE"          -%}
+=== "YAML Metadata approach"
 
-{{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
-```
+    ```jinja hl_lines="2-5"
+    {%- set yaml_metadata -%}
+    source_model: 
+        - v_stg_orders_web
+        - v_stg_orders_crm
+        - v_stg_orders_sap
+    src_pk: CUSTOMER_HK
+    src_nk: CUSTOMER_ID
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
+                    src_nk=metadata_dict["src_nk"], 
+                    src_ldts=metadata_dict["src_ldts"],
+                    src_source=metadata_dict["src_ldts"],
+                    source_model=metadata_dict["source_model"]) }}
+    ```
 
 See the [Hub metadata reference](../metadata.md#hubs) for more examples.
 

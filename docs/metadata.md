@@ -16,7 +16,7 @@ down to user and organisation preference.
     Parameter data types definitions are available on the [macros](macros/index.md) page. The approaches below are simply our
     recommendations, which we hope provide a good balance of manageability and readability.
 
-**All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
+**All approaches for the same structure will produce the same result/output, the only difference is how the metadata is provided.**
 
 It is worth noting that with larger projects, metadata management gets increasingly harder and can become unwieldy.
 See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
@@ -509,7 +509,7 @@ example provided to help better convey the difference.
         source_model: v_stg_orders
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-          - CUSTOMER_ID
+          - CUSTOMER_HK
           - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
@@ -532,7 +532,7 @@ example provided to help better convey the difference.
           - v_stg_transactions
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-          - CUSTOMER_ID
+          - CUSTOMER_HK
           - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
