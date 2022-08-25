@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 
-## [v0.9.0] - 
+## [v0.9.0] - 2022-10-x
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.0)](https://dbtvault.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
 
 ### New Platform Support  
@@ -38,23 +38,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Introducing:
 
-:star2: Payload column exclusion: Satellite's payload can now be configured to select all columns, except a user-defined list using an `exclude` configuration (#128) 
+:star2: Payload column exclusion: Satellite's payload can now be configured to select all columns, except a user-defined list using an `exclude` configuration ([#128](https://github.com/Datavault-UK/dbtvault/issues/128)) 
 
-:star2: Null Business Key Handling: Now users can provide a configuration in their staging tables to handle NULL keys elegantly, according to business needs (#133)
+:star2: Null Business Key Handling: Now users can provide a configuration in their staging tables to handle NULL keys elegantly, according to business needs ([#133](https://github.com/Datavault-UK/dbtvault/issues/133))
 
-:star2: Extra Columns Parameter: All table macros now provide a `src_extra_columns` parameter which allows users to add extra columns outside of the standard template for business needs. 
+:star2: Extra Columns Parameter: All table macros now provide a `src_extra_columns` parameter which allows users to add extra columns outside the standard template for business needs. 
 
 :star2: More logging: Hubs and Links now provide additional logging about the number of sources they are loading from. Minor but helpful! This is our first step towards giving our users more information.
 
 ### Fixes
 
-:white_check_mark: Fixed an edge case for `vault_insert_by_period` when the staging table and the target table were in different databases (#121)
+:white_check_mark: Fixed an edge case for `vault_insert_by_period` when the staging table and the target table were in different databases ([#121](https://github.com/Datavault-UK/dbtvault/issues/121))
 
-:white_check_mark: Removed the uppercase conversion in the staging macro (#122, #134)
+:white_check_mark: Removed the uppercase conversion in the staging macro ([#122](https://github.com/Datavault-UK/dbtvault/issues/122), [#134](https://github.com/Datavault-UK/dbtvault/issues/134))
 
-:white_check_mark: Fixed an issue where duplicate records (same hashdiff) would sometimes be loaded into a Satellite (#126)
+:white_check_mark: Fixed an issue where duplicate records (same hashdiff) would sometimes be loaded into a Satellite ([#126](https://github.com/Datavault-UK/dbtvault/issues/126))
 
-:white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping can now be configured on a case-by-case basis for each column to escape when they are reserved words etc. (#114) (#141)
+:white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping can now be configured on a case-by-case basis for each column to escape when they are reserved words etc. ([#114](https://github.com/Datavault-UK/dbtvault/issues/114), [#141](https://github.com/Datavault-UK/dbtvault/issues/141))
 
 ## [v0.8.3] - 2022-05-10
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
@@ -190,8 +190,8 @@ as a result of loading data 'manually' end-dated by business rules.
 
 #### Rank column configurations in stage macro (ranked_columns):
 
-- Provide ASC or DESC for an `order_by` column [Read More](../macros/index.md#order-by-direction)
-- Configure the ranking to use `DENSE_RANK()` or `RANK()` [Read More](../macros/index.md#dense-rank)
+- Provide ASC or DESC for an `order_by` column [Read More](../macros/stage_macro_configurations.md#order-by-direction)
+- Configure the ranking to use `DENSE_RANK()` or `RANK()` [Read More](../macros/stage_macro_configurations.md#dense-rank)
 
 #### Configuration for hash strings
 
