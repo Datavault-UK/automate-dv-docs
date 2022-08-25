@@ -46,8 +46,8 @@ You may also provide metadata on a per-model basis. This is useful if you have a
 
 #### Per-Model - YAML strings
 
-If you want to provide metadata inside the model itself, but find yourself disliking the format for larger collections
-of metadata or certain data types (e.g. dict literals), then providing a YAML String inside a block
+If you want to provide metadata inside the model itself, but find yourself disliking the variables format for larger collections
+of metadata or certain data types (e.g. dict literals), then providing a YAML string inside a block
 `set` assignment is a good alternative to using multiple individual `set` assignments. This approach takes advantage of
 the `fromyaml()` built-in jinja function provided by dbt, which is
 documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/).

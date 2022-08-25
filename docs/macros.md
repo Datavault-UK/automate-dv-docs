@@ -126,7 +126,7 @@ delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
 
-=== "BigQuery"
+=== "Google BigQuery"
 
     ```yaml
     ...
