@@ -1,5 +1,7 @@
 ![alt text](../assets/images/staging.png "Staging from a raw table to the raw vault")
 
+
+
 ### Pre-conditions
 
 1. The dbtvault package assumes you've already loaded a Snowflake database staging table with raw data 
