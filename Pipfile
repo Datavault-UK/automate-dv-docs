@@ -10,7 +10,6 @@ mkdocs-material = "*"
 pymdown-extensions = "*"
 mkdocs-git-revision-date-localized-plugin = "*"
 mkdocs-with-pdf = "*"
-mike = "*"
 
 [requires]
 python_version = "3.9"

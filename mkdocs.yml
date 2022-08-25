@@ -92,8 +92,6 @@ extra:
       link: 'https://www.linkedin.com/company/business-thinking-limited'
     - icon: 'fontawesome/brands/facebook'
       link: 'https://www.facebook.com/DataVaultUK/'
-  version:
-    provider: mike
 
 markdown_extensions:
   - admonition

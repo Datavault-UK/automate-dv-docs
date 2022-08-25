@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b8acfc6a0cca73c77a460cb293bcdfbc33ad1927476bd2e02de27c19ed8c841a"
+            "sha256": "41bdbe00523ece6a3a35a3a2d641354714ddb4f72b91b8cd7e7d5a70a71947fd"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.8"
+            "python_version": "3.9"
         },
         "sources": [
             {
@@ -319,14 +319,6 @@
             "markers": "python_version >= '3.6'",
             "version": "==1.3.4"
         },
-        "mike": {
-            "hashes": [
-                "sha256:4c307c28769834d78df10f834f57f810f04ca27d248f80a75f49c6fa2d1527ca",
-                "sha256:56c3f1794c2d0b5fdccfa9b9487beb013ca813de2e3ad0744724e9d34d40b77b"
-            ],
-            "index": "pypi",
-            "version": "==1.1.2"
-        },
         "mkdocs": {
             "hashes": [
                 "sha256:a41a2ff25ce3bbacc953f9844ba07d106233cd76c88bac1f59cb1564ac0d87ed",
@@ -491,7 +483,7 @@
                 "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86",
                 "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==2.8.2"
         },
         "pytz": {
@@ -553,7 +545,7 @@
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
                 "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==1.16.0"
         },
         "smmap": {
@@ -579,13 +571,6 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==1.1.1"
-        },
-        "verspec": {
-            "hashes": [
-                "sha256:741877d5633cc9464c45a469ae2a31e801e6dbbaa85b9675d481cda100f11c31",
-                "sha256:c4504ca697b2056cdb4bfa7121461f5a0e81809255b41c03dda4ba823637c01e"
-            ],
-            "version": "==0.1.0"
         },
         "watchdog": {
             "hashes": [
