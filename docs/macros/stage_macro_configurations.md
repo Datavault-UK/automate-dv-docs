@@ -269,8 +269,15 @@ allowing the business to enforce meaning for these keys.
 
 Where key columns might have a null value in the source data and there is a requirement to import the associated records,
 the null key can be replaced by a default value and the original null value stored in an additional column. The key might
-be required, for instance where it is the basis for a hashed primary key, or it might be optional. The default replacement
-value for a required key is -1 and for an optional key is -2. The replacement process is enabled as follows:
+be required, for instance where it is the basis for a hashed primary key, or it might be optional. 
+
+- The default replacement value for a required key is -1
+- The default replacement value for an optional key is -2
+
+!!! tip
+    [Configure replacement values](./index.md#global-variables)
+
+The replacement process is enabled as follows:
 
 === "Null columns configuration"
 
