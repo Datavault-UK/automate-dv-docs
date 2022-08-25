@@ -18,7 +18,7 @@ These new columns can include but are not limited to:
 1. [Derived Columns](#derived-columns)
 2. [Null Columns](#null-columns)
 3. [Hashed Columns](#hashed-columns)
-4. [Ranked Columns](#ranked_columns)
+4. [Ranked Columns](#ranked-columns)
 
 Each of the above are described in more detail in the remainder of this section, use the links above for convenience.
 
@@ -442,14 +442,10 @@ listed under the `columns` key, instead of using them to create the hashdiff.
     are used to generate the hashdiff. If your component columns change, then your hashdiff output will also change,
     and it will cause unpredictable results.
 
-## ranked_columns
+## Ranked Columns
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/staging/rank_columns.sql))
-
-!!! note 
-    This is a helper macro used within the stage macro, but can be used independently.
-
-Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function.
+Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function. This is predominantly for use with
+[custom dbtvault materialisations](../materialisations.md).
 
 ### Defining and configuring Ranked columns
 

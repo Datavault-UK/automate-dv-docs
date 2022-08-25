@@ -56,6 +56,12 @@ Introducing:
 
 :white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping can now be configured on a case-by-case basis for each column to escape when they are reserved words etc. ([#114](https://github.com/Datavault-UK/dbtvault/issues/114), [#141](https://github.com/Datavault-UK/dbtvault/issues/141))
 
+### Docs
+
+- Moved stage configuration details to a [new page](../macros/stage_macro_configurations.md)
+- Updated packages behind the scenes for security and bug fixes
+- Created landing pages for sections, which should make navigation easier, e.g. getting started is now the home page when clicking 'Tutorials' in the menu, instead of having to click twice.
+
 ## [v0.8.3] - 2022-05-10
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
 
