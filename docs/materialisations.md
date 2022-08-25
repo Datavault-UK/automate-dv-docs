@@ -144,8 +144,8 @@ Please refer to the _Usage_ section above to see examples.
 
 | Configuration      | Description                                     | Type                | Default | Required?                                         |
 |--------------------|-------------------------------------------------|---------------------|---------|---------------------------------------------------|
-| timestamp_field    | A list of column names                          | List[String]        | None    | :fontawesome-solid-check-circle:{ .required }     |
-| period             | Time period to load over                        | String              | day     | :fontawesome-solid-minus-circle:{ .not-required } |
+| timestamp_field    | A list of column names                          | List[String]        | None    | :fontawesome-solid-circle-check:{ .required }     |
+| period             | Time period to load over                        | String              | day     | :fontawesome-solid-circle-minus:{ .not-required } |
 | start_date         | The date to start the load from                 | String (YYYY-MM-DD) | None    | See: Configuring the load date range (above)      |
 | stop_date          | The date to stop the load on                    | String (YYYY-MM-DD) | None    | See: Configuring the load date range (above)      |
 | date_source_models | A list of models containing the timestamp_field | List[String]/String | None    | See: Configuring the load date range (above)      |
@@ -258,8 +258,8 @@ column.
 
 | Configuration      | Description                                        | Type         | Default | Required?                                     |
 |--------------------|----------------------------------------------------|--------------|---------|-----------------------------------------------|
-| rank_column        | The column name containing the rank values         | String       | None    | :fontawesome-solid-check-circle:{ .required } |
-| rank_source_models | A list of model names containing the `rank_column` | List[String] | None    | :fontawesome-solid-check-circle:{ .required } |
+| rank_column        | The column name containing the rank values         | String       | None    | :fontawesome-solid-circle-check:{ .required } |
+| rank_source_models | A list of model names containing the `rank_column` | List[String] | None    | :fontawesome-solid-circle-check:{ .required } |
 
 #### Creating a rank column
 

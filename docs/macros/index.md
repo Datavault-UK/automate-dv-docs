@@ -109,7 +109,8 @@ characters: '`^^`'
 
 #### null_key_required
 
-Configure the string value to use for replacing `NULL` values found in keys where a value is required, e.g. prior to hashing.
+Configure the string value to use for replacing `NULL` values found in keys where a value is required, e.g. prior to
+hashing.
 By default, this is '-1'.
 
 #### null_key_optional
@@ -121,7 +122,7 @@ Configure the string value to use for replacing `NULL` values found in optional 
 #### escape_char_left/escape_char_right
 
 Configure the characters to use to delimit SQL column names. All column names are delimited, and by default both the
-delimiting characters are double quotes following the SQL:1999 standard. 
+delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
 
@@ -157,25 +158,24 @@ Here are some examples for different platforms:
 The table below indicates which macros and templates are officially available for each platform.
 
 dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
-Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality 
-with no equivalent in another platform. 
+Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality
+with no equivalent in another platform.
 
 Thanks for your patience and continued support!
 
-| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks**                                      | Postgres**                                         | Redshift**                                        |
-|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|---------------------------------------------------|----------------------------------------------------|---------------------------------------------------|
-| hash           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| stage          | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| hub            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| link           | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| sat            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| t_link         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| eff_sat        | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{  .not-required } | :fontawesome-solid-minus-circle:{ .not-required } |
-| ma_sat         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| xts            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| pit            | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-| bridge         | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-check-circle:{ .required } | :fontawesome-solid-minus-circle:{ .not-required } | :fontawesome-solid-minus-circle:{ .not-required }  | :fontawesome-solid-minus-circle:{ .not-required } |
-
+| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks**                                      | Postgres**                                        | Redshift**                                        |
+|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|
+| hash           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
+| stage          | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
+| hub            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
+| link           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
+| sat            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
+| t_link         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| eff_sat        | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| ma_sat         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| xts            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| pit            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
 
 !!! note "**"
     These platforms are either planned or actively being worked on by the community and/or internal dbtvault team.
@@ -194,7 +194,8 @@ for your Data Vault 2.0 Data Warehouse.
 
 ### hub
 
-###### view source: 
+###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/hub.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/hub.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/hub.sql)
@@ -206,18 +207,20 @@ Generates SQL to build a Hub table using the provided parameters.
 ``` jinja
 
 {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                src_extra_columns=src_extra_columns,
                 src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter    | Description                                 | Type                | Required?                                     |
-|--------------|---------------------------------------------|---------------------|-----------------------------------------------|
-| src_pk       | Source primary key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
-| src_nk       | Source natural key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
-| src_ldts     | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required } |
-| src_source   | Name of the column containing the source ID | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
-| source_model | Staging model name                          | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_nk            | Source natural key column                   | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_source        | Name of the column containing the source ID | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| source_model      | Staging model name                          | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_hubs.md) for more details
@@ -714,7 +717,8 @@ ___
 
 ### link
 
-###### view source: 
+###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/link.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/link.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/link.sql)
@@ -725,18 +729,20 @@ Generates SQL to build a Link table using the provided parameters.
 
 ``` jinja
 {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                 src_extra_columns=src_extra_columns,
                  src_source=src_source, source_model=source_model) }}
 ```                                             
 
 #### Parameters
 
-| Parameter    | Description                                 | Type                | Required?                                     |
-|--------------|---------------------------------------------|---------------------|-----------------------------------------------|
-| src_pk       | Source primary key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
-| src_fk       | Source foreign key column(s)                | List[String]        | :fontawesome-solid-check-circle:{ .required } |
-| src_ldts     | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required } |
-| src_source   | Name of the column containing the source ID | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
-| source_model | Staging model name                          | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_fk            | Source foreign key column(s)                | List[String]        | :fontawesome-solid-circle-check:{ .required }     |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_source        | Name of the column containing the source ID | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| source_model      | Staging model name                          | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_links.md) for more details
@@ -1282,21 +1288,23 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 
 ``` jinja
 {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
+                   src_extra_columns=src_extra_columns,
                    src_eff=src_eff, src_ldts=src_ldts, 
                    src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter    | Description                                 | Type                | Required?                                         |
-|--------------|---------------------------------------------|---------------------|---------------------------------------------------|
-| src_pk       | Source primary key column                   | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
-| src_fk       | Source foreign key column(s)                | List[String]        | :fontawesome-solid-check-circle:{ .required }     |
-| src_payload  | Source payload column(s)                    | List[String]        | :fontawesome-solid-minus-circle:{ .not-required } |
-| src_eff      | Source effective from column                | String              | :fontawesome-solid-check-circle:{ .required }     |
-| src_ldts     | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required }     |
-| src_source   | Name of the column containing the source ID | String              | :fontawesome-solid-check-circle:{ .required }     |
-| source_model | Staging model name                          | String              | :fontawesome-solid-check-circle:{ .required }     |
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_fk            | Source foreign key column(s)                | List[String]        | :fontawesome-solid-circle-check:{ .required }     |
+| src_payload       | Source payload column(s)                    | List[String]        | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_eff           | Source effective from column                | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .required }     |
+| source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_t_links.md) for more details
@@ -1432,7 +1440,8 @@ ___
 
 ### sat
 
-###### view source: 
+###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/sat.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/sat.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/sat.sql)
@@ -1443,21 +1452,23 @@ Generates SQL to build a Satellite table using the provided parameters.
 
 ``` jinja
 {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                src_extra_columns=src_extra_columns,
                 src_eff=src_eff, src_ldts=src_ldts, 
                 src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter    | Description                                 | Type         | Required?                                         |
-|--------------|---------------------------------------------|--------------|---------------------------------------------------|
-| src_pk       | Source primary key column                   | String       | :fontawesome-solid-check-circle:{ .required }     |
-| src_hashdiff | Source hashdiff column                      | String       | :fontawesome-solid-check-circle:{ .required }     |
-| src_payload  | Source payload column(s)                    | List[String] | :fontawesome-solid-check-circle:{ .required }     |
-| src_eff      | Source effective from column                | String       | :fontawesome-solid-minus-circle:{ .not-required } |
-| src_ldts     | Source load date timestamp column           | String       | :fontawesome-solid-check-circle:{ .required }     |
-| src_source   | Name of the column containing the source ID | String       | :fontawesome-solid-check-circle:{ .required }     |
-| source_model | Staging model name                          | String       | :fontawesome-solid-check-circle:{ .required }     |
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_hashdiff      | Source hashdiff column                      | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_payload       | Source payload column(s)                    | List[String]        | :fontawesome-solid-circle-check:{ .required }     |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_eff           | Source effective from column                | String              | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .required }     |
+| source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_satellites.md) for more details
@@ -1652,6 +1663,7 @@ ___
 ### eff_sat
 
 ###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/eff_sat.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/eff_sat.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/eff_sat.sql)
@@ -1663,23 +1675,25 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 ``` jinja
 {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, src_end_date=src_end_date,
+                    src_extra_columns=src_extra_columns,
                     src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
                     source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter      | Description                                 | Type                | Required?                                     |
-|----------------|---------------------------------------------|---------------------|-----------------------------------------------|
-| src_pk         | Source primary key column                   | String              | :fontawesome-solid-check-circle:{ .required } |
-| src_dfk        | Source driving foreign key column           | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
-| src_sfk        | Source secondary foreign key column         | List[String]/String | :fontawesome-solid-check-circle:{ .required } |
-| src_start_date | Source start date column                    | String              | :fontawesome-solid-check-circle:{ .required } |
-| src_end_date   | Source end date column                      | String              | :fontawesome-solid-check-circle:{ .required } |
-| src_eff        | Source effective from column                | String              | :fontawesome-solid-check-circle:{ .required } |
-| src_ldts       | Source load date timestamp column           | String              | :fontawesome-solid-check-circle:{ .required } |
-| src_source     | Name of the column containing the source ID | String              | :fontawesome-solid-check-circle:{ .required } |
-| source_model   | Staging model name                          | String              | :fontawesome-solid-check-circle:{ .required } |
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_dfk           | Source driving foreign key column           | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_sfk           | Source secondary foreign key column         | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_start_date    | Source start date column                    | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_end_date      | Source end date column                      | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_eff           | Source effective from column                | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .required }     |
+| source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_eff_satellites.md) for more details
@@ -2292,7 +2306,8 @@ ___
 
 ### ma_sat
 
-###### view source: 
+###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/ma_sat.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/ma_sat.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/ma_sat.sql)
@@ -2303,22 +2318,24 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ``` jinja
 {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
-                   src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
+                   src_payload=src_payload, src_eff=src_eff,
+                   src_extra_columns=src_extra_columns, src_ldts=src_ldts, 
                    src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter    | Description                                 | Type         | Required?                                         |
-|--------------|---------------------------------------------|--------------|---------------------------------------------------|
-| src_pk       | Source primary key column                   | String       | :fontawesome-solid-check-circle:{ .required }     |
-| src_cdk      | Source child dependent key(s) column(s)     | List[String] | :fontawesome-solid-check-circle:{ .required }     |
-| src_hashdiff | Source hashdiff column                      | String       | :fontawesome-solid-check-circle:{ .required }     |
-| src_payload  | Source payload column(s)                    | List[String] | :fontawesome-solid-check-circle:{ .required }     |
-| src_eff      | Source effective from column                | String       | :fontawesome-solid-minus-circle:{ .not-required } |
-| src_ldts     | Source load date timestamp column           | String       | :fontawesome-solid-check-circle:{ .required }     |
-| src_source   | Name of the column containing the source ID | String       | :fontawesome-solid-check-circle:{ .required }     |
-| source_model | Staging model name                          | String       | :fontawesome-solid-check-circle:{ .required }     |
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_cdk           | Source child dependent key(s) column(s)     | List[String]        | :fontawesome-solid-circle-check:{ .required }     |
+| src_hashdiff      | Source hashdiff column                      | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_payload       | Source payload column(s)                    | List[String]        | :fontawesome-solid-circle-check:{ .required }     |
+| src_eff           | Source effective from column                | String              | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .required }     |
+| source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_multi_active_satellites.md) for more details
@@ -2649,7 +2666,8 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ### xts
 
-###### view source: 
+###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/xts.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/xts.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/xts.sql)
@@ -2659,19 +2677,21 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 #### Usage
 
 ``` jinja
-{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
+{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, 
+                src_extra_columns=src_extra_columns, src_ldts=src_ldts,
+                src_source=src_source, source_model=source_model) }}`
 ```
 
 #### Parameters
 
-| Parameter     | Description                                                    | Type        | Required?                                    |
-|---------------|----------------------------------------------------------------|-------------|----------------------------------------------|
-| src_pk        | Source primary key column                                      | String/List | <i class="fas fa-check-circle required"></i> |
-| src_satellite | Dictionary of source satellite name column and hashdiff column | Dictionary  | <i class="fas fa-check-circle required"></i> |
-| src_ldts      | Source load date/timestamp column                              | String      | <i class="fas fa-check-circle required"></i> |
-| src_source    | Name of the column containing the source ID                    | String/List | <i class="fas fa-check-circle required"></i> |
-| source_model  | Staging model name                                             | String/List | <i class="fas fa-check-circle required"></i> |
+| Parameter         | Description                                                    | Type                | Required?                                         |
+|-------------------|----------------------------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                                      | String/List         | :fontawesome-solid-circle-check:{ .required }     |
+| src_satellite     | Dictionary of source satellite name column and hashdiff column | Dictionary          | :fontawesome-solid-circle-check:{ .required }     |
+| src_extra_columns | Select arbitrary columns from the source                       | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_ldts          | Source load date/timestamp column                              | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_source        | Name of the column containing the source ID                    | String/List         | :fontawesome-solid-circle-check:{ .required }     |
+| source_model      | Staging model name                                             | String/List         | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_xts.md) for more details
@@ -3068,7 +3088,8 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 ### pit
 
-###### view source: 
+###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/pit.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/pit.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/pit.sql)
@@ -3076,23 +3097,24 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 Generates SQL to build a Point-In-Time (PIT) table.
 
 ``` jinja
-{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+{{ dbtvault.pit(src_pk=src_pk, 
                 as_of_dates_table=as_of_dates_table,
                 satellites=satellites,
-                stage_tables=stage_tables,
-                src_ldts=src_ldts) }}
+                stage_tables_ldts=stage_tables_ldts,
+                src_ldts=src_ldts,
+                source_model=source_model) }}
 ```
 
 #### Parameters
 
-| Parameter         | Description                                  | Type    | Required?                                    |
-|-------------------|----------------------------------------------|---------|----------------------------------------------|
-| src_pk            | Source primary key column                    | String  | <i class="fas fa-check-circle required"></i> |
-| as_of_dates_table | Name for the As of Date table                | String  | <i class="fas fa-check-circle required"></i> |
-| satellites        | Dictionary of satellite reference mappings   | Mapping | <i class="fas fa-check-circle required"></i> |
-| stage_tables      | Dictionary of stage table reference mappings | Mapping | <i class="fas fa-check-circle required"></i> |
-| src_ldts          | Source load date timestamp column            | String  | <i class="fas fa-check-circle required"></i> |
-| source_model      | Hub model name                               | String  | <i class="fas fa-check-circle required"></i> |
+| Parameter         | Description                                  | Type    | Required?                                     |
+|-------------------|----------------------------------------------|---------|-----------------------------------------------|
+| src_pk            | Source primary key column                    | String  | :fontawesome-solid-circle-check:{ .required } |
+| as_of_dates_table | Name for the As of Date table                | String  | :fontawesome-solid-circle-check:{ .required } |
+| satellites        | Dictionary of satellite reference mappings   | Mapping | :fontawesome-solid-circle-check:{ .required } |
+| stage_tables_ldts | Dictionary of stage table reference mappings | Mapping | :fontawesome-solid-circle-check:{ .required } |
+| src_ldts          | Source load date timestamp column            | String  | :fontawesome-solid-circle-check:{ .required } |
+| source_model      | Hub model name                               | String  | :fontawesome-solid-circle-check:{ .required } |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_point_in_time.md) for more details
@@ -3344,7 +3366,8 @@ ___
 
 ### bridge
 
-###### view source: 
+###### view source:
+
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/snowflake/bridge.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/bigquery/bridge.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/release/0.8.3/macros/tables/sqlserver/bridge.sql)
@@ -3366,14 +3389,14 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 
 #### Parameters
 
-| Parameter         | Description                                                                 | Type    | Required?                                    |
-|-------------------|-----------------------------------------------------------------------------|---------|----------------------------------------------|
-| source_model      | Starting Hub model name                                                     | String  | <i class="fas fa-check-circle required"></i> |
-| src_pk            | Starting Hub primary key column                                             | String  | <i class="fas fa-check-circle required"></i> |
-| src_ldts          | Starting Hub load date timestamp                                            | String  | <i class="fas fa-check-circle required"></i> |
-| bridge_walk       | Dictionary of bridge reference mappings                                     | Mapping | <i class="fas fa-check-circle required"></i> |
-| as_of_dates_table | Name for the As of Date table                                               | String  | <i class="fas fa-check-circle required"></i> |
-| stage_tables_ldts | Dictionary of stage table reference mappings and their load date timestamps | Mapping | <i class="fas fa-check-circle required"></i> |
+| Parameter         | Description                                                                 | Type    | Required?                                     |
+|-------------------|-----------------------------------------------------------------------------|---------|-----------------------------------------------|
+| source_model      | Starting Hub model name                                                     | String  | :fontawesome-solid-circle-check:{ .required } |
+| src_pk            | Starting Hub primary key column                                             | String  | :fontawesome-solid-circle-check:{ .required } |
+| src_ldts          | Starting Hub load date timestamp                                            | String  | :fontawesome-solid-circle-check:{ .required } |
+| bridge_walk       | Dictionary of bridge reference mappings                                     | Mapping | :fontawesome-solid-circle-check:{ .required } |
+| as_of_dates_table | Name for the As of Date table                                               | String  | :fontawesome-solid-circle-check:{ .required } |
+| stage_tables_ldts | Dictionary of stage table reference mappings and their load date timestamps | Mapping | :fontawesome-solid-circle-check:{ .required } |
 
 !!! tip
     [Read the tutorial](../tutorial/tut_bridges.md) for more details
@@ -3602,10 +3625,10 @@ ___
 
 These macros are intended for use in the staging layer.
 
-At dbtvault, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the 
+At dbtvault, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the
 raw vault. It is important to understand that according to Data Vault 2.0 standards, the primed stages is
 essentially where all of our **_hard_** business rules are defined. We are not excessively transforming the data beyond
-what is reasonable prior to the raw stage, but simply creating some columns to drive audit and performance downstream.  
+what is reasonable prior to the raw stage, but simply creating some columns to drive audit and performance downstream.
 
 ___
 
@@ -3630,12 +3653,12 @@ Generates SQL to build a staging area using the provided parameters.
 
 | Parameter              | Description                                                                 | Type    | Default | Required?                                         |
 |------------------------|-----------------------------------------------------------------------------|---------|---------|---------------------------------------------------|
-| include_source_columns | If true, select all columns in the `source_model`                           | Boolean | true    | :fontawesome-solid-minus-circle:{ .not-required } |
-| source_model           | Staging model name                                                          | Mapping | N/A     | :fontawesome-solid-check-circle:{ .required }     |
-| derived_columns        | Mappings of column names and their value                                    | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
-| null_columns           | Mappings of columns for which null business keys should be replaced         | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
-| hashed_columns         | Mappings of hashes to their component columns                               | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
-| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping | none    | :fontawesome-solid-minus-circle:{ .not-required } |
+| include_source_columns | If true, select all columns in the `source_model`                           | Boolean | true    | :fontawesome-solid-circle-minus:{ .not-required } |
+| source_model           | Staging model name                                                          | Mapping | N/A     | :fontawesome-solid-circle-check:{ .required }     |
+| derived_columns        | Mappings of column names and their value                                    | Mapping | none    | :fontawesome-solid-circle-minus:{ .not-required } |
+| null_columns           | Mappings of columns for which null business keys should be replaced         | Mapping | none    | :fontawesome-solid-circle-minus:{ .not-required } |
+| hashed_columns         | Mappings of hashes to their component columns                               | Mapping | none    | :fontawesome-solid-circle-minus:{ .not-required } |
+| ranked_columns         | Mappings of ranked columns names to their order by and partition by columns | Mapping | none    | :fontawesome-solid-circle-minus:{ .not-required } |
 
 #### Example Metadata
 
@@ -4690,7 +4713,7 @@ A macro for generating hashing SQL for columns.
         )) AS BINARY(16)) AS HASHDIFF
         ```
 
-    === "SHA"
+    === "SHA (256)"
 
         ```sql
         CAST(SHA2_BINARY(CONCAT_WS('||',
@@ -4712,7 +4735,7 @@ A macro for generating hashing SQL for columns.
         )) AS BINARY(16)) AS HASHDIFF
         ```
 
-    === "SHA"
+    === "SHA (256)"
 
         ```sql
         CAST(HASHBYTES('SHA2_256', (CONCAT_WS('||',
@@ -4730,9 +4753,9 @@ A macro for generating hashing SQL for columns.
 
 | Parameter   | Description                                     | Type                | Required?                                         |
 |-------------|-------------------------------------------------|---------------------|---------------------------------------------------|
-| columns     | Columns to hash on                              | List[String]/String | :fontawesome-solid-check-circle:{ .required }     |
-| alias       | The name to give the hashed column              | String              | :fontawesome-solid-check-circle:{ .required }     |
-| is_hashdiff | Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-minus-circle:{ .not-required } |      
+| columns     | Columns to hash on                              | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| alias       | The name to give the hashed column              | String              | :fontawesome-solid-circle-check:{ .required }     |
+| is_hashdiff | Will alpha sort columns if true, default false. | Boolean             | :fontawesome-solid-circle-minus:{ .not-required } |      
 
 ___
 
@@ -4746,8 +4769,8 @@ A macro for quickly prefixing a list of columns with a string.
 
 | Parameter  | Description                | Type         | Required?                                     |
 |------------|----------------------------|--------------|-----------------------------------------------|
-| columns    | A list of column names     | List[String] | :fontawesome-solid-check-circle:{ .required } |
-| prefix_str | The prefix for the columns | String       | :fontawesome-solid-check-circle:{ .required } |
+| columns    | A list of column names     | List[String] | :fontawesome-solid-circle-check:{ .required } |
+| prefix_str | The prefix for the columns | String       | :fontawesome-solid-circle-check:{ .required } |
 
 #### Usage
 

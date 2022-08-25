@@ -8,6 +8,7 @@ dev_addr: 127.0.0.1:8001
 
 theme:
   name: 'material'
+  custom_dir: 'overrides'
   show_sidebar: true
   logo: 'assets/images/logo.png'
   banner: 'assets/images/docs-banner.png'
@@ -96,7 +97,8 @@ extra:
 
 markdown_extensions:
   - admonition
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences
   - abbr
   - md_in_html
