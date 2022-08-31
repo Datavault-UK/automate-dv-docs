@@ -13,6 +13,9 @@ These new columns can include but are not limited to:
     This section documents some specific use cases for certain stage configurations. If you feel any are missing, please 
     get in touch on GitHub!
 
+??? video
+    <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7yyrARKipeA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Available configurations
 
 1. [Derived Columns](#derived-columns)

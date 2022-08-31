@@ -1,26 +1,25 @@
 ![alt text](../assets/images/staging.png "Staging from a raw table to the raw vault")
 
+### Watch the video
+    
+Prefer a video? This video has a great overview of the content on this page.
+    
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7yyrARKipeA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+### Assumptions
 
-### Pre-conditions
-
-1. The dbtvault package assumes you've already loaded a Snowflake database staging table with raw data 
-from a source system or feed; the 'raw staging layer'.
+1. The dbtvault package assumes you've already loaded a table with raw data 
+from a source system or feed; this is referred to as the 'raw staging layer' or 'landing zone'.
 
 2. All records in a single load must be for the same load datetime. This restriction is not applicable to Hubs and Links.
    We will be removing this restriction for other structures in the future. 
 
-### Let's Begin
+### Getting started
 
 The raw staging table needs to be prepared with additional columns so that we may load our raw vault.
 Specifically, we need to add hash keys, hashdiffs, and any implied fixed-value columns (see the above diagram).
 
 We also need to ensure column names align with target Hub or Link table column names.
-
-!!! info
-    Hash keys are optional in Snowflake. Natural/business keys alone can be used in place of hashing. 
-    
-    We've implemented hashing as the only option for now, though a non-hashed version will be added in future releases, checkout our [roadmap](../roadmap.md).
 
 ### Creating staging models
 

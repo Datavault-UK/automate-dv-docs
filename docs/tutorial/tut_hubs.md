@@ -1,6 +1,12 @@
 Hubs are one of the core building blocks of a Data Vault. Hubs record a unique list of all business keys for a single entity. 
 For example, a Hub may contain a list of all Customer IDs in the business. 
 
+### Watch the video
+
+Prefer a video? This video has a great overview of the content on this page.
+    
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DDc0hS_XCpo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ### Structure
 
 In general, Hubs consist of 4 columns, described below.

@@ -211,6 +211,9 @@ Generates SQL to build a Hub table using the provided parameters.
                 src_source=src_source, source_model=source_model) }}
 ```
 
+??? video
+    <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DDc0hS_XCpo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 #### Parameters
 
 | Parameter         | Description                                 | Type                | Required?                                         |
