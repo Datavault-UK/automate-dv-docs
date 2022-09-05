@@ -68,7 +68,7 @@ Create a new dbt model as before. We'll call this one `ma_sat_customer_detail`.
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [ma_sat](../macros.md#ma_sat) macro.
+Let's look at the metadata we need to provide to the [ma_sat](../macros/index.md#ma_sat) macro.
 
 #### Materialisation
 
@@ -76,7 +76,7 @@ The recommended materialisation for **Multi-Active Satellites** is `incremental`
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [multi-active satellite macro](../macros.md#ma_sat).
+Let's look at the metadata we need to provide to the [multi-active satellite macro](../macros/index.md#ma_sat).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 

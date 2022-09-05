@@ -4,7 +4,7 @@ macros**.
 For all other metadata and configurations, please refer to
 the [dbt configurations reference](https://docs.getdbt.com/reference/dbt_project.yml).
 
-For further details about how to use the macros in this section, see [table templates](macros.md#table-templates).
+For further details about how to use the macros in this section, see [table templates](macros/index.md#table-templates).
 
 ### Approaches
 
@@ -13,10 +13,10 @@ down to user and organisation preference.
 
 !!! note
     The macros **do not care** how the metadata parameters get provided, as long as they are of the correct type.
-    Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our
+    Parameter data types definitions are available on the [macros](macros/index.md) page. The approaches below are simply our
     recommendations, which we hope provide a good balance of manageability and readability.
 
-**All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
+**All approaches for the same structure will produce the same result/output, the only difference is how the metadata is provided.**
 
 It is worth noting that with larger projects, metadata management gets increasingly harder and can become unwieldy.
 See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
@@ -136,13 +136,13 @@ example provided to help better convey the difference.
 
     !!! note
         '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
-        [Read More](macros.md#constants-derived-columns)
+        [Read More](macros/index.md#constants-derived-columns)
 
 ### Staging
 
 #### Parameters
 
-[stage macro parameters](macros.md#stage)
+[stage macro parameters](macros/index.md#stage)
 
 #### Metadata
 
@@ -382,7 +382,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[hub macro parameters](macros.md#hub)
+[hub macro parameters](macros/index.md#hub)
 
 #### Metadata
 
@@ -497,7 +497,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[link macro parameters](macros.md#link)
+[link macro parameters](macros/index.md#link)
 
 #### Metadata
 
@@ -509,7 +509,7 @@ example provided to help better convey the difference.
         source_model: v_stg_orders
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-          - CUSTOMER_ID
+          - CUSTOMER_HK
           - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
@@ -532,7 +532,7 @@ example provided to help better convey the difference.
           - v_stg_transactions
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-          - CUSTOMER_ID
+          - CUSTOMER_HK
           - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
@@ -579,7 +579,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[t_link macro parameters](macros.md#t_link)
+[t_link macro parameters](macros/index.md#t_link)
 
 #### Metadata
 
@@ -633,7 +633,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[sat macro parameters](macros.md#sat)
+[sat macro parameters](macros/index.md#sat)
 
 #### Metadata
 
@@ -744,7 +744,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Parameters
 
-[eff_sat macro parameters](macros.md#eff_sat)
+[eff_sat macro parameters](macros/index.md#eff_sat)
 
 #### Metadata
 
@@ -800,7 +800,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Parameters
 
-[ma_sat macro parameters](macros.md#ma_sat)
+[ma_sat macro parameters](macros/index.md#ma_sat)
 
 #### Metadata
 
@@ -855,7 +855,7 @@ ___
 
 #### Parameters
 
-[xts macro parameters](macros.md#xts)
+[xts macro parameters](macros/index.md#xts)
 
 #### Metadata
 
@@ -1009,7 +1009,7 @@ ___
 
 #### Parameters
 
-[pit macro parameters](macros.md#pit)
+[pit macro parameters](macros/index.md#pit)
 
 #### Metadata
 
@@ -1059,7 +1059,7 @@ ___
 
 #### Parameters
 
-[bridge macro parameters](macros.md#bridge)
+[bridge macro parameters](macros/index.md#bridge)
 
 #### Metadata
 

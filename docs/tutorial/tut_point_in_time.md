@@ -1,6 +1,6 @@
 A Point-In-Time table is a query assistant structure, part of the Business Vault, meant to improve the performance of 
 loading and creating the information marts. Given a supplied list of dates/timestamps in an 
-[As of Date table](../macros.md#as-of-date-tables), the PIT table will identify the relevant records from 
+[As of Date table](../macros/index.md#as-of-date-tables), the PIT table will identify the relevant records from 
 each Satellite for that specific date/timestamp and record the Hash Key and the LDTS value of that Satellite record. 
 By identifying the coordinates of the relevant records at each point-in-time a priori, the information marts queries 
 can make use of equi-joins which offer a significant boost in performance.    

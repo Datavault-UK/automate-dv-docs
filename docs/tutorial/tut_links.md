@@ -48,7 +48,7 @@ The recommended materialisation for **Links** is `incremental`, as we load and a
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [link macro](../macros.md#link).
+Let's look at the metadata we need to provide to the [link macro](../macros/index.md#link).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
@@ -114,31 +114,59 @@ The `link` macro will perform a union operation to combine the tables using that
 a complete record set.
 
 The metadata needed to create a multi-source Link is identical to a single-source Link, we just provide a 
-list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [link](../macros.md#link) macro 
+list of sources (usually multiple [staging areas](tut_staging.md)) rather than a single source, and the [link](../macros/index.md#link) macro 
 will handle the rest:
 
-!!! note
+!!! warning "Important"
+
     If your primary key and natural key columns have different names across the different
     tables, they will need to be aliased to the same name in the respective staging layers 
-    via a `derived column` configuration, using the [stage](../macros.md#stage) macro in the staging layer.
+    via a `derived column` configuration, using the [stage](../macros/index.md#stage) macro in the staging layer.
 
+#### Example
 
+=== "Variable Metadata approach"
 
-```jinja hl_lines="3 4 5"
-{{ config(materialized='incremental') }}
+    ```jinja hl_lines="3-5"
+    {{ config(materialized='incremental') }}
+    
+    {%- set source_model = ["v_stg_orders_web",   
+                            "v_stg_orders_crm",   
+                            "v_stg_orders_sap"]   -%}
+    
+    {%- set src_pk = "CUSTOMER_ORDER_HK"          -%}
+    {%- set src_fk = ["CUSTOMER_HK", "ORDER_HK"]  -%}
+    {%- set src_ldts = "LOAD_DATETIME"            -%}
+    {%- set src_source = "RECORD_SOURCE"          -%}
+    
+    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                     src_source=src_source, source_model=source_model) }}
+    ```
 
-{%- set source_model = ["v_stg_orders_web",   
-                        "v_stg_orders_crm",   
-                        "v_stg_orders_sap"]   -%}
+=== "YAML Metadata approach"
 
-{%- set src_pk = "CUSTOMER_ORDER_HK"          -%}
-{%- set src_fk = ["CUSTOMER_HK", "ORDER_HK"]  -%}
-{%- set src_ldts = "LOAD_DATETIME"            -%}
-{%- set src_source = "RECORD_SOURCE"          -%}
-
-{{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                 src_source=src_source, source_model=source_model) }}
-```
+    ```jinja
+    {%- set yaml_metadata -%}
+    source_model: 
+      - v_stg_orders_web
+      - v_stg_orders_crm
+      - v_stg_orders_sap
+    src_pk: CUSTOMER_ORDER_HK
+    src_fk: 
+      - CUSTOMER_HK
+      - ORDER_HK
+    src_ldts: LOAD_DATETIME
+    src_source: RECORD_SOURCE
+    {%- endset -%}
+    
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+    {{ dbtvault.link(src_pk=metadata_dict["src_pk"],
+                     src_fk=metadata_dict["src_fk"], 
+                     src_ldts=metadata_dict["src_ldts"],
+                     src_source=metadata_dict["src_source"], 
+                     source_model=metadata_dict["source_model"]) }}
+    ```
 
 See the [Link metadata reference](../metadata.md#links) for more examples.
 

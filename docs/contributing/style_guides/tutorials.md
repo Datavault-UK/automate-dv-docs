@@ -37,7 +37,7 @@ The recommended materialisation for **<type of structure>s** is `<recommended ma
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [<type of structure> macro](../macros.md#<name of macro>).
+Let's look at the metadata we need to provide to the [<type of structure> macro](../../macros/index.md#<name of macro>).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
@@ -74,7 +74,7 @@ When we provide the metadata above, our model should look like the following:
 ```
 
 !!! Note
-    See our [metadata reference](../metadata.md#<type of structure>s) for more detail on how to provide metadata to <type of structure>s.
+    See our [metadata reference](../../metadata.md#<type of structure>s) for more detail on how to provide metadata to <type of structure>s.
 
 ### Running dbt
 

@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 !!! note
     To view documentation for a specific version, please click the 'docs | passing' badges under the specific changelog entry. 
 
-[View Stable Releases](stable.md){: .md-button }
+[View Stable Releases](index.md){: .md-button }
 
 
 ## [v0.7.6-b1] - 2020-06-11
@@ -44,7 +44,7 @@ Docs no longer available
 
 ### Added
 
-- Effectivity Satellites: The new [eff_sat](../macros.md#eff_sat) macro.
+- Effectivity Satellites: The new [eff_sat](../macros/index.md#eff_sat) macro.
 - Limited documentation for Effectivity Satellites
 
 ### Updated

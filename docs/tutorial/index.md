@@ -2,7 +2,7 @@
     This walk-through intends to give you a detailed understanding of the Data Vault 2.0 
     concepts which dbtvault supports, and how to use dbtvault to create a Data Vault 2.0 Data Warehouse.
     If you're looking get started quickly with sample data in the cloud, take a look at 
-    our [worked example](../worked_example/we_worked_example.md).
+    our [worked example](../worked_example/index.md).
 
 In this section we teach you how to use dbtvault, by example, explaining the use of macros and the
 different components of the Data Vault in detail.

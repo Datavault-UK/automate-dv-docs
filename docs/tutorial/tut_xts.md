@@ -48,7 +48,7 @@ The recommended materialisation for **Extended Tracking Satellites** is `increme
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [xts macro](../macros.md#xts).
+Let's look at the metadata we need to provide to the [xts macro](../macros/index.md#xts).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
