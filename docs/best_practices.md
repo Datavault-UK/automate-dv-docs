@@ -30,6 +30,13 @@ the code examples.
 If there is already a source in the raw staging layer, you may keep this or override it using
 the [stage](macros/index.md#stage) macro.
 
+## Column name quoting and escaping
+
+By default, dbtvault automatically quotes columns in all macro code, aside from with derived columns which must be 
+[explicitly configured to be escaped](./macros/stage_macro_configurations.md#escaping-column-names-that-are-not-sql-compliant).
+
+This escaping approach to make it easier to deal with non-compliant and awkward column names in your source data.
+
 ## NULL Handling
 
 The handling of nulls is important in Data Vault 2.0 because - as a general rule -, nulls represent a lack of something,
@@ -131,12 +138,12 @@ they fundamentally break and oppose Data Vault 2.0 standards.
 
 !!! seealso "See Also"
     - [hash](macros/index.md#hash-macro)
-    - [hash_columns](macros/index.md#hash_columns)
+    - [hash_columns](macros/stage_macro_configurations.md#hashed-columns)
  
 ### The drawbacks of using MD5
 
 By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros/index.md#hash-macro)
-and [hash_columns](macros/index.md#hash_columns). If your table contains more than a few billion rows, then there is a chance
+and [hash_columns](macros/stage_macro_configurations.md#hashed-columns). If your table contains more than a few billion rows, then there is a chance
 of a clash: where two different values generate the same hash value
 (see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collision_vulnerabilities)).
 

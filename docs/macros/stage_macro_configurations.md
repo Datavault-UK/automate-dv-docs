@@ -262,6 +262,82 @@ SELECT CONCAT_WS('||', CUSTOMER_ID, CUSTOMER_NAME, 'DEV') AS CUSTOMER_NK
 FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
+### Escaping column names that are not SQL compliant
+
+By default, source column names in dbtvault are enclosed by escape characters during compilation. 
+For derived columns however the source column names are **not** escaped by default. 
+This is because there is too wide a range of potential inputs to parse in the source column detail, and it would simply 
+be enclosed as is with escape characters.
+
+To override this behaviour a mapping of the source column name and an escape flag must be provided.
+Alternatively, for computed derived columns, escape characters can be explicitly coded within the function itself.
+
+!!! note 
+    The derived column name (used as a column alias) **is** enclosed by escape characters by default.
+
+Check out the following metadata examples:
+
+=== "Snowflake"
+
+    ```yaml
+    source_model: "MY_STAGE"
+    derived_columns:
+      EFFECTIVE_FROM:
+        source_column: "BOOKING DATE"
+        escape: true
+      BOOKING_DETAILS:
+        source_column:
+          - "BOOKING_DATE"
+          - "!STG_BOOKING"
+          - "CUSTOMER_NAME"
+        escape: true
+      BOOKING_FLAG: "NOT \"BOOKING COMPLETED\""
+      CREATED_DATE: "TO_VARCHAR(\"CREATED DATE\"::date, 'DD-MM-YYYY')"
+    ```
+
+    Generated SQL:
+
+    ```sql
+    ...
+    "BOOKING DATE" AS "EFFECTIVE_FROM",
+    CONCAT_WS('||', "BOOKING_DATE", 'STG_BOOKING', "CUSTOMER_ID", "CUSTOMER_NAME") AS "BOOKING_DETAILS",
+    NOT "BOOKING COMPLETED" AS "BOOKING_FLAG",
+    TO_VARCHAR("CREATED DATE"::date, 'DD-MM-YYYY') AS "CREATED_DATE",
+    ...
+    ```
+
+=== "Google BigQuery"
+
+    ```yaml
+    source_model: "MY_STAGE"
+    derived_columns:
+      EFFECTIVE_FROM:
+        source_column: "BOOKING DATE"
+        escape: true
+      BOOKING_DETAILS:
+        source_column:
+          - "BOOKING_DATE"
+          - "!STG_BOOKING"
+          - "CUSTOMER_NAME"
+        escape: true
+      BOOKING_FLAG: "NOT `BOOKING COMPLETED`"
+      CREATED_DATE: "CAST(CAST(`CREATED DATE` AS DATE) AS STRING FORMAT 'DD-MM-YYYY')"
+    ```
+
+    Generated SQL:
+
+    ```sql
+    ...
+    `BOOKING DATE` AS `EFFECTIVE_FROM`,
+    CONCAT(`BOOKING_DATE`, '||', 'STG_BOOKING', '||', `CUSTOMER_ID`, '||', `CUSTOMER_NAME`) AS `BOOKING_DETAILS`,
+    NOT `BOOKING COMPLETED` AS `BOOKING_FLAG`,
+    CAST(CAST(`CREATED DATE` AS DATE) AS STRING FORMAT 'DD-MM-YYYY') AS `CREATED_DATE`,
+    ...
+    ```
+
+!!! note 
+    Please ensure that your functions must have valid SQL syntax on your platform, for use in this context.
+
 ## Null Columns
 
 This stage configuration provides the user with the means to define required and optional Null keys according to business
