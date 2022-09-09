@@ -700,6 +700,33 @@ example provided to help better convey the difference.
                         src_source=metadata_dict["src_source"],
                         source_model=metadata_dict["source_model"]) }}
         ```
+    === "Exlude Payload Columns"
+
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: v_stg_orders
+        src_pk: CUSTOMER_HK
+        src_hashdiff: CUSTOMER_HASHDIFF
+        src_payload:
+            exclude_columns: true
+            columns:
+                - NAME
+                - PHONE
+        src_eff: EFFECTIVE_FROM
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+        {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+                        src_hashdiff=metadata_dict["src_hashdiff"],
+                        src_payload=metadata_dict["src_payload"],
+                        src_eff=metadata_dict["src_eff"],
+                        src_ldts=metadata_dict["src_ldts"],
+                        src_source=metadata_dict["src_source"],
+                        source_model=metadata_dict["source_model"]) }}
+        ```
 
 === "Per-Model - Variables"
 
@@ -727,6 +754,23 @@ example provided to help better convey the difference.
         {%- set src_pk = "CUSTOMER_HK" -%}
         {%- set src_hashdiff = {"source_column": "CUSTOMER_HASHDIFF", "alias": "HASHDIFF"} -%}
         {%- set src_payload = ["NAME", "ADDRESS", "PHONE", "ACCBAL", "MKTSEGMENT", "COMMENT"] -%}
+        {%- set src_eff = "EFFECTIVE_FROM" -%}
+        {%- set src_ldts = "LOAD_DATETIME" -%}
+        {%- set src_source = "RECORD_SOURCE" -%}
+        
+        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+                        src_payload=src_payload, src_eff=src_eff,
+                        src_ldts=src_ldts, src_source=src_source, 
+                        source_model=source_model) }}
+        ```
+
+    === "Exlude Payload Columns"
+
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
+        {%- set src_hashdiff = "CUSTOMER_HASHDIFF" -%}
+        {%- set src_payload = {"exclude_columns": "true", "columns": ["NAME", "PHONE"]} -%}
         {%- set src_eff = "EFFECTIVE_FROM" -%}
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
