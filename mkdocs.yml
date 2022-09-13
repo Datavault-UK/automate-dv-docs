@@ -58,6 +58,7 @@ nav:
       - Stage Macro Configurations: 'macros/stage_macro_configurations.md'
   - Materialisations: 'materialisations.md'
   - Best Practices: 'best_practices.md'
+  - Migration Guides: 'migration_guides.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
   - Versions: 'versions.md'
