@@ -9,13 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 
-## [v0.9.0] - 2022-10-x
+## [v0.9.0] - 2022-09-13
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.0)](https://dbtvault.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
 
 ### New Platform Support  
 
 #### Databricks
-
 :sparkles: Staging
 
 :sparkles: Hubs 
@@ -24,23 +23,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 :sparkles: Satellites
 
-#### Postgres
-
+#### Postgres**
 :sparkles: Staging
 
-:sparkles: Hubs
+:sparkles: Hubs 
 
 :sparkles: Links
 
 :sparkles: Satellites
 
+!!! note "**"
+    There are currently limitations on Postgres. [Click here for more details](https://dbtvault.readthedocs.io/en/latest/macros/#limitations)
+
 ### New Features
 
 Introducing:
 
-:star2: Payload column exclusion: Satellite's payload can now be configured to select all columns, except a user-defined list using an `exclude` configuration ([#128](https://github.com/Datavault-UK/dbtvault/issues/128)) 
+:star2: Payload column exclusion: Satellite's payload can now be configured to select all columns, except a user-defined list using an `exclude` configuration (https://github.com/Datavault-UK/dbtvault/issues/128) 
 
-:star2: Null Business Key Handling: Now users can provide a configuration in their staging tables to handle NULL keys elegantly, according to business needs ([#133](https://github.com/Datavault-UK/dbtvault/issues/133))
+:star2: Null Business Key Handling: Now users can provide a configuration in their staging tables to handle NULL keys elegantly, according to business needs (https://github.com/Datavault-UK/dbtvault/issues/133)
 
 :star2: Extra Columns Parameter: All table macros now provide a `src_extra_columns` parameter which allows users to add extra columns outside the standard template for business needs. 
 
@@ -48,19 +49,32 @@ Introducing:
 
 ### Fixes
 
-:white_check_mark: Fixed an edge case for `vault_insert_by_period` when the staging table and the target table were in different databases ([#121](https://github.com/Datavault-UK/dbtvault/issues/121))
+:white_check_mark: Fixed an edge case for `vault_insert_by_period` when the staging table and the target table were in different databases (https://github.com/Datavault-UK/dbtvault/issues/121)
 
-:white_check_mark: Removed the uppercase conversion in the staging macro ([#122](https://github.com/Datavault-UK/dbtvault/issues/122), [#134](https://github.com/Datavault-UK/dbtvault/issues/134))
+:white_check_mark: Removed the uppercase conversion in the staging macro (https://github.com/Datavault-UK/dbtvault/issues/122, https://github.com/Datavault-UK/dbtvault/issues/134)
 
-:white_check_mark: Fixed an issue where duplicate records (same hashdiff) would sometimes be loaded into a Satellite ([#126](https://github.com/Datavault-UK/dbtvault/issues/126))
+:white_check_mark: Fixed an issue where duplicate records (same hashdiff) would sometimes be loaded into a Satellite (https://github.com/Datavault-UK/dbtvault/issues/126)
 
-:white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping can now be configured on a case-by-case basis for each column to escape when they are reserved words etc. ([#114](https://github.com/Datavault-UK/dbtvault/issues/114), [#141](https://github.com/Datavault-UK/dbtvault/issues/141))
+:white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping can now be configured on a case-by-case basis for each column to escape when they are reserved words etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Datavault-UK/dbtvault/issues/141)
+
+### Breaking changes
+
+- [Read our 0.83 to 0.9.0 migration guide](https://dbtvault.readthedocs.io/en/latest/migration_guides/#migrating-from-083-to-090)
+
+### Behind the scenes
+
+- Re-factor PIT and Bridge macros to ensure better maintainability and readability
 
 ### Docs
 
-- Moved stage configuration details to a [new page](../macros/stage_macro_configurations.md)
+- Moved stage configuration details to a [new page](https://dbtvault.readthedocs.io/en/latest/macros/stage_macro_configurations)
 - Updated packages behind the scenes for security and bug fixes
 - Created landing pages for sections, which should make navigation easier, e.g. getting started is now the home page when clicking 'Tutorials' in the menu, instead of having to click twice.
+
+### Thanks
+
+[View on GitHub](https://github.com/Datavault-UK/dbtvault/releases/tag/v0.9.0])
+
 
 ## [v0.8.3] - 2022-05-10
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
