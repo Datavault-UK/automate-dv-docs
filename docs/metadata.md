@@ -4,7 +4,7 @@ macros**.
 For all other metadata and configurations, please refer to
 the [dbt configurations reference](https://docs.getdbt.com/reference/dbt_project.yml).
 
-For further details about how to use the macros in this section, see [table templates](macros.md#table-templates).
+For further details about how to use the macros in this section, see [table templates](macros/index.md#table-templates).
 
 ### Approaches
 
@@ -13,10 +13,10 @@ down to user and organisation preference.
 
 !!! note
     The macros **do not care** how the metadata parameters get provided, as long as they are of the correct type.
-    Parameter data types definitions are available on the [macros](macros.md) page. The approaches below are simply our
+    Parameter data types definitions are available on the [macros](macros/index.md) page. The approaches below are simply our
     recommendations, which we hope provide a good balance of manageability and readability.
 
-**All approaches for the same structure will produce the same structure, the only difference is how the metadata is provided.**
+**All approaches for the same structure will produce the same result/output, the only difference is how the metadata is provided.**
 
 It is worth noting that with larger projects, metadata management gets increasingly harder and can become unwieldy.
 See [the problem with metadata](#the-problem-with-metadata) for a more detailed discussion.
@@ -46,8 +46,8 @@ You may also provide metadata on a per-model basis. This is useful if you have a
 
 #### Per-Model - YAML strings
 
-If you want to provide metadata inside the model itself, but find yourself disliking the format for larger collections
-of metadata or certain data types (e.g. dict literals), then providing a YAML String inside a block
+If you want to provide metadata inside the model itself, but find yourself disliking the variables format for larger collections
+of metadata or certain data types (e.g. dict literals), then providing a YAML string inside a block
 `set` assignment is a good alternative to using multiple individual `set` assignments. This approach takes advantage of
 the `fromyaml()` built-in jinja function provided by dbt, which is
 documented [here](https://docs.getdbt.com/reference/dbt-jinja-functions/fromyaml/).
@@ -106,6 +106,12 @@ example provided to help better convey the difference.
     derived_columns:
       RECORD_SOURCE: "!STG_BOOKING"
       EFFECTIVE_FROM: BOOKING_DATE
+    null_columns:
+      required: 
+        - CUSTOMER_ID
+      optional:
+        - CUSTOMER_REF
+        - NATIONALITY 
     ranked_columns:
       DBTVAULT_RANK:
         partition_by: CUSTOMER_ID
@@ -116,25 +122,27 @@ example provided to help better convey the difference.
 
     {% set source_model = metadata_dict["source_model"] %}
     {% set derived_columns = metadata_dict["derived_columns"] %}
+    {% set null_columns = metadata_dict["null_columns"] %}
     {% set hashed_columns = metadata_dict["hashed_columns"] %}
     {% set ranked_columns = metadata_dict["ranked_columns"] %}
     
     {{ dbtvault.stage(include_source_columns=true,
                       source_model=source_model,
                       derived_columns=derived_columns,
+                      null_columns=null_columns,
                       hashed_columns=hashed_columns,
                       ranked_columns=ranked_columns) }}
     ```
 
     !!! note
         '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
-        [Read More](macros.md#constants-derived-columns)
+        [Read More](macros/index.md#constants-derived-columns)
 
 ### Staging
 
 #### Parameters
 
-[stage macro parameters](macros.md#stage)
+[stage macro parameters](macros/index.md#stage)
 
 #### Metadata
 
@@ -162,6 +170,12 @@ example provided to help better convey the difference.
         derived_columns:
           RECORD_SOURCE: "!STG_BOOKING"
           EFFECTIVE_FROM: BOOKING_DATE
+        null_columns:
+          required: 
+            - CUSTOMER_ID
+          optional:
+            - CUSTOMER_REF
+            - NATIONALITY 
         ranked_columns:
           DBTVAULT_RANK:
             partition_by: CUSTOMER_ID
@@ -172,12 +186,14 @@ example provided to help better convey the difference.
     
         {% set source_model = metadata_dict["source_model"] %}
         {% set derived_columns = metadata_dict["derived_columns"] %}
+        {% set null_columns = metadata_dict["null_columns"] %}
         {% set hashed_columns = metadata_dict["hashed_columns"] %}
         {% set ranked_columns = metadata_dict["ranked_columns"] %}
         
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=derived_columns,
+                          null_columns=null_columns,
                           hashed_columns=hashed_columns,
                           ranked_columns=ranked_columns) }}
         ```
@@ -196,6 +212,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=none,
                           ranked_columns=none) }}
         ```
@@ -215,6 +232,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=none,
                           ranked_columns=none) }}
         ```
@@ -249,6 +267,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=hashed_columns,
                           ranked_columns=none) }}
         ```
@@ -271,6 +290,33 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=derived_columns,
+                          null_columns=none,
+                          hashed_columns=none,
+                          ranked_columns=none) }}
+        ```
+
+    === "Only null key columns"
+
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: raw_source
+        null_columns:
+          required: 
+            - CUSTOMER_ID
+          optional:
+            - CUSTOMER_REF
+            - NATIONALITY 
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+        
+        {% set source_model = metadata_dict["source_model"] %}
+        {% set null_columns = metadata_dict["null_columns"] %}
+        
+        {{ dbtvault.stage(include_source_columns=false,
+                          source_model=source_model,
+                          derived_columns=none,
+                          null_columns=null_columns,
                           hashed_columns=none,
                           ranked_columns=none) }}
         ```
@@ -294,6 +340,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=none,
                           ranked_columns=ranked_columns) }}
         ```
@@ -326,6 +373,7 @@ example provided to help better convey the difference.
         {{ dbtvault.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
+                          null_columns=none,
                           hashed_columns=hashed_columns,
                           ranked_columns=none) }}
         ```
@@ -334,7 +382,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[hub macro parameters](macros.md#hub)
+[hub macro parameters](macros/index.md#hub)
 
 #### Metadata
 
@@ -449,7 +497,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[link macro parameters](macros.md#link)
+[link macro parameters](macros/index.md#link)
 
 #### Metadata
 
@@ -461,7 +509,7 @@ example provided to help better convey the difference.
         source_model: v_stg_orders
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-          - CUSTOMER_ID
+          - CUSTOMER_HK
           - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
@@ -484,7 +532,7 @@ example provided to help better convey the difference.
           - v_stg_transactions
         src_pk: LINK_CUSTOMER_NATION_HK
         src_fk: 
-          - CUSTOMER_ID
+          - CUSTOMER_HK
           - NATION_HK
         src_ldts: LOAD_DATETIME
         src_source: RECORD_SOURCE
@@ -531,7 +579,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[t_link macro parameters](macros.md#t_link)
+[t_link macro parameters](macros/index.md#t_link)
 
 #### Metadata
 
@@ -585,7 +633,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[sat macro parameters](macros.md#sat)
+[sat macro parameters](macros/index.md#sat)
 
 #### Metadata
 
@@ -652,6 +700,33 @@ example provided to help better convey the difference.
                         src_source=metadata_dict["src_source"],
                         source_model=metadata_dict["source_model"]) }}
         ```
+    === "Exlude Payload Columns"
+
+        ```jinja
+        {%- set yaml_metadata -%}
+        source_model: v_stg_orders
+        src_pk: CUSTOMER_HK
+        src_hashdiff: CUSTOMER_HASHDIFF
+        src_payload:
+            exclude_columns: true
+            columns:
+                - NAME
+                - PHONE
+        src_eff: EFFECTIVE_FROM
+        src_ldts: LOAD_DATETIME
+        src_source: RECORD_SOURCE
+        {%- endset -%}
+        
+        {% set metadata_dict = fromyaml(yaml_metadata) %}
+    
+        {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+                        src_hashdiff=metadata_dict["src_hashdiff"],
+                        src_payload=metadata_dict["src_payload"],
+                        src_eff=metadata_dict["src_eff"],
+                        src_ldts=metadata_dict["src_ldts"],
+                        src_source=metadata_dict["src_source"],
+                        source_model=metadata_dict["source_model"]) }}
+        ```
 
 === "Per-Model - Variables"
 
@@ -689,6 +764,23 @@ example provided to help better convey the difference.
                         source_model=source_model) }}
         ```
 
+    === "Exlude Payload Columns"
+
+        ```jinja
+        {%- set source_model = "v_stg_orders" -%}
+        {%- set src_pk = "CUSTOMER_HK" -%}
+        {%- set src_hashdiff = "CUSTOMER_HASHDIFF" -%}
+        {%- set src_payload = {"exclude_columns": "true", "columns": ["NAME", "PHONE"]} -%}
+        {%- set src_eff = "EFFECTIVE_FROM" -%}
+        {%- set src_ldts = "LOAD_DATETIME" -%}
+        {%- set src_source = "RECORD_SOURCE" -%}
+        
+        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+                        src_payload=src_payload, src_eff=src_eff,
+                        src_ldts=src_ldts, src_source=src_source, 
+                        source_model=source_model) }}
+        ```
+
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 [Read more](best_practices.md#hashdiff-aliasing)
 
@@ -696,7 +788,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Parameters
 
-[eff_sat macro parameters](macros.md#eff_sat)
+[eff_sat macro parameters](macros/index.md#eff_sat)
 
 #### Metadata
 
@@ -752,7 +844,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Parameters
 
-[ma_sat macro parameters](macros.md#ma_sat)
+[ma_sat macro parameters](macros/index.md#ma_sat)
 
 #### Metadata
 
@@ -807,7 +899,7 @@ ___
 
 #### Parameters
 
-[xts macro parameters](macros.md#xts)
+[xts macro parameters](macros/index.md#xts)
 
 #### Metadata
 
@@ -961,7 +1053,7 @@ ___
 
 #### Parameters
 
-[pit macro parameters](macros.md#pit)
+[pit macro parameters](macros/index.md#pit)
 
 #### Metadata
 
@@ -1011,7 +1103,7 @@ ___
 
 #### Parameters
 
-[bridge macro parameters](macros.md#bridge)
+[bridge macro parameters](macros/index.md#bridge)
 
 #### Metadata
 

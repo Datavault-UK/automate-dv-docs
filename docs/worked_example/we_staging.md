@@ -61,7 +61,7 @@ The tables in the raw staging layer need additional columns to prepare the data 
 Specifically, we need to add primary key hashes, hashdiffs, and any implied fixed-value columns 
 (see the diagram at the top of the page).
 
-We have created a helper macro for dbtvault, to make this step easier; the [stage](../macros.md#stage) macro, which 
+We have created a helper macro for dbtvault, to make this step easier; the [stage](../macros/index.md#stage) macro, which 
 generates derived and hashed columns from a given raw staging table.
 
 ### v_stg_orders and v_stg_inventory
@@ -85,6 +85,7 @@ from the source table.
 {{ dbtvault.stage(include_source_columns=true,
                   source_model=source_model,
                   derived_columns=derived_columns,
+                  null_columns=null_columns,
                   hashed_columns=hashed_columns,
                   ranked_columns=none) }}
 ```
@@ -119,6 +120,7 @@ Let's take a look at some metadata supplied to the stage macro for the `v_stg_tr
     {{ dbtvault.stage(include_source_columns=true,
                       source_model=source_model,
                       derived_columns=derived_columns,
+                      null_columns=none,
                       hashed_columns=hashed_columns,
                       ranked_columns=none) }}
     ```

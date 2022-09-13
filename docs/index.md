@@ -19,7 +19,7 @@ Our package runs inside the dbt environment, so you can use dbt to run other par
 dbtvault package for the Data Vault 2.0 specific steps.
 
 !!! tip "Join our Slack community!"
-    [Join now](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA){: .md-button }
+    [Join now](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA){ .md-button .md-button--primary }
 
 ## What is Data Vault 2.0?
 Data Vault 2.0 is an Agile method that can be used to deliver a highly scalable enterprise Data Warehouse. 
@@ -84,7 +84,7 @@ information:
 
 We keep an up-to-date log of past and planned changes:
 
-- [Changelog](changelog/stable.md)
+- [Changelog](changelog/index.md)
 - [Roadmap](roadmap.md)
 
 --8<-- "includes/abbreviations.md"

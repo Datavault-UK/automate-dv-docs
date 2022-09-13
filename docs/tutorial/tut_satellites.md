@@ -69,7 +69,7 @@ The recommended materialisation for **Satellites** is `incremental`, as we load 
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [satellite macro](../macros.md#sat).
+Let's look at the metadata we need to provide to the [satellite macro](../macros/index.md#sat).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 

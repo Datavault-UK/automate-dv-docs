@@ -1,28 +1,29 @@
 ![alt text](../assets/images/staging.png "Staging from a raw table to the raw vault")
 
-### Pre-conditions
+### Watch the video
+    
+Prefer a video? This video has a great overview of the content on this page.
+    
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7yyrARKipeA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-1. The dbtvault package assumes you've already loaded a Snowflake database staging table with raw data 
-from a source system or feed; the 'raw staging layer'.
+### Assumptions
+
+1. The dbtvault package assumes you've already loaded a table with raw data 
+from a source system or feed; this is referred to as the 'raw staging layer' or 'landing zone'.
 
 2. All records in a single load must be for the same load datetime. This restriction is not applicable to Hubs and Links.
    We will be removing this restriction for other structures in the future. 
 
-### Let's Begin
+### Getting started
 
 The raw staging table needs to be prepared with additional columns so that we may load our raw vault.
 Specifically, we need to add hash keys, hashdiffs, and any implied fixed-value columns (see the above diagram).
 
 We also need to ensure column names align with target Hub or Link table column names.
 
-!!! info
-    Hash keys are optional in Snowflake. Natural/business keys alone can be used in place of hashing. 
-    
-    We've implemented hashing as the only option for now, though a non-hashed version will be added in future releases, checkout our [roadmap](../roadmap.md).
-
 ### Creating staging models
 
-To create a stage model, we simply copy and paste the above template into a model named after the staging table/view we
+To create a stage model, we simply copy and paste the below template into a model named after the staging table/view we
 are creating. dbtvault will generate a stage using parameters provided in the next steps.
 
 === "v_stg_orders.sql"
@@ -31,6 +32,7 @@ are creating. dbtvault will generate a stage using parameters provided in the ne
     {{ dbtvault.stage(include_source_columns=true,
                       source_model=source_model,
                       derived_columns=derived_columns,
+                      null_columns=null_columns,
                       hashed_columns=hashed_columns,
                       ranked_columns=ranked_columns) }}
     ```
@@ -43,7 +45,7 @@ can increase costs significantly for large amounts of data.
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [stage](../macros.md#stage) macro.
+Let's look at the metadata we need to provide to the [stage](../macros/index.md#stage) macro.
 
 ##### Source model
 
@@ -52,7 +54,7 @@ the raw stage via dbt models if you don't need to, and can simply reference tabl
 [dbt source](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources).
 
 The model provided in the 'Final model' section below, shows the use of the 'source style' 
-[source_model syntax](../macros.md#source_model-syntax).
+[source_model syntax](../macros/index.md#source_model-syntax).
 
 ##### Derived columns
 
@@ -65,7 +67,7 @@ The model provided in the 'Final model' section below, shows the use of the 'sou
 | END_DATE       | TO_DATE('9999-12-31')   |
 
 !!! Note "What is the '!'?"
-    This is some syntactic sugar provided by dbtvault to create constant values. [Read More](../macros.md#constants-derived-columns)
+    This is some syntactic sugar provided by dbtvault to create constant values. [Read More](../macros/index.md#constants-derived-columns)
     
 
 ##### Hashed columns
@@ -113,6 +115,7 @@ hashed_columns:
 {{ dbtvault.stage(include_source_columns=true,
                   source_model=metadata_dict['source_model'],
                   derived_columns=metadata_dict['derived_columns'],
+                  null_columns=none,
                   hashed_columns=metadata_dict['hashed_columns'],
                   ranked_columns=none) }}
 ```
@@ -133,7 +136,7 @@ In summary this model will:
 - Generate `START_DATE` and `END_DATE` columns for use in the [effectivity satellites](tut_eff_satellites.md) later on.
 
 !!! Note "Using the staging macro"
-    Take a look at the [stage section of the macro documentation](../macros.md#stage) for a more in-depth look at what you can do with the stage macro
+    Take a look at the [stage section of the macro documentation](../macros/index.md#stage) for a more in-depth look at what you can do with the stage macro
 
 ### Running dbt
 

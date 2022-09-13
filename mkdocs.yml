@@ -5,33 +5,36 @@ repo_name: 'Datavault-UK/dbtvault'
 site_url: 'https://dbtvault.readthedocs.io/'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
 dev_addr: 127.0.0.1:8001
+
 theme:
-    name: 'material'
-    custom_dir: 'overrides'
-    show_sidebar: true
-    logo: 'assets/images/logo.png'
-    banner: 'assets/images/docs-banner.png'
-    favicon: 'assets/images/favicon.ico'
-    palette:
-      - scheme: material
-        primary: 'black'
-        accent: 'indigo'
-        toggle:
-          icon: material/toggle-switch-off-outline
-          name: Switch to dark mode
-      - scheme: slate
-        primary: 'black'
-        accent: 'indigo'
-        toggle:
-          icon: material/toggle-switch
-          name: Switch to light mode
-    highlightjs: true
-    features:
-      - navigation.top
+  name: 'material'
+  custom_dir: 'overrides'
+  show_sidebar: true
+  logo: 'assets/images/logo.png'
+  banner: 'assets/images/docs-banner.png'
+  favicon: 'assets/images/favicon.ico'
+  palette:
+    - scheme: material
+      primary: 'black'
+      accent: 'indigo'
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: 'black'
+      accent: 'indigo'
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  highlightjs: true
+  features:
+    - navigation.top
+    - navigation.indexes
+
 nav:
   - Home: 'index.md'
   - Tutorials:
-      - Getting Started: 'tutorial/tut_getting_started.md'
+      - Getting Started: 'tutorial/index.md'
       - Staging: 'tutorial/tut_staging.md'
       - Hubs: 'tutorial/tut_hubs.md'
       - Links: 'tutorial/tut_links.md'
@@ -44,25 +47,28 @@ nav:
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
       - Bridge Tables: 'tutorial/tut_bridges.md'
   - Worked example:
-      - Getting Started: 'worked_example/we_worked_example.md'
+      - Getting Started: 'worked_example/index.md'
       - Project setup: 'worked_example/we_setup.md'
       - Profiling TPC-H: 'worked_example/we_tpch_profile.md'
       - Creating the stage layers: 'worked_example/we_staging.md'
       - Loading the vault: 'worked_example/we_loading.md'
   - Metadata Reference: 'metadata.md'
-  - Macros: 'macros.md'
+  - Macros:
+      - Macros: 'macros/index.md'
+      - Stage Macro Configurations: 'macros/stage_macro_configurations.md'
   - Materialisations: 'materialisations.md'
   - Best Practices: 'best_practices.md'
+  - Migration Guides: 'migration_guides.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
   - Versions: 'versions.md'
   - Changelog:
-      - Stable Releases: 'changelog/stable.md'
+      - Stable Releases: 'changelog/index.md'
       - Beta Releases: 'changelog/beta.md'
   - Contributing:
-    - Getting Started: 'contributing.md'
-    - Style Guides:
-        - Tutorials: 'style_guides/tutorials.md'
+      - Getting Started: 'contributing/index.md'
+      - Style Guides:
+          - Tutorials: 'contributing/style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
   - Find Us:
       - GitHub: 'https://github.com/Datavault-UK/dbtvault'
@@ -90,10 +96,13 @@ extra:
 
 markdown_extensions:
   - admonition
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences
   - abbr
+  - md_in_html
   - pymdownx.snippets
+  - pymdownx.details
   - pymdownx.highlight:
       linenums: true
   - pymdownx.magiclink:
@@ -115,5 +124,6 @@ plugins:
 extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
+  - 'stylesheets/icons.css'
 
 copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2022 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
