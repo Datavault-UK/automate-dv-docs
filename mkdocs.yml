@@ -125,5 +125,9 @@ extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
   - 'stylesheets/icons.css'
+  - 'assets/versions/versions.css'
+
+extra_javascript:
+  - 'assets/versions/versions.js'
 
 copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2022 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
