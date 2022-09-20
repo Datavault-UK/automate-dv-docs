@@ -1,7 +1,7 @@
 # Stage Macro configurations
 
-The stage macro provides a variety of configurations to allow users to generate new columns using only metadata, 
-and columns which exist in the source data.
+The stage macro provides a variety of configurations to allow users to generate new columns using metadata about 
+columns which exist in the source data.
 
 These new columns can include but are not limited to:
 
@@ -23,7 +23,7 @@ These new columns can include but are not limited to:
 3. [Hashed Columns](#hashed-columns)
 4. [Ranked Columns](#ranked-columns)
 
-Each of the above are described in more detail in the remainder of this section, use the links above for convenience.
+Each of the above are described in more detail below; use the links above for convenience.
 
 ## Column definition scoping
 
@@ -36,15 +36,15 @@ internal code. The diagram above describes this hierarchy and inheritance. In en
 
 - Source columns are available to all configurations if `include_source_columns` is set to true, which is the default.
 - Derived columns have access to all source columns.
-- Null columns have access to all derived columns.
-- Hashed columns have access to all Derived columns and all null columns
-- Ranked columns have access to all derived, null and hashed columns
+- Null columns have access to all derived columns and source columns.
+- Hashed columns have access to all derived columns, source columns and null columns
+- Ranked columns have access to all source, null, derived, and hashed columns
 
 The above rules open up a number of possibilities:
 
 1. Hashed column configurations may refer to columns which have been newly created in the derived
 column configuration.
-2. Derived columns are generated in addition to the source column it is derived from, so you can retain the original value for audit purposes.
+2. Derived columns are generated in addition to the source column in its derived form, so you can retain the original value for audit purposes.
 
 !!! note
     An exception to #2 arises when [overriding source columns](#overriding-source-column-names)
@@ -98,6 +98,10 @@ of columns which exist in the source model for the stage model.
 
 This section describes some specific use cases for the derived columns configuration, with examples.
 
+!!! tip
+    You should of course be careful to avoid creating soft rules or business rules in staging. Derived columns
+    are intended for creating minimal hard rules. 
+
 ### Basic Usage
 
 ```sql
@@ -134,11 +138,9 @@ derived_columns:
 The above snippet, which includes a `derived_columns` configuration, will re-format the date in the `CUSTOMER_DOB`
 column, and alias it to `CUSTOMER_DOB`, effectively replacing the value present in that column in this staging layer.
 
-There should not be a common need for this functionality, and it is advisable to keep the old column value around for
-auditability purposes, however this could be useful in some scenarios.
+There should not be a frequent need for this functionality, and it is advisable to keep the old column value around for
+audit purposes, however this could be useful in specific situations.
 
-Generates SQL to create columns based off of the values of other columns, provided as a mapping from column name to
-column value.
 
 ### Defining new columns with functions
 
@@ -231,6 +233,7 @@ And the data would look like:
 | .               | RAW_CUSTOMER  | .              |
 | 02-01-1986      | RAW_CUSTOMER  | 07-03-2021     |
 
+
 ### Defining Composite columns
 
 ```yaml hl_lines="3 4 5 6"
@@ -251,8 +254,12 @@ Given the following values for the columns in the above example:
 - `CUSTOMER_ID` = 0011
 - `CUSTOMER_NAME` = Alex
 
-The new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. The values get joined in the order provided, using a
-double pipe `||`. Currently, this `||` join string has been hard-coded, but in future it will be user-configurable.
+The new column, `CUSTOMER_NK`, would contain `0011||Alex||DEV`. 
+
+The values get joined in the order provided, using a double pipe `||`. 
+
+!!! tip
+    [Configure the join string value](./index.md#global-variables)
 
 The values provided in the list can use any of the previously described syntax (including functions and constants) to
 generate new values, as the concatenation happens in pure SQL, as follows:
