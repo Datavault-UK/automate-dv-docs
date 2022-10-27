@@ -74,7 +74,6 @@ dbtvault.
       escape_char_right: '"'
       null_key_required: '-1'
       null_key_optional: '-2'
-      enable_ghost_records: false
     ```
 
 #### hash
@@ -119,10 +118,6 @@ By default, this is '-1'.
 Configure the string value to use for replacing `NULL` values found in optional keys. By default, this is '-2'.
 
 [Read more](../best_practices.md#null-handling)
-
-#### enable_ghost_records
-
-Configure satellites to load a ghost record on table creation and tables where a ghost records does not already exist.
 
 #### escape_char_left/escape_char_right
 
@@ -1522,26 +1517,10 @@ Generates SQL to build a Satellite table using the provided parameters.
             WHERE CUSTOMER_HK IS NOT NULL
         ),
 
-        ghost AS (
-            SELECT
-                NULL AS CUSTOMER_NAME,
-                TO_DATE('1900-01-01') AS CUSTOMER_DOB,
-                NULL AS CUSTOMER_PHONE,
-                TO_DATE('1900-01-01') AS LOAD_DATE,
-                CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS SOURCE,
-                TO_DATE('1900-01-01') AS EFFECTIVE_FROM,
-                CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
-                CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
-        ),
-
-	    records_to_insert AS (
-            SELECT
-                g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_DOB, g.CUSTOMER_PHONE, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
-            FROM ghost AS g
-            UNION
+        records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
-	    )
+        )
 
         SELECT * FROM records_to_insert
         ```
@@ -1572,31 +1551,13 @@ Generates SQL to build a Satellite table using the provided parameters.
             QUALIFY rank = 1
         ),
         
-        ghost AS (
-            SELECT
-                NULL AS CUSTOMER_NAME,
-                TO_DATE('1900-01-01') AS CUSTOMER_DOB,
-                NULL AS CUSTOMER_PHONE,
-                TO_DATE('1900-01-01') AS LOAD_DATE,
-                CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS SOURCE,
-                TO_DATE('1900-01-01') AS EFFECTIVE_FROM,
-                CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
-                CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
-        ),
-
-    	records_to_insert AS (
-	        SELECT
-            g.CUSTOMER_hK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_DOB, g.CUSTOMER_PHONE, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
-            FROM ghost AS g
-            WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT_DEV.TEST_SIOBHAN_STRANGE.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
-            UNION
+        records_to_insert AS (
             SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
             LEFT JOIN latest_records
                 ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
             WHERE latest_records.HASHDIFF != e.HASHDIFF
                 OR latest_records.HASHDIFF IS NULL
-            
         )
         
         SELECT * FROM records_to_insert
