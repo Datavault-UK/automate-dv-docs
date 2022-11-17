@@ -1685,6 +1685,41 @@ Generates SQL to build a Satellite table using the provided parameters.
 If you have multiple Satellites using a single stage as its data source, then you will need to
 use [hashdiff aliasing](../best_practices.md#hashdiff-aliasing)
 
+#### Excluding columns from the payload
+
+An `exclude_columns` flag can be provided for payload columns which will invert the selection of columns provided in the list of columns.
+
+This is extremely useful when a payload is composed of many columns, and you do not wish to individually provide all the columns.
+
+The snippet below demonstrates this.
+
+```yaml
+{%- set yaml_metadata -%}
+source_model: v_stg_orders
+src_pk: CUSTOMER_HK
+src_hashdiff: CUSTOMER_HASHDIFF
+src_payload:
+  exclude_columns: true
+  columns:
+      - NAME
+      - PHONE
+src_eff: EFFECTIVE_FROM
+src_ldts: LOAD_DATETIME
+src_source: RECORD_SOURCE
+{%- endset -%}
+
+{% set metadata_dict = fromyaml(yaml_metadata) %}
+
+{{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+                src_hashdiff=metadata_dict["src_hashdiff"],
+                src_payload=metadata_dict["src_payload"],
+                src_eff=metadata_dict["src_eff"],
+                src_ldts=metadata_dict["src_ldts"],
+                src_source=metadata_dict["src_source"],
+                source_model=metadata_dict["source_model"]) }}
+
+```
+
 ___
 
 ### eff_sat
