@@ -1691,8 +1691,6 @@ An `exclude_columns` flag can be provided for payload columns which will invert 
 
 This is extremely useful when a payload is composed of many columns, and you do not wish to individually provide all the columns.
 
-The snippet below demonstrates this.
-
 ```yaml
 {%- set yaml_metadata -%}
 source_model: v_stg_orders
@@ -1701,8 +1699,8 @@ src_hashdiff: CUSTOMER_HASHDIFF
 src_payload:
   exclude_columns: true
   columns:
-      - NAME
-      - PHONE
+    - NAME
+    - PHONE
 src_eff: EFFECTIVE_FROM
 src_ldts: LOAD_DATETIME
 src_source: RECORD_SOURCE
@@ -1719,6 +1717,11 @@ src_source: RECORD_SOURCE
                 source_model=metadata_dict["source_model"]) }}
 
 ```
+
+Using the configuration in the above snippet, if we had the following columns: `NAME, PHONE, ADDRESS_LINE_1, EMAIL_ADDRESS, DOB,...`
+
+The satellite payload would be created with the following columns: `ADDRESS_LINE_1, EMAIL_ADDRESS, DOB,...`
+
 
 ___
 
