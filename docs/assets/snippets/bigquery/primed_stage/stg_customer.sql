@@ -38,12 +38,7 @@ hashed_columns AS (
     `CUSTOMER_ID`,
     `LOAD_DATETIME`,
     `RECORD_SOURCE`,
-    CAST(UPPER(TO_HEX(MD5(NULLIF(UPPER(TRIM(CAST(`C_CUSTKEY` AS STRING))), '')))) AS STRING) AS `CUSTOMER_HK`,
-    UPPER(TO_HEX(MD5(CONCAT(
-        IFNULL(NULLIF(UPPER(TRIM(CAST(`C_ADDRESS` AS STRING))), ''), '^^'),'||',
-        IFNULL(NULLIF(UPPER(TRIM(CAST(`C_NAME` AS STRING))), ''), '^^'),'||',
-        IFNULL(NULLIF(UPPER(TRIM(CAST(`C_PHONE` AS STRING))), ''), '^^')
-    )))) AS `CUST_CUSTOMER_HASHDIFF`
+    CAST(UPPER(TO_HEX(MD5(NULLIF(UPPER(TRIM(CAST(`C_CUSTKEY` AS STRING))), '')))) AS STRING) AS `CUSTOMER_HK`
     FROM derived_columns
 ),
 columns_to_select AS (
@@ -59,8 +54,7 @@ columns_to_select AS (
     `CUSTOMER_ID`,
     `LOAD_DATETIME`,
     `RECORD_SOURCE`,
-    `CUSTOMER_HK`,
-    `CUST_CUSTOMER_HASHDIFF`
+    `CUSTOMER_HK`
     FROM hashed_columns
 )
 SELECT * FROM columns_to_select
