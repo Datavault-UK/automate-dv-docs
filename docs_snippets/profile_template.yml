@@ -1,0 +1,18 @@
+fixed:
+  account: mz89709.europe-west2.gcp
+  type: snowflake
+  warehouse: DBTVAULT_SAMPLE
+  role: DBTVAULT_DEVELOPER
+  threads: 4
+  query_tag: docs_snippets
+  database: DBTVAULT_SAMPLE
+  schema: SAMPLE_SCHEMA
+  client_session_keep_alive: false
+
+prompts:
+  user:
+    type: string
+    hint: "Your name, FIRSTNAME_SURNAME"
+  password:
+    type: string
+    hint: "Your snowflake password"
