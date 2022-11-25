@@ -43,22 +43,20 @@ def dbt_run_twice(c, target='snowflake'):
 def copy_samples(c):
     targets = ['snowflake', 'bigquery', 'sqlserver']
 
+    reset_and_copy('./docs_snippets/models/',
+                   f'./docs/assets/snippets/models/')
+
     for target in targets:
         print(f"Running dbt with {target}...")
 
         dbt_run_twice(c, target=target)
 
         tgt_compiled = f'./docs/assets/snippets/compiled/{target}'
-        tgt_models = f'./docs/assets/snippets/models/{target}'
 
         reset_and_copy('./docs_snippets/target/compiled/docs_snippets/models/',
                        tgt_compiled)
 
-        reset_and_copy('./docs_snippets/models/',
-                       tgt_models)
-
         trim_sql_files_in_path(tgt_compiled)
-        trim_sql_files_in_path(tgt_models)
 
 
 if __name__ == '__main__':
