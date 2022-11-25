@@ -1,15 +1,13 @@
 {%- set yaml_metadata -%}
-source_model: ORDERS
+source_model: CUSTOMER
 hashed_columns:
-  CUSTOMER_HK: O_CUSTKEY
+  CUSTOMER_HK: C_CUSTKEY
 derived_columns:
-  CUSTOMER_ID: O_CUSTKEY
+  CUSTOMER_ID: C_CUSTKEY
   LOAD_DATETIME: "!1998-01-01"
-  RECORD_SOURCE: "!TPCH_ORDERS"
+  RECORD_SOURCE: "!TPCH_CUSTOMER"
 {%- endset -%}
-
 {% set metadata_dict = fromyaml(yaml_metadata) %}
-
 {{ dbtvault.stage(include_source_columns=true,
                   source_model=metadata_dict["source_model"],
                   derived_columns=metadata_dict["derived_columns"],
