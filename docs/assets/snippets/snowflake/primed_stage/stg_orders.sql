@@ -9,7 +9,7 @@ WITH source_data AS (
     "O_CLERK",
     "O_SHIPPRIORITY",
     "O_COMMENT"
-    FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF10.ORDERS
+    FROM DBTVAULT_SAMPLE.SAMPLE_SCHEMA.ORDERS
 ),
 derived_columns AS (
     SELECT
@@ -27,23 +27,6 @@ derived_columns AS (
     'TPCH_ORDERS' AS "RECORD_SOURCE"
     FROM source_data
 ),
-null_columns AS (
-    SELECT
-    "O_ORDERKEY",
-    "O_ORDERSTATUS",
-    "O_TOTALPRICE",
-    "O_ORDERDATE",
-    "O_ORDERPRIORITY",
-    "O_CLERK",
-    "O_SHIPPRIORITY",
-    "O_COMMENT",
-    "CUSTOMER_ID",
-    "LOAD_DATETIME",
-    "RECORD_SOURCE",
-    "O_CUSTKEY" AS "O_CUSTKEY_ORIGINAL",
-        IFNULL("O_CUSTKEY", '-1') AS "O_CUSTKEY"
-    FROM derived_columns
-),
 hashed_columns AS (
     SELECT
     "O_ORDERKEY",
@@ -58,13 +41,13 @@ hashed_columns AS (
     "CUSTOMER_ID",
     "LOAD_DATETIME",
     "RECORD_SOURCE",
-    "O_CUSTKEY_ORIGINAL",
     CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST("O_CUSTKEY" AS VARCHAR))), ''))) AS BINARY(16)) AS "CUSTOMER_HK"
-    FROM null_columns
+    FROM derived_columns
 ),
 columns_to_select AS (
     SELECT
     "O_ORDERKEY",
+    "O_CUSTKEY",
     "O_ORDERSTATUS",
     "O_TOTALPRICE",
     "O_ORDERDATE",
@@ -75,8 +58,6 @@ columns_to_select AS (
     "CUSTOMER_ID",
     "LOAD_DATETIME",
     "RECORD_SOURCE",
-    "O_CUSTKEY",
-    "O_CUSTKEY_ORIGINAL",
     "CUSTOMER_HK"
     FROM hashed_columns
 )

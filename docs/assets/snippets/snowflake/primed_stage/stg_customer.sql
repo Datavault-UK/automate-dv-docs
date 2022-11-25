@@ -8,7 +8,7 @@ WITH source_data AS (
     "C_ACCTBAL",
     "C_MKTSEGMENT",
     "C_COMMENT"
-    FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF10.CUSTOMER
+    FROM DBTVAULT_SAMPLE.SAMPLE_SCHEMA.CUSTOMER
 ),
 derived_columns AS (
     SELECT
@@ -25,23 +25,6 @@ derived_columns AS (
     'TPCH_CUSTOMER' AS "RECORD_SOURCE"
     FROM source_data
 ),
-null_columns AS (
-    SELECT
-    "C_NAME",
-    "C_ADDRESS",
-    "C_PHONE",
-    "C_ACCTBAL",
-    "C_MKTSEGMENT",
-    "C_COMMENT",
-    "CUSTOMER_ID",
-    "LOAD_DATETIME",
-    "RECORD_SOURCE",
-    "C_CUSTKEY" AS "C_CUSTKEY_ORIGINAL",
-        IFNULL("C_CUSTKEY", '-1') AS "C_CUSTKEY",
-    "C_NATIONKEY" AS "C_NATIONKEY_ORIGINAL",
-        IFNULL("C_NATIONKEY", '-2') AS "C_NATIONKEY"
-    FROM derived_columns
-),
 hashed_columns AS (
     SELECT
     "C_CUSTKEY",
@@ -55,20 +38,20 @@ hashed_columns AS (
     "CUSTOMER_ID",
     "LOAD_DATETIME",
     "RECORD_SOURCE",
-    "C_CUSTKEY_ORIGINAL",
-    "C_NATIONKEY_ORIGINAL",
     CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST("C_CUSTKEY" AS VARCHAR))), ''))) AS BINARY(16)) AS "CUSTOMER_HK",
     CAST(MD5_BINARY(CONCAT_WS('||',
         IFNULL(NULLIF(UPPER(TRIM(CAST("C_ADDRESS" AS VARCHAR))), ''), '^^'),
         IFNULL(NULLIF(UPPER(TRIM(CAST("C_NAME" AS VARCHAR))), ''), '^^'),
         IFNULL(NULLIF(UPPER(TRIM(CAST("C_PHONE" AS VARCHAR))), ''), '^^')
     )) AS BINARY(16)) AS "CUST_CUSTOMER_HASHDIFF"
-    FROM null_columns
+    FROM derived_columns
 ),
 columns_to_select AS (
     SELECT
+    "C_CUSTKEY",
     "C_NAME",
     "C_ADDRESS",
+    "C_NATIONKEY",
     "C_PHONE",
     "C_ACCTBAL",
     "C_MKTSEGMENT",
@@ -76,10 +59,6 @@ columns_to_select AS (
     "CUSTOMER_ID",
     "LOAD_DATETIME",
     "RECORD_SOURCE",
-    "C_CUSTKEY",
-    "C_CUSTKEY_ORIGINAL",
-    "C_NATIONKEY",
-    "C_NATIONKEY_ORIGINAL",
     "CUSTOMER_HK",
     "CUST_CUSTOMER_HASHDIFF"
     FROM hashed_columns

@@ -1,6 +1,5 @@
 {%- set yaml_metadata -%}
-source_model:
-  tpch: CUSTOMER
+source_model: CUSTOMER
 hashed_columns:
   CUSTOMER_HK: C_CUSTKEY
   CUST_CUSTOMER_HASHDIFF:
@@ -13,11 +12,6 @@ derived_columns:
   CUSTOMER_ID: C_CUSTKEY
   LOAD_DATETIME: "!1998-01-01"
   RECORD_SOURCE: "!TPCH_CUSTOMER"
-null_columns:
-  required:
-    - C_CUSTKEY
-  optional:
-    - C_NATIONKEY
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}

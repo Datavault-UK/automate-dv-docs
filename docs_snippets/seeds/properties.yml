@@ -1,0 +1,12 @@
+version: 2
+
+seeds:
+  - name: CUSTOMER
+    config:
+      column_types:
+        C_CUSTKEY: STRING
+
+  - name: ORDERS
+    config:
+      column_types:
+        O_CUSTKEY: STRING
