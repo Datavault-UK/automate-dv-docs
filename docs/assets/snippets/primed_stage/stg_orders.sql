@@ -1,0 +1,83 @@
+WITH source_data AS (
+    SELECT
+    "O_ORDERKEY",
+    "O_CUSTKEY",
+    "O_ORDERSTATUS",
+    "O_TOTALPRICE",
+    "O_ORDERDATE",
+    "O_ORDERPRIORITY",
+    "O_CLERK",
+    "O_SHIPPRIORITY",
+    "O_COMMENT"
+    FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF10.ORDERS
+),
+derived_columns AS (
+    SELECT
+    "O_ORDERKEY",
+    "O_CUSTKEY",
+    "O_ORDERSTATUS",
+    "O_TOTALPRICE",
+    "O_ORDERDATE",
+    "O_ORDERPRIORITY",
+    "O_CLERK",
+    "O_SHIPPRIORITY",
+    "O_COMMENT",
+    O_CUSTKEY AS "CUSTOMER_ID",
+    '1998-01-01' AS "LOAD_DATETIME",
+    'TPCH_ORDERS' AS "RECORD_SOURCE"
+    FROM source_data
+),
+null_columns AS (
+    SELECT
+    "O_ORDERKEY",
+    "O_ORDERSTATUS",
+    "O_TOTALPRICE",
+    "O_ORDERDATE",
+    "O_ORDERPRIORITY",
+    "O_CLERK",
+    "O_SHIPPRIORITY",
+    "O_COMMENT",
+    "CUSTOMER_ID",
+    "LOAD_DATETIME",
+    "RECORD_SOURCE",
+    "O_CUSTKEY" AS "O_CUSTKEY_ORIGINAL",
+        IFNULL("O_CUSTKEY", '-1') AS "O_CUSTKEY"
+    FROM derived_columns
+),
+hashed_columns AS (
+    SELECT
+    "O_ORDERKEY",
+    "O_CUSTKEY",
+    "O_ORDERSTATUS",
+    "O_TOTALPRICE",
+    "O_ORDERDATE",
+    "O_ORDERPRIORITY",
+    "O_CLERK",
+    "O_SHIPPRIORITY",
+    "O_COMMENT",
+    "CUSTOMER_ID",
+    "LOAD_DATETIME",
+    "RECORD_SOURCE",
+    "O_CUSTKEY_ORIGINAL",
+    CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST("O_CUSTKEY" AS VARCHAR))), ''))) AS BINARY(16)) AS "CUSTOMER_HK"
+    FROM null_columns
+),
+columns_to_select AS (
+    SELECT
+    "O_ORDERKEY",
+    "O_ORDERSTATUS",
+    "O_TOTALPRICE",
+    "O_ORDERDATE",
+    "O_ORDERPRIORITY",
+    "O_CLERK",
+    "O_SHIPPRIORITY",
+    "O_COMMENT",
+    "CUSTOMER_ID",
+    "LOAD_DATETIME",
+    "RECORD_SOURCE",
+    "O_CUSTKEY",
+    "O_CUSTKEY_ORIGINAL",
+    "CUSTOMER_HK"
+    FROM hashed_columns
+)
+SELECT * FROM columns_to_select

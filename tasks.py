@@ -11,7 +11,15 @@ def dbt_compile(c):
         c.run('dbt compile --full-refresh')
 
 
-@task(pre=[dbt_compile])
+@task
+def dbt_run_twice(c):
+    with c.cd('./docs_snippets'):
+        c.run('dbt clean')
+        c.run('dbt run --full-refresh')
+        c.run('dbt run')
+
+
+@task(pre=[dbt_run_twice])
 def copy_samples(c):
     src_dir = './docs_snippets/target/compiled/docs_snippets/models/'
     tgt_dir = './docs/assets/snippets'

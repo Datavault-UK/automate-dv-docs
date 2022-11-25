@@ -1,5 +1,3 @@
-{{ config(full_refresh = true) }}
-
 {%- set yaml_metadata -%}
 source_model: stg_customer
 src_pk: CUSTOMER_HK
