@@ -254,22 +254,7 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/hubs/hub_single_source_base_load.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"

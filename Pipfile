@@ -17,6 +17,7 @@ pymdown-extensions = "*"
 mkdocs-git-revision-date-localized-plugin = "*"
 mkdocs-with-pdf = "*"
 mkdocs-video = "*"
+invoke = "*"
 
 [requires]
 python_version = "3.9"
