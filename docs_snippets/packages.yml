@@ -1,0 +1,3 @@
+packages:
+
+  - local: "../../dbtvault-dev/dbtvault-dev"
