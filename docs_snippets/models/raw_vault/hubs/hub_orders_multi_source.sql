@@ -2,8 +2,8 @@
 
 {%- set yaml_metadata -%}
 source_model:
-    - stg_customer
-    - stg_orders
+  - stg_customer
+  - stg_orders
 src_pk: CUSTOMER_HK
 src_nk: CUSTOMER_ID
 src_ldts: LOAD_DATETIME

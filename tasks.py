@@ -14,7 +14,7 @@ def dbt_run_twice(c, target='snowflake'):
 
 @task
 def copy_samples(c):
-    targets = ['snowflake', 'bigquery']
+    targets = ['snowflake', 'bigquery', 'sqlserver']
 
     for target in targets:
         print(f"Running dbt with {target}...")

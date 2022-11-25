@@ -2,12 +2,6 @@
 source_model: CUSTOMER
 hashed_columns:
   CUSTOMER_HK: C_CUSTKEY
-  CUST_CUSTOMER_HASHDIFF:
-    is_hashdiff: true
-    columns:
-      - C_NAME
-      - C_ADDRESS
-      - C_PHONE
 derived_columns:
   CUSTOMER_ID: C_CUSTKEY
   LOAD_DATETIME: "!1998-01-01"
