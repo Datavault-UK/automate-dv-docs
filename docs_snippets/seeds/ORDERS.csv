@@ -1,4 +1,4 @@
-O_ORDERKEY,O_CUSTKEY,O_ORDERSTATUS,O_TOTALPRICE,O_ORDERDATE,O_ORDERPRIORITY,O_CLERK,O_SHIPPRIORITY,O_COMMENT
+o_orderkey,o_custkey,o_orderstatus,o_totalprice,o_orderdate,o_orderpriority,o_clerk,o_shippriority,o_comment
 4808192,"A1",O,65478.05,1996-06-29,2-HIGH,Clerk#000000473,0,eposits use against the express accounts. carefully regular ideas sleep blithe
 454791,"A1",F,74602.81,1992-04-19,1-URGENT,Clerk#000000815,0,uriously ironic deposits wake across the s
 4273923,"A1",O,95911.01,1997-03-23,3-MEDIUM,Clerk#000000381,0,ep fluffily along the carefull

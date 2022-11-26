@@ -1,9 +1,9 @@
 {%- set yaml_metadata -%}
 source_model: CUSTOMER
 hashed_columns:
-  CUSTOMER_HK: C_CUSTKEY
+  CUSTOMER_HK: c_custkey
 derived_columns:
-  CUSTOMER_ID: C_CUSTKEY
+  CUSTOMER_ID: c_custkey
   LOAD_DATETIME: "!1998-01-01"
   RECORD_SOURCE: "!TPCH_CUSTOMER"
 {%- endset -%}

@@ -41,7 +41,7 @@ def dbt_run_twice(c, target='snowflake'):
 
 @task
 def copy_samples(c):
-    targets = ['snowflake', 'bigquery', 'sqlserver']
+    targets = ['snowflake', 'bigquery', 'sqlserver', 'postgres', 'databricks']
 
     reset_and_copy('./docs_snippets/models/',
                    f'./docs/assets/snippets/models/')

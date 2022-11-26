@@ -327,6 +327,57 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/sqlserver/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
+=== "Postgres"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_customer.sql"
+        ```
+    
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_customer_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_orders_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        ```
+
+=== "Postgres"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_customer.sql"
+        ```
+    
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_customer_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_orders_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        ```
 ___
 
 ### link
