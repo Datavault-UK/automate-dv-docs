@@ -353,7 +353,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
-=== "Postgres"
+=== "Databricks"
 
     === "Single-Source (Base Load)"
     
