@@ -945,7 +945,7 @@ ___
               SATELLITE_NAME: SATELLITE_NAME_1
             hashdiff:
               HASHDIFF: CUSTOMER_HASHDIFF
-          SAT_CUSTOMER_DETAILS: 
+          SAT_ORDER_DETAILS: 
             sat_name:
               SATELLITE_NAME: SATELLITE_NAME_2
             hashdiff:

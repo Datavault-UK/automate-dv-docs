@@ -2015,6 +2015,15 @@ Generates SQL to build a Satellite table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+#### Ghost records
+
+Ghost Records are system-generated records which are added to Satellites to provide equi-join performance in PIT tables
+downstream. dbtvault will generate ghost records if the [global variable](#ghost-record-configuration) is set to `true`.
+
+!!! tip "New in v0.9.1"
+    Ghost Records are here! More details (including examples of how it works) coming soon!
+
+
 
 #### Hashdiff Aliasing
 
