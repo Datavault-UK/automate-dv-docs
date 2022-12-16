@@ -64,19 +64,15 @@ user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-
 which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of
 dbtvault.
 
-=== "dbt_project.yml"
+### Hashing configuration 
 
-    ```yaml
-    vars:
-      hash: MD5
-      max_datetime: '{{ dbtvault.max_datetime() }}'
-      concat_string: '||'
-      null_placeholder_string: '^^'
-      escape_char_left: '"'
-      escape_char_right: '"'
-      null_key_required: '-1'
-      null_key_optional: '-2'
-    ```
+```yaml
+vars:
+  hash: MD5
+  concat_string: '||'
+  null_placeholder_string: '^^'
+  hash_content_casing: 'UPPER'
+```
 
 #### hash
 
@@ -88,12 +84,6 @@ This can be one of:
 - SHA
 
 [Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
-
-#### max_datetime
-
-Configure the value for the maximum datetime.
-
-This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances.
 
 #### concat_string
 
@@ -107,7 +97,80 @@ characters: '`||`'
 Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
 characters: '`^^`'
 
-[Read more](../best_practises/null_handling.md)
+#### hash_content_casing
+
+This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hashing.
+
+This can be one of:
+
+- UPPER
+- DISABLED
+
+=== "UPPER Example"
+    === "YAML config input"
+        ```yaml
+        source_model: raw_source
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+        ```
+    === "SQL Output"
+        ```sql
+        CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK
+        ```
+=== "DISABLED Example"
+    === "YAML config input"
+        ```yaml
+        source_model: raw_source
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+        ```
+    === "SQL Output"
+        ```sql
+        CAST((MD5_BINARY(NULLIF(TRIM(CAST(CUSTOMER_ID AS VARCHAR)), ''))) AS BINARY(16)) AS CUSTOMER_HK
+        ```
+
+!!! tip "New in v0.9.1"
+    We've added this config to give you more options when hashing. If there is logic difference between uppercase
+    and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
+
+### Ghost Record configuration
+
+!!! tip "New in v0.9.1"
+    Ghost Records are here! This is our first iteration of Ghost Records functionality. Please give us feedback on
+    GitHub or Slack :smile:
+
+
+```yaml
+vars:
+  enable_ghost_record: false
+  system_record_value: 'DBTVAULT_SYSTEM'
+```
+
+#### enable_ghost_record
+
+Enable the use of ghost records in your project. This can either be true or false, `true` will enable the configuration and `false` will disable it.
+
+This will insert a ghost record to a satellite table whether it is a new table or pre-loaded. 
+
+Before adding the ghost record, the satellite macro will check there is not already one loaded.
+
+!!! note
+    If this is enabled on an existing project, the ghost-records will be inserted into 
+
+#### system_record_value
+
+This will set the record source system for the ghost record. The default is 'DBTVAULT_SYSTEM' and can be changed to any string.
+
+!!! note
+    If this is changed on an existing project, the source system of already loaded ghost records will not be changed.
+
+### NULL Key configurations
+
+```yaml
+vars:
+  null_key_required: '-1'
+  null_key_optional: '-2'
+```
 
 #### null_key_required
 
@@ -121,10 +184,28 @@ Configure the string value to use for replacing `NULL` values found in optional 
 
 [Read more](../best_practises/null_handling.md)
 
+### Other global variables
+
+```yaml
+vars:
+  escape_char_left: '"'
+  escape_char_right: '"'
+  max_datetime: '9999-12-31 23:59:59.999999'
+```
+
+#### max_datetime
+
+Configure the value for the maximum datetime.
+
+This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances.
+
+The default is variations on `9999-12-31 23:59:59.999999` where there is more or less nanosecond precision (9's after the .) depending on platform.
+
 #### escape_char_left/escape_char_right
 
-Configure the characters to use to delimit SQL column names. All column names are delimited, and by default both the
-delimiting characters are double quotes following the SQL:1999 standard.
+Configure the characters to use to delimit SQL column names when [escaping](../best_practises/escaping.md). 
+Column names are delimited when using the [escaping](../best_practises/escaping.md) feature of dbtvault, 
+and by default both the delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
 
@@ -154,18 +235,6 @@ Here are some examples for different platforms:
       escape_char_left: '"'
       escape_char_right: '"'
     ```
-
-#### enable_ghost_record
-
-Enable the use of ghost records in your project. This can either be true or false, true will enable the configuration and false will disable it.
-
-This will insert a ghost record to a satellite table whether it is a new table or pre-loaded. Before adding the ghost record, the satellite macro will check there is not already one loaded.
-
-#### system_record_value
-
-This will set the record source system for the ghost record. The default is 'DBTVAULT_SYSTEM' and can be changed to any string.
-
-If this is changed mid-way through a project the source system of already loaded ghost records will not be changed.
 
 ## Platform Support
 
