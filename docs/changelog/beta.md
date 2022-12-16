@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     To view documentation for a specific version, please click the 'docs | passing' badges under the specific changelog entry. 
 
 [View Stable Releases](index.md){: .md-button }
-
+[View Archived Releases](archived.md){ .md-button .md-button--primary }
 
 ## [v0.7.6-b1] - 2020-06-11
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6-b1)](https://dbtvault.readthedocs.io/en/v0.7.6-b1/?badge=v0.7.6-b1)
