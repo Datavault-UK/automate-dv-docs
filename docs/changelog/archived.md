@@ -2,7 +2,7 @@
 
 These releases are so old now, we'd rather you did not use them! They are archived here for prosperity :smile:
 
-[View Stable Releases](index.md){: .md-button }
+[View Stable Releases](index.md){ .md-button .md-button--primary }
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 
 ## [v0.7.2] - 2021-01-26

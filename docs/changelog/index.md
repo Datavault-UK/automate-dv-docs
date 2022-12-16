@@ -6,10 +6,61 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 !!! note
-To view documentation for a specific version, please click the 'docs' badges under the specific changelog entry.
+  To view documentation for a specific version, please click the 'docs' badges under the specific changelog entry.
 
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
+
+## [v0.9.1] - 2022-12-16
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.1)](https://dbtvault.readthedocs.io/en/v0.9.1/?badge=v0.9.1)
+
+## New 
+
+### New Features: 
+
+:star2: Ghost Records -> [docs](../macros#ghost-record-configuration)
+
+:star2: Hashing Casing config (#123) -> [Docs](../macros#hash_content_casing)
+
+### dbt Versions
+
+:+1: dbt support updated to 1.3.x
+
+:+1: dbt-utils support updated to 0.9.x (1.0.x will be officially supported shortly)
+
+## Fixes
+
+### Escaping
+
+We have made significant changes to how escaping now works as per #168. We believe this will fix the bugs collected in this master issue.
+
+**_Whilst we have tested this extensively, we cannot yet be 100% this has fixed every edge case. Please bear with us as we collect community feedback. We welcome your feedback on this!_**
+
+Related issues:
+- https://github.com/Datavault-UK/dbtvault/issues/168 
+- https://github.com/Datavault-UK/dbtvault/issues/159 
+
+### Casing
+
+In addition to the above, we have also done an overhaul of casing in our templates. Users should now not experience any unwanted casing changes. As above, please provide feedback if any issues are found! 
+
+Related issues:
+- https://github.com/Datavault-UK/dbtvault/issues/166 
+- https://github.com/Datavault-UK/dbtvault/issues/163 
+- https://github.com/Datavault-UK/dbtvault/issues/157 
+
+### Other
+
+- Fixed a few edge cases where excludes for payload and hashdiffs would not work as expected 
+
+## Behind the scenes
+
+- Major re-factor of Hashing to improve maintainability, readability and extensibility.  **_The functionality remains the same and should not affect users_**
+
+## Docs
+
+- Split best practises into separate pages for ease of navigation and to reduce clutter
+- Moved old release notes to a new "archived" releases page
 
 ## [v0.9.0] - 2022-09-13
 

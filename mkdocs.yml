@@ -72,6 +72,7 @@ nav:
   - Changelog:
       - Stable Releases: 'changelog/index.md'
       - Beta Releases: 'changelog/beta.md'
+      - Archived Releases: 'changelog/archived.md'
   - Contributing:
       - Getting Started: 'contributing/index.md'
       - Style Guides:
