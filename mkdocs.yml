@@ -5,6 +5,7 @@ repo_name: 'Datavault-UK/dbtvault'
 site_url: 'https://dbtvault.readthedocs.io/'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
 dev_addr: 127.0.0.1:8001
+edit_uri: ""
 
 theme:
   name: 'material'
@@ -54,10 +55,16 @@ nav:
       - Loading the vault: 'worked_example/we_loading.md'
   - Metadata Reference: 'metadata.md'
   - Macros:
-      - Macros: 'macros/index.md'
+      - 'macros/index.md'
       - Stage Macro Configurations: 'macros/stage_macro_configurations.md'
   - Materialisations: 'materialisations.md'
-  - Best Practices: 'best_practices.md'
+  - Best Practices:
+      - 'best_practises/index.md'
+      - Hashing: 'best_practises/hashing.md'
+      - Escaping: 'best_practises/escaping.md'
+      - NULL Handling: 'best_practises/null_handling.md'
+      - Loading: 'best_practises/loading.md'
+      - Materialisations: 'best_practises/materialisations.md'
   - Migration Guides: 'migration_guides.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'

@@ -87,7 +87,7 @@ staging layer which map to them:
 | src_source   | RECORD_SOURCE                                        |
 
 !!! Note
-    We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practices.md#hashdiff-aliasing)
+    We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practises/hashing.md#hashdiff-aliasing)
 
 When we provide the metadata above, our model should look like the following:
 

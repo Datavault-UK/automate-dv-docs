@@ -271,16 +271,11 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 ### Escaping column names that are not SQL compliant
 
-By default, source column names in dbtvault are enclosed by escape characters during compilation. 
-For derived columns however the source column names are **not** escaped by default. 
-This is because there is too wide a range of potential inputs to parse in the source column detail, and it would simply 
-be enclosed as is with escape characters.
+!!! note
+    As of dbtvault 0.9.1, columns are **_not_** escaped by default. 
 
-To override this behaviour a mapping of the source column name and an escape flag must be provided.
+To enable the escaping functionality, a mapping of the source column name and an escape flag must be provided.
 Alternatively, for computed derived columns, escape characters can be explicitly coded within the function itself.
-
-!!! note 
-    The derived column name (used as a column alias) **is** enclosed by escape characters by default.
 
 Check out the following metadata examples:
 
@@ -396,8 +391,7 @@ hash keys and hashdiffs for various dbtvault (and Data Vault 2.0) tables and str
 This section describes some specific use cases for the hashed columns configuration, with examples.
 
 !!! Read more
-    - [Why do we hash?](../best_practices.md#why-do-we-hash)
-    - [How do we hash?](../best_practices.md#how-do-we-hash)
+    - [Hashing](../best_practises/hashing.md)
 
 ### Basic Usage
 

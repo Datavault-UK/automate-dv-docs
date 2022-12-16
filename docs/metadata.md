@@ -782,7 +782,7 @@ example provided to help better convey the difference.
         ```
 
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
-[Read more](best_practices.md#hashdiff-aliasing)
+[Read more](./best_practises/hashing.md#hashdiff-aliasing)
 
 ### Effectivity Satellites
 

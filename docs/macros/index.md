@@ -1,3 +1,5 @@
+# Macros
+
 ## Global usage notes
 
 ### source_model syntax
@@ -85,7 +87,7 @@ This can be one of:
 - MD5
 - SHA
 
-[Read more](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+[Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
 
 #### max_datetime
 
@@ -98,14 +100,14 @@ This value will be used for showing that a record's effectivity is 'open' or 'cu
 Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe
 characters: '`||`'
 
-[Read more](../best_practices.md#multi-column-hashing)
+[Read more](../best_practises/hashing.md#multi-column-hashing)
 
 #### null_placeholder_string
 
 Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
 characters: '`^^`'
 
-[Read more](../best_practices.md#null-handling)
+[Read more](../best_practises/null_handling.md)
 
 #### null_key_required
 
@@ -117,7 +119,7 @@ By default, this is '-1'.
 
 Configure the string value to use for replacing `NULL` values found in optional keys. By default, this is '-2'.
 
-[Read more](../best_practices.md#null-handling)
+[Read more](../best_practises/null_handling.md)
 
 #### escape_char_left/escape_char_right
 
@@ -1683,7 +1685,7 @@ Generates SQL to build a Satellite table using the provided parameters.
 #### Hashdiff Aliasing
 
 If you have multiple Satellites using a single stage as its data source, then you will need to
-use [hashdiff aliasing](../best_practices.md#hashdiff-aliasing)
+use [hashdiff aliasing](../best_practises/hashing.md#hashdiff-aliasing)
 
 #### Excluding columns from the payload
 
@@ -4756,10 +4758,10 @@ ___
 
 !!! seealso "See Also"
     - [hash_columns](stage_macro_configurations.md#hashed-columns)
-    - Read [Hashing best practices and why we hash](../best_practices.md#hashing)
+    - Read [Hashing best practices and why we hash](../best_practises/hashing.md)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
-    [Learn how](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
     
 A macro for generating hashing SQL for columns.
 

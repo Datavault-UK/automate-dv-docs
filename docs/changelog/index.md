@@ -215,7 +215,7 @@ as a result of loading data 'manually' end-dated by business rules.
 
 #### Configuration for hash strings
 
-[Read More](../best_practices.md#configuring-hash-strings)
+[Read More](../best_practises/hashing.md#configuring-hash-strings)
 
 - Concatenation string can now be user defined
 - Null placeholder string can now be user defined
@@ -265,7 +265,7 @@ one-to-many relationships were not getting handled as intended.
 
 ### Improvements
 - Added check for matching primary key when inserting new satellite records in the sat macro. This removes the requirement to
-add the natural key to the hashdiff, but it is still recommended. [Read More](../best_practices.md#hashdiff-components)
+add the natural key to the hashdiff, but it is still recommended. [Read More](../best_practises/hashing#hashdiff-components)
 
 ### Quality of Life
 - Payload in Transactional (Non-Historised) Links now optional
@@ -297,7 +297,7 @@ add the natural key to the hashdiff, but it is still recommended. [Read More](..
 
 - Optimised Satellite SQL for larger loads (billions) seen in the wild. 
 - For non-hashdiff composite hashed_columns: If all components of the key are NULL, then the whole key will evaluate as NULL. 
-  [Read more](../best_practices.md#how-do-we-hash)
+  [Read more](../best_practises/hashing.md#how-do-we-hash)
 - Hashing concatenation now uses `CONCAT_WS` instead of `CONCAT`; this is more concise.
 - The stage macro has received a big overhaul, and the SQL should now be more efficient and easier to read.
 - Optimised table macro SQL across to board by reducing the number of CTEs
@@ -440,7 +440,7 @@ We'll be updating the other macros soon, stay tuned!
 ### Fixed 
 
 - Fixed `NULL` handling when hashing. We broke this in v0.5 ([see related issue](https://github.com/Datavault-UK/dbtvault/issues/5))
-[Read more](../best_practices.md#how-do-we-hash)
+[Read more](../best_practises/hashing.md#how-do-we-hash)
 
 ### Removed
 
@@ -485,7 +485,7 @@ _**multi_hash**_, [staging](../macros/index.md#staging-macros)).
 
 - Hashing:
     - You may now choose between `MD5` and `SHA-256` hashing with a simple yaml configuration
-    [Learn how!](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how!](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
     
 ### Worked example
 
