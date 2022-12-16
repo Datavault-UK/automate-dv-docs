@@ -2026,8 +2026,6 @@ downstream. dbtvault will generate ghost records if the [global variable](#ghost
 !!! tip "New in v0.9.1"
     Ghost Records are here! More details (including examples of how it works) coming soon!
 
-
-
 #### Hashdiff Aliasing
 
 If you have multiple Satellites using a single stage as its data source, then you will need to
