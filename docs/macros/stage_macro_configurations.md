@@ -338,7 +338,7 @@ Check out the following metadata examples:
     ```
 
 !!! note 
-    Please ensure that your functions must have valid SQL syntax on your platform, for use in this context.
+    Please ensure that your functions have valid SQL syntax on your platform, for use in this context.
 
 ## Null Columns
 

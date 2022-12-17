@@ -274,10 +274,6 @@ This section documents platform-specific limitations.
 
 #### Postgres
 
-1. Due to the way Postgres handles column naming when it comes to quoting/escaping and lower-casing everything, 
-derived columns are handled slightly differently to every other platform:
-    - Column escaping is currently disabled in Postgres, and there is currently no way to enable it
-
 2. Due to the way Postgres handles CTEs, dbtvault's [custom materialisations](../materialisations.md) are not yet 
 available for use on Postgres. An exception will be raised if their use is attempted.
 
