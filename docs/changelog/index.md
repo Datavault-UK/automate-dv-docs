@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 !!! note
-  To view documentation for a specific version, please click the 'docs' badges under the specific changelog entry.
+    To view documentation for a specific version, please click the 'docs' badges under the specific changelog entry.
 
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
@@ -37,6 +37,7 @@ We have made significant changes to how escaping now works as per #168. We belie
 **_Whilst we have tested this extensively, we cannot yet be 100% this has fixed every edge case. Please bear with us as we collect community feedback. We welcome your feedback on this!_**
 
 Related issues:
+
 - https://github.com/Datavault-UK/dbtvault/issues/168 
 - https://github.com/Datavault-UK/dbtvault/issues/159 
 
@@ -45,7 +46,8 @@ Related issues:
 In addition to the above, we have also done an overhaul of casing in our templates. Users should now not experience any unwanted casing changes. As above, please provide feedback if any issues are found! 
 
 Related issues:
-- https://github.com/Datavault-UK/dbtvault/issues/166 
+
+- https://github.com/Datavault-UK/dbtvault/issues/166
 - https://github.com/Datavault-UK/dbtvault/issues/163 
 - https://github.com/Datavault-UK/dbtvault/issues/157 
 
@@ -88,9 +90,10 @@ Related issues:
 
 :sparkles: Satellites
 
-!!! note "**"
-There are currently limitations on
-Postgres. [Click here for more details](https://dbtvault.readthedocs.io/en/latest/macros/#limitations)
+
+!!! note
+    There are currently limitations on Postgres. [Click here for more details](https://dbtvault.readthedocs.io/en/v0.9.0/macros/#limitations)
+
 
 ### New Features
 
