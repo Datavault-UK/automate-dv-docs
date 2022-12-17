@@ -782,7 +782,7 @@ example provided to help better convey the difference.
         ```
 
 Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
-[Read more](best_practices.md#hashdiff-aliasing)
+[Read more](./best_practises/hashing.md#hashdiff-aliasing)
 
 ### Effectivity Satellites
 
@@ -945,7 +945,7 @@ ___
               SATELLITE_NAME: SATELLITE_NAME_1
             hashdiff:
               HASHDIFF: CUSTOMER_HASHDIFF
-          SAT_CUSTOMER_DETAILS: 
+          SAT_ORDER_DETAILS: 
             sat_name:
               SATELLITE_NAME: SATELLITE_NAME_2
             hashdiff:

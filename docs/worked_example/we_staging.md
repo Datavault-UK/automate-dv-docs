@@ -201,7 +201,7 @@ for hashdiffs
 
 !!! tip
     For more detail on dbtvault's hashing process, 
-    why we hash, and the differences between hash keys and hashdiffs, [read more](../best_practices.md#hashing).
+    why we hash, and the differences between hash keys and hashdiffs, [read more](../best_practises/hashing.md).
 
 ## Deploying the 'prepared' staging layer
 
