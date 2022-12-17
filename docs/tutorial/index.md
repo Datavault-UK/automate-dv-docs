@@ -19,7 +19,7 @@ Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
 
 2. We assume you already have a raw staging layer, PSA or Data Lake.
 
-3. You should read our [best practices](../best_practices.md) guidance.
+3. You should read our [best practices](../best_practises/index.md) guidance.
 
 ## Installation 
 

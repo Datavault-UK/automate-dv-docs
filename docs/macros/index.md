@@ -1,3 +1,5 @@
+# Macros
+
 ## Global usage notes
 
 ### source_model syntax
@@ -62,19 +64,15 @@ user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-
 which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of
 dbtvault.
 
-=== "dbt_project.yml"
+### Hashing configuration 
 
-    ```yaml
-    vars:
-      hash: MD5
-      max_datetime: '{{ dbtvault.max_datetime() }}'
-      concat_string: '||'
-      null_placeholder_string: '^^'
-      escape_char_left: '"'
-      escape_char_right: '"'
-      null_key_required: '-1'
-      null_key_optional: '-2'
-    ```
+```yaml
+vars:
+  hash: MD5
+  concat_string: '||'
+  null_placeholder_string: '^^'
+  hash_content_casing: 'UPPER'
+```
 
 #### hash
 
@@ -85,27 +83,94 @@ This can be one of:
 - MD5
 - SHA
 
-[Read more](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
-
-#### max_datetime
-
-Configure the value for the maximum datetime.
-
-This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances.
+[Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
 
 #### concat_string
 
 Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe
 characters: '`||`'
 
-[Read more](../best_practices.md#multi-column-hashing)
+[Read more](../best_practises/hashing.md#multi-column-hashing)
 
 #### null_placeholder_string
 
 Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
 characters: '`^^`'
 
-[Read more](../best_practices.md#null-handling)
+#### hash_content_casing
+
+This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hashing.
+
+This can be one of:
+
+- UPPER
+- DISABLED
+
+=== "UPPER Example"
+    === "YAML config input"
+        ```yaml
+        source_model: raw_source
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+        ```
+    === "SQL Output"
+        ```sql
+        CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK
+        ```
+=== "DISABLED Example"
+    === "YAML config input"
+        ```yaml
+        source_model: raw_source
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+        ```
+    === "SQL Output"
+        ```sql
+        CAST((MD5_BINARY(NULLIF(TRIM(CAST(CUSTOMER_ID AS VARCHAR)), ''))) AS BINARY(16)) AS CUSTOMER_HK
+        ```
+
+!!! tip "New in v0.9.1"
+    We've added this config to give you more options when hashing. If there is logic difference between uppercase
+    and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
+
+### Ghost Record configuration
+
+!!! tip "New in v0.9.1"
+    Ghost Records are here! This is our first iteration of Ghost Records functionality. Please give us feedback on
+    GitHub or Slack :smile:
+
+
+```yaml
+vars:
+  enable_ghost_record: false
+  system_record_value: 'DBTVAULT_SYSTEM'
+```
+
+#### enable_ghost_record
+
+Enable the use of ghost records in your project. This can either be true or false, `true` will enable the configuration and `false` will disable it.
+
+This will insert a ghost record to a satellite table whether it is a new table or pre-loaded. 
+
+Before adding the ghost record, the satellite macro will check there is not already one loaded.
+
+!!! note
+    If this is enabled on an existing project, the ghost-records will be inserted into 
+
+#### system_record_value
+
+This will set the record source system for the ghost record. The default is 'DBTVAULT_SYSTEM' and can be changed to any string.
+
+!!! note
+    If this is changed on an existing project, the source system of already loaded ghost records will not be changed.
+
+### NULL Key configurations
+
+```yaml
+vars:
+  null_key_required: '-1'
+  null_key_optional: '-2'
+```
 
 #### null_key_required
 
@@ -117,12 +182,30 @@ By default, this is '-1'.
 
 Configure the string value to use for replacing `NULL` values found in optional keys. By default, this is '-2'.
 
-[Read more](../best_practices.md#null-handling)
+[Read more](../best_practises/null_handling.md)
+
+### Other global variables
+
+```yaml
+vars:
+  escape_char_left: '"'
+  escape_char_right: '"'
+  max_datetime: '9999-12-31 23:59:59.999999'
+```
+
+#### max_datetime
+
+Configure the value for the maximum datetime.
+
+This value will be used for showing that a record's effectivity is 'open' or 'current' in certain circumstances.
+
+The default is variations on `9999-12-31 23:59:59.999999` where there is more or less nanosecond precision (9's after the .) depending on platform.
 
 #### escape_char_left/escape_char_right
 
-Configure the characters to use to delimit SQL column names. All column names are delimited, and by default both the
-delimiting characters are double quotes following the SQL:1999 standard.
+Configure the characters to use to delimit SQL column names when [escaping](../best_practises/escaping.md). 
+Column names are delimited when using the [escaping](../best_practises/escaping.md) feature of dbtvault, 
+and by default both the delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
 
@@ -209,11 +292,11 @@ for your Data Vault 2.0 Data Warehouse.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/hub.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/hub.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/hub.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/databricks/hub.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/postgres/hub.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/hub.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/hub.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/hub.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/databricks/hub.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/postgres/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -737,11 +820,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/link.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/databricks/link.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/postgres/link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/databricks/link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/postgres/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -1303,9 +1386,9 @@ ___
 
 ### t_link
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/t_link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/t_link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/t_link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/t_link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/t_link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/t_link.sql)
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -1467,11 +1550,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/sat.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/databricks/sat.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/postgres/sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/databricks/sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/postgres/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -1496,6 +1579,9 @@ Generates SQL to build a Satellite table using the provided parameters.
 | src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
 | src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .required }     |
 | source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
+
+??? video "Video Tutorial"
+    <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9-5ibeTbT80" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 !!! tip
     [Read the tutorial](../tutorial/tut_satellites.md) for more details
@@ -1563,6 +1649,90 @@ Generates SQL to build a Satellite table using the provided parameters.
         SELECT * FROM records_to_insert
         ```
 
+    === "Base Load with Ghost Record"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_PHONE", a."CUSTOMER_DOB", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE a."CUSTOMER_PK" IS NOT NULL
+        ),
+
+        ghost AS (SELECT
+            NULL AS "CUSTOMER_NAME",
+            NULL AS "CUSTOMER_DOB",
+            NULL AS "CUSTOMER_PHONE",
+            TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
+            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
+            TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
+        ),
+
+        records_to_insert AS (SELECT
+                g."CUSTOMER_HK", g."HASHDIFF", g."CUSTOMER_NAME", g."CUSTOMER_PHONE", g."CUSTOMER_DOB", g."EFFECTIVE_FROM", g."LOAD_DATE", g."SOURCE"
+                FROM ghost AS g
+            UNION
+            SELECT DISTINCT stage."CUSTOMER_PK", stage."HASHDIFF", stage."CUSTOMER_NAME", stage."CUSTOMER_PHONE", stage."CUSTOMER_DOB", stage."EFFECTIVE_FROM", stage."LOAD_DATE", stage."SOURCE"
+            FROM source_data AS stage
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Subsequent Loads with Ghost Record"
+
+        ```sql
+        WITH source_data AS (
+            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_DOB", a."CUSTOMER_PHONE", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE a."CUSTOMER_PK" IS NOT NULL
+        ),
+
+        latest_records AS (
+            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."LOAD_DATE"
+            FROM (
+                SELECT current_records."CUSTOMER_HK", current_records."HASHDIFF", current_records."LOAD_DATE",
+                    RANK() OVER (
+                       PARTITION BY current_records."CUSTOMER_HK"
+                       ORDER BY current_records."LOAD_DATE" DESC
+                    ) AS rank
+                FROM DBTVAULT.TEST.SATELLITE AS current_records
+                    JOIN (
+                        SELECT DISTINCT source_data."CUSTOMER_HK"
+                        FROM source_data
+                    ) AS source_records
+                        ON current_records."CUSTOMER_HK" = source_records."CUSTOMER_HK"
+            ) AS a
+            WHERE a.rank = 1
+        ),
+
+        ghost AS (SELECT
+            NULL AS "CUSTOMER_NAME",
+            NULL AS "CUSTOMER_DOB",
+            NULL AS "CUSTOMER_PHONE",
+            TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
+            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
+            TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
+        ),
+        
+        records_to_insert AS (SELECT
+                g."CUSTOMER_HK", g."HASHDIFF", g."CUSTOMER_NAME", g."CUSTOMER_DOB", g."CUSTOMER_PHONE", g."EFFECTIVE_FROM", g."LOAD_DATE", g."SOURCE"
+                FROM ghost AS g
+                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
+            UNION
+            SELECT DISTINCT stage."CUSTOMER_HK", stage."HASHDIFF", stage."CUSTOMER_NAME", stage."CUSTOMER_DOB", stage."CUSTOMER_PHONE", stage."EFFECTIVE_FROM", stage."LOAD_DATE", stage."SOURCE"
+            FROM source_data AS stage
+            LEFT JOIN latest_records
+            ON latest_records."CUSTOMER_HK" = stage."CUSTOMER_HK"
+                AND latest_records."HASHDIFF" = stage."HASHDIFF"
+            WHERE latest_records."HASHDIFF" IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
 === "Google BigQuery"
 
     === "Base Load"
@@ -1618,6 +1788,89 @@ Generates SQL to build a Satellite table using the provided parameters.
             OR latest_records.HASHDIFF IS NULL
         )
 
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Base Load with Ghost Record"
+        ```sql
+        WITH source_data AS (
+            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
+            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
+            WHERE a.`CUSTOMER_PK` IS NOT NULL
+        ),
+        
+        ghost AS (SELECT
+            CAST(NULL AS STRING) AS `CUSTOMER_NAME`,
+            CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
+            CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
+            CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
+            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
+            CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
+            CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
+            CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
+        ),
+        
+        records_to_insert AS (SELECT
+                g.`CUSTOMER_HK`, g.`HASHDIFF`, g.`CUSTOMER_NAME`, g.`CUSTOMER_DOB`, g.`CUSTOMER_PHONE`, g.`EFFECTIVE_FROM`, g.`LOAD_DATE`, g.`SOURCE`
+                FROM ghost AS g
+            UNION DISTINCT
+            SELECT DISTINCT stage.`CUSTOMER_HK`, stage.`HASHDIFF`, stage.`CUSTOMER_NAME`, stage.`CUSTOMER_DOB`, stage.`CUSTOMER_PHONE`, stage.`EFFECTIVE_FROM`, stage.`LOAD_DATE`, stage.`SOURCE`
+            FROM source_data AS stage
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Subsequent Load with Ghost Record"
+        ```sql
+        WITH source_data AS (
+            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
+            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
+            WHERE a.`CUSTOMER_PK` IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`LOAD_DATE`
+            FROM (
+                SELECT current_records.`CUSTOMER_HK`, current_records.`HASHDIFF`, current_records.`LOAD_DATE`,
+                    RANK() OVER (
+                       PARTITION BY current_records.`CUSTOMER_HK`
+                       ORDER BY current_records.`LOAD_DATE` DESC
+                    ) AS rank
+                FROM `DBTVAULT`.`TEST`.`SATELLITE` AS current_records
+                    JOIN (
+                        SELECT DISTINCT source_data.`CUSTOMER_HK`
+                        FROM source_data
+                    ) AS source_records
+                        ON current_records.`CUSTOMER_HK` = source_records.`CUSTOMER_HK`
+            ) AS a
+            WHERE a.rank = 1
+        ),
+
+        ghost AS (SELECT
+            CAST(NULL AS STRING) AS `CUSTOMER_NAME`,
+            CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
+            CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
+            CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
+            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
+            CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
+            CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
+            CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
+        ),
+        
+        records_to_insert AS (SELECT
+                g.`CUSTOMER_HK`, g.`HASHDIFF`, g.`CUSTOMER_NAME`, g.`CUSTOMER_DOB`, g.`CUSTOMER_PHONE`, g.`EFFECTIVE_FROM`, g.`LOAD_DATE`, g.`SOURCE`
+                FROM ghost AS g
+                WHERE NOT EXISTS ( SELECT 1 FROM `DBTVAULT`.`TEST`.`SATELLITE` AS h WHERE h.`HASHDIFF` = g.`HASHDIFF` )
+            UNION DISTINCT
+            SELECT DISTINCT stage.`CUSTOMER_HK`, stage.`HASHDIFF`, stage.`CUSTOMER_NAME`, stage.`CUSTOMER_DOB`, stage.`CUSTOMER_PHONE`, stage.`EFFECTIVE_FROM`, stage.`LOAD_DATE`, stage.`SOURCE`
+            FROM source_data AS stage
+            LEFT JOIN latest_records
+            ON latest_records.`CUSTOMER_HK` = stage.`CUSTOMER_HK`
+                AND latest_records.`HASHDIFF` = stage.`HASHDIFF`
+            WHERE latest_records.`HASHDIFF` IS NULL
+        )
+        
         SELECT * FROM records_to_insert
         ```
 
@@ -1679,11 +1932,104 @@ Generates SQL to build a Satellite table using the provided parameters.
         
         SELECT * FROM records_to_insert
         ```
+    === "Base Load with Ghost Record"
+    
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_HK IS NOT NULL
+        ),
+
+        ghost AS (SELECT
+            NULL AS CUSTOMER_NAME,
+            NULL AS CUSTOMER_DOB,
+            NULL AS CUSTOMER_PHONE,
+            CAST('1900-01-01' AS DATE) AS LOAD_DATE,
+            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
+            CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
+        ),
+
+        records_to_insert AS (
+            SELECT g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_PHONE, g.CUSTOMER_DOB, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
+            FROM ghost AS g
+            UNION
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+        )
+
+        SELECT * FROM records_to_insert
+        ```
+
+    === "Subsequent Loads"
+        
+        ```sql
+        WITH source_data AS (
+            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
+            FROM DBTVAULT.TEST.MY_STAGE AS a
+            WHERE CUSTOMER_HK IS NOT NULL
+        ),
+        
+        latest_records AS (
+            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.LOAD_DATE
+            FROM
+            (
+                SELECT current_records.CUSTOMER_PK, current_records.HASHDIFF, current_records.LOAD_DATE,
+                    RANK() OVER (
+                       PARTITION BY current_records.CUSTOMER_PK
+                       ORDER BY current_records.LOAD_DATE DESC
+                    ) AS rank
+                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
+                JOIN (
+                    SELECT DISTINCT source_data.CUSTOMER_PK
+                    FROM source_data
+                ) AS source_records
+                ON current_records.CUSTOMER_PK = source_records.CUSTOMER_PK
+            ) AS a
+            WHERE a.rank = 1
+        ),
+
+        ghost AS (SELECT
+            NULL AS CUSTOMER_NAME,
+            NULL AS CUSTOMER_DOB,
+            NULL AS CUSTOMER_PHONE,
+            CAST('1900-01-01' AS DATE) AS LOAD_DATE,
+            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
+            CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
+            CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
+        ),
+
+        records_to_insert AS (SELECT
+                g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_DOB, g.CUSTOMER_PHONE, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
+                FROM ghost AS g
+                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
+            UNION
+            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
+            FROM source_data AS e
+            LEFT JOIN latest_records
+            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
+            WHERE latest_records.HASHDIFF != e.HASHDIFF
+                OR latest_records.HASHDIFF IS NULL
+        )
+        
+        SELECT * FROM records_to_insert
+        ```
+
+#### Ghost records
+
+Ghost Records are system-generated records which are added to Satellites to provide equi-join performance in PIT tables
+downstream. dbtvault will generate ghost records if the [global variable](#ghost-record-configuration) is set to `true`.
+
+!!! tip "New in v0.9.1"
+    Ghost Records are here! More details (including examples of how it works) coming soon!
 
 #### Hashdiff Aliasing
 
 If you have multiple Satellites using a single stage as its data source, then you will need to
-use [hashdiff aliasing](../best_practices.md#hashdiff-aliasing)
+use [hashdiff aliasing](../best_practises/hashing.md#hashdiff-aliasing)
 
 #### Excluding columns from the payload
 
@@ -1729,9 +2075,9 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/eff_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/eff_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/eff_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -2373,9 +2719,9 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/ma_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/ma_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/ma_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -2733,9 +3079,9 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/xts.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/xts.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/xts.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/xts.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/xts.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -3155,9 +3501,9 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/pit.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/pit.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/pit.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/pit.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/pit.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -3433,9 +3779,9 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/bridge.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/bridge.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/bridge.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/bridge.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/bridge.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
@@ -3699,7 +4045,7 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.0/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.1/macros/staging/stage.sql))
 
 Generates SQL to build a staging area using the provided parameters.
 
@@ -4747,7 +5093,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.0/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.1/macros/supporting/hash.sql))
 
 !!! warning
     This macro ***should not be*** used for cryptographic purposes.
@@ -4756,10 +5102,10 @@ ___
 
 !!! seealso "See Also"
     - [hash_columns](stage_macro_configurations.md#hashed-columns)
-    - Read [Hashing best practices and why we hash](../best_practices.md#hashing)
+    - Read [Hashing best practices and why we hash](../best_practises/hashing.md)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
-    [Learn how](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
     
 A macro for generating hashing SQL for columns.
 
@@ -4832,7 +5178,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.0/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.1/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 

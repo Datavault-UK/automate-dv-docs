@@ -4,6 +4,7 @@ Only the last 10 versions of dbtvault will be shown here.
 
 | dbtvault version                                              | dbt version(s)    | Advice                                                                              | 
 |---------------------------------------------------------------|-------------------|-------------------------------------------------------------------------------------|
+| [v0.9.1](https://hub.getdbt.com/datavault-uk/dbtvault/0.9.1/) | >=1.3.0, <2.0.0   | Use latest dbt 1.3.x version.                                                       |
 | [v0.9.0](https://hub.getdbt.com/datavault-uk/dbtvault/0.9.0/) | >=1.1.0, <2.0.0   | Use latest dbt 1.1.x version.**                                                     |
 | [v0.8.3](https://hub.getdbt.com/datavault-uk/dbtvault/0.8.3/) | >=1.1.0, <2.0.0   | Use latest dbt 1.1.x version.**                                                     |
 | [v0.8.2](https://hub.getdbt.com/datavault-uk/dbtvault/0.8.2/) | >=1.0.0, <2.0.0   | Use latest dbt 1.x version                                                          |
@@ -16,7 +17,7 @@ Only the last 10 versions of dbtvault will be shown here.
 | [v0.7.5](https://hub.getdbt.com/datavault-uk/dbtvault/0.7.5/) | >=0.18.0, <0.20.0 | Use dbt 0.19.2                                                                      |
 | [v0.7.4](https://hub.getdbt.com/datavault-uk/dbtvault/0.7.4/) | >=0.18.0, <0.20.0 | Use dbt 0.19.2                                                                      |
 | [v0.7.3](https://hub.getdbt.com/datavault-uk/dbtvault/0.7.3/) | >=0.18.0, <0.20.0 | Use dbt 0.19.2                                                                      |
-| [v0.7.2](https://hub.getdbt.com/datavault-uk/dbtvault/0.7.2/) | >=0.18.0, <0.19.0 | Use dbt 0.18.2                                                                      |
 
 !!! warning "**"
-    For dbtvault v0.8.3, we have updated dbt support to v1.1.x. For MSSQL Server, dbt 1.1.x is currently not supported. Please use dbt 1.0.x versions instead.
+For dbtvault v0.8.3, we have updated dbt support to v1.1.x. For MSSQL Server, dbt 1.1.x is currently not supported.
+Please use dbt 1.0.x versions instead.
