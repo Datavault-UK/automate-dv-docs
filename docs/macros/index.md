@@ -142,11 +142,11 @@ This can be one of:
 
 ```yaml
 vars:
-  enable_ghost_record: false
+  enable_ghost_records: false
   system_record_value: 'DBTVAULT_SYSTEM'
 ```
 
-#### enable_ghost_record
+#### enable_ghost_records
 
 Enable the use of ghost records in your project. This can either be true or false, `true` will enable the configuration and `false` will disable it.
 
