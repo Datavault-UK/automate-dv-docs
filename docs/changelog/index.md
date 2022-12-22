@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Fixes
 
-- Hotfixes for issues with Ghost Record creation ([#173](https://github.com/Datavault-UK/dbtvault/issues/173),[#174](https://github.com/Datavault-UK/dbtvault/issues/174))
+- Hotfixes for issues with Ghost Record creation under certain circumstances ([#173](https://github.com/Datavault-UK/dbtvault/issues/173),[#174](https://github.com/Datavault-UK/dbtvault/issues/174))
 
 In other news: Happy Holidays!
 
