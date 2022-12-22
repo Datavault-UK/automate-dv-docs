@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
+## [v0.9.2] - 2022-12-22
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.2)](https://dbtvault.readthedocs.io/en/v0.9.2/?badge=v0.9.2)
+
+## Fixes
+
+- Hotfixes for issues with Ghost Record creation ([#173](https://github.com/Datavault-UK/dbtvault/issues/173),[#174](https://github.com/Datavault-UK/dbtvault/issues/174))
+
+In other news: Happy Holidays!
+
 ## [v0.9.1] - 2022-12-16
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.1)](https://dbtvault.readthedocs.io/en/v0.9.1/?badge=v0.9.1)
 
