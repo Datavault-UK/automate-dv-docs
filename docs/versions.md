@@ -19,5 +19,5 @@ Only the last 10 versions of dbtvault will be shown here.
 | [v0.7.3](https://hub.getdbt.com/datavault-uk/dbtvault/0.7.3/)             | >=0.18.0, <0.20.0 | Use dbt 0.19.2                                                                      |
 
 !!! warning "**"
-For dbtvault v0.8.3, we have updated dbt support to v1.1.x. For MSSQL Server, dbt 1.1.x is currently not supported.
-Please use dbt 1.0.x versions instead.
+    For dbtvault v0.8.3, we have updated dbt support to v1.1.x. For MSSQL Server, dbt 1.1.x is currently not supported.
+    Please use dbt 1.0.x versions instead.
