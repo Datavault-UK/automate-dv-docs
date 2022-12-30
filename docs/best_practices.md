@@ -427,3 +427,29 @@ input gives same output). Until we provide more configuration options, feel free
 long as you stick to a standard that makes sense to you or your organisation. If you need
 advice, [feel free to join our slack and ask our developers](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA)!
 
+## Ghost Records
+
+### What are ghost records?
+
+Ghost records are 'dummy' records that are implemented in satellite tables. In Data Vault 1.0 the best practice was to 
+have a separate ghost record for each key. This was changed in Data Vault 2.0 and so now there is a single ghost records 
+inserted at the top of every satellite table.
+
+The ghost records enable the PIT tables to have a complete set of historic data. This means if a key was introduced 
+after the initial creation or the keys are not updated at the same frequency, there will still be data in the table 
+instead of missing the record.
+
+### What does a ghost record look like?
+
+| Column               | Datatype      | Value                                                            | 
+|----------------------|---------------|------------------------------------------------------------------|
+| Primary Key - MD5    | BINARY(16)    | 00000000000000000000000000000000                                 |
+| Primary Key - SHA256 | BINARY(32)    | 0000000000000000000000000000000000000000000000000000000000000000 |
+| Hashdiff - MD5       | BINARY(16)    | 00000000000000000000000000000000                                 |
+| Hashdiff - SHA256    | BINARY(32)    | 0000000000000000000000000000000000000000000000000000000000000000 |
+| Effective From       | DATE/DATETIME | 1900-01-01 00:00:00.000000                                       |
+| Load Date            | DATE/DATETIME | 1900-01-01 00:00:00.000000                                       |
+| Payload Columns      | null          | NULL                                                             |
+| Extra Columns        | null          | NULL                                                             |
+
+
