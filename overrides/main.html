@@ -10,7 +10,7 @@
     <div class="nav-cube">
         <a href="{{ config.site_url | default(nav.homepage.url, true) | url }}"
         title="{{ config.site_name }}">
-            <img src="{{ config.theme.banner | url }}" alt="dbtvault">
+            <img src="{{ config.theme.banner | url }}" alt="AutomateDV">
         </a>
     </div>
     <div class="md-sidebar__scrollwrap">
@@ -39,7 +39,7 @@
 {% block content %}
   <!-- Edit button -->
   {% if page.edit_url %}
-    <a href="{{ page.edit_url | replace('dbtvault', 'dbtvault-docs')}} "
+    <a href="{{ page.edit_url | replace('AutomateDV', 'AutomateDV-docs')}} "
       title="{{ lang.t('edit.link.title') }}"
       class="md-content__button md-icon">
       {% include ".icons/material/pencil.svg" %}
