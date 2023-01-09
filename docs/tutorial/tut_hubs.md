@@ -35,12 +35,12 @@ Create a new dbt model as before. We'll call this one `hub_customer`.
 === "hub_customer.sql"
 
     ```jinja
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+    {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                     src_source=src_source, source_model=source_model) }}
     ```
 
 To create a Hub model, we simply copy and paste the above template into a model named after the Hub we
-are creating. dbtvault will generate a Hub using parameters provided in the next steps.
+are creating. AutomateDV will generate a Hub using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -76,7 +76,7 @@ When we provide the metadata above, our model should look like the following:
     {%- set src_ldts = "LOAD_DATETIME"      -%}
     {%- set src_source = "RECORD_SOURCE"    -%}
     
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+    {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                     src_source=src_source, source_model=source_model) }}
     ```
 
@@ -140,7 +140,7 @@ will handle the rest:
     {%- set src_ldts = "LOAD_DATETIME"            -%}
     {%- set src_source = "RECORD_SOURCE"          -%}
     
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+    {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                     src_source=src_source, source_model=source_model) }}
     ```
 
@@ -160,7 +160,7 @@ will handle the rest:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
+    {{ automatedv.hub(src_pk=metadata_dict["src_pk"],
                     src_nk=metadata_dict["src_nk"], 
                     src_ldts=metadata_dict["src_ldts"],
                     src_source=metadata_dict["src_ldts"],

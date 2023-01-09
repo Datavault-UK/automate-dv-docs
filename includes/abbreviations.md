@@ -18,3 +18,4 @@
 *[HK]: Hash Key
 *[BK]: Business Key
 *[NK]: Natural Key
+*[AutomateDV]: Automate DataVault

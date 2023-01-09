@@ -1,9 +1,9 @@
-site_name: dbtvault
+site_name: AutomateDV
 site_author: Datavault
 site_dir: 'site'
-repo_name: 'Datavault-UK/dbtvault'
-site_url: 'https://dbtvault.readthedocs.io/'
-repo_url: 'https://github.com/Datavault-UK/dbtvault'
+repo_name: 'Datavault-UK/AutomateDV'
+site_url: 'https://AutomateDV.readthedocs.io/'
+repo_url: 'https://github.com/Datavault-UK/AutomateDV'
 dev_addr: 127.0.0.1:8001
 
 theme:
@@ -71,11 +71,11 @@ nav:
           - Tutorials: 'contributing/style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
   - Find Us:
-      - GitHub: 'https://github.com/Datavault-UK/dbtvault'
+      - GitHub: 'https://github.com/Datavault-UK/AutomateDV'
       - Facebook: 'https://www.facebook.com/DataVaultUK/'
       - Twitter: 'https://twitter.com/datavault_uk'
       - LinkedIn: 'https://www.linkedin.com/company/business-thinking-limited'
-      - Slack: 'https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA'
+      - Slack: 'https://join.slack.com/t/AutomateDV/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA'
       - Data Vault User Group: 'https://www.ukdatavaultusergroup.co.uk/'
       - Data Vault User Group Forums: 'https://forum.ukdatavaultusergroup.co.uk/'
       - YouTube: 'https://www.youtube.com/channel/UCdhSsZWTwkX1-v8EX84WLYg'
@@ -126,4 +126,4 @@ extra_css:
   - 'stylesheets/all.css'
   - 'stylesheets/icons.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2022 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
+copyright: AutomateDV and documentation &copy; Business Thinking trading as Datavault 2022 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs

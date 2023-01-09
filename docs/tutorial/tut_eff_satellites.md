@@ -103,14 +103,14 @@ Create a new dbt model as before.
 === "eff_sat_customer_nation.sql"
 
     ```jinja
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+    {{ automatedv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
                         source_model=source_model) }}
     ```
 
 To create an Effectivity Satellite model, we simply copy and paste the above template into a model named after the Effectivity
-Satellite we are creating. dbtvault will generate an Effectivity Satellite using parameters provided in the next steps.
+Satellite we are creating. AutomateDV will generate an Effectivity Satellite using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -157,7 +157,7 @@ When we provide the metadata above, our model should look like the following:
     {%- set src_ldts = "LOAD_DATETIME"    -%}
     {%- set src_source = "RECORD_SOURCE"  -%}
     
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+    {{ automatedv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, 
                         src_end_date=src_end_date,
                         src_eff=src_eff, src_ldts=src_ldts, 

@@ -35,12 +35,12 @@ Create a new dbt model as before. We'll call this one `link_customer_order`.
 === "link_customer_order.sql"
 
     ```jinja
-    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+    {{ automatedv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                     src_source=src_source, source_model=source_model) }}
     ```
 
 To create a Link model, we simply copy and paste the above template into a model named after the Link we
-are creating. dbtvault will generate a Link using metadata provided in the next steps.
+are creating. AutomateDV will generate a Link using metadata provided in the next steps.
 
 #### Materialisation
 
@@ -76,7 +76,7 @@ When we provide the metadata above, our model should look like the following:
     {%- set src_ldts = "LOAD_DATETIME"           -%}
     {%- set src_source = "RECORD_SOURCE"         -%}
     
-    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+    {{ automatedv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                      src_source=src_source, source_model=source_model) }}
     ```
 
@@ -139,7 +139,7 @@ will handle the rest:
     {%- set src_ldts = "LOAD_DATETIME"            -%}
     {%- set src_source = "RECORD_SOURCE"          -%}
     
-    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+    {{ automatedv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                      src_source=src_source, source_model=source_model) }}
     ```
 
@@ -161,7 +161,7 @@ will handle the rest:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.link(src_pk=metadata_dict["src_pk"],
+    {{ automatedv.link(src_pk=metadata_dict["src_pk"],
                      src_fk=metadata_dict["src_fk"], 
                      src_ldts=metadata_dict["src_ldts"],
                      src_source=metadata_dict["src_source"], 

@@ -5,7 +5,7 @@ demonstration project from the repository.
 
 Using the button below, find the latest release and download the zip file, listed under assets.
 
-[View Downloads](https://github.com/Datavault-UK/dbtvault-snowflakeDemo/releases){: .md-button .md-button--primary .btn }
+[View Downloads](https://github.com/Datavault-UK/AutomateDV-snowflakeDemo/releases){: .md-button .md-button--primary .btn }
 
 Once downloaded, unzip the project.
 
@@ -19,15 +19,15 @@ First make sure the `requirements.txt` file is in your current working directory
 This will install dbt and all of its dependencies, ready for 
 development with dbt.
 
-## Install dbtvault
+## Install AutomateDV
 
-Next, we need to install dbtvault. 
-dbtvault has already been added to the `packages.yml` file provided with the example project, so all you need to do 
+Next, we need to install AutomateDV. 
+AutomateDV has already been added to the `packages.yml` file provided with the example project, so all you need to do 
 is run the following command, inside the folder where your `dbt_project.yml` resides:
  
 `dbt deps`
 
-## Setting up dbtvault with Snowflake
+## Setting up AutomateDV with Snowflake
 
 In the provided dbt project file (`dbt_project.yml`) the profile is named `snowflake-demo`.
 In your dbt profiles, you must create a connection with this name and provide the snowflake
@@ -85,8 +85,8 @@ The `dbt_project.yml` file is used to tag and configure groups of models and set
 === "dbt_project.yml"
 
     ```yaml linenums="1"
-    name: dbtvault_snowflake_demo
-    profile: dbtvault_snowflake_demo
+    name: automatedv_snowflake_demo
+    profile: automatedv_snowflake_demo
     version: '5.0.0'
     require-dbt-version: ['>=0.18.0', '<0.19.0']
     config-version: 2
@@ -110,7 +110,7 @@ The `dbt_project.yml` file is used to tag and configure groups of models and set
       tpch_size: 10 #1, 10, 100, 1000, 10000
     
     models:
-      dbtvault_snowflake_demo:
+      automatedv_snowflake_demo:
         raw_stage:
           tags:
             - 'raw'
@@ -176,7 +176,7 @@ Metadata for each structure is provided in each file, for example:
     {%- set src_ldts = "LOAD_DATE" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
     
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+    {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                 src_source=src_source, source_model=source_model) }}
     ```
 

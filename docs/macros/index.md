@@ -7,7 +7,7 @@ the `ref()` [function](https://docs.getdbt.com/reference/dbt-jinja-functions/ref
 [function](https://docs.getdbt.com/reference/dbt-jinja-functions/source)
 for [dbt sources](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources/).
 
-dbtvault provides the means for specifying sources for Data Vault structures with a `source_model` argument.
+AutomateDV provides the means for specifying sources for Data Vault structures with a `source_model` argument.
 
 This behaves differently for the [stage](#stage) macro, which supports either style, shown below:
 
@@ -57,17 +57,17 @@ the `.sql`).
 
 ## Global variables
 
-dbtvault provides
+AutomateDV provides
 user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml)
-which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of
-dbtvault.
+which allow you to configure different aspects of AutomateDV. These variables will be expanded in future versions of
+AutomateDV.
 
 === "dbt_project.yml"
 
     ```yaml
     vars:
       hash: MD5
-      max_datetime: '{{ dbtvault.max_datetime() }}'
+      max_datetime: '{{ automatedv.max_datetime() }}'
       concat_string: '||'
       null_placeholder_string: '^^'
       escape_char_left: '"'
@@ -85,7 +85,7 @@ This can be one of:
 - MD5
 - SHA
 
-[Read more](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+[Read more](../best_practices.md#choosing-a-hashing-algorithm-in-AutomateDV)
 
 #### max_datetime
 
@@ -161,7 +161,7 @@ This will insert a ghost record to a satellite table whether it is a new table o
 
 #### system_record_value
 
-This will set the record source system for the ghost record. The default is 'DBTVAULT_SYSTEM' and can be changed to any string.
+This will set the record source system for the ghost record. The default is 'AUTOMATEDV_SYSTEM' and can be changed to any string.
 
 If this is changed mid-way through a project the source system of already loaded ghost records will not be changed.
 
@@ -169,7 +169,7 @@ If this is changed mid-way through a project the source system of already loaded
 
 The table below indicates which macros and templates are officially available for each platform.
 
-dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
+AutomateDV is primarily developed on Snowflake, and we release support for other platforms as and when possible.
 Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality
 with no equivalent in another platform.
 
@@ -190,12 +190,12 @@ Thanks for your patience and continued support!
 | bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
 
 !!! note "**"
-    These platforms are either planned or actively being worked on by the community and/or internal dbtvault team.
+    These platforms are either planned or actively being worked on by the community and/or internal AutomateDV team.
     See the issues below for more information:
 
-    - [Databricks](https://github.com/Datavault-UK/dbtvault/issues/98)
-    - [Postgres](https://github.com/Datavault-UK/dbtvault/issues/117)
-    - [Redshift](https://github.com/Datavault-UK/dbtvault/issues/86)
+    - [Databricks](https://github.com/Datavault-UK/AutomateDV/issues/98)
+    - [Postgres](https://github.com/Datavault-UK/AutomateDV/issues/117)
+    - [Redshift](https://github.com/Datavault-UK/AutomateDV/issues/86)
 
 ### Limitations
 
@@ -207,7 +207,7 @@ This section documents platform-specific limitations.
 derived columns are handled slightly differently to every other platform:
     - Column escaping is currently disabled in Postgres, and there is currently no way to enable it
 
-2. Due to the way Postgres handles CTEs, dbtvault's [custom materialisations](../materialisations.md) are not yet 
+2. Due to the way Postgres handles CTEs, AutomateDV's [custom materialisations](../materialisations.md) are not yet 
 available for use on Postgres. An exception will be raised if their use is attempted.
 
 ## Table templates
@@ -221,11 +221,11 @@ for your Data Vault 2.0 Data Warehouse.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/hub.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/hub.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/hub.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/databricks/hub.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/postgres/hub.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/hub.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/hub.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/hub.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/databricks/hub.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/postgres/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -233,7 +233,7 @@ Generates SQL to build a Hub table using the provided parameters.
 
 ``` jinja
 
-{{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+{{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                 src_extra_columns=src_extra_columns,
                 src_source=src_source, source_model=source_model) }}
 ```
@@ -272,7 +272,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
@@ -293,14 +293,14 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATEDV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -317,7 +317,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
@@ -327,7 +327,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATEDV.TEST.MY_STAGE_2
             QUALIFY row_number = 1
         ),
         
@@ -365,7 +365,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
@@ -375,7 +375,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATEDV.TEST.MY_STAGE_2
             QUALIFY row_number = 1
         ),
         
@@ -399,7 +399,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATEDV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -418,7 +418,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -440,7 +440,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -448,7 +448,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATEDV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -465,7 +465,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE 
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -476,7 +476,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATEDV.TEST.MY_STAGE_2
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -515,7 +515,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -526,7 +526,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATEDV.TEST.MY_STAGE_2
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -551,7 +551,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATEDV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -573,7 +573,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -599,7 +599,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -608,7 +608,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATEDV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -628,7 +628,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -643,7 +643,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -690,7 +690,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -705,7 +705,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -735,7 +735,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATEDV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -749,18 +749,18 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/link.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/databricks/link.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/postgres/link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/databricks/link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/postgres/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+{{ automatedv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                  src_extra_columns=src_extra_columns,
                  src_source=src_source, source_model=source_model) }}
 ```                                             
@@ -799,7 +799,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATEDV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -823,7 +823,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATEDV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -833,7 +833,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATEDV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -851,7 +851,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATEDV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -864,7 +864,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+            FROM AUTOMATEDV.TEST.MY_STAGE_2 AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -906,7 +906,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATEDV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -919,7 +919,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATEDV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -947,7 +947,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATEDV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -966,7 +966,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             AND ORDER_FK IS NOT NULL
             AND BOOKING_FK IS NOT NULL
@@ -990,7 +990,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             AND ORDER_FK IS NOT NULL
             AND BOOKING_FK IS NOT NULL
@@ -1000,7 +1000,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATEDV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1018,7 +1018,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
         ),
         
         row_rank_2 AS (
@@ -1027,7 +1027,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATEDV.TEST.MY_STAGE_2
         ),
         
         stage_union AS (
@@ -1068,7 +1068,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
         ),
         
         row_rank_2 AS (
@@ -1077,7 +1077,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATEDV.TEST.MY_STAGE_2
         ),
         
         stage_union AS (
@@ -1104,7 +1104,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATEDV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1126,7 +1126,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1154,7 +1154,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1165,7 +1165,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATEDV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1186,7 +1186,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1203,7 +1203,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1253,7 +1253,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1270,7 +1270,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATEDV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1303,7 +1303,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATEDV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1315,16 +1315,16 @@ ___
 
 ### t_link
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/t_link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/t_link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/t_link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/t_link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/t_link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/t_link.sql)
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
+{{ automatedv.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
                    src_extra_columns=src_extra_columns,
                    src_eff=src_eff, src_ldts=src_ldts, 
                    src_source=src_source, source_model=source_model) }}
@@ -1359,7 +1359,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1377,7 +1377,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
+            FROM AUTOMATEDV.TEST.raw_stage_hashed
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1385,7 +1385,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            LEFT JOIN AUTOMATEDV.TEST.t_link AS tgt
             ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
             WHERE tgt.TRANSACTION_HK IS NULL
         )
@@ -1400,7 +1400,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1417,14 +1417,14 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
+            FROM AUTOMATEDV.TEST.raw_stage_hashed
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            LEFT JOIN AUTOMATEDV.TEST.t_link AS tgt
             ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
             WHERE tgt.TRANSACTION_HK IS NULL
         )
@@ -1439,7 +1439,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATEDV.TEST.MY_STAGE
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1457,7 +1457,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
+            FROM AUTOMATEDV.TEST.raw_stage_hashed
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1465,7 +1465,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            LEFT JOIN AUTOMATEDV.TEST.t_link AS tgt
             ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
             WHERE tgt.TRANSACTION_HK IS NULL
         )
@@ -1479,18 +1479,18 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/sat.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/databricks/sat.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/postgres/sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/databricks/sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/postgres/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+{{ automatedv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
                 src_extra_columns=src_extra_columns,
                 src_eff=src_eff, src_ldts=src_ldts, 
                 src_source=src_source, source_model=source_model) }}
@@ -1525,7 +1525,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
 
@@ -1542,7 +1542,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
         
@@ -1554,7 +1554,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                     PARTITION BY c.CUSTOMER_HK
                     ORDER BY c.LOAD_DATE DESC
                 ) AS rank
-            FROM DBTVAULT.TEST.SATELLITE AS c
+            FROM AUTOMATEDV.TEST.SATELLITE AS c
             JOIN (
                 SELECT DISTINCT source_data.CUSTOMER_PK
                 FROM source_data
@@ -1580,7 +1580,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_PHONE", a."CUSTOMER_DOB", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE a."CUSTOMER_PK" IS NOT NULL
         ),
 
@@ -1589,7 +1589,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             NULL AS "CUSTOMER_DOB",
             NULL AS "CUSTOMER_PHONE",
             TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
+            CAST('AUTOMATEDV_SYSTEM' AS VARCHAR) AS "SOURCE",
             TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
@@ -1611,7 +1611,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_DOB", a."CUSTOMER_PHONE", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE a."CUSTOMER_PK" IS NOT NULL
         ),
 
@@ -1623,7 +1623,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                        PARTITION BY current_records."CUSTOMER_HK"
                        ORDER BY current_records."LOAD_DATE" DESC
                     ) AS rank
-                FROM DBTVAULT.TEST.SATELLITE AS current_records
+                FROM AUTOMATEDV.TEST.SATELLITE AS current_records
                     JOIN (
                         SELECT DISTINCT source_data."CUSTOMER_HK"
                         FROM source_data
@@ -1638,7 +1638,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             NULL AS "CUSTOMER_DOB",
             NULL AS "CUSTOMER_PHONE",
             TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
+            CAST('AUTOMATEDV_SYSTEM' AS VARCHAR) AS "SOURCE",
             TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
@@ -1647,7 +1647,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         records_to_insert AS (SELECT
                 g."CUSTOMER_HK", g."HASHDIFF", g."CUSTOMER_NAME", g."CUSTOMER_DOB", g."CUSTOMER_PHONE", g."EFFECTIVE_FROM", g."LOAD_DATE", g."SOURCE"
                 FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
+                WHERE NOT EXISTS ( SELECT 1 FROM AUTOMATEDV.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
             UNION
             SELECT DISTINCT stage."CUSTOMER_HK", stage."HASHDIFF", stage."CUSTOMER_NAME", stage."CUSTOMER_DOB", stage."CUSTOMER_PHONE", stage."EFFECTIVE_FROM", stage."LOAD_DATE", stage."SOURCE"
             FROM source_data AS stage
@@ -1666,7 +1666,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
 
@@ -1683,7 +1683,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
 
@@ -1695,7 +1695,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                 PARTITION BY c.CUSTOMER_HK
                 ORDER BY c.LOAD_DATE DESC
                 ) AS rank
-                FROM DBTVAULT.TEST.SATELLITE AS c
+                FROM AUTOMATEDV.TEST.SATELLITE AS c
                 JOIN (  
                 SELECT DISTICT source_data.CUSTOMER_HK
                 FROM source_data
@@ -1721,7 +1721,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
-            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
+            FROM `AUTOMATEDV`.`TEST`.`MY_STAGE` AS a
             WHERE a.`CUSTOMER_PK` IS NOT NULL
         ),
         
@@ -1730,7 +1730,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
             CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
             CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
-            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
+            CAST('AUTOMATEDV_SYSTEM' AS STRING) AS `SOURCE`,
             CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
             CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
             CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
@@ -1751,7 +1751,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
-            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
+            FROM `AUTOMATEDV`.`TEST`.`MY_STAGE` AS a
             WHERE a.`CUSTOMER_PK` IS NOT NULL
         ),
         
@@ -1763,7 +1763,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                        PARTITION BY current_records.`CUSTOMER_HK`
                        ORDER BY current_records.`LOAD_DATE` DESC
                     ) AS rank
-                FROM `DBTVAULT`.`TEST`.`SATELLITE` AS current_records
+                FROM `AUTOMATEDV`.`TEST`.`SATELLITE` AS current_records
                     JOIN (
                         SELECT DISTINCT source_data.`CUSTOMER_HK`
                         FROM source_data
@@ -1778,7 +1778,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
             CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
             CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
-            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
+            CAST('AUTOMATEDV_SYSTEM' AS STRING) AS `SOURCE`,
             CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
             CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
             CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
@@ -1787,7 +1787,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         records_to_insert AS (SELECT
                 g.`CUSTOMER_HK`, g.`HASHDIFF`, g.`CUSTOMER_NAME`, g.`CUSTOMER_DOB`, g.`CUSTOMER_PHONE`, g.`EFFECTIVE_FROM`, g.`LOAD_DATE`, g.`SOURCE`
                 FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM `DBTVAULT`.`TEST`.`SATELLITE` AS h WHERE h.`HASHDIFF` = g.`HASHDIFF` )
+                WHERE NOT EXISTS ( SELECT 1 FROM `AUTOMATEDV`.`TEST`.`SATELLITE` AS h WHERE h.`HASHDIFF` = g.`HASHDIFF` )
             UNION DISTINCT
             SELECT DISTINCT stage.`CUSTOMER_HK`, stage.`HASHDIFF`, stage.`CUSTOMER_NAME`, stage.`CUSTOMER_DOB`, stage.`CUSTOMER_PHONE`, stage.`EFFECTIVE_FROM`, stage.`LOAD_DATE`, stage.`SOURCE`
             FROM source_data AS stage
@@ -1807,7 +1807,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
 
@@ -1824,7 +1824,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
         
@@ -1837,7 +1837,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                        PARTITION BY current_records.CUSTOMER_PK
                        ORDER BY current_records.LOAD_DATE DESC
                     ) AS rank
-                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
+                FROM AUTOMATEDV_DEV.TEST.SATELLITE AS current_records
                 JOIN (
                     SELECT DISTINCT source_data.CUSTOMER_PK
                     FROM source_data
@@ -1863,7 +1863,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
 
@@ -1872,7 +1872,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             NULL AS CUSTOMER_DOB,
             NULL AS CUSTOMER_PHONE,
             CAST('1900-01-01' AS DATE) AS LOAD_DATE,
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
+            CAST('AUTOMATEDV_SYSTEM' AS VARCHAR(50)) AS SOURCE,
             CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
@@ -1894,7 +1894,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATEDV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
         
@@ -1907,7 +1907,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                        PARTITION BY current_records.CUSTOMER_PK
                        ORDER BY current_records.LOAD_DATE DESC
                     ) AS rank
-                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
+                FROM AUTOMATEDV_DEV.TEST.SATELLITE AS current_records
                 JOIN (
                     SELECT DISTINCT source_data.CUSTOMER_PK
                     FROM source_data
@@ -1922,7 +1922,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             NULL AS CUSTOMER_DOB,
             NULL AS CUSTOMER_PHONE,
             CAST('1900-01-01' AS DATE) AS LOAD_DATE,
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
+            CAST('AUTOMATEDV_SYSTEM' AS VARCHAR(50)) AS SOURCE,
             CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
@@ -1931,7 +1931,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         records_to_insert AS (SELECT
                 g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_DOB, g.CUSTOMER_PHONE, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
                 FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
+                WHERE NOT EXISTS ( SELECT 1 FROM AUTOMATEDV.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
             UNION
             SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
             FROM source_data AS e
@@ -1956,16 +1956,16 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/eff_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/eff_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/eff_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+{{ automatedv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, src_end_date=src_end_date,
                     src_extra_columns=src_extra_columns,
                     src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
@@ -2003,7 +2003,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2021,7 +2021,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2032,7 +2032,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
                     PARTITION BY b.ORDER_CUSTOMER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                 ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            FROM AUTOMATEDV.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             QUALIFY row_num = 1
         ),
         
@@ -2103,7 +2103,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2114,7 +2114,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
                     PARTITION BY b.ORDER_CUSTOMER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                 ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            FROM AUTOMATEDV.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             QUALIFY row_num = 1
         ),
         
@@ -2189,7 +2189,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2207,7 +2207,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2218,7 +2218,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
                     PARTITION BY b.ORDER_CUSTOMER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                 ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            FROM AUTOMATEDV.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             WHERE b.ORDER_HK IS NOT NULL
             QUALIFY row_num = 1
         ),
@@ -2290,7 +2290,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2301,7 +2301,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
                     PARTITION BY b.ORDER_CUSTOMER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                 ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+            FROM AUTOMATEDV.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             WHERE b.ORDER_HK IS NOT NULL
             QUALIFY row_num = 1
         ),
@@ -2379,7 +2379,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2397,7 +2397,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2411,7 +2411,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
                         PARTITION BY b.ORDER_CUSTOMER_HK
                         ORDER BY b.LOAD_DATETIME DESC
                     ) AS row_num
-                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+                FROM AUTOMATEDV.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             ) l
             WHERE l.row_num = 1
         ),
@@ -2483,7 +2483,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         ```sql
         WITH source_data AS (
             SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.STG_ORDER_CUSTOMER AS a
             WHERE a.ORDER_HK IS NOT NULL
             AND a.CUSTOMER_HK IS NOT NULL
         ),
@@ -2497,7 +2497,7 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
                         PARTITION BY b.ORDER_CUSTOMER_HK
                         ORDER BY b.LOAD_DATETIME DESC
                     ) AS row_num
-                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
+                FROM AUTOMATEDV.TEST.EFF_SAT_ORDER_CUSTOMER AS b
             ) l
             WHERE l.row_num = 1
         ),
@@ -2573,7 +2573,7 @@ Auto end-dating is enabled by providing a config option as below:
 ``` jinja
 {{ config(is_auto_end_dating=true) }}
 
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+{{ automatedv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, src_end_date=src_end_date,
                     src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
                     source_model=source_model) }}
@@ -2600,16 +2600,16 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/ma_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/ma_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/ma_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+{{ automatedv.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
                    src_payload=src_payload, src_eff=src_eff,
                    src_extra_columns=src_extra_columns, src_ldts=src_ldts, 
                    src_source=src_source, source_model=source_model) }}
@@ -2645,7 +2645,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         ```sql
         WITH source_data AS (
             SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
                 AND s.CUSTOMER_PHONE IS NOT NULL
         ),
@@ -2665,7 +2665,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
             SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE 
                 ,COUNT(DISTINCT s.HASHDIFF, s.CUSTOMER_PHONE)
                     OVER (PARTITION BY s.CUSTOMER_PK) AS source_count
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
                 AND s.CUSTOMER_PHONE IS NOT NULL
         ),
@@ -2687,7 +2687,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
                     ,inner_mas.LOAD_DATE
                     ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
                         ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
-                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
+                FROM AUTOMATEDV.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
                 INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
                     ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
                 QUALIFY latest_rank = 1
@@ -2743,7 +2743,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         ```sql
         WITH source_data AS (
             SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
                 AND s.CUSTOMER_PHONE IS NOT NULL
         ),
@@ -2760,7 +2760,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         ```sql
         WITH source_data AS (
             SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATETIME, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
                 AND s.CUSTOMER_PHONE IS NOT NULL
         ),
@@ -2795,7 +2795,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
                 ,inner_mas.LOAD_DATETIME
                 ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
                     ORDER BY inner_mas.LOAD_DATETIME DESC) AS latest_rank
-            FROM flash-bazaar-332912.DBTVAULT_FLASH_BAZAAR_332912.MULTI_ACTIVE_SATELLITE_TS AS inner_mas
+            FROM flash-bazaar-332912.AUTOMATEDV_FLASH_BAZAAR_332912.MULTI_ACTIVE_SATELLITE_TS AS inner_mas
             INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
                 ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK
             ) AS mas
@@ -2854,7 +2854,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         ```sql
         WITH source_data AS (
             SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
                 AND s.CUSTOMER_PHONE IS NOT NULL
         ),
@@ -2872,7 +2872,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         ```sql
         WITH source_data AS (
             SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATETIME, s.SOURCE
-            FROM DBTVAULT_DEV.TEST.STG_CUSTOMER AS s
+            FROM AUTOMATEDV_DEV.TEST.STG_CUSTOMER AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
                 AND s.CUSTOMER_PHONE IS NOT NULL
         ),
@@ -2907,7 +2907,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
                 ,inner_mas.LOAD_DATETIME
                 ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
                     ORDER BY inner_mas.LOAD_DATETIME DESC) AS latest_rank
-            FROM DBTVAULT_DEV.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
+            FROM AUTOMATEDV_DEV.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
             INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
                 ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK
             ) AS mas
@@ -2960,16 +2960,16 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/xts.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/xts.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/xts.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/xts.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/xts.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, 
+{{ automatedv.xts(src_pk=src_pk, src_satellite=src_satellite, 
                 src_extra_columns=src_extra_columns, src_ldts=src_ldts,
                 src_source=src_source, source_model=source_model) }}`
 ```
@@ -3004,7 +3004,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         ```sql
         WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
@@ -3016,7 +3016,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* 
             FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                 AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3034,13 +3034,13 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         ```sql
         WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_b AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
@@ -3052,7 +3052,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                 AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3070,25 +3070,25 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         ```sql
         WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_1
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_b AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_1
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_c AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_2
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_d AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_2
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
@@ -3104,7 +3104,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                     AND union_satellites.LOAD_DATE = d.LOAD_DATE
                     AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3124,7 +3124,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         ```sql
         WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
@@ -3136,7 +3136,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* 
             FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                 AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3156,13 +3156,13 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
         satellite_a AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_b AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
@@ -3174,7 +3174,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                 AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3195,37 +3195,37 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
         satellite_a AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_1 AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_b AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_1 AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_c AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_d AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_e AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_2 AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
         satellite_f AS (
             SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_2 AS s
             WHERE s.CUSTOMER_PK IS NOT NULL
         ),
 
@@ -3245,7 +3245,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                 AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3265,7 +3265,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         ```sql
         WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
@@ -3277,7 +3277,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* 
             FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                 AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3295,13 +3295,13 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         ```sql
         WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_b AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
@@ -3313,7 +3313,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                 AND union_satellites.LOAD_DATE = d.LOAD_DATE
                 AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3331,25 +3331,25 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         ```sql
         WITH satellite_a AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_1
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_b AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_1
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_c AS (
             SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_2
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
         satellite_d AS (
             SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
+            FROM AUTOMATEDV.TEST.STG_CUSTOMER_2SAT_2
             WHERE CUSTOMER_PK IS NOT NULL
         ),
         
@@ -3365,7 +3365,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         
         records_to_insert AS (
             SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
+            LEFT JOIN AUTOMATEDV.TEST.XTS_2SAT AS d
                 ON (union_satellites.HASHDIFF = d.HASHDIFF
                     AND union_satellites.LOAD_DATE = d.LOAD_DATE
                     AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
@@ -3382,14 +3382,14 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/pit.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/pit.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/pit.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/pit.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/pit.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
 ``` jinja
-{{ dbtvault.pit(src_pk=src_pk, 
+{{ automatedv.pit(src_pk=src_pk, 
                 as_of_dates_table=as_of_dates_table,
                 satellites=satellites,
                 stage_tables_ldts=stage_tables_ldts,
@@ -3424,14 +3424,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
         ```sql
         WITH as_of_dates AS (
             SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE AS a
+            FROM AUTOMATEDV.TEST.AS_OF_DATE AS a
         ),
         
         new_rows_as_of_dates AS (
             SELECT
                 a.CUSTOMER_PK,
                 b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.HUB_CUSTOMER AS a
             INNER JOIN as_of_dates AS b
             ON (1=1)
         ),
@@ -3447,13 +3447,13 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
                 COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
             FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
                 ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
                 AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
                 ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
                 AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
             GROUP BY
@@ -3472,23 +3472,23 @@ Generates SQL to build a Point-In-Time (PIT) table.
         ```sql
         WITH as_of_dates AS (
             SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE
+            FROM AUTOMATEDV.TEST.AS_OF_DATE
         ),
         
         last_safe_load_datetime AS (
             SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME 
             FROM (
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM AUTOMATEDV.TEST.STG_CUSTOMER_DETAILS
                 UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM AUTOMATEDV.TEST.STG_CUSTOMER_LOGIN
                 UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM AUTOMATEDV.TEST.STG_CUSTOMER_PROFILE
             ) a
         ),
         
         as_of_grain_old_entries AS (
             SELECT DISTINCT AS_OF_DATE 
-            FROM DBTVAULT.TEST.PIT_CUSTOMER
+            FROM AUTOMATEDV.TEST.PIT_CUSTOMER
         ),
         
         as_of_grain_lost_entries AS (
@@ -3520,7 +3520,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
         
         new_rows_pks AS (
             SELECT a.CUSTOMER_PK
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.HUB_CUSTOMER AS a
             WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
         ),
         
@@ -3535,8 +3535,8 @@ Generates SQL to build a Point-In-Time (PIT) table.
         
         overlap AS (
             SELECT a.*
-            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
-            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
+            FROM AUTOMATEDV.TEST.PIT_CUSTOMER AS a
+            INNER JOIN AUTOMATEDV.TEST.HUB_CUSTOMER as b
                 ON a.CUSTOMER_PK = b.CUSTOMER_PK
             WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
                 AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
@@ -3565,13 +3565,13 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,        
                 CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_PROFILE_LDTS
             FROM backfill_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
                 ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
                 AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
                 ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
                 AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
             GROUP BY
@@ -3582,7 +3582,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
             SELECT
                 a.CUSTOMER_PK,
                 b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
+            FROM AUTOMATEDV.TEST.HUB_CUSTOMER AS a
             INNER JOIN new_rows_as_of AS b
             ON (1=1)
         ),
@@ -3598,13 +3598,13 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
                 COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
             FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
                 ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
                 AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
+            LEFT JOIN AUTOMATEDV.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
                 ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
                 AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
             GROUP BY
@@ -3647,7 +3647,7 @@ forward to reflect the current date.
 Think of As of Date tables as essentially a rolling window of time.
 
 !!! note 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you
+    At the current release of AutomateDV there is no functionality that auto generates this table for you, so you
     will have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
 
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
@@ -3660,9 +3660,9 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/bridge.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/bridge.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/bridge.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/snowflake/bridge.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/bigquery/bridge.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/AutomateDV/blob/v0.9.0/macros/tables/sqlserver/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
@@ -3672,7 +3672,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 #### Usage
 
 ``` jinja
-{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
+{{ automatedv.bridge(source_model=source_model, src_pk=src_pk,
                         src_ldts=src_ldts,
                         bridge_walk=bridge_walk,
                         as_of_dates_table=as_of_dates_table,
@@ -3706,7 +3706,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         ```sql
         WITH as_of AS (
              SELECT a.AS_OF_DATE
-             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
+             FROM AUTOMATEDV_DEV.TEST.AS_OF_DATE AS a
              WHERE a.AS_OF_DATE <= CURRENT_DATE()
         ),
         
@@ -3716,12 +3716,12 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
                 b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
                             ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
                             ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
+            FROM AUTOMATEDV_DEV.TEST.HUB_CUSTOMER AS a
             INNER JOIN AS_OF AS b
                 ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+            LEFT JOIN AUTOMATEDV_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
                 ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+            INNER JOIN AUTOMATEDV_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
                 ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
                 AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
         ),
@@ -3758,20 +3758,20 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         ```sql
         WITH as_of AS (
              SELECT a.AS_OF_DATE
-             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
+             FROM AUTOMATEDV_DEV.TEST.AS_OF_DATE AS a
              WHERE a.AS_OF_DATE <= CURRENT_DATE()
         ),
         
         last_safe_load_datetime AS (
             SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
-            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT_DEV.TEST.STG_CUSTOMER_ORDER
+            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM AUTOMATEDV_DEV.TEST.STG_CUSTOMER_ORDER
                         
                     ) AS l
         ),
         
         as_of_grain_old_entries AS (
             SELECT DISTINCT AS_OF_DATE
-            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER
+            FROM AUTOMATEDV_DEV.TEST.BRIDGE_CUSTOMER_ORDER
         ),
         
         as_of_grain_lost_entries AS (
@@ -3797,7 +3797,7 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         
         new_rows_pks AS (
             SELECT h.CUSTOMER_PK
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS h
+            FROM AUTOMATEDV_DEV.TEST.HUB_CUSTOMER AS h
             WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
         ),
         
@@ -3812,8 +3812,8 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
         
         overlap_pks AS (
             SELECT p.CUSTOMER_PK
-            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER AS p
-            INNER JOIN DBTVAULT_DEV.TEST.HUB_CUSTOMER as h
+            FROM AUTOMATEDV_DEV.TEST.BRIDGE_CUSTOMER_ORDER AS p
+            INNER JOIN AUTOMATEDV_DEV.TEST.HUB_CUSTOMER as h
                 ON p.CUSTOMER_PK = h.CUSTOMER_PK
             WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
                 AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
@@ -3838,9 +3838,9 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
             FROM overlap_pks AS a
             INNER JOIN overlap_as_of AS b
                 ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+            LEFT JOIN AUTOMATEDV_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
                 ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+            INNER JOIN AUTOMATEDV_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
                 ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
                 AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
         ),
@@ -3851,12 +3851,12 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
                 b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
                             ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
                             ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
+            FROM AUTOMATEDV_DEV.TEST.HUB_CUSTOMER AS a
             INNER JOIN NEW_ROWS_AS_OF AS b
                 ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
+            LEFT JOIN AUTOMATEDV_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
                 ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
+            INNER JOIN AUTOMATEDV_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
                 ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
                 AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
         ),
@@ -3902,7 +3902,7 @@ An As of Date table contains a single column of dates used to construct the hist
 
 !!! note
 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    At the current release of AutomateDV there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
     
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
@@ -3917,7 +3917,7 @@ ___
 
 These macros are intended for use in the staging layer.
 
-At dbtvault, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the
+At AutomateDV, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the
 raw vault. It is important to understand that according to Data Vault 2.0 standards, the primed stages is
 essentially where all of our **_hard_** business rules are defined. We are not excessively transforming the data beyond
 what is reasonable prior to the raw stage, but simply creating some columns to drive audit and performance downstream.
@@ -3926,14 +3926,14 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.0/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/AutomateDV/blob/release/0.9.0/macros/staging/stage.sql))
 
 Generates SQL to build a staging area using the provided parameters.
 
 #### Usage
 
 ``` jinja 
-{{ dbtvault.stage(include_source_columns=true,
+{{ automatedv.stage(include_source_columns=true,
                   source_model=source_model,
                   derived_columns=derived_columns,
                   null_columns=null_columns,
@@ -3993,7 +3993,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         derived_columns AS (
@@ -4144,7 +4144,7 @@ Generates SQL to build a staging area using the provided parameters.
         
             SELECT *
             
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         columns_to_select AS (
@@ -4204,7 +4204,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         derived_columns AS (
@@ -4276,7 +4276,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         null_columns AS (
@@ -4353,7 +4353,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         hashed_columns AS (
@@ -4435,14 +4435,14 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         ranked_columns AS (
         
             SELECT *,
         
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS DBTVAULT_RANK,
+            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS AUTOMATEDV_RANK,
             RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS SAT_LOAD_RANK
         
             FROM source_data
@@ -4452,7 +4452,7 @@ Generates SQL to build a staging area using the provided parameters.
         
             SELECT
         
-            DBTVAULT_RANK,
+            AUTOMATEDV_RANK,
             SAT_LOAD_RANK
         
             FROM ranked_columns
@@ -4490,7 +4490,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         derived_columns AS (
@@ -4641,7 +4641,7 @@ Generates SQL to build a staging area using the provided parameters.
         
             SELECT *
             
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         columns_to_select AS (
@@ -4701,7 +4701,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         derived_columns AS (
@@ -4773,7 +4773,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         null_columns AS (
@@ -4850,7 +4850,7 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         hashed_columns AS (
@@ -4932,14 +4932,14 @@ Generates SQL to build a staging area using the provided parameters.
             TEST_COLUMN_9,
             BOOKING_DATE
         
-            FROM DBTVAULT.TEST.my_raw_stage
+            FROM AUTOMATEDV.TEST.my_raw_stage
         ),
         
         ranked_columns AS (
         
             SELECT *,
         
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS DBTVAULT_RANK,
+            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS AUTOMATEDV_RANK,
             RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS SAT_LOAD_RANK
         
             FROM source_data
@@ -4949,7 +4949,7 @@ Generates SQL to build a staging area using the provided parameters.
         
             SELECT
         
-            DBTVAULT_RANK,
+            AUTOMATEDV_RANK,
             SAT_LOAD_RANK
         
             FROM ranked_columns
@@ -4974,7 +4974,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.0/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/AutomateDV/blob/release/0.9.0/macros/supporting/hash.sql))
 
 !!! warning
     This macro ***should not be*** used for cryptographic purposes.
@@ -4986,7 +4986,7 @@ ___
     - Read [Hashing best practices and why we hash](../best_practices.md#hashing)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
-    [Learn how](../best_practices.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how](../best_practices.md#choosing-a-hashing-algorithm-in-AutomateDV)
     
 A macro for generating hashing SQL for columns.
 
@@ -4995,8 +4995,8 @@ A macro for generating hashing SQL for columns.
 === "Input"
 
     ```yaml
-    {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
-    {{ dbtvault.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
+    {{ automatedv.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
+    {{ automatedv.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
     ```
 
 === "Output (Snowflake)"
@@ -5059,7 +5059,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.0/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/AutomateDV/blob/release/0.9.0/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
@@ -5075,7 +5075,7 @@ A macro for quickly prefixing a list of columns with a string.
 === "Input"
 
     ```sql 
-    {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
+    {{ automatedv.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ automatedv.prefix(['CUSTOMERKEY'], 'a') }}
     ```
 
 === "Output"
@@ -5093,7 +5093,7 @@ ___
 
 ###### (macros/internal)
 
-Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to be
+Internal macros are used by other macros provided by AutomateDV. They process provided metadata and should not need to be
 called directly.
 
 --8<-- "includes/abbreviations.md"

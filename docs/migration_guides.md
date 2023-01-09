@@ -9,7 +9,7 @@ This will only affect users using the `pit()` macro.
     === "Before (v0.8.3)"
     
         ```jinja hl_lines="4"
-        {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+        {{ automatedv.pit(source_model=source_model, src_pk=src_pk,
                         as_of_dates_table=as_of_dates_table,
                         satellites=satellites,
                         stage_tables=stage_tables,
@@ -19,7 +19,7 @@ This will only affect users using the `pit()` macro.
     === "After (v0.9.0)"
     
         ```jinja hl_lines="4"
-        {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
+        {{ automatedv.pit(source_model=source_model, src_pk=src_pk,
                         as_of_dates_table=as_of_dates_table,
                         satellites=satellites,
                         stage_tables_ldts=stage_tables_ldts,

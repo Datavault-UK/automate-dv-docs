@@ -1,4 +1,4 @@
-dbtvault is metadata driven. On this page, we provide an overview of how to provide and store the data for **dbtvault
+AutomateDV is metadata driven. On this page, we provide an overview of how to provide and store the data for **AutomateDV
 macros**.
 
 For all other metadata and configurations, please refer to
@@ -40,7 +40,7 @@ You may also provide metadata on a per-model basis. This is useful if you have a
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
     
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+    {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                     src_source=src_source, source_model=source_model) }}
     ```
 
@@ -76,7 +76,7 @@ example provided to help better convey the difference.
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
+    {{ automatedv.hub(src_pk=metadata_dict["src_pk"],
                     src_nk=metadata_dict["src_nk"], 
                     src_ldts=metadata_dict["src_ldts"],
                     src_source=metadata_dict["src_ldts"],
@@ -126,7 +126,7 @@ example provided to help better convey the difference.
     {% set hashed_columns = metadata_dict["hashed_columns"] %}
     {% set ranked_columns = metadata_dict["ranked_columns"] %}
     
-    {{ dbtvault.stage(include_source_columns=true,
+    {{ automatedv.stage(include_source_columns=true,
                       source_model=source_model,
                       derived_columns=derived_columns,
                       null_columns=null_columns,
@@ -135,7 +135,7 @@ example provided to help better convey the difference.
     ```
 
     !!! note
-        '!' at the beginning of strings is syntactic sugar provided by dbtvault for creating constant values. 
+        '!' at the beginning of strings is syntactic sugar provided by AutomateDV for creating constant values. 
         [Read More](macros/index.md#constants-derived-columns)
 
 ### Staging
@@ -190,7 +190,7 @@ example provided to help better convey the difference.
         {% set hashed_columns = metadata_dict["hashed_columns"] %}
         {% set ranked_columns = metadata_dict["ranked_columns"] %}
         
-        {{ dbtvault.stage(include_source_columns=true,
+        {{ automatedv.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=derived_columns,
                           null_columns=null_columns,
@@ -209,7 +209,7 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict["source_model"] %}
         
-        {{ dbtvault.stage(include_source_columns=true,
+        {{ automatedv.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=none,
                           null_columns=none,
@@ -229,7 +229,7 @@ example provided to help better convey the difference.
         
         {% set source_model = metadata_dict["source_model"] %}
         
-        {{ dbtvault.stage(include_source_columns=true,
+        {{ automatedv.stage(include_source_columns=true,
                           source_model=source_model,
                           derived_columns=none,
                           null_columns=none,
@@ -264,7 +264,7 @@ example provided to help better convey the difference.
         {% set source_model = metadata_dict["source_model"] %}
         {% set hashed_columns = metadata_dict["hashed_columns"] %}
         
-        {{ dbtvault.stage(include_source_columns=false,
+        {{ automatedv.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
                           null_columns=none,
@@ -287,7 +287,7 @@ example provided to help better convey the difference.
         {% set source_model = metadata_dict["source_model"] %}
         {% set derived_columns = metadata_dict["derived_columns"] %}
         
-        {{ dbtvault.stage(include_source_columns=false,
+        {{ automatedv.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=derived_columns,
                           null_columns=none,
@@ -313,7 +313,7 @@ example provided to help better convey the difference.
         {% set source_model = metadata_dict["source_model"] %}
         {% set null_columns = metadata_dict["null_columns"] %}
         
-        {{ dbtvault.stage(include_source_columns=false,
+        {{ automatedv.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
                           null_columns=null_columns,
@@ -337,7 +337,7 @@ example provided to help better convey the difference.
         {% set source_model = metadata_dict["source_model"] %}
         {% set ranked_columns = metadata_dict["ranked_columns"] %}
         
-        {{ dbtvault.stage(include_source_columns=false,
+        {{ automatedv.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
                           null_columns=none,
@@ -370,7 +370,7 @@ example provided to help better convey the difference.
         {% set source_model = metadata_dict["source_model"] %}
         {% set hashed_columns = metadata_dict["hashed_columns"] %}
         
-        {{ dbtvault.stage(include_source_columns=false,
+        {{ automatedv.stage(include_source_columns=false,
                           source_model=source_model,
                           derived_columns=none,
                           null_columns=none,
@@ -401,7 +401,7 @@ example provided to help better convey the difference.
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.hub(src_pk=metadata_dict["src_pk"],
                         src_nk=metadata_dict["src_nk"], 
                         src_ldts=metadata_dict["src_ldts"],
                         src_source=metadata_dict["src_source"],
@@ -423,7 +423,7 @@ example provided to help better convey the difference.
 
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.hub(src_pk=metadata_dict["src_pk"],
                         src_nk=metadata_dict["src_nk"], 
                         src_ldts=metadata_dict["src_ldts"],
                         src_source=metadata_dict["src_source"],
@@ -445,7 +445,7 @@ example provided to help better convey the difference.
 
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.hub(src_pk=metadata_dict["src_pk"],
                         src_nk=metadata_dict["src_nk"], 
                         src_ldts=metadata_dict["src_ldts"],
                         src_source=metadata_dict["src_source"],
@@ -463,7 +463,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+        {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
 
@@ -476,7 +476,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+        {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
 
@@ -489,7 +489,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+        {{ automatedv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
 
@@ -517,7 +517,7 @@ example provided to help better convey the difference.
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {{ dbtvault.link(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.link(src_pk=metadata_dict["src_pk"],
                          src_fk=metadata_dict["src_fk"], 
                          src_ldts=metadata_dict["src_ldts"],
                          src_source=metadata_dict["src_source"], 
@@ -540,7 +540,7 @@ example provided to help better convey the difference.
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
         
-        {{ dbtvault.link(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.link(src_pk=metadata_dict["src_pk"],
                          src_fk=metadata_dict["src_fk"], 
                          src_ldts=metadata_dict["src_ldts"],
                          src_source=metadata_dict["src_source"], 
@@ -557,7 +557,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+        {{ automatedv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                          src_source=src_source, source_model=source_model) }}
         ```
 
@@ -569,7 +569,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+        {{ automatedv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                          src_source=src_source, source_model=source_model) }}
         ```
 
@@ -604,7 +604,7 @@ example provided to help better convey the difference.
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-    {{ dbtvault.t_link(src_pk=metadata_dict["src_pk"],
+    {{ automatedv.t_link(src_pk=metadata_dict["src_pk"],
                        src_fk=metadata_dict["src_fk"],
                        src_payload=metadata_dict["src_payload"],
                        src_eff=metadata_dict["src_eff"],
@@ -624,7 +624,7 @@ example provided to help better convey the difference.
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
     
-    {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+    {{ automatedv.t_link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                        src_payload=src_payload, src_eff=src_eff,
                        src_source=src_source, source_model=source_model) }}
     ```
@@ -660,7 +660,7 @@ example provided to help better convey the difference.
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-        {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.sat(src_pk=metadata_dict["src_pk"],
                         src_hashdiff=metadata_dict["src_hashdiff"],
                         src_payload=metadata_dict["src_payload"],
                         src_eff=metadata_dict["src_eff"],
@@ -692,7 +692,7 @@ example provided to help better convey the difference.
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-        {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.sat(src_pk=metadata_dict["src_pk"],
                         src_hashdiff=metadata_dict["src_hashdiff"],
                         src_payload=metadata_dict["src_payload"],
                         src_eff=metadata_dict["src_eff"],
@@ -719,7 +719,7 @@ example provided to help better convey the difference.
         
         {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-        {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+        {{ automatedv.sat(src_pk=metadata_dict["src_pk"],
                         src_hashdiff=metadata_dict["src_hashdiff"],
                         src_payload=metadata_dict["src_payload"],
                         src_eff=metadata_dict["src_eff"],
@@ -741,7 +741,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+        {{ automatedv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
                         src_payload=src_payload, src_eff=src_eff,
                         src_ldts=src_ldts, src_source=src_source, 
                         source_model=source_model) }}
@@ -758,7 +758,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+        {{ automatedv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
                         src_payload=src_payload, src_eff=src_eff,
                         src_ldts=src_ldts, src_source=src_source, 
                         source_model=source_model) }}
@@ -775,7 +775,7 @@ example provided to help better convey the difference.
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
+        {{ automatedv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff,
                         src_payload=src_payload, src_eff=src_eff,
                         src_ldts=src_ldts, src_source=src_source, 
                         source_model=source_model) }}
@@ -810,7 +810,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.eff_sat(src_pk=metadata_dict["src_pk"],
+    {{ automatedv.eff_sat(src_pk=metadata_dict["src_pk"],
                         src_dfk=metadata_dict["src_dfk"],
                         src_sfk=metadata_dict["src_sfk"],
                         src_start_date=metadata_dict["src_start_date"],
@@ -834,7 +834,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
     
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+    {{ automatedv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                         src_start_date=src_start_date, src_end_date=src_end_date, 
                         src_eff=src_eff, src_ldts=src_ldts, src_source=src_source, 
                         source_model=source_model) }}
@@ -866,7 +866,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.ma_sat(src_pk=metadata_dict["src_pk"],
+    {{ automatedv.ma_sat(src_pk=metadata_dict["src_pk"],
                        src_cdk=metadata_dict["src_cdk"],
                        src_payload=metadata_dict["src_payload"],
                        src_hashdiff=metadata_dict["src_hashdiff"],
@@ -888,7 +888,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
     {%- set src_ldts = "LOAD_DATETIME" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
     
-    {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+    {{ automatedv.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
                        src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
                        src_source=src_source, source_model=source_model) }}
     ```
@@ -929,7 +929,7 @@ ___
         {% set src_satellite = metadata_dict["src_satellite"] %}
         {% set src_source = metadata_dict["src_source"] %}
     
-        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+        {{ automatedv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
 
@@ -962,7 +962,7 @@ ___
         {% set src_satellite = metadata_dict["src_satellite"] %}
         {% set src_source = metadata_dict["src_source"] %}
     
-        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+        {{ automatedv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
 
@@ -977,7 +977,7 @@ ___
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+        {{ automatedv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
 
@@ -996,7 +996,7 @@ ___
         {%- set src_ldts = "LOAD_DATETIME" -%}
         {%- set src_source = "RECORD_SOURCE" -%}
         
-        {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+        {{ automatedv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
                         src_source=src_source, source_model=source_model) }}
         ```
 
@@ -1089,7 +1089,7 @@ ___
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-    {{ dbtvault.pit(source_model=metadata_dict['source_model'], 
+    {{ automatedv.pit(source_model=metadata_dict['source_model'], 
                     src_pk=metadata_dict['src_pk'],
                     as_of_dates_table=metadata_dict['as_of_dates_table'],
                     satellites=metadata_dict['satellites'],
@@ -1147,7 +1147,7 @@ ___
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}   
 
-    {{ dbtvault.bridge(source_model=metadata_dict['source_model'], 
+    {{ automatedv.bridge(source_model=metadata_dict['source_model'], 
                        src_pk=metadata_dict['src_pk'],
                        src_ldts=metadata_dict['src_ldts'],
                        bridge_walk=metadata_dict['bridge_walk'],

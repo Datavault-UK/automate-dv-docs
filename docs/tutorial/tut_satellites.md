@@ -55,13 +55,13 @@ Create a new dbt model as before. We'll call this one `sat_customer_detail`.
 === "sat_customer_detail.sql"
 
     ```jinja
-    {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+    {{ automatedv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
                     src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
                     source_model=source_model)                                        }}
     ```
 
 To create a Satellite model, we simply copy and paste the above template into a model named after the Satellite we
-are creating. dbtvault will generate a Satellite using parameters provided in the next steps.
+are creating. AutomateDV will generate a Satellite using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -113,7 +113,7 @@ When we provide the metadata above, our model should look like the following:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
+    {{ automatedv.sat(src_pk=metadata_dict["src_pk"],
                     src_hashdiff=metadata_dict["src_hashdiff"],
                     src_payload=metadata_dict["src_payload"],
                     src_eff=metadata_dict["src_eff"],

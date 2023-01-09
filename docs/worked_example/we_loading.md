@@ -154,7 +154,7 @@ Return to the `dbt_project.yml` file and change the date to `1992-01-09`:
       tpch_size: 10 #1, 10, 100, 1000, 10000
     
     models:
-      dbtvault_snowflake_demo:
+      automatedv_snowflake_demo:
         ...
     ```
 
@@ -166,7 +166,7 @@ This will load the next day-feed into the system.
 
 ## Next steps
 
-Now that you have a taste for how dbtvault and Data Vault works, you may be itching to implement Data Vault in
+Now that you have a taste for how AutomateDV and Data Vault works, you may be itching to implement Data Vault in
 a production system.
 
 There are a range of skills you need to learn, but this is the same for all Data Warehouse architectures.
@@ -176,4 +176,4 @@ We understand that it's a daunting process, but not to worry!
 We can shortcut your adoption process with Data Vault training, coaching and advice so that you can develop a 
 practical Data Vault demonstration to impress your stakeholders. 
 
-[Find out more](https://www.data-vault.co.uk/dbtvault/){: .md-button .md-button--primary .btn }
+[Find out more](https://www.data-vault.co.uk/AutomateDV/){: .md-button .md-button--primary .btn }

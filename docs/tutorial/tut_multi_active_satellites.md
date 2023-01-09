@@ -61,7 +61,7 @@ Create a new dbt model as before. We'll call this one `ma_sat_customer_detail`.
 === "ma_sat_customer_detail.sql"
 
     ```jinja
-    {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+    {{ automatedv.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
                        src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
                        src_source=src_source, source_model=source_model) }}
     ```
@@ -116,7 +116,7 @@ When we provide the metadata above, our model should look like the following:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.ma_sat(src_pk=metadata_dict['src_pk'],
+    {{ automatedv.ma_sat(src_pk=metadata_dict['src_pk'],
                        src_cdk=metadata_dict['src_cdk'],
                        src_payload=metadata_dict['src_payload'],
                        src_hashdiff=metadata_dict['src_hashdiff'],
