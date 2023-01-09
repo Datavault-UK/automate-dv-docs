@@ -246,7 +246,7 @@ column.
 #### Usage
 
 ```jinja
-{{ config(materialized='vault_insert_by_rank', rank_column='DBTVAULT_RANK', rank_source_models='MY_STAGE') }}
+{{ config(materialized='vault_insert_by_rank', rank_column='AUTOMATEDV_RANK', rank_source_models='MY_STAGE') }}
 
 {{ automatedv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                     src_start_date=src_start_date, src_end_date=src_end_date,
@@ -272,7 +272,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATEDV_RANK:
         partition_by: "CUSTOMER_HK"
         order_by: "LOAD_DATETIME"
     ```
@@ -282,7 +282,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
+      AUTOMATEDV_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
     ```
 
 !!! note
