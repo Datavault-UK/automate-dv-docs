@@ -14,6 +14,12 @@ dbt comes with 4 standard materialisations:
 For dbtvault, we have created some custom materialisations which support Data Vault 2.0 specific patterns which are 
 documented below.
 
+For normal use, you should use the standard incremental materialisation in most cases. Please refer to our [best practises for recommended materialisations](https://dbtvault.readthedocs.io/en/latest/best_practises/materialisations/#recommended-materialisations). 
+
+!!! warning 
+    These are not to be used for daily loads or even first-time (base) loads as they have ill performance. 
+    Their main use case is for low-volume tables for testing or development purposes and users are not advised to use these in production
+
 ### vault_insert_by_period (Insert by Period)
 
 ([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/vault_insert_by_period_materialization.sql))
