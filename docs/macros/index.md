@@ -3446,43 +3446,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
         
                 COALESCE(MAX(sat_customer_details_src.LOAD_DATE),
                          TO_TIMESTAMP('1900-01-01 00:00:00.000'))
-                AS SAT_CUSTOMER_DETAILS_LDTS,
-        
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK),
-                         CAST('0000000000000000' AS BINARY(16)))
-                AS SAT_CUSTOMER_LOGIN_PK,
-        
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE),
-                         TO_TIMESTAMP('1900-01-01 00:00:00.000'))
-                AS SAT_CUSTOMER_LOGIN_LDTS,
-        
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK),
-                         CAST('0000000000000000' AS BINARY(16)))
-                AS SAT_CUSTOMER_PROFILE_PK,
-        
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE),
-                         TO_TIMESTAMP('1900-01-01 00:00:00.000'))
-                AS SAT_CUSTOMER_PROFILE_LDTS
-        
+                AS SAT_CUSTOMER_DETAILS_LDTS
+
             FROM new_rows_as_of_dates AS a
         
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                     ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                     AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                    ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                    AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_login_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                    ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                    AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_profile_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
+                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'           
         
             GROUP BY
                 a.CUSTOMER_PK,
@@ -3506,13 +3477,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
         last_safe_load_datetime AS (
             SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
             FROM (
-        
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-                    
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS    
                 ) AS l
         ),
         
@@ -3604,33 +3569,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 a.AS_OF_DATE,
         
                 CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
-                TO_TIMESTAMP('1900-01-01 00:00:00.000') AS SAT_CUSTOMER_DETAILS_LDTS,
-        
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
-                TO_TIMESTAMP('1900-01-01 00:00:00.000') AS SAT_CUSTOMER_LOGIN_LDTS,
-        
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,
-                TO_TIMESTAMP('1900-01-01 00:00:00.000') AS SAT_CUSTOMER_PROFILE_LDTS
+                TO_TIMESTAMP('1900-01-01 00:00:00.000') AS SAT_CUSTOMER_DETAILS_LDTS
         
             FROM backfill_rows_as_of_dates AS a
         
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                     ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                     AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                    ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                    AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_login_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                    ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                    AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_profile_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
+                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'            
         
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
@@ -3656,43 +3602,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
         
                 COALESCE(MAX(sat_customer_details_src.LOAD_DATE),
                          TO_TIMESTAMP('1900-01-01 00:00:00.000'))
-                AS SAT_CUSTOMER_DETAILS_LDTS,
-        
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK),
-                         CAST('0000000000000000' AS BINARY(16)))
-                AS SAT_CUSTOMER_LOGIN_PK,
-        
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE),
-                         TO_TIMESTAMP('1900-01-01 00:00:00.000'))
-                AS SAT_CUSTOMER_LOGIN_LDTS,
-        
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK),
-                         CAST('0000000000000000' AS BINARY(16)))
-                AS SAT_CUSTOMER_PROFILE_PK,
-        
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE),
-                         TO_TIMESTAMP('1900-01-01 00:00:00.000'))
-                AS SAT_CUSTOMER_PROFILE_LDTS
+                AS SAT_CUSTOMER_DETAILS_LDTS
         
             FROM new_rows_as_of_dates AS a
         
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                     ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                     AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                    ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                    AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_login_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                    ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                    AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_profile_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
+                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'            
         
             GROUP BY
                 a.CUSTOMER_PK,
@@ -3732,31 +3649,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,
                 MAX(sat_customer_details_src.CUSTOMER_PK) AS SAT_CUSTOMER_DETAILS_PK,
-                MAX(TO_TIMESTAMP(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                MAX(sat_customer_login_src.CUSTOMER_PK) AS SAT_CUSTOMER_LOGIN_PK,
-                MAX(TO_TIMESTAMP(sat_customer_login_src.LOAD_DATE)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                MAX(sat_customer_profile_src.CUSTOMER_PK) AS SAT_CUSTOMER_PROFILE_PK,
-                MAX(TO_TIMESTAMP(sat_customer_profile_src.LOAD_DATE)) AS SAT_CUSTOMER_PROFILE_LDTS
+                MAX(TO_TIMESTAMP(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS
         
             FROM new_rows_as_of_dates AS a
         
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                     ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                     AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                    ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                    AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_login_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                    ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                    AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_profile_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
+                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'            
         
             GROUP BY
                 a.CUSTOMER_PK,
@@ -3780,13 +3680,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
         last_safe_load_datetime AS (
             SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
             FROM (
-        
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-                    
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS   
                 ) AS l
         ),
         
@@ -3877,31 +3771,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,
                 MIN(sat_customer_details_src.CUSTOMER_PK) AS SAT_CUSTOMER_DETAILS_PK,
-                MIN(TO_TIMESTAMP(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                MIN(sat_customer_login_src.CUSTOMER_PK) AS SAT_CUSTOMER_LOGIN_PK,
-                MIN(TO_TIMESTAMP(sat_customer_login_src.LOAD_DATE)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                MIN(sat_customer_profile_src.CUSTOMER_PK) AS SAT_CUSTOMER_PROFILE_PK,
-                MIN(TO_TIMESTAMP(sat_customer_profile_src.LOAD_DATE)) AS SAT_CUSTOMER_PROFILE_LDTS
+                MIN(TO_TIMESTAMP(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS
         
             FROM backfill_rows_as_of_dates AS a
         
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                     ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                     AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                    ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                    AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_login_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                    ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                    AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_profile_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
+                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'           
         
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
@@ -3921,31 +3798,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,
                 MAX(sat_customer_details_src.CUSTOMER_PK) AS SAT_CUSTOMER_DETAILS_PK,
-                MAX(TO_TIMESTAMP(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                MAX(sat_customer_login_src.CUSTOMER_PK) AS SAT_CUSTOMER_LOGIN_PK,
-                MAX(TO_TIMESTAMP(sat_customer_login_src.LOAD_DATE)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                MAX(sat_customer_profile_src.CUSTOMER_PK) AS SAT_CUSTOMER_PROFILE_PK,
-                MAX(TO_TIMESTAMP(sat_customer_profile_src.LOAD_DATE)) AS SAT_CUSTOMER_PROFILE_LDTS
+                MAX(TO_TIMESTAMP(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS
         
             FROM new_rows_as_of_dates AS a
         
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                     ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                     AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                    ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                    AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_login_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
-        
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                    ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                    AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                    OR sat_customer_profile_src.LOAD_DATE = '1900-01-01 00:00:00.000'
-            
+                    OR sat_customer_details_src.LOAD_DATE = '1900-01-01 00:00:00.000'           
         
             GROUP BY
                 a.CUSTOMER_PK,
@@ -3986,32 +3846,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
             SELECT
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK),
-                '0x0000000000000000') AS SAT_CUSTOMER_DETAILS_PK,
+                    '0x0000000000000000') AS SAT_CUSTOMER_DETAILS_PK,
                 COALESCE(MAX(sat_customer_details_src.LOAD_DATE),
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS,COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK),
-                '0x0000000000000000') AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE),
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_LOGIN_LDTS,COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK),
-                '0x0000000000000000') AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE),
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_PROFILE_LDTS
+                    PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS
             FROM new_rows_as_of_dates AS a
-        
-        
             
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
         
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
@@ -4023,6 +3865,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
         )
         
         SELECT DISTINCT * FROM pit
+        ```
 
     === "Incremental Load"
 
@@ -4034,13 +3877,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
         last_safe_load_datetime AS (
             SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
             FROM (
-        
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-                    
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS  
                 ) AS l
         ),
         
@@ -4144,22 +3981,12 @@ Generates SQL to build a Point-In-Time (PIT) table.
             SELECT
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,'0x0000000000000000' AS SAT_CUSTOMER_DETAILS_PK,
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000') AS SAT_CUSTOMER_DETAILS_LDTS,'0x0000000000000000' AS SAT_CUSTOMER_LOGIN_PK,
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000') AS SAT_CUSTOMER_LOGIN_LDTS,'0x0000000000000000' AS SAT_CUSTOMER_PROFILE_PK,
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000') AS SAT_CUSTOMER_PROFILE_LDTS
+                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000') AS SAT_CUSTOMER_DETAILS_LDTS
             FROM backfill_rows_as_of_dates AS a
-        
-            
+
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-        
+                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE        
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
             ORDER BY (1)
@@ -4177,34 +4004,17 @@ Generates SQL to build a Point-In-Time (PIT) table.
         new_rows AS (
             SELECT
                 a.CUSTOMER_PK,
-                a.AS_OF_DATE,COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK),
-                '0x0000000000000000') AS SAT_CUSTOMER_DETAILS_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), 
+                    '0x0000000000000000') AS SAT_CUSTOMER_DETAILS_PK,
                 COALESCE(MAX(sat_customer_details_src.LOAD_DATE),
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS,COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK),
-                '0x0000000000000000') AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE),
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_LOGIN_LDTS,COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK),
-                '0x0000000000000000') AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE),
-                PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_PROFILE_LDTS
+                    PARSE_DATETIME('%F %H:%M:%E6S', '1900-01-01 00:00:00.000000')) AS SAT_CUSTOMER_DETAILS_LDTS
             FROM new_rows_as_of_dates AS a
-        
-        
-            
+
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-        
+
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
             ORDER BY (1)
@@ -4219,6 +4029,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
         )
         
         SELECT DISTINCT * FROM pit
+        ```
     
     === "Base Load with Ghost Records"
 
@@ -4241,32 +4052,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,
                 MAX(sat_customer_details_src.CUSTOMER_PK) AS SAT_CUSTOMER_DETAILS_PK,
-                DATETIME(MAX(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                MAX(sat_customer_login_src.CUSTOMER_PK) AS SAT_CUSTOMER_LOGIN_PK,
-                DATETIME(MAX(sat_customer_login_src.LOAD_DATE)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                MAX(sat_customer_profile_src.CUSTOMER_PK) AS SAT_CUSTOMER_PROFILE_PK,
-                DATETIME(MAX(sat_customer_profile_src.LOAD_DATE)) AS SAT_CUSTOMER_PROFILE_LDTS
+                DATETIME(MAX(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS
             FROM new_rows_as_of_dates AS a
-        
-        
-            
+
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
                 OR sat_customer_details_src.LOAD_DATE = DATETIME('1900-01-01')
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                OR sat_customer_login_src.LOAD_DATE = DATETIME('1900-01-01')
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                OR sat_customer_profile_src.LOAD_DATE = DATETIME('1900-01-01')
-        
+
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
             ORDER BY (1)
@@ -4277,7 +4070,6 @@ Generates SQL to build a Point-In-Time (PIT) table.
         )
         
         SELECT DISTINCT * FROM pit
-
         ```
     === "Incremental Load with Ghost Records"
 
@@ -4289,13 +4081,7 @@ Generates SQL to build a Point-In-Time (PIT) table.
         last_safe_load_datetime AS (
             SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
             FROM (
-        
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                     UNION ALL 
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-                    
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS 
                 ) AS l
         ),
         
@@ -4328,19 +4114,15 @@ Generates SQL to build a Point-In-Time (PIT) table.
         backfill_as_of AS (
             SELECT AS_OF_DATE
             FROM as_of_dates AS a
-        
             INNER JOIN last_safe_load_datetime as l
             ON a.AS_OF_DATE < l.LAST_SAFE_LOAD_DATETIME
-            
         ),
         
         new_rows_pks AS (
             SELECT h.CUSTOMER_PK
             FROM DBTVAULT.TEST.HUB_CUSTOMER AS h
-        
             INNER JOIN last_safe_load_datetime as l
             ON h.LOAD_DATE >= l.LAST_SAFE_LOAD_DATETIME
-            
         ),
         
         new_rows_as_of AS (
@@ -4349,7 +4131,6 @@ Generates SQL to build a Point-In-Time (PIT) table.
             INNER JOIN last_safe_load_datetime as l
             ON a.AS_OF_DATE >= l.LAST_SAFE_LOAD_DATETIME
             UNION DISTINCT
-            
             SELECT as_of_date
             FROM as_of_grain_new_entries
         ),
@@ -4368,7 +4149,6 @@ Generates SQL to build a Point-In-Time (PIT) table.
             WHERE a.AS_OF_DATE >= min_date.MIN_DATE
                 AND a.AS_OF_DATE < last_safe_load_datetime.LAST_SAFE_LOAD_DATETIME
         		AND as_of_grain_lost_entries.AS_OF_DATE IS NULL
-            
         ),
         
         overlap_as_of AS (
@@ -4383,7 +4163,6 @@ Generates SQL to build a Point-In-Time (PIT) table.
             WHERE p.AS_OF_DATE >= min_date.MIN_DATE
                 AND p.AS_OF_DATE < last_safe_load_datetime.LAST_SAFE_LOAD_DATETIME
         		AND as_of_grain_lost_entries.AS_OF_DATE IS NULL
-            
         ),
         
         backfill_rows_as_of_dates AS (
@@ -4400,26 +4179,13 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,
                 MIN(sat_customer_details_src.CUSTOMER_PK) AS SAT_CUSTOMER_DETAILS_,
-                DATETIME(MIN(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                MIN(sat_customer_login_src.CUSTOMER_PK) AS SAT_CUSTOMER_LOGIN_,
-                DATETIME(MIN(sat_customer_login_src.LOAD_DATE)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                MIN(sat_customer_profile_src.CUSTOMER_PK) AS SAT_CUSTOMER_PROFILE_,
-                DATETIME(MIN(sat_customer_profile_src.LOAD_DATE)) AS SAT_CUSTOMER_PROFILE_LDTS
+                DATETIME(MIN(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS
             FROM backfill_rows_as_of_dates AS a
-        
             
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
                 OR sat_customer_details_src.LOAD_DATE = DATETIME('1900-01-01')
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                OR sat_customer_login_src.LOAD_DATE = DATETIME('1900-01-01')
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                OR sat_customer_profile_src.LOAD_DATE = DATETIME('1900-01-01')
         
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
@@ -4440,31 +4206,13 @@ Generates SQL to build a Point-In-Time (PIT) table.
                 a.CUSTOMER_PK,
                 a.AS_OF_DATE,
                 MAX(sat_customer_details_src.CUSTOMER_PK) AS SAT_CUSTOMER_DETAILS_PK,
-                DATETIME(MAX(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                MAX(sat_customer_login_src.CUSTOMER_PK) AS SAT_CUSTOMER_LOGIN_PK,
-                DATETIME(MAX(sat_customer_login_src.LOAD_DATE)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                MAX(sat_customer_profile_src.CUSTOMER_PK) AS SAT_CUSTOMER_PROFILE_PK,
-                DATETIME(MAX(sat_customer_profile_src.LOAD_DATE)) AS SAT_CUSTOMER_PROFILE_LDTS
+                DATETIME(MAX(sat_customer_details_src.LOAD_DATE)) AS SAT_CUSTOMER_DETAILS_LDTS
             FROM new_rows_as_of_dates AS a
-        
-        
-            
+
                 LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
                 ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
                 AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
                 OR sat_customer_details_src.LOAD_DATE = DATETIME('1900-01-01')
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-                OR sat_customer_login_src.LOAD_DATE = DATETIME('1900-01-01')
-        
-            
-                LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-                OR sat_customer_profile_src.LOAD_DATE = DATETIME('1900-01-01')
         
             GROUP BY
                 a.CUSTOMER_PK, a.AS_OF_DATE
@@ -4480,9 +4228,405 @@ Generates SQL to build a Point-In-Time (PIT) table.
         )
         
         SELECT DISTINCT * FROM pit
+        ```
 
 === "MS SQL Server"
-    Coming soon!
+
+    === "Base Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER_1S AS a
+            INNER JOIN as_of_dates AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+        
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK),
+                         CONVERT(BINARY(16), '0000000000000000', 2))
+                AS SAT_CUSTOMER_DETAILS_PK,
+        
+                COALESCE(MAX(sat_customer_details_src.LOAD_DATE),
+                         CONVERT(DATETIME2, '1900-01-01 00:00:00.000'))
+                AS SAT_CUSTOMER_DETAILS_LDTS
+        
+            FROM new_rows_as_of_dates AS a
+        
+                LEFT OUTER JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                    ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                    AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+            
+        
+            GROUP BY
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
+
+    === "Incremental Load"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+        
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
+            FROM (
+                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
+                ) AS l
+        ),
+        
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE
+            FROM DBTVAULT.TEST.PIT_CUSTOMER_1S
+        ),
+        
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of_dates AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_dates AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        min_date AS (
+            SELECT MIN(AS_OF_DATE) AS MIN_DATE
+            FROM as_of_dates
+        ),
+        
+        backfill_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_pks AS (
+            SELECT h.CUSTOMER_PK
+            FROM DBTVAULT.TEST.HUB_CUSTOMER_1S AS h
+            WHERE h.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+            UNION
+            SELECT as_of_date
+            FROM as_of_grain_new_entries
+        ),
+        
+        overlap_pks AS (
+            SELECT a.*
+            FROM DBTVAULT.TEST.PIT_CUSTOMER_1S AS a
+            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER_1S as b
+                ON a.CUSTOMER_PK = b.CUSTOMER_PK
+            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        overlap_as_of AS (
+            SELECT p.AS_OF_DATE
+            FROM as_of_dates AS p
+            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        backfill_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM new_rows_pks AS a
+            INNER JOIN backfill_as_of AS b
+                ON (1=1)
+        ),
+        
+        backfill AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+        
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK),
+                         CONVERT(BINARY(16), '0000000000000000', 2))
+                AS SAT_CUSTOMER_DETAILS_PK,
+        
+                COALESCE(MAX(sat_customer_details_src.LOAD_DATE),
+                         CONVERT(DATETIME2, '1900-01-01 00:00:00.000'))
+                AS SAT_CUSTOMER_DETAILS_LDTS
+        
+            FROM backfill_rows_as_of_dates AS a
+        
+                LEFT OUTER JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                    ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                    AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER_1S AS a
+            INNER JOIN new_rows_as_of AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+        
+                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK),
+                         CONVERT(BINARY(16), '0000000000000000', 2))
+                AS SAT_CUSTOMER_DETAILS_PK,
+        
+                COALESCE(MAX(sat_customer_details_src.LOAD_DATE),
+                         CONVERT(DATETIME2, '1900-01-01 00:00:00.000'))
+                AS SAT_CUSTOMER_DETAILS_LDTS
+        
+            FROM new_rows_as_of_dates AS a
+        
+                LEFT OUTER JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
+                    ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
+                    AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
+
+            GROUP BY
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap_pks
+            UNION ALL
+            SELECT * FROM backfill
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
+
+    === "Base Load with Ghost Records"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER_1S_TS AS a
+            INNER JOIN as_of_dates AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_ts_src.CUSTOMER_PK),
+                         CAST(REPLICATE(CAST(CAST('0' AS tinyint) AS BINARY(16)), 16) AS BINARY(16)))
+                AS SAT_CUSTOMER_DETAILS_TS_PK,
+                COALESCE(MAX(sat_customer_details_ts_src.LOAD_DATETIME),
+                         CONVERT(DATETIME2, '1900-01-01 00:00:00'))
+                AS SAT_CUSTOMER_DETAILS_TS_LDTS
+        
+            FROM new_rows_as_of_dates AS a
+        
+                LEFT OUTER JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS_TS AS sat_customer_details_ts_src
+                    ON a.CUSTOMER_PK = sat_customer_details_ts_src.CUSTOMER_PK
+                    AND sat_customer_details_ts_src.LOAD_DATETIME <= a.AS_OF_DATE
+
+            GROUP BY
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
+
+    === "Incremental Load with Ghost Records"
+
+        ```sql
+        WITH as_of_dates AS (
+            SELECT * FROM DBTVAULT.TEST.AS_OF_DATE
+        ),
+        
+        last_safe_load_datetime AS (
+            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
+            FROM (
+                SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT.TEST.SAT_CUSTOMER_DETAILS_TS
+                ) AS l
+        ),
+        
+        as_of_grain_old_entries AS (
+            SELECT DISTINCT AS_OF_DATE
+            FROM DBTVAULT.TEST.PIT_CUSTOMER_1S_TS
+        ),
+        
+        as_of_grain_lost_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_grain_old_entries AS a
+            LEFT OUTER JOIN as_of_dates AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        as_of_grain_new_entries AS (
+            SELECT a.AS_OF_DATE
+            FROM as_of_dates AS a
+            LEFT OUTER JOIN as_of_grain_old_entries AS b
+                ON a.AS_OF_DATE = b.AS_OF_DATE
+            WHERE b.AS_OF_DATE IS NULL
+        ),
+        
+        min_date AS (
+            SELECT MIN(AS_OF_DATE) AS MIN_DATE
+            FROM as_of_dates
+        ),
+        
+        backfill_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_pks AS (
+            SELECT h.CUSTOMER_PK
+            FROM DBTVAULT.TEST.HUB_CUSTOMER_1S_TS AS h
+            WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+        ),
+        
+        new_rows_as_of AS (
+            SELECT AS_OF_DATE
+            FROM as_of_dates AS a
+            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+            UNION
+            SELECT as_of_date
+            FROM as_of_grain_new_entries
+        ),
+        
+        overlap_pks AS (
+            SELECT a.*
+            FROM DBTVAULT.TEST.PIT_CUSTOMER_1S_TS AS a
+            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER_1S_TS as b
+                ON a.CUSTOMER_PK = b.CUSTOMER_PK
+            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        overlap_as_of AS (
+            SELECT p.AS_OF_DATE
+            FROM as_of_dates AS p
+            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
+                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
+                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
+        ),
+        
+        backfill_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM new_rows_pks AS a
+            INNER JOIN backfill_as_of AS b
+                ON (1=1)
+        ),
+        
+        backfill AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_ts_src.CUSTOMER_PK),
+                         CAST(REPLICATE(CAST(CAST('0' AS tinyint) AS BINARY(16)), 16) AS BINARY(16)))
+                AS SAT_CUSTOMER_DETAILS_TS_PK,
+                COALESCE(MAX(sat_customer_details_ts_src.LOAD_DATETIME),
+                         CONVERT(DATETIME2, '1900-01-01 00:00:00'))
+                AS SAT_CUSTOMER_DETAILS_TS_LDTS
+            FROM backfill_rows_as_of_dates AS a
+                LEFT OUTER JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS_TS AS sat_customer_details_ts_src
+                    ON a.CUSTOMER_PK = sat_customer_details_ts_src.CUSTOMER_PK
+                    AND sat_customer_details_ts_src.LOAD_DATETIME <= a.AS_OF_DATE
+            GROUP BY
+                a.CUSTOMER_PK, a.AS_OF_DATE
+        ),
+        
+        new_rows_as_of_dates AS (
+            SELECT
+                a.CUSTOMER_PK,
+                b.AS_OF_DATE
+            FROM DBTVAULT.TEST.HUB_CUSTOMER_1S_TS AS a
+            INNER JOIN new_rows_as_of AS b
+            ON (1=1)
+        ),
+        
+        new_rows AS (
+            SELECT
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE,
+                COALESCE(MAX(sat_customer_details_ts_src.CUSTOMER_PK),
+                         CAST(REPLICATE(CAST(CAST('0' AS tinyint) AS BINARY(16)), 16) AS BINARY(16)))
+                AS SAT_CUSTOMER_DETAILS_TS_PK,
+                COALESCE(MAX(sat_customer_details_ts_src.LOAD_DATETIME),
+                         CONVERT(DATETIME2, '1900-01-01 00:00:00'))
+                AS SAT_CUSTOMER_DETAILS_TS_LDTS
+            FROM new_rows_as_of_dates AS a
+        
+                LEFT OUTER JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS_TS AS sat_customer_details_ts_src
+                    ON a.CUSTOMER_PK = sat_customer_details_ts_src.CUSTOMER_PK
+                    AND sat_customer_details_ts_src.LOAD_DATETIME <= a.AS_OF_DATE
+
+            GROUP BY
+                a.CUSTOMER_PK,
+                a.AS_OF_DATE
+        ),
+        
+        pit AS (
+            SELECT * FROM new_rows
+            UNION ALL
+            SELECT * FROM overlap_pks
+            UNION ALL
+            SELECT * FROM backfill
+            
+        )
+        
+        SELECT DISTINCT * FROM pit
+        ```
 
 #### As Of Date Tables
 
