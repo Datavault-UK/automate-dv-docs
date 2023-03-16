@@ -11,8 +11,6 @@ We will be releasing changes incrementally, so you can reap the benefits as soon
 
 ## Releases Roadmap
 
-## Future releases
-
 In future releases, we hope to include the following:
 
 ### Platform support
