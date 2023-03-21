@@ -155,7 +155,7 @@ This will insert a ghost record to a satellite table whether it is a new table o
 Before adding the ghost record, the satellite macro will check there is not already one loaded.
 
 !!! note
-    If this is enabled on an existing project, the ghost-records will be inserted into 
+    If this is enabled on an existing project, the ghost-records will be inserted into the satellite on the first dbt run after enabling **_only_**
 
 #### system_record_value
 
