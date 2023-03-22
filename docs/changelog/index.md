@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [v0.9.5] - 2023-03-22
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.5)](https://dbtvault.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
 
-[![dbt Versions](https://img.shields.io/badge/tested%20dbt%20versions-%3E1.3%20%3C1.4-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
+[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
 
 
 ## Fixes
