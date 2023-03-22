@@ -68,7 +68,7 @@ nav:
   - Migration Guides: 'migration_guides.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
-  - Versions: 'versions.md'
+  - dbt Compatibility: 'versions.md'
   - Changelog:
       - Stable Releases: 'changelog/index.md'
       - Beta Releases: 'changelog/beta.md'
