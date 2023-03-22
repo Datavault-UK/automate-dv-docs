@@ -11,6 +11,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
+# [v0.9.5] - 2023-03-22
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.5)](https://dbtvault.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
+
+[![dbt Versions](https://img.shields.io/badge/tested%20dbt%20versions-%3E1.3%20%3C1.4-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
+
+
+## Fixes
+
+### All platforms
+- Added error handling for when the number of iterations in `vault_insert_by_x` exceeds 100,000 (#175)
+- Fixed a regression in PITs where an incorrect join was causing a performance hit and in some cases, incorrect data
+- Fixed an issue causing 'LOADING...' log messages to appear when running `dbt docs generate` or `dbt docs serve` 
+- Fixed a bug in the `vault_insert_by_period` materialisation affecting executions with 'hour' as the period (#178)
+
+### SQLServer
+- Fixed a minor casing issue in the SQLServer `eff_sat` macro (#182)
+
+### Databricks
+- Fixed an issue related to #183 but for MD5 hashing in Databricks
+
+## [v0.9.4] - 2023-02-16
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.4)](https://dbtvault.readthedocs.io/en/v0.9.4/?badge=v0.9.4)
+
+This is a minor hotfix update. More bug fixes to come soon! :smile: 
+
+## Fixes
+
+- Binary type not defaulting correctly (Snowflake) (#183)
+
+## [v0.9.3] - 2023-01-27
+[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.3)](https://dbtvault.readthedocs.io/en/v0.9.3/?badge=v0.9.3)
+
+## Fixes
+
+- Updated `packages.yml` for compatibility with dbt-utils 1.0.0
+
+## Notes
+
+- Fully tested (and passing) with dbt-utils 1.0.0 and dbt 1.3.2 
+
+## Thank you to our community
+
+Thank you to all those who were being patient for this release. The delay was due to us wanting to release this with a few other bug fixes and new features. This additional content is being released at a later date so that we could get this dbt-utils fix out to our community sooner.
+
 ## [v0.9.2] - 2022-12-22
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.2)](https://dbtvault.readthedocs.io/en/v0.9.2/?badge=v0.9.2)
 
