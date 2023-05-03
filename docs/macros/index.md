@@ -205,7 +205,8 @@ The default is variations on `9999-12-31 23:59:59.999999` where there is more or
 
 Configure the characters to use to delimit SQL column names when [escaping](../best_practises/escaping.md). 
 Column names are delimited when using the [escaping](../best_practises/escaping.md) feature of dbtvault, 
-and by default both the delimiting characters are double quotes following the SQL:1999 standard.
+and by default both the delimiting characters are double quotes following the SQL:1999 standard. 
+If these are set to an empty string then the default for the platform will be used when the escaping feature is enabled.
 
 Here are some examples for different platforms:
 
