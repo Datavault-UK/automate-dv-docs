@@ -60,7 +60,7 @@ Thank you to all those who were being patient for this release. The delay was du
 
 ## Fixes
 
-- Hotfixes for issues with Ghost Record creation under certain circumstances ([#173](https://github.com/Datavault-UK/dbtvault/issues/173),[#174](https://github.com/Datavault-UK/dbtvault/issues/174))
+- Hotfixes for issues with Ghost Record creation under certain circumstances ([#173](https://github.com/Datavault-UK/automate-dv/issues/173),[#174](https://github.com/Datavault-UK/automate-dv/issues/174))
 
 In other news: Happy Holidays!
 
@@ -91,8 +91,8 @@ We have made significant changes to how escaping now works as per #168. We belie
 
 Related issues:
 
-- https://github.com/Datavault-UK/dbtvault/issues/168 
-- https://github.com/Datavault-UK/dbtvault/issues/159 
+- https://github.com/Datavault-UK/automate-dv/issues/168 
+- https://github.com/Datavault-UK/automate-dv/issues/159 
 
 ### Casing
 
@@ -100,9 +100,9 @@ In addition to the above, we have also done an overhaul of casing in our templat
 
 Related issues:
 
-- https://github.com/Datavault-UK/dbtvault/issues/166
-- https://github.com/Datavault-UK/dbtvault/issues/163 
-- https://github.com/Datavault-UK/dbtvault/issues/157 
+- https://github.com/Datavault-UK/automate-dv/issues/166
+- https://github.com/Datavault-UK/automate-dv/issues/163 
+- https://github.com/Datavault-UK/automate-dv/issues/157 
 
 ### Other
 
@@ -153,10 +153,10 @@ Related issues:
 Introducing:
 
 :star2: Payload column exclusion: Satellite's payload can now be configured to select all columns, except a user-defined
-list using an `exclude` configuration (https://github.com/Datavault-UK/dbtvault/issues/128)
+list using an `exclude` configuration (https://github.com/Datavault-UK/automate-dv/issues/128)
 
 :star2: Null Business Key Handling: Now users can provide a configuration in their staging tables to handle NULL keys
-elegantly, according to business needs (https://github.com/Datavault-UK/dbtvault/issues/133)
+elegantly, according to business needs (https://github.com/Datavault-UK/automate-dv/issues/133)
 
 :star2: Extra Columns Parameter: All table macros now provide a `src_extra_columns` parameter which allows users to add
 extra columns outside the standard template for business needs.
@@ -167,17 +167,17 @@ Minor but helpful! This is our first step towards giving our users more informat
 ### Fixes
 
 :white_check_mark: Fixed an edge case for `vault_insert_by_period` when the staging table and the target table were in
-different databases (https://github.com/Datavault-UK/dbtvault/issues/121)
+different databases (https://github.com/Datavault-UK/automate-dv/issues/121)
 
 :white_check_mark: Removed the uppercase conversion in the staging
-macro (https://github.com/Datavault-UK/dbtvault/issues/122, https://github.com/Datavault-UK/dbtvault/issues/134)
+macro (https://github.com/Datavault-UK/automate-dv/issues/122, https://github.com/Datavault-UK/automate-dv/issues/134)
 
 :white_check_mark: Fixed an issue where duplicate records (same hashdiff) would sometimes be loaded into a
-Satellite (https://github.com/Datavault-UK/dbtvault/issues/126)
+Satellite (https://github.com/Datavault-UK/automate-dv/issues/126)
 
 :white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping
 can now be configured on a case-by-case basis for each column to escape when they are reserved words
-etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Datavault-UK/dbtvault/issues/141)
+etc. (https://github.com/Datavault-UK/automate-dv/issues/114, https://github.com/Datavault-UK/automate-dv/issues/141)
 
 ### Breaking changes
 
@@ -197,7 +197,7 @@ etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Da
 
 ### Thanks
 
-[View on GitHub](https://github.com/Datavault-UK/dbtvault/releases/tag/v0.9.0])
+[View on GitHub](https://github.com/Datavault-UK/automate-dv/releases/tag/v0.9.0])
 
 ## [v0.8.3] - 2022-05-10
 
@@ -221,12 +221,12 @@ All existing macros are now supported by all platforms!
 ##### Effectivity Satellites
 
 - Fixed an issue affecting auto-end-dating in flip-flop
-  situations [eff_sat](../macros/index.md#eff_sat) ([#115](https://github.com/Datavault-UK/dbtvault/issues/115))
+  situations [eff_sat](../macros/index.md#eff_sat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
 
 ##### Staging
 
 - Fixed an issue where hashed columns with lower-case columns provided to an `exclude_columns` config, behaved
-  incorrectly ([#110](https://github.com/Datavault-UK/dbtvault/issues/110))
+  incorrectly ([#110](https://github.com/Datavault-UK/automate-dv/issues/110))
 
 ## [v0.8.2] - 2022-03-14
 
@@ -248,7 +248,7 @@ See our [Platform support matrix](../macros/index.md#platform-support) for more 
 ### Fixed
 
 - Fixed a bug where `vault_insert_by_period` would give an error during incremental
-  loads ([#108](https://github.com/Datavault-UK/dbtvault/issues/108))
+  loads ([#108](https://github.com/Datavault-UK/automate-dv/issues/108))
 - Fixed `vault_insert_by_x` issues for MS SQL Server
 - Fixed (increased) datetime precision in `max_datetime` for Google BigQuery
 
@@ -286,8 +286,8 @@ to you in the future!
 
 #### All platforms
 
-- Column Escaping ([#28](https://github.com/Datavault-UK/dbtvault/issues/28)
-  , [#23](https://github.com/Datavault-UK/dbtvault/issues/23))
+- Column Escaping ([#28](https://github.com/Datavault-UK/automate-dv/issues/28)
+  , [#23](https://github.com/Datavault-UK/automate-dv/issues/23))
   - [Docs](../macros/index.md#escapecharleftescapecharright):
   AutomateDV now automatically surrounds all column names with quotes. This is to allow for columns with reserved words,
   spaces, and other oddities.
@@ -328,7 +328,7 @@ to you in the future!
 ### Bug Fixes
 
 - Multi-Active Satellite record duplication under some
-  circumstances [#50](https://github.com/Datavault-UK/dbtvault/issues/50)
+  circumstances [#50](https://github.com/Datavault-UK/automate-dv/issues/50)
 
 ## [v0.7.8] - 2021-10-25
 
@@ -367,7 +367,7 @@ to you in the future!
 ## [v0.7.6.1] - 2021-07-14
 
 - Hotfix for 0.7.6 to remove unintentionally added macros from the beta
-  branch. [#36](https://github.com/Datavault-UK/dbtvault/issues/36)
+  branch. [#36](https://github.com/Datavault-UK/automate-dv/issues/36)
 
 ### Installing
 
@@ -375,7 +375,7 @@ to you in the future!
 
 ```
 packages:
-  - git: "https://github.com/Datavault-UK/dbtvault.git"
+  - git: "https://github.com/Datavault-UK/automate-dv.git"
     revision: v0.7.6.1
 ```
 
@@ -384,7 +384,7 @@ packages:
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.6)](https://automate-dv.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
 
 - Updated to dbt 0.20.0 and incorporated `adapter.dispatch`
-  changes [(#32)](https://github.com/Datavault-UK/dbtvault/issues/32)
+  changes [(#32)](https://github.com/Datavault-UK/automate-dv/issues/32)
 
 ## [v0.7.5] - 2021-06-10
 
@@ -413,7 +413,7 @@ packages:
 
 ### Bug Fixes
 
-- Fixed NULL handling bugs in Hubs, Links and Satellites [(#26)](https://github.com/Datavault-UK/dbtvault/issues/26)
+- Fixed NULL handling bugs in Hubs, Links and Satellites [(#26)](https://github.com/Datavault-UK/automate-dv/issues/26)
 - Fixed a bug where Effectivity Satellites would incorrectly end-date (with auto-end-dating enabled) records other than
   the
   latest, resulting in duplicate end-date records for previously end-dated records.

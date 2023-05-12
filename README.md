@@ -5,7 +5,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=latest)](https://automate-dv.readthedocs.io/en/latest/?badge=latest)
 
-# Documentation for [AutomateDV](https://github.com/Datavault-UK/dbtvault)
+# Documentation for [AutomateDV](https://github.com/Datavault-UK/automate-dv)
 
 ## Developing
 

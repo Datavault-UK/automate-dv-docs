@@ -264,9 +264,9 @@ Thanks for your patience and continued support!
     These platforms are either planned or actively being worked on by the community and/or internal AutomateDV team.
     See the issues below for more information:
 
-    - [Databricks](https://github.com/Datavault-UK/dbtvault/issues/98)
-    - [Postgres](https://github.com/Datavault-UK/dbtvault/issues/117)
-    - [Redshift](https://github.com/Datavault-UK/dbtvault/issues/86)
+    - [Databricks](https://github.com/Datavault-UK/automate-dv/issues/98)
+    - [Postgres](https://github.com/Datavault-UK/automate-dv/issues/117)
+    - [Redshift](https://github.com/Datavault-UK/automate-dv/issues/86)
 
 ### Limitations
 
@@ -288,11 +288,11 @@ for your Data Vault 2.0 Data Warehouse.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/hub.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/hub.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/hub.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/databricks/hub.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/postgres/hub.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/hub.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/hub.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/hub.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/databricks/hub.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/postgres/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
