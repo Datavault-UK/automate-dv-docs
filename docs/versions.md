@@ -20,5 +20,5 @@ Only the last 10 versions of AutomateDV will be shown here.
 | [v0.7.9](https://hub.getdbt.com/datavault-uk/dbtvault/0.7.9/)             | >=1.0.0, <2.0.0   | Use latest dbt 1.0.x version                                               |
 
 !!! warning "**"
-    For dbtvault v0.8.3, we have updated dbt support to v1.1.x. For MSSQL Server, dbt 1.1.x is currently not supported.
+    For AutomateDV v0.8.3, we have updated dbt support to v1.1.x. For MSSQL Server, dbt 1.1.x is currently not supported.
     Please use dbt 1.0.x versions instead.

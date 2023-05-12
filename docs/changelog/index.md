@@ -267,8 +267,8 @@ HOTFIX RELEASE
 
 [![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.0)](https://dbtvault.readthedocs.io/en/v0.8.0/?badge=v0.8.0)
 
-This is a big release for dbtvault. It's the first time we are releasing support for new platforms!
-Please welcome to the dbtvault family, Google BigQuery and MS SQL Server!
+This is a big release for AutomateDV. It's the first time we are releasing support for new platforms!
+Please welcome to the AutomateDV family, Google BigQuery and MS SQL Server!
 
 This is just the start, and we're excited to bring even more platforms (and further support for existing platforms)
 to you in the future!
@@ -288,8 +288,8 @@ to you in the future!
 
 - Column Escaping ([#28](https://github.com/Datavault-UK/dbtvault/issues/28)
   , [#23](https://github.com/Datavault-UK/dbtvault/issues/23))
-  - [Docs](../macros/index.md#escape_char_leftescape_char_right):
-  dbtvault now automatically surrounds all column names with quotes. This is to allow for columns with reserved words,
+  - [Docs](../macros/index.md#escapecharleftescapecharright):
+  AutomateDV now automatically surrounds all column names with quotes. This is to allow for columns with reserved words,
   spaces, and other oddities.
   The type of quotes is configurable, please refer to the docs linked above.
 

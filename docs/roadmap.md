@@ -4,7 +4,7 @@ the best, and most useful it can be.
 
 We will be releasing changes incrementally, so you can reap the benefits as soon as features are developed.
 
-#### Contribute to dbtvault
+#### Contribute to AutomateDV
 
 - Do you have some ideas? [Let us know what you want added](https://github.com/Datavault-UK/dbtvault/issues)
 - Want to contribute your own work? [Read our contribution guidelines](https://github.com/Datavault-UK/dbtvault/blob/master/CONTRIBUTING.md)

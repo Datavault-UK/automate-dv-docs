@@ -204,7 +204,7 @@ The default is variations on `9999-12-31 23:59:59.999999` where there is more or
 #### escape_char_left/escape_char_right
 
 Configure the characters to use to delimit SQL column names when [escaping](../best_practises/escaping.md). 
-Column names are delimited when using the [escaping](../best_practises/escaping.md) feature of dbtvault, 
+Column names are delimited when using the [escaping](../best_practises/escaping.md) feature of AutomateDV, 
 and by default both the delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
@@ -240,7 +240,7 @@ Here are some examples for different platforms:
 
 The table below indicates which macros and templates are officially available for each platform.
 
-dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
+AutomateDV is primarily developed on Snowflake, and we release support for other platforms as and when possible.
 Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality
 with no equivalent in another platform.
 
@@ -261,7 +261,7 @@ Thanks for your patience and continued support!
 | bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
 
 !!! note "**"
-    These platforms are either planned or actively being worked on by the community and/or internal dbtvault team.
+    These platforms are either planned or actively being worked on by the community and/or internal AutomateDV team.
     See the issues below for more information:
 
     - [Databricks](https://github.com/Datavault-UK/dbtvault/issues/98)
@@ -300,7 +300,7 @@ Generates SQL to build a Hub table using the provided parameters.
 
 ``` jinja
 
-{{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+{{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
                 src_extra_columns=src_extra_columns,
                 src_source=src_source, source_model=source_model) }}
 ```
@@ -827,7 +827,7 @@ Generates SQL to build a Link table using the provided parameters.
 #### Usage
 
 ``` jinja
-{{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+{{ automate_dv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
                  src_extra_columns=src_extra_columns,
                  src_source=src_source, source_model=source_model) }}
 ```                                             
@@ -1391,7 +1391,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 #### Usage
 
 ``` jinja
-{{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
+{{ automate_dv.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
                    src_extra_columns=src_extra_columns,
                    src_eff=src_eff, src_ldts=src_ldts, 
                    src_source=src_source, source_model=source_model) }}
