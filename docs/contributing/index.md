@@ -7,7 +7,7 @@ Please refer to our contribution guidelines over on our [development repository]
 dbtvault is very much a work in progress – we’re constantly adding quality of life improvements and will be adding
 new table types regularly.
 
-Rest assured we’re working on future releases – [our roadmap contains information on what’s coming](https://dbtvault.readthedocs.io/en/latest/roadmap/).
+Rest assured we’re working on future releases – [our roadmap contains information on what’s coming](https://automate-dv.readthedocs.io/en/latest/roadmap/).
  
 If you spot anything you’d like to bring something to our attention, have a request for new features, have spotted an improvement we could make, 
 or want to tell us about an issue, then please don’t hesitate to let us know via [github](https://github.com/Datavault-UK/dbtvault/issues). 

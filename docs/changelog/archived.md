@@ -6,7 +6,7 @@ These releases are so old now, we'd rather you did not use them! They are archiv
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 
 ## [v0.7.2] - 2021-01-26
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.2)](https://dbtvault.readthedocs.io/en/v0.7.2/?badge=v0.7.2)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.2)](https://automate-dv.readthedocs.io/en/v0.7.2/?badge=v0.7.2)
 
 ### New
 
@@ -41,7 +41,7 @@ These releases are so old now, we'd rather you did not use them! They are archiv
 - Updated all SQL snippets to reflect changes
 
 ## [v0.7.1] - 2020-12-18
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.1)](https://dbtvault.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.1)](https://automate-dv.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
 
 ### New
 
@@ -74,7 +74,7 @@ users wishing to override macro implementations. Documentation will be made avai
 - dbt_utils dependency is now explicit [Issue #15](https://github.com/Datavault-UK/dbtvault/issues/15)
 
 ## [v0.7.0] - 2020-09-25
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.0)](https://dbtvault.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.0)](https://automate-dv.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
 
 ### New
 
@@ -99,7 +99,7 @@ users wishing to override macro implementations. Documentation will be made avai
 - Support for dbt versions prior to v0.18.0 [Upgrading to v0.18.0](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-18-0/)
 
 ## [v0.6.2] - 2020-08-06
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6.2)](https://dbtvault.readthedocs.io/en/v0.6.2/?badge=v0.6.2)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.6.2)](https://automate-dv.readthedocs.io/en/v0.6.2/?badge=v0.6.2)
 
 ### Fixed
 
@@ -114,7 +114,7 @@ Guidance will be released for alternatives to model-scoped `dbt_project.yml` var
 Read more about the [config-version](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/) setting.
 
 ## [v0.6.1] - 2020-06-24
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6.1)](https://dbtvault.readthedocs.io/en/v0.6.1/?badge=v0.6.1)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.6.1)](https://automate-dv.readthedocs.io/en/v0.6.1/?badge=v0.6.1)
 
 ### Added
 
@@ -138,13 +138,13 @@ this is to clarify this config option as a boolean flag.
 - Check relation (internal) - No longer used.
 
 ## [v0.6] - 2020-05-26
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.6)](https://dbtvault.readthedocs.io/en/v0.6/?badge=v0.6)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.6)](https://automate-dv.readthedocs.io/en/v0.6/?badge=v0.6)
 
 **MAJOR UPDATE**
 
 We've added a whole host of interesting new features.
 
-[Read our v0.5 to v0.6 migration guide](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/)
+[Read our v0.5 to v0.6 migration guide](https://automate-dv.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/)
 
 ### Added
 
@@ -155,7 +155,7 @@ See the new [stage](../macros/index.md#stage) macro and the [staging tutorial](.
 A big thank you to @balmasi for this suggestion.
 
 - `HASHDIFF` aliasing is now available for Satellites
-[Read More](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/#hashdiff-aliasing)
+[Read More](https://automate-dv.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.5_v0.6/#hashdiff-aliasing)
 
 ### Upgraded
 
@@ -180,7 +180,7 @@ We'll be updating the other macros soon, stay tuned!
 ### Added
 
 - Metadata is now provided in the `dbt_project.yml` file. This means metadata can be managed in one place. 
-Read [Migrating from v0.4](https://dbtvault.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.4_v0.5/) for more information.
+Read [Migrating from v0.4](https://automate-dv.readthedocs.io/en/v0.7.6/migration_guides/migrating_v0.4_v0.5/) for more information.
 
 ### Removed
 

@@ -12,9 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
 # [v0.9.5] - 2023-03-22
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.5)](https://dbtvault.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.5)](https://automate-dv.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
 
-[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
+[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://automate-dv.readthedocs.io/en/latest/versions/)
 
 
 ## Fixes
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue related to #183 but for MD5 hashing in Databricks
 
 ## [v0.9.4] - 2023-02-16
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.4)](https://dbtvault.readthedocs.io/en/v0.9.4/?badge=v0.9.4)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.4)](https://automate-dv.readthedocs.io/en/v0.9.4/?badge=v0.9.4)
 
 This is a minor hotfix update. More bug fixes to come soon! :smile: 
 
@@ -41,7 +41,7 @@ This is a minor hotfix update. More bug fixes to come soon! :smile:
 - Binary type not defaulting correctly (Snowflake) (#183)
 
 ## [v0.9.3] - 2023-01-27
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.3)](https://dbtvault.readthedocs.io/en/v0.9.3/?badge=v0.9.3)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.3)](https://automate-dv.readthedocs.io/en/v0.9.3/?badge=v0.9.3)
 
 ## Fixes
 
@@ -56,7 +56,7 @@ This is a minor hotfix update. More bug fixes to come soon! :smile:
 Thank you to all those who were being patient for this release. The delay was due to us wanting to release this with a few other bug fixes and new features. This additional content is being released at a later date so that we could get this dbt-utils fix out to our community sooner.
 
 ## [v0.9.2] - 2022-12-22
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.2)](https://dbtvault.readthedocs.io/en/v0.9.2/?badge=v0.9.2)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.2)](https://automate-dv.readthedocs.io/en/v0.9.2/?badge=v0.9.2)
 
 ## Fixes
 
@@ -65,7 +65,7 @@ Thank you to all those who were being patient for this release. The delay was du
 In other news: Happy Holidays!
 
 ## [v0.9.1] - 2022-12-16
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.1)](https://dbtvault.readthedocs.io/en/v0.9.1/?badge=v0.9.1)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.1)](https://automate-dv.readthedocs.io/en/v0.9.1/?badge=v0.9.1)
 
 ## New 
 
@@ -119,7 +119,7 @@ Related issues:
 
 ## [v0.9.0] - 2022-09-13
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.0)](https://dbtvault.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.0)](https://automate-dv.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
 
 ### New Platform Support
 
@@ -145,7 +145,7 @@ Related issues:
 
 
 !!! note
-    There are currently limitations on Postgres. [Click here for more details](https://dbtvault.readthedocs.io/en/v0.9.0/macros/#limitations)
+    There are currently limitations on Postgres. [Click here for more details](https://automate-dv.readthedocs.io/en/v0.9.0/macros/#limitations)
 
 
 ### New Features
@@ -181,7 +181,7 @@ etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Da
 
 ### Breaking changes
 
-- [Read our 0.83 to 0.9.0 migration guide](https://dbtvault.readthedocs.io/en/latest/migration_guides/#migrating-from-083-to-090)
+- [Read our 0.83 to 0.9.0 migration guide](https://automate-dv.readthedocs.io/en/latest/migration_guides/#migrating-from-083-to-090)
 
 ### Behind the scenes
 
@@ -190,7 +190,7 @@ etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Da
 ### Docs
 
 - Moved stage configuration details to
-  a [new page](https://dbtvault.readthedocs.io/en/latest/macros/stage_macro_configurations)
+  a [new page](https://automate-dv.readthedocs.io/en/latest/macros/stage_macro_configurations)
 - Updated packages behind the scenes for security and bug fixes
 - Created landing pages for sections, which should make navigation easier, e.g. getting started is now the home page
   when clicking 'Tutorials' in the menu, instead of having to click twice.
@@ -201,7 +201,7 @@ etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Da
 
 ## [v0.8.3] - 2022-05-10
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.3)](https://automate-dv.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
 
 All existing macros are now supported by all platforms!
 
@@ -230,7 +230,7 @@ All existing macros are now supported by all platforms!
 
 ## [v0.8.2] - 2022-03-14
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.2)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.2)](https://automate-dv.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
 
 More Google BigQuery and MS SQL Server support, plus fixes!
 
@@ -254,7 +254,7 @@ See our [Platform support matrix](../macros/index.md#platform-support) for more 
 
 ## [v0.8.1] - 2022-02-22
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.1)](https://dbtvault.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.1)](https://automate-dv.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
 
 HOTFIX RELEASE
 
@@ -265,7 +265,7 @@ HOTFIX RELEASE
 
 ## [v0.8.0] - 2022-02-21
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.0)](https://dbtvault.readthedocs.io/en/v0.8.0/?badge=v0.8.0)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.0)](https://automate-dv.readthedocs.io/en/v0.8.0/?badge=v0.8.0)
 
 This is a big release for AutomateDV. It's the first time we are releasing support for new platforms!
 Please welcome to the AutomateDV family, Google BigQuery and MS SQL Server!
@@ -295,7 +295,7 @@ to you in the future!
 
 ## [v0.7.9] - 2021-12-13
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.9)](https://dbtvault.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.9)](https://automate-dv.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
 
 ### Dependencies
 
@@ -332,7 +332,7 @@ to you in the future!
 
 ## [v0.7.8] - 2021-10-25
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.8)](https://dbtvault.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.8)](https://automate-dv.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
 
 ### Dependencies
 
@@ -381,14 +381,14 @@ packages:
 
 ## [v0.7.6] - 2021-07-13
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6)](https://dbtvault.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.6)](https://automate-dv.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
 
 - Updated to dbt 0.20.0 and incorporated `adapter.dispatch`
   changes [(#32)](https://github.com/Datavault-UK/dbtvault/issues/32)
 
 ## [v0.7.5] - 2021-06-10
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.5)](https://dbtvault.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.5)](https://automate-dv.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
 
 ### New structures
 
@@ -409,7 +409,7 @@ packages:
 
 ## [v0.7.4] - 2021-03-27
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.4)](https://dbtvault.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.4)](https://automate-dv.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
 
 ### Bug Fixes
 
@@ -432,7 +432,7 @@ packages:
 
 ## [v0.7.3] - 2021-01-28
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.3)](https://dbtvault.readthedocs.io/en/v0.7.3/?badge=v0.7.3)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.3)](https://automate-dv.readthedocs.io/en/v0.7.3/?badge=v0.7.3)
 
 - Updated dbt to v0.19.0
 - Updated dbt utils to 0.6.4

@@ -14,7 +14,7 @@ dbt comes with 4 standard materialisations:
 For dbtvault, we have created some custom materialisations which support Data Vault 2.0 specific patterns which are 
 documented below.
 
-For normal use, you should use the standard incremental materialisation in most cases. Please refer to our [best practises for recommended materialisations](https://dbtvault.readthedocs.io/en/latest/best_practises/materialisations/#recommended-materialisations). 
+For normal use, you should use the standard incremental materialisation in most cases. Please refer to our [best practises for recommended materialisations](https://automate-dv.readthedocs.io/en/latest/best_practises/materialisations/#recommended-materialisations). 
 
 !!! warning 
     These are not to be used for daily loads or even first-time (base) loads as they have ill performance. 
