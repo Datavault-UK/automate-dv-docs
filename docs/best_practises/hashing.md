@@ -198,7 +198,7 @@ Below is an example satellite YAML config from a Satellite model:
 The highlighted lines show the syntax required to alias a column named `CUSTOMER_HASHDIFF` (present in the
 `stg_customer_details_hashed` staging layer) as `HASHDIFF`.
 
-### Choosing a hashing algorithm in dbtvault
+### Choosing a hashing algorithm
 
 You may choose between `MD5` and `SHA-256` hashing. `SHA-256` is an option for users who wish to reduce the hashing
 collision rates in larger data sets.

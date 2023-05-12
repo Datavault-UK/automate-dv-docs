@@ -1,8 +1,8 @@
-site_name: dbtvault
+site_name: AutomateDV
 site_author: Datavault
 site_dir: 'site'
 repo_name: 'Datavault-UK/dbtvault'
-site_url: 'https://dbtvault.readthedocs.io/'
+site_url: 'https://automate-dv.readthedocs.io/'
 repo_url: 'https://github.com/Datavault-UK/dbtvault'
 dev_addr: 127.0.0.1:8001
 edit_uri: ""
@@ -134,4 +134,4 @@ extra_css:
   - 'stylesheets/all.css'
   - 'stylesheets/icons.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2019-2023 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
+copyright: AutomateDV (f.k.a dbtvault) and documentation &copy; Business Thinking trading as Datavault 2019-2023 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs

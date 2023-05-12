@@ -1,10 +1,11 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/25080503/65772647-89525700-e132-11e9-80ff-12ad30a25466.png">
+  <img src="https://user-images.githubusercontent.com/25080503/237990810-ab2e14cf-a449-47ac-8c72-6f0857816194.png#gh-light-mode-only" alt="AutomateDV">
+  <img src="https://user-images.githubusercontent.com/25080503/237990915-6afbeba8-9e80-44cb-a57b-5b5966ab5c02.png#gh-dark-mode-only" alt="AutomateDV">
 </p>
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=latest)](https://dbtvault.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=latest)](https://automate-dv.readthedocs.io/en/latest/?badge=latest)
 
-# Documentation for [dbtvault](https://github.com/Datavault-UK/dbtvault)
+# Documentation for [AutomateDV](https://github.com/Datavault-UK/dbtvault)
 
 ## Developing
 

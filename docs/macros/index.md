@@ -9,7 +9,7 @@ the `ref()` [function](https://docs.getdbt.com/reference/dbt-jinja-functions/ref
 [function](https://docs.getdbt.com/reference/dbt-jinja-functions/source)
 for [dbt sources](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources/).
 
-dbtvault provides the means for specifying sources for Data Vault structures with a `source_model` argument.
+AutomateDV provides the means for specifying sources for Data Vault structures with a `source_model` argument.
 
 This behaves differently for the [stage](#stage) macro, which supports either style, shown below:
 
@@ -59,10 +59,10 @@ the `.sql`).
 
 ## Global variables
 
-dbtvault provides
+AutomateDV provides
 user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml)
-which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of
-dbtvault.
+which allow you to configure different aspects of AutomateDV. These variables will be expanded in future versions of
+AutomateDV.
 
 ### Hashing configuration 
 
@@ -83,7 +83,7 @@ This can be one of:
 - MD5
 - SHA
 
-[Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
+[Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm)
 
 #### concat_string
 
@@ -3104,7 +3104,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     [Read the tutorial](../tutorial/tut_xts.md) for more details
 
 !!! note "Understanding the src_satellite parameter"
-    [Read More](../metadata.md#understanding-the-src_satellite-parameter)
+    [Read More](../metadata.md#understanding-the-srcsatellite-parameter)
 
 #### Example Metadata
 
@@ -5101,7 +5101,7 @@ ___
     - Read [Hashing best practices and why we hash](../best_practises/hashing.md)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
-    [Learn how](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how](../best_practises/hashing.md#choosing-a-hashing-algorithm)
     
 A macro for generating hashing SQL for columns.
 

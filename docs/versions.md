@@ -1,12 +1,12 @@
-This page shows which versions of dbtvault and dbt which have been tested together. 
+This page shows which versions of AutomateDV and dbt which have been tested together. 
 
-Other versions of dbt may be compatible with the specified dbtvault version, however there may be unpredictable results. Please take care!
+Other versions of dbt may be compatible with the specified AutomateDV version, however there may be unpredictable results. Please take care!
 
-dbtvault Versions supporting dbt versions prior to 1.0 are no longer displayed on this table. Please upgrade to dbt 1.x as soon as convenient.  
+AutomateDV Versions supporting dbt versions prior to 1.0 are no longer displayed on this table. Please upgrade to dbt 1.x as soon as convenient.  
 
-Only the last 10 versions of dbtvault will be shown here. 
+Only the last 10 versions of AutomateDV will be shown here. 
 
-| dbtvault version                                                          | dbt version(s)    | Advice                                                                     | 
+| AutomateDV version                                                          | dbt version(s)    | Advice                                                                     | 
 |---------------------------------------------------------------------------|-------------------|----------------------------------------------------------------------------|
 | [v0.9.5](https://hub.getdbt.com/datavault-uk/dbtvault/0.9.5/)             | >=1.3.0, <2.0.0   | Use latest dbt 1.4.x version.                                              |
 | [v0.9.4](https://hub.getdbt.com/datavault-uk/dbtvault/0.9.4/)             | >=1.3.0, <2.0.0   | Use latest dbt 1.3.x version.                                              |
