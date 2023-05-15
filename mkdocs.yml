@@ -12,7 +12,7 @@ theme:
   custom_dir: 'overrides'
   show_sidebar: true
   logo: 'assets/images/logo.png'
-  banner: 'assets/images/docs-banner.png'
+  banner: 'assets/images/docs-banner-adv.png'
   favicon: 'assets/images/favicon.ico'
   palette:
     - scheme: material
