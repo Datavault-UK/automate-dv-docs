@@ -12,9 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
 # [v0.9.5] - 2023-03-22
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.5)](https://dbtvault.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.5)](https://automate-dv.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
 
-[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
+[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://automate-dv.readthedocs.io/en/latest/versions/)
 
 
 ## Fixes
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue related to #183 but for MD5 hashing in Databricks
 
 ## [v0.9.4] - 2023-02-16
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.4)](https://dbtvault.readthedocs.io/en/v0.9.4/?badge=v0.9.4)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.4)](https://automate-dv.readthedocs.io/en/v0.9.4/?badge=v0.9.4)
 
 This is a minor hotfix update. More bug fixes to come soon! :smile: 
 
@@ -41,7 +41,7 @@ This is a minor hotfix update. More bug fixes to come soon! :smile:
 - Binary type not defaulting correctly (Snowflake) (#183)
 
 ## [v0.9.3] - 2023-01-27
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.3)](https://dbtvault.readthedocs.io/en/v0.9.3/?badge=v0.9.3)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.3)](https://automate-dv.readthedocs.io/en/v0.9.3/?badge=v0.9.3)
 
 ## Fixes
 
@@ -56,16 +56,16 @@ This is a minor hotfix update. More bug fixes to come soon! :smile:
 Thank you to all those who were being patient for this release. The delay was due to us wanting to release this with a few other bug fixes and new features. This additional content is being released at a later date so that we could get this dbt-utils fix out to our community sooner.
 
 ## [v0.9.2] - 2022-12-22
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.2)](https://dbtvault.readthedocs.io/en/v0.9.2/?badge=v0.9.2)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.2)](https://automate-dv.readthedocs.io/en/v0.9.2/?badge=v0.9.2)
 
 ## Fixes
 
-- Hotfixes for issues with Ghost Record creation under certain circumstances ([#173](https://github.com/Datavault-UK/dbtvault/issues/173),[#174](https://github.com/Datavault-UK/dbtvault/issues/174))
+- Hotfixes for issues with Ghost Record creation under certain circumstances ([#173](https://github.com/Datavault-UK/automate-dv/issues/173),[#174](https://github.com/Datavault-UK/automate-dv/issues/174))
 
 In other news: Happy Holidays!
 
 ## [v0.9.1] - 2022-12-16
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.1)](https://dbtvault.readthedocs.io/en/v0.9.1/?badge=v0.9.1)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.1)](https://automate-dv.readthedocs.io/en/v0.9.1/?badge=v0.9.1)
 
 ## New 
 
@@ -91,8 +91,8 @@ We have made significant changes to how escaping now works as per #168. We belie
 
 Related issues:
 
-- https://github.com/Datavault-UK/dbtvault/issues/168 
-- https://github.com/Datavault-UK/dbtvault/issues/159 
+- https://github.com/Datavault-UK/automate-dv/issues/168 
+- https://github.com/Datavault-UK/automate-dv/issues/159 
 
 ### Casing
 
@@ -100,9 +100,9 @@ In addition to the above, we have also done an overhaul of casing in our templat
 
 Related issues:
 
-- https://github.com/Datavault-UK/dbtvault/issues/166
-- https://github.com/Datavault-UK/dbtvault/issues/163 
-- https://github.com/Datavault-UK/dbtvault/issues/157 
+- https://github.com/Datavault-UK/automate-dv/issues/166
+- https://github.com/Datavault-UK/automate-dv/issues/163 
+- https://github.com/Datavault-UK/automate-dv/issues/157 
 
 ### Other
 
@@ -119,7 +119,7 @@ Related issues:
 
 ## [v0.9.0] - 2022-09-13
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.9.0)](https://dbtvault.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.0)](https://automate-dv.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
 
 ### New Platform Support
 
@@ -145,7 +145,7 @@ Related issues:
 
 
 !!! note
-    There are currently limitations on Postgres. [Click here for more details](https://dbtvault.readthedocs.io/en/v0.9.0/macros/#limitations)
+    There are currently limitations on Postgres. [Click here for more details](https://automate-dv.readthedocs.io/en/v0.9.0/macros/#limitations)
 
 
 ### New Features
@@ -153,10 +153,10 @@ Related issues:
 Introducing:
 
 :star2: Payload column exclusion: Satellite's payload can now be configured to select all columns, except a user-defined
-list using an `exclude` configuration (https://github.com/Datavault-UK/dbtvault/issues/128)
+list using an `exclude` configuration (https://github.com/Datavault-UK/automate-dv/issues/128)
 
 :star2: Null Business Key Handling: Now users can provide a configuration in their staging tables to handle NULL keys
-elegantly, according to business needs (https://github.com/Datavault-UK/dbtvault/issues/133)
+elegantly, according to business needs (https://github.com/Datavault-UK/automate-dv/issues/133)
 
 :star2: Extra Columns Parameter: All table macros now provide a `src_extra_columns` parameter which allows users to add
 extra columns outside the standard template for business needs.
@@ -167,21 +167,21 @@ Minor but helpful! This is our first step towards giving our users more informat
 ### Fixes
 
 :white_check_mark: Fixed an edge case for `vault_insert_by_period` when the staging table and the target table were in
-different databases (https://github.com/Datavault-UK/dbtvault/issues/121)
+different databases (https://github.com/Datavault-UK/automate-dv/issues/121)
 
 :white_check_mark: Removed the uppercase conversion in the staging
-macro (https://github.com/Datavault-UK/dbtvault/issues/122, https://github.com/Datavault-UK/dbtvault/issues/134)
+macro (https://github.com/Datavault-UK/automate-dv/issues/122, https://github.com/Datavault-UK/automate-dv/issues/134)
 
 :white_check_mark: Fixed an issue where duplicate records (same hashdiff) would sometimes be loaded into a
-Satellite (https://github.com/Datavault-UK/dbtvault/issues/126)
+Satellite (https://github.com/Datavault-UK/automate-dv/issues/126)
 
 :white_check_mark: Disabled automatic column name escaping in derived columns when using the `stage()` macro. Escaping
 can now be configured on a case-by-case basis for each column to escape when they are reserved words
-etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Datavault-UK/dbtvault/issues/141)
+etc. (https://github.com/Datavault-UK/automate-dv/issues/114, https://github.com/Datavault-UK/automate-dv/issues/141)
 
 ### Breaking changes
 
-- [Read our 0.83 to 0.9.0 migration guide](https://dbtvault.readthedocs.io/en/latest/migration_guides/#migrating-from-083-to-090)
+- [Read our 0.83 to 0.9.0 migration guide](https://automate-dv.readthedocs.io/en/latest/migration_guides/#migrating-from-083-to-090)
 
 ### Behind the scenes
 
@@ -190,18 +190,18 @@ etc. (https://github.com/Datavault-UK/dbtvault/issues/114, https://github.com/Da
 ### Docs
 
 - Moved stage configuration details to
-  a [new page](https://dbtvault.readthedocs.io/en/latest/macros/stage_macro_configurations)
+  a [new page](https://automate-dv.readthedocs.io/en/latest/macros/stage_macro_configurations)
 - Updated packages behind the scenes for security and bug fixes
 - Created landing pages for sections, which should make navigation easier, e.g. getting started is now the home page
   when clicking 'Tutorials' in the menu, instead of having to click twice.
 
 ### Thanks
 
-[View on GitHub](https://github.com/Datavault-UK/dbtvault/releases/tag/v0.9.0])
+[View on GitHub](https://github.com/Datavault-UK/automate-dv/releases/tag/v0.9.0])
 
 ## [v0.8.3] - 2022-05-10
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.3)](https://dbtvault.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.3)](https://automate-dv.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
 
 All existing macros are now supported by all platforms!
 
@@ -221,16 +221,16 @@ All existing macros are now supported by all platforms!
 ##### Effectivity Satellites
 
 - Fixed an issue affecting auto-end-dating in flip-flop
-  situations [eff_sat](../macros/index.md#eff_sat) ([#115](https://github.com/Datavault-UK/dbtvault/issues/115))
+  situations [eff_sat](../macros/index.md#effsat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
 
 ##### Staging
 
 - Fixed an issue where hashed columns with lower-case columns provided to an `exclude_columns` config, behaved
-  incorrectly ([#110](https://github.com/Datavault-UK/dbtvault/issues/110))
+  incorrectly ([#110](https://github.com/Datavault-UK/automate-dv/issues/110))
 
 ## [v0.8.2] - 2022-03-14
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.2)](https://dbtvault.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.2)](https://automate-dv.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
 
 More Google BigQuery and MS SQL Server support, plus fixes!
 
@@ -238,9 +238,9 @@ More Google BigQuery and MS SQL Server support, plus fixes!
 
 #### Google BigQuery and MS SQL Server
 
-- T-Links ([t_link macro](../macros/index.md#t_link))
-- Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
-- Multi-Active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
+- T-Links ([t_link macro](../macros/index.md#tlink))
+- Effectivity Satellites ([eff_sat macro](../macros/index.md#effsat))
+- Multi-Active Satellites ([ma_sat macro](../macros/index.md#masat))
 - Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
 
 See our [Platform support matrix](../macros/index.md#platform-support) for more details.
@@ -248,13 +248,13 @@ See our [Platform support matrix](../macros/index.md#platform-support) for more 
 ### Fixed
 
 - Fixed a bug where `vault_insert_by_period` would give an error during incremental
-  loads ([#108](https://github.com/Datavault-UK/dbtvault/issues/108))
+  loads ([#108](https://github.com/Datavault-UK/automate-dv/issues/108))
 - Fixed `vault_insert_by_x` issues for MS SQL Server
 - Fixed (increased) datetime precision in `max_datetime` for Google BigQuery
 
 ## [v0.8.1] - 2022-02-22
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.1)](https://dbtvault.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.1)](https://automate-dv.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
 
 HOTFIX RELEASE
 
@@ -265,10 +265,10 @@ HOTFIX RELEASE
 
 ## [v0.8.0] - 2022-02-21
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.8.0)](https://dbtvault.readthedocs.io/en/v0.8.0/?badge=v0.8.0)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.0)](https://automate-dv.readthedocs.io/en/v0.8.0/?badge=v0.8.0)
 
-This is a big release for dbtvault. It's the first time we are releasing support for new platforms!
-Please welcome to the dbtvault family, Google BigQuery and MS SQL Server!
+This is a big release for AutomateDV. It's the first time we are releasing support for new platforms!
+Please welcome to the AutomateDV family, Google BigQuery and MS SQL Server!
 
 This is just the start, and we're excited to bring even more platforms (and further support for existing platforms)
 to you in the future!
@@ -286,16 +286,16 @@ to you in the future!
 
 #### All platforms
 
-- Column Escaping ([#28](https://github.com/Datavault-UK/dbtvault/issues/28)
-  , [#23](https://github.com/Datavault-UK/dbtvault/issues/23))
-  - [Docs](../macros/index.md#escape_char_leftescape_char_right):
-  dbtvault now automatically surrounds all column names with quotes. This is to allow for columns with reserved words,
+- Column Escaping ([#28](https://github.com/Datavault-UK/automate-dv/issues/28)
+  , [#23](https://github.com/Datavault-UK/automate-dv/issues/23))
+  - [Docs](../macros/index.md#escapecharleftescapecharright):
+  AutomateDV now automatically surrounds all column names with quotes. This is to allow for columns with reserved words,
   spaces, and other oddities.
   The type of quotes is configurable, please refer to the docs linked above.
 
 ## [v0.7.9] - 2021-12-13
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.9)](https://dbtvault.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.9)](https://automate-dv.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
 
 ### Dependencies
 
@@ -316,8 +316,8 @@ to you in the future!
 
 #### Materialisations
 
-- Custom materialisation for PITs [Docs](../materialisations.md#pit_incremental)
-- Custom materialisation for Bridges [Docs](../materialisations.md#bridge_incremental)
+- Custom materialisation for PITs [Docs](../materialisations.md#pitincremental)
+- Custom materialisation for Bridges [Docs](../materialisations.md#bridgeincremental)
 
 #### Behind the Scenes
 
@@ -328,11 +328,11 @@ to you in the future!
 ### Bug Fixes
 
 - Multi-Active Satellite record duplication under some
-  circumstances [#50](https://github.com/Datavault-UK/dbtvault/issues/50)
+  circumstances [#50](https://github.com/Datavault-UK/automate-dv/issues/50)
 
 ## [v0.7.8] - 2021-10-25
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.8)](https://dbtvault.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.8)](https://automate-dv.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
 
 ### Dependencies
 
@@ -367,7 +367,7 @@ to you in the future!
 ## [v0.7.6.1] - 2021-07-14
 
 - Hotfix for 0.7.6 to remove unintentionally added macros from the beta
-  branch. [#36](https://github.com/Datavault-UK/dbtvault/issues/36)
+  branch. [#36](https://github.com/Datavault-UK/automate-dv/issues/36)
 
 ### Installing
 
@@ -375,20 +375,20 @@ to you in the future!
 
 ```
 packages:
-  - git: "https://github.com/Datavault-UK/dbtvault.git"
+  - git: "https://github.com/Datavault-UK/automate-dv.git"
     revision: v0.7.6.1
 ```
 
 ## [v0.7.6] - 2021-07-13
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.6)](https://dbtvault.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.6)](https://automate-dv.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
 
 - Updated to dbt 0.20.0 and incorporated `adapter.dispatch`
-  changes [(#32)](https://github.com/Datavault-UK/dbtvault/issues/32)
+  changes [(#32)](https://github.com/Datavault-UK/automate-dv/issues/32)
 
 ## [v0.7.5] - 2021-06-10
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.5)](https://dbtvault.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.5)](https://automate-dv.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
 
 ### New structures
 
@@ -409,11 +409,11 @@ packages:
 
 ## [v0.7.4] - 2021-03-27
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.4)](https://dbtvault.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.4)](https://automate-dv.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
 
 ### Bug Fixes
 
-- Fixed NULL handling bugs in Hubs, Links and Satellites [(#26)](https://github.com/Datavault-UK/dbtvault/issues/26)
+- Fixed NULL handling bugs in Hubs, Links and Satellites [(#26)](https://github.com/Datavault-UK/automate-dv/issues/26)
 - Fixed a bug where Effectivity Satellites would incorrectly end-date (with auto-end-dating enabled) records other than
   the
   latest, resulting in duplicate end-date records for previously end-dated records.
@@ -432,7 +432,7 @@ packages:
 
 ## [v0.7.3] - 2021-01-28
 
-[![Documentation Status](https://readthedocs.org/projects/dbtvault/badge/?version=v0.7.3)](https://dbtvault.readthedocs.io/en/v0.7.3/?badge=v0.7.3)
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.3)](https://automate-dv.readthedocs.io/en/v0.7.3/?badge=v0.7.3)
 
 - Updated dbt to v0.19.0
 - Updated dbt utils to 0.6.4

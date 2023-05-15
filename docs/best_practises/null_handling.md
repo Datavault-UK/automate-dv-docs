@@ -2,14 +2,14 @@
 
 The handling of nulls is important in Data Vault 2.0 because - as a general rule - nulls represent a lack of something,
 and therefore do not mean anything to the business. This means we do not want records or keys containing nulls ending up
-in our raw vault. dbtvault, without any configuration from the user, will ignore all NULLs being loaded into 
+in our raw vault. AutomateDV, without any configuration from the user, will ignore all NULLs being loaded into 
 Hubs and Links, with slightly different handling for other table types. This is documented in the sections below.
 
 Sometimes though, columns might have a null value in the source data and there is a requirement to import the associated 
 records anyway, because they still carry business meaning. For this case, we provide users the option to configure
 how NULLs in business keys are handled, using the Data Vault standard of replacing them with 'tokens' (i.e. placeholders).
 
-dbtvault's [business-key Null handling feature](../macros/stage_macro_configurations.md#null-columns) provides this option; 
+AutomateDV's [business-key Null handling feature](../macros/stage_macro_configurations.md#null-columns) provides this option; 
 the null key can be replaced by a default value and the original null value stored in an additional column. 
 The key might be required, for instance where it is the basis for a hashed primary key, or it might be optional. 
 
@@ -19,7 +19,7 @@ by a configuration setting in [staging](../macros/stage_macro_configurations.md#
 !!! tip
     The null keys default values can be configured, [Read more](../macros/index.md#global-variables)
 
-If not configured by the user, NULLs get handled in the built-in hashing processes in dbtvault:
+If not configured by the user, NULLs get handled in the built-in hashing processes in AutomateDV:
 
 - Nulls get replaced with a placeholder; by default this is `^^`.
 - If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL and the record will not be loaded.
@@ -34,7 +34,7 @@ If not configured by the user, NULLs get handled in the built-in hashing process
 
 This is described in more depth below (with code examples).
 
-dbtvault has built-in support for ensuring nulls do not get loaded into the raw vault. Null handling has been described
+AutomateDV has built-in support for ensuring nulls do not get loaded into the raw vault. Null handling has been described
 below for each structure:
 
 ### Staging

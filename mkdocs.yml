@@ -1,9 +1,9 @@
-site_name: dbtvault
+site_name: AutomateDV
 site_author: Datavault
 site_dir: 'site'
-repo_name: 'Datavault-UK/dbtvault'
-site_url: 'https://dbtvault.readthedocs.io/'
-repo_url: 'https://github.com/Datavault-UK/dbtvault'
+repo_name: 'Datavault-UK/automate-dv'
+site_url: 'https://automate-dv.readthedocs.io/'
+repo_url: 'https://github.com/Datavault-UK/automate-dv'
 dev_addr: 127.0.0.1:8001
 edit_uri: ""
 
@@ -79,7 +79,7 @@ nav:
           - Tutorials: 'contributing/style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
   - Find Us:
-      - GitHub: 'https://github.com/Datavault-UK/dbtvault'
+      - GitHub: 'https://github.com/Datavault-UK/automate-dv'
       - Facebook: 'https://www.facebook.com/DataVaultUK/'
       - Twitter: 'https://twitter.com/datavault_uk'
       - LinkedIn: 'https://www.linkedin.com/company/business-thinking-limited'
@@ -134,4 +134,4 @@ extra_css:
   - 'stylesheets/all.css'
   - 'stylesheets/icons.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2019-2023 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
+copyright: AutomateDV (f.k.a dbtvault) and documentation &copy; Business Thinking trading as Datavault 2019-2023 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs

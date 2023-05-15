@@ -1,10 +1,10 @@
 !!! example "Work in Progress"
-    This article is a work in progress! We understand there needs to be clarity on how to load effectively in dbtvault.
+    This article is a work in progress! We understand there needs to be clarity on how to load effectively in AutomateDV.
     More information (and helpful features!) about loading is coming soon!
 
 ## Single record per key, per load (incremental)
 
-At the current time, dbtvault will load discrete records with the same primary key (hash key) simultaneously. This means
+At the current time, AutomateDV will load discrete records with the same primary key (hash key) simultaneously. This means
 that any deltas formed by loading these records in individual cycles get lost. For Hubs and Links this is not a problem,
 as there are no temporal attributes, but for structures such as Satellites this will produce erroneous loads.
 
@@ -23,7 +23,7 @@ We suggest you use a code for your record source. This can be anything that make
 though usually an integer or alpha-numeric value works well. The code often gets used to look up the full table name in
 a reference table.
 
-You may do this with dbtvault by providing the code as a constant in the [staging](../tutorial/tut_staging.md) layer, using
+You may do this with AutomateDV by providing the code as a constant in the [staging](../tutorial/tut_staging.md) layer, using
 the [stage](../macros/index.md#stage) macro. The [staging walk-through](../tutorial/tut_staging.md) presents this exact use-case in
 the code examples.
 
