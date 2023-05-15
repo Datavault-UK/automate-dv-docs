@@ -15,7 +15,7 @@ theme:
   banner: 'assets/images/docs-banner.png'
   favicon: 'assets/images/favicon.ico'
   palette:
-    - scheme: material
+    - scheme: default
       primary: 'black'
       accent: 'indigo'
       toggle:
