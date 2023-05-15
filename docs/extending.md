@@ -1,11 +1,11 @@
-### Extending dbtvault
+### Extending AutomateDV
 
-This page describes how write your own macros to replace existing macros provided in dbtvault.
+This page describes how write your own macros to replace existing macros provided in AutomateDV.
 
 
 ### adapter.dispatch
 
-Every macro in dbtvault first calls [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) to find platform specific implementations of the macro to execute.
+Every macro in AutomateDV first calls [adapter.dispatch](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter/#dispatch) to find platform specific implementations of the macro to execute.
 
 Here is an example:
 
@@ -14,14 +14,14 @@ Here is an example:
     ```jinja
     {%- macro hub(src_pk, src_nk, src_ldts, src_source, source_model) -%}
 
-    {{- adapter.dispatch('hub', 'dbtvault')(src_pk=src_pk, src_nk=src_nk,
-                                            src_ldts=src_ldts, src_source=src_source,
-                                            source_model=source_model) -}}
+    {{- adapter.dispatch('hub', 'automate_dv')(src_pk=src_pk, src_nk=src_nk,
+                                               src_ldts=src_ldts, src_source=src_source,
+                                               source_model=source_model) -}}
 
     {%- endmacro -%}
     ```
 
-This snippet defines the macro namespace as `'dbtvault'`, ensuring that this macro gets found in the list of macros implemented in the dbtvault package namespace.
+This snippet defines the macro namespace as `'automate_dv'`, ensuring that this macro gets found in the list of macros implemented in the `automate_dv` package namespace.
 
 To override the `hub` macro and ensure dbt uses your own implementation of it, you simply need to provide a configuration in your `dbt_project.yml` as follows:
 
@@ -34,8 +34,8 @@ To override the `hub` macro and ensure dbt uses your own implementation of it, y
     config-version: 2
     
     dispatch:
-      - macro_namespace: dbtvault
-        search_order: ['my_project', 'dbtvault']  # enable override
+      - macro_namespace: automate_dv
+        search_order: ['my_project', 'automate_dv']  # enable override
     ```
 
 With this configuration change, an implementation of the `hub` macro could be defined in your own project as follows:

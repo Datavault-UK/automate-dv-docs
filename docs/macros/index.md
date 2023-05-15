@@ -274,7 +274,7 @@ This section documents platform-specific limitations.
 
 #### Postgres
 
-2. Due to the way Postgres handles CTEs, dbtvault's [custom materialisations](../materialisations.md) are not yet 
+Due to the way Postgres handles CTEs, AutomateDV's [custom materialisations](../materialisations.md) are not yet 
 available for use on Postgres. An exception will be raised if their use is attempted.
 
 ## Table templates
@@ -816,11 +816,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/link.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/databricks/link.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/postgres/link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/databricks/link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/postgres/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -1382,9 +1382,9 @@ ___
 
 ### t_link
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/t_link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/t_link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/t_link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/t_link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/t_link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/t_link.sql)
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -1546,21 +1546,21 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/sat.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/databricks/sat.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/postgres/sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/databricks/sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/postgres/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
-                src_extra_columns=src_extra_columns,
-                src_eff=src_eff, src_ldts=src_ldts, 
-                src_source=src_source, source_model=source_model) }}
+{{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                   src_extra_columns=src_extra_columns,
+                   src_eff=src_eff, src_ldts=src_ldts, 
+                   src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -2017,7 +2017,7 @@ Generates SQL to build a Satellite table using the provided parameters.
 #### Ghost records
 
 Ghost Records are system-generated records which are added to Satellites to provide equi-join performance in PIT tables
-downstream. dbtvault will generate ghost records if the [global variable](#ghost-record-configuration) is set to `true`.
+downstream. AutomateDV will generate ghost records if the [global variable](#ghost-record-configuration) is set to `true`.
 
 !!! tip "New in v0.9.1"
     Ghost Records are here! More details (including examples of how it works) coming soon!
@@ -2050,13 +2050,13 @@ src_source: RECORD_SOURCE
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-{{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
-                src_hashdiff=metadata_dict["src_hashdiff"],
-                src_payload=metadata_dict["src_payload"],
-                src_eff=metadata_dict["src_eff"],
-                src_ldts=metadata_dict["src_ldts"],
-                src_source=metadata_dict["src_source"],
-                source_model=metadata_dict["source_model"]) }}
+{{ automate_dv.sat(src_pk=metadata_dict["src_pk"],
+                   src_hashdiff=metadata_dict["src_hashdiff"],
+                   src_payload=metadata_dict["src_payload"],
+                   src_eff=metadata_dict["src_eff"],
+                   src_ldts=metadata_dict["src_ldts"],
+                   src_source=metadata_dict["src_source"],
+                   source_model=metadata_dict["source_model"]) }}
 
 ```
 
@@ -2071,20 +2071,20 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/eff_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/eff_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/eff_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                    src_start_date=src_start_date, src_end_date=src_end_date,
-                    src_extra_columns=src_extra_columns,
-                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                    source_model=source_model) }}
+{{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                       src_start_date=src_start_date, src_end_date=src_end_date,
+                       src_extra_columns=src_extra_columns,
+                       src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                       source_model=source_model) }}
 ```
 
 #### Parameters
@@ -2688,10 +2688,10 @@ Auto end-dating is enabled by providing a config option as below:
 ``` jinja
 {{ config(is_auto_end_dating=true) }}
 
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                    src_start_date=src_start_date, src_end_date=src_end_date,
-                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                    source_model=source_model) }}
+{{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                       src_start_date=src_start_date, src_end_date=src_end_date,
+                       src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                       source_model=source_model) }}
 ```
 
 This will enable 3 extra CTEs in the Effectivity Satellite SQL generated by the macro. Examples of this SQL are in the
@@ -2715,19 +2715,19 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/ma_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/ma_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/ma_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
-                   src_payload=src_payload, src_eff=src_eff,
-                   src_extra_columns=src_extra_columns, src_ldts=src_ldts, 
-                   src_source=src_source, source_model=source_model) }}
+{{ automate_dv.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                      src_payload=src_payload, src_eff=src_eff,
+                      src_extra_columns=src_extra_columns, src_ldts=src_ldts, 
+                      src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -3075,18 +3075,18 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/xts.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/xts.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/xts.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/xts.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/xts.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, 
-                src_extra_columns=src_extra_columns, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}`
+{{ automate_dv.xts(src_pk=src_pk, src_satellite=src_satellite, 
+                   src_extra_columns=src_extra_columns, src_ldts=src_ldts,
+                   src_source=src_source, source_model=source_model) }}`
 ```
 
 #### Parameters
@@ -3497,19 +3497,19 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/pit.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/pit.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/pit.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/pit.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/pit.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
 ``` jinja
-{{ dbtvault.pit(src_pk=src_pk, 
-                as_of_dates_table=as_of_dates_table,
-                satellites=satellites,
-                stage_tables_ldts=stage_tables_ldts,
-                src_ldts=src_ldts,
-                source_model=source_model) }}
+{{ automate_dv.pit(src_pk=src_pk, 
+                   as_of_dates_table=as_of_dates_table,
+                   satellites=satellites,
+                   stage_tables_ldts=stage_tables_ldts,
+                   src_ldts=src_ldts,
+                   source_model=source_model) }}
 ```
 
 #### Parameters
@@ -3762,7 +3762,7 @@ forward to reflect the current date.
 Think of As of Date tables as essentially a rolling window of time.
 
 !!! note 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you
+    At the current release of AutomateDV there is no functionality that auto generates this table for you, so you
     will have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
 
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
@@ -3775,9 +3775,9 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/snowflake/bridge.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/bigquery/bridge.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.4/macros/tables/sqlserver/bridge.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/snowflake/bridge.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/bigquery/bridge.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.4/macros/tables/sqlserver/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
@@ -3787,11 +3787,11 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 #### Usage
 
 ``` jinja
-{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                        src_ldts=src_ldts,
-                        bridge_walk=bridge_walk,
-                        as_of_dates_table=as_of_dates_table,
-                        stage_tables_ldts=stage_tables_ldts) }}
+{{ automate_dv.bridge(source_model=source_model, src_pk=src_pk,
+                      src_ldts=src_ldts,
+                      bridge_walk=bridge_walk,
+                      as_of_dates_table=as_of_dates_table,
+                      stage_tables_ldts=stage_tables_ldts) }}
 ```
 
 #### Parameters
@@ -4017,7 +4017,7 @@ An As of Date table contains a single column of dates used to construct the hist
 
 !!! note
 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    At the current release of AutomateDV there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
     
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
@@ -4032,7 +4032,7 @@ ___
 
 These macros are intended for use in the staging layer.
 
-At dbtvault, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the
+In AutomateDV, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the
 raw vault. It is important to understand that according to Data Vault 2.0 standards, the primed stages is
 essentially where all of our **_hard_** business rules are defined. We are not excessively transforming the data beyond
 what is reasonable prior to the raw stage, but simply creating some columns to drive audit and performance downstream.
@@ -4041,19 +4041,19 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.4/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/staging/stage.sql))
 
 Generates SQL to build a staging area using the provided parameters.
 
 #### Usage
 
 ``` jinja 
-{{ dbtvault.stage(include_source_columns=true,
-                  source_model=source_model,
-                  derived_columns=derived_columns,
-                  null_columns=null_columns,
-                  hashed_columns=hashed_columns,
-                  ranked_columns=ranked_columns) }}
+{{ automate_dv.stage(include_source_columns=true,
+                     source_model=source_model,
+                     derived_columns=derived_columns,
+                     null_columns=null_columns,
+                     hashed_columns=hashed_columns,
+                     ranked_columns=ranked_columns) }}
 ```
 
 #### Parameters
@@ -5089,7 +5089,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.4/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/supporting/hash.sql))
 
 !!! warning
     This macro ***should not be*** used for cryptographic purposes.
@@ -5110,8 +5110,8 @@ A macro for generating hashing SQL for columns.
 === "Input"
 
     ```yaml
-    {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
-    {{ dbtvault.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
+    {{ automate_dv.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
+    {{ automate_dv.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
     ```
 
 === "Output (Snowflake)"
@@ -5174,7 +5174,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.4/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
@@ -5190,7 +5190,7 @@ A macro for quickly prefixing a list of columns with a string.
 === "Input"
 
     ```sql 
-    {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
+    {{ automate_dv.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ automate_dv.prefix(['CUSTOMERKEY'], 'a') }}
     ```
 
 === "Output"
@@ -5208,7 +5208,7 @@ ___
 
 ###### (macros/internal)
 
-Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to be
+Internal macros are used by other macros provided by AutomateDV. They process provided metadata and should not need to be
 called directly.
 
 --8<-- "includes/abbreviations.md"

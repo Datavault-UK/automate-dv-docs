@@ -221,7 +221,7 @@ All existing macros are now supported by all platforms!
 ##### Effectivity Satellites
 
 - Fixed an issue affecting auto-end-dating in flip-flop
-  situations [eff_sat](../macros/index.md#eff_sat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
+  situations [eff_sat](../macros/index.md#effsat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
 
 ##### Staging
 
@@ -238,9 +238,9 @@ More Google BigQuery and MS SQL Server support, plus fixes!
 
 #### Google BigQuery and MS SQL Server
 
-- T-Links ([t_link macro](../macros/index.md#t_link))
-- Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
-- Multi-Active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
+- T-Links ([t_link macro](../macros/index.md#tlink))
+- Effectivity Satellites ([eff_sat macro](../macros/index.md#effsat))
+- Multi-Active Satellites ([ma_sat macro](../macros/index.md#masat))
 - Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
 
 See our [Platform support matrix](../macros/index.md#platform-support) for more details.
@@ -316,8 +316,8 @@ to you in the future!
 
 #### Materialisations
 
-- Custom materialisation for PITs [Docs](../materialisations.md#pit_incremental)
-- Custom materialisation for Bridges [Docs](../materialisations.md#bridge_incremental)
+- Custom materialisation for PITs [Docs](../materialisations.md#pitincremental)
+- Custom materialisation for Bridges [Docs](../materialisations.md#bridgeincremental)
 
 #### Behind the Scenes
 

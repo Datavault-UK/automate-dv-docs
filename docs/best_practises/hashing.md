@@ -4,7 +4,7 @@
  
 ### The drawbacks of using MD5
 
-By default, dbtvault uses MD5 hashing to calculate hashes using [hash](../macros/index.md#hash-macro)
+By default, AutomateDV uses MD5 hashing to calculate hashes using [hash](../macros/index.md#hash-macro)
 and [hash_columns](../macros/stage_macro_configurations.md#hashed-columns). If your table contains more than a few billion rows, then there is a chance
 of a clash: where two different values generate the same hash value
 (see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collisi76on_vulnerabilities)).
@@ -12,7 +12,7 @@ of a clash: where two different values generate the same hash value
 For this reason, it **should not be** used for cryptographic purposes either.
 
 You can however, choose between MD5 and SHA-256 in
-dbtvault, [read below](#choosing-a-hashing-algorithm-in-dbtvault), which will help with reducing the
+AutomateDV, [read below](#choosing-a-hashing-algorithm), which will help with reducing the
 possibility of collision in larger data sets.
 
 #### Personally Identifiable Information (PII)
@@ -49,7 +49,7 @@ been a change in the payload. This triggers the load of a new Satellite record. 
 we'd have to compare each column in turn and handle nulls to see if a change had occurred.
 
 Hashing is sensitive to column ordering. If you provide the `is_hashdiff: true` flag to your column specification in
-the [stage](../macros/index.md#stage) macro, dbtvault will automatically sort the provided columns alphabetically. Columns will
+the [stage](../macros/index.md#stage) macro, AutomateDV will automatically sort the provided columns alphabetically. Columns will
 be sorted by their alias.
 
 ### How do we hash?
@@ -75,7 +75,7 @@ Single-column hashing step by step:
    hash to the same value. For example <code>1001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> and <code>&nbsp;1001</code>.
 
 3. `UPPER` Next we eliminate problems where the casing in a string will cause a different hash value to be generated for
-   the same word, for example `DBTVAULT` and `dbtvault`.
+   the same word, for example `AUTOMATE_DV` and `automate_dv`.
 
 4. `NULLIF ''` At this point we ensure that if an empty string has been provided, it will be considered `NULL`. This
    kind of problem can arise if data gets ingested into your warehouse from semi-structured data such as JSON or CSV,
@@ -143,15 +143,15 @@ of the record, and the payload of the record.
 
 !!! note
 
-    Prior to dbtvault v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
-    In dbtvault v0.7.4, macros have been updated to include logic to ensure the primary key is checked
+    Prior to AutomateDV v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
+    In AutomateDV v0.7.4, macros have been updated to include logic to ensure the primary key is checked
     in addition to the hashdiff when detecting new records. It is still best practice to include the natural keys, however. 
 
 ### Hashing best practices
 
 Best practices for hashing include:
 
-- Alpha sorting Hashdiff columns. As mentioned, dbtvault can do this for us, so no worries!
+- Alpha sorting Hashdiff columns. As mentioned, AutomateDV can do this for us, so no worries!
   Refer to the [stage](../macros/index.md#stage) docs for details on how to do this.
 
 - Ensure all **Hub** columns used to calculate a primary key hash get presented in the same order across all staging
@@ -205,9 +205,9 @@ collision rates in larger data sets.
 
 !!! note
 
-    If a hashing algorithm configuration is missing or invalid, dbtvault will use `MD5` by default. 
+    If a hashing algorithm configuration is missing or invalid, AutomateDV will use `MD5` by default. 
 
-Configuring the hashing algorithm which will be used by dbtvault is simple: add a global variable to your
+Configuring the hashing algorithm which will be used by AutomateDV is simple: add a global variable to your
 `dbt_project.yml` as follows:
 
 === "dbt_project.yml"
@@ -276,7 +276,7 @@ The strings can be changed by the user, and this is achieved in the same way as 
     ), '##!!##!!##')) AS BINARY(16)) AS CUSTOMER_HK
     ```
 
-### The future of hashing in dbtvault
+### The future of hashing in AutomateDV
 
 We plan to provide users with the ability to disable hashing entirely.
 

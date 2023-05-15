@@ -16,7 +16,7 @@ The As of Date table consists of a single date/datetime column, and is currently
 !!! note
     _dbt_utils_ is another package for dbt, provided by dbt Labs. The date_spine macro above is provided by this package.
     For more information, go read the date_spine docs [here](https://github.com/dbt-labs/dbt-utils#date_spine-source).
-    dbtvault includes dbt_utils as a dependency, and is installed alongside the dbtvault package. 
+    AutomateDV includes dbt_utils as a dependency, and is installed alongside the AutomateDV package. 
 
 It will require the following input:
 

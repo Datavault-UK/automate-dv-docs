@@ -1,10 +1,10 @@
-In this section we demonstrate dbtvault by example. We guide you through developing a 
-Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbt models using dbtvault macros.
+In this section we demonstrate AutomateDV by example. We guide you through developing a 
+Data Vault 2.0 Data Warehouse based on the Snowflake TPC-H dataset, step-by-step using pre-written dbt models using AutomateDV macros.
 
-This demonstration was developed to give users a further understanding of how dbt and dbtvault could be used to build
+This demonstration was developed to give users a further understanding of how dbt and AutomateDV could be used to build
 a Data Vault using an actual data set.  
 
-For a more detailed guide on how to use the provided macros create your own Data Vault using dbtvault, 
+For a more detailed guide on how to use the provided macros create your own Data Vault using AutomateDV, 
 with a simplified example, take a look at our [walk-through](../tutorial/index.md) guide.
 
 We will:
@@ -13,7 +13,7 @@ We will:
 - examine and profile the TPCH dataset to explore how we can map it to the Data Vault architecture.
 - create a raw staging layer.
 - process the raw staging layer.
-- create a Data Vault with Hubs, Links, Satellites and Transactional Links using dbtvault and pre-written models.
+- create a Data Vault with Hubs, Links, Satellites and Transactional Links using AutomateDV and pre-written models.
 
 ## Pre-requisites
 
@@ -21,7 +21,7 @@ These pre-requisites are separate from those found on the [getting started](../t
 be the only necessary requirements you will need to get started with the example project. 
 
 1. Some prior knowledge of Data Vault 2.0 architecture.
-Read more: [dbtvault pre-requisite knowledge](../index.md#pre-requisite)
+Read more: [AutomateDV pre-requisite knowledge](../index.md#pre-requisite)
 
 2. A Snowflake trial account. [Sign up for a free 30-day trial here](https://trial.snowflake.com/ab/)
 

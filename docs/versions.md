@@ -6,8 +6,8 @@ AutomateDV Versions supporting dbt versions prior to 1.0 are no longer displayed
 
 Only the last 10 versions of AutomateDV will be shown here. 
 
-| AutomateDV version                                                        | dbt version(s)  | Advice                                                                     | 
-|---------------------------------------------------------------------------|-----------------|----------------------------------------------------------------------------|
+| AutomateDV version                                                           | dbt version(s)  | Advice                                                                     | 
+|------------------------------------------------------------------------------|-----------------|----------------------------------------------------------------------------|
 | [v0.9.5](https://hub.getdbt.com/datavault-uk/automate-dv/0.9.5/)             | >=1.3.0, <2.0.0 | Use latest dbt 1.4.x version.                                              |
 | [v0.9.4](https://hub.getdbt.com/datavault-uk/automate-dv/0.9.4/)             | >=1.3.0, <2.0.0 | Use latest dbt 1.3.x version.                                              |
 | [v0.9.3](https://hub.getdbt.com/datavault-uk/automate-dv/0.9.3/)             | >=1.3.0, <2.0.0 | Use latest dbt 1.3.x version. This version compatible with dbt-utils 1.0.0 |

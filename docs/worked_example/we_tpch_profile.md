@@ -1,5 +1,5 @@
 We are using the [TPC-H benchmarking dataset provided by Snowflake](https://docs.snowflake.net/manuals/user-guide/sample-data-tpch.html)
-to demonstrate dbtvault and showcase the Data Vault architecture running on Snowflake. 
+to demonstrate AutomateDV and showcase the Data Vault architecture running on Snowflake. 
 
 The data comes in 4 different sizes, we will be using the smallest in this guide, TPCH_SF10 which 
 contains 60 million rows in its largest table. 

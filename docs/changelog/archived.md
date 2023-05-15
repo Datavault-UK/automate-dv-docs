@@ -10,12 +10,12 @@ These releases are so old now, we'd rather you did not use them! They are archiv
 
 ### New
 
-- Derived columns can now be provided lists, for creating composite column values. [(#20)](https://github.com/Datavault-UK/dbtvault/issues/20)
+- Derived columns can now be provided lists, for creating composite column values. [(#20)](https://github.com/Datavault-UK/automate-dv/issues/20)
   [Docs](../macros/index.md#stage-macro-configurations)
   
-- The hashed_columns exclude flag in staging can now be provided without a list of columns, and dbtvault will hash everything. [Docs](../macros/index.md#stage-macro-configurations)
+- The hashed_columns exclude flag in staging can now be provided without a list of columns, and AutomateDV will hash everything. [Docs](../macros/index.md#stage-macro-configurations)
 
-- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../materialisations.md#vault_insert_by_rank-insert-by-rank)
+- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../materialisations.md#vaultinsertbyrank-insert-by-rank)
 
 - The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros/index.md#stage-macro-configurations)
 
@@ -30,14 +30,14 @@ These releases are so old now, we'd rather you did not use them! They are archiv
 
 ### Fixed
 
-- Fixed multiple (minor) bugs in the stage macro [(#21)](https://github.com/Datavault-UK/dbtvault/issues/21)
-- Fixed and improved the `adapter.dispatch` implementation [(#22)](https://github.com/Datavault-UK/dbtvault/issues/22)
-- Fixed a bug in the vault_insert_by_period materialisation [(#19)](https://github.com/Datavault-UK/dbtvault/issues/19)
+- Fixed multiple (minor) bugs in the stage macro [(#21)](https://github.com/Datavault-UK/automate-dv/issues/21)
+- Fixed and improved the `adapter.dispatch` implementation [(#22)](https://github.com/Datavault-UK/automate-dv/issues/22)
+- Fixed a bug in the vault_insert_by_period materialisation [(#19)](https://github.com/Datavault-UK/automate-dv/issues/19)
 
 ### Docs
 
 - Added examples of different ways to provide metadata to the [metadata reference](../metadata.md)
-- Added a short guide on [extending dbtvault](../extending.md)
+- Added a short guide on [extending AutomateDV](../extending.md)
 - Updated all SQL snippets to reflect changes
 
 ## [v0.7.1] - 2020-12-18
@@ -59,19 +59,19 @@ This is very useful for large multi-column hashdiffs.
   
 - Multi-dispatch implementation now supports a package override variable, providing a smoother experience for 
 users wishing to override macro implementations. Documentation will be made available in due course.
-  See [Issue #14](https://github.com/Datavault-UK/dbtvault/issues/14) for more details.
+  See [Issue #14](https://github.com/Datavault-UK/automate-dv/issues/14) for more details.
 
 - Hashed columns now 'see' columns defined as derived columns. Allowing you to use them in your hashed column definitions.
-  [Issue #9](https://github.com/Datavault-UK/dbtvault/issues/9)
+  [Issue #9](https://github.com/Datavault-UK/automate-dv/issues/9)
 
 ### Fixed
 
-- Fixed a bug in the [vault_insert_by_period](../materialisations.md#vault_insert_by_period-insert-by-period) materialization which caused orphaned temporary relations 
-  under specific circumstances. [Issue #18](https://github.com/Datavault-UK/dbtvault/issues/18)
+- Fixed a bug in the [vault_insert_by_period](../materialisations.md#vaultinsertbyperiod-insert-by-period) materialization which caused orphaned temporary relations 
+  under specific circumstances. [Issue #18](https://github.com/Datavault-UK/automate-dv/issues/18)
   
-- Stage macro conversion to CTE fixes [Issue #17](https://github.com/Datavault-UK/dbtvault/issues/17)
+- Stage macro conversion to CTE fixes [Issue #17](https://github.com/Datavault-UK/automate-dv/issues/17)
 
-- dbt_utils dependency is now explicit [Issue #15](https://github.com/Datavault-UK/dbtvault/issues/15)
+- dbt_utils dependency is now explicit [Issue #15](https://github.com/Datavault-UK/automate-dv/issues/15)
 
 ## [v0.7.0] - 2020-09-25
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.0)](https://automate-dv.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
@@ -80,10 +80,10 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - Effectivity Satellites: A newly supported Data Vault 2.0 structure.  
 [Read more](../tutorial/tut_eff_satellites.md)   
-[Macro Reference](../macros/index.md#eff_sat) 
+[Macro Reference](../macros/index.md#effsat) 
 
-- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../materialisations.md#vault_insert_by_period-insert-by-period)
-- dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for dbtvault*. 
+- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../materialisations.md#vaultinsertbyperiod-insert-by-period)
+- dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for AutomateDV*. 
 - dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/dbt-labs/dbt/releases/tag/v0.18.0)
 
 !!! info
@@ -109,7 +109,7 @@ users wishing to override macro implementations. Documentation will be made avai
 in for users making use of variables in their `dbt_project.yml` file. 
 
 Note: If using `vars` in `dbt_project.yml`, you still need to specify `config-version: 1` in your own project's `dbt_project.yml`.
-Guidance will be released for alternatives to model-scoped `dbt_project.yml` vars in the next major release of dbtvault (`0.7.x`)
+Guidance will be released for alternatives to model-scoped `dbt_project.yml` vars in the next major release of automate-dv (`0.7.x`)
 
 Read more about the [config-version](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/) setting.
 
@@ -148,7 +148,7 @@ We've added a whole host of interesting new features.
 
 ### Added
 
-- Staging has now been moved to YAML format, meaning dbtvault is now entirely YAML and metadata driven.
+- Staging has now been moved to YAML format, meaning AutomateDV is now entirely YAML and metadata driven.
 See the new [stage](../macros/index.md#stage) macro and the [staging tutorial](../tutorial/tut_staging.md) for more details.
 
 - Renamed `source` metadata configuration to `source_model` to clear up some confusion.
@@ -165,7 +165,7 @@ We'll be updating the other macros soon, stay tuned!
 
 ### Fixed 
 
-- Fixed `NULL` handling when hashing. We broke this in v0.5 ([see related issue](https://github.com/Datavault-UK/dbtvault/issues/5))
+- Fixed `NULL` handling when hashing. We broke this in v0.5 ([see related issue](https://github.com/Datavault-UK/automate-dv/issues/5))
 [Read more](../best_practises/hashing.md#how-do-we-hash)
 
 ### Removed
@@ -173,7 +173,7 @@ We'll be updating the other macros soon, stay tuned!
 - Deprecated macros (old table template macros) 
 - A handful of now unused internal macros
 - Documentation website from main repository (this makes the package smaller!) 
-[New docs repo](https://github.com/Datavault-UK/dbtvault-docs)
+[New docs repo](https://github.com/Datavault-UK/automate-dv-docs)
 
 ## [v0.5] - 2020-02-24
 
@@ -210,7 +210,7 @@ _**multi_hash**_, [staging](../macros/index.md#staging-macros)).
 
 - Hashing:
     - You may now choose between `MD5` and `SHA-256` hashing with a simple yaml configuration
-    [Learn how!](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how!](../best_practises/hashing.md#choosing-a-hashing-algorithm)
     
 ### Worked example
 
@@ -221,7 +221,7 @@ _**multi_hash**_, [staging](../macros/index.md#staging-macros)).
 
 - Updated macros, best practices, roadmap, and other pages to account for new features
 - Updated worked example documentation
-- Replaced all dbt documentation links with links to the 0.14 documentation as dbtvault
+- Replaced all dbt documentation links with links to the 0.14 documentation as AutomateDV
 is using dbt 0.14 currently (we will be updating to 0.15 soon!)
 - Minor corrections
 
