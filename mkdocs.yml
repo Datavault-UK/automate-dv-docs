@@ -12,10 +12,9 @@ theme:
   custom_dir: 'overrides'
   show_sidebar: true
   logo: 'assets/images/logo.png'
-  banner: 'assets/images/docs-banner-adv.png'
   favicon: 'assets/images/favicon.ico'
   palette:
-    - scheme: material
+    - scheme: default
       primary: 'black'
       accent: 'indigo'
       toggle:
@@ -27,6 +26,7 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
+
   highlightjs: true
   features:
     - navigation.top
