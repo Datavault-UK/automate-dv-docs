@@ -14,18 +14,19 @@ theme:
   logo: 'assets/images/logo.png'
   favicon: 'assets/images/favicon.ico'
   palette:
-    - scheme: standard
-      primary: custom
-      accent: custom
+    - scheme: default
+      primary: 'black'
+      accent: 'indigo'
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
     - scheme: slate
-      primary: custom
-      accent: custom
+      primary: 'black'
+      accent: 'indigo'
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
+
   highlightjs: true
   features:
     - navigation.top
