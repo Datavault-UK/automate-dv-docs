@@ -13,6 +13,8 @@ theme:
   show_sidebar: true
   logo: 'assets/images/logo.png'
   favicon: 'assets/images/favicon.ico'
+  banner_dark: 'assets/images/banner/docs-banner-adv-drk.png'
+  banner_light: 'assets/images/banner/docs-banner-adv-lgt.png'
   palette:
     - scheme: default
       primary: 'black'
