@@ -22,7 +22,7 @@ For normal use, you should use the standard incremental materialisation in most 
 
 ### vault_insert_by_period (Insert by Period)
 
-([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/materialisations/vault_insert_by_period_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/vault_insert_by_period_materialization.sql))
 
 This materialisation is based on
 the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
@@ -205,7 +205,7 @@ a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/tables/hub.sql) source code for 
+See the [hub](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/tables/hub.sql) source code for 
 a demonstration of this.
 
 #### Idempotent loads
@@ -233,7 +233,7 @@ Example incremental logic containing a `LEFT OUTER JOIN` (taken from AutomateDV'
 
 ### vault_insert_by_rank (Insert by Rank)
 
-([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/materialisations/vault_insert_by_rank_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/vault_insert_by_rank_materialization.sql))
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
 arbitrary rank column, created in the staging layer.
@@ -307,7 +307,7 @@ A rank column can be created one of three ways:
 
 ### pit_incremental
 
-([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/materialisations/incremental_pit_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/incremental_pit_materialization.sql))
 
 The `pit_incremental` custom materialisation is the required materialisation for the [PIT table](macros/index.md#pit) as it
 allows for a continuous reconstruction of the PIT table. 
@@ -332,7 +332,7 @@ populates the target table, for each run of the PIT model.
 
 ### bridge_incremental
 
-([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.4/macros/materialisations/incremental_bridge_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/incremental_bridge_materialization.sql))
 
 The `bridge_incremental` custom materialisation is the required materialisation for the [Bridge table](macros/index.md#bridge)
 as it allows for a continuous reconstruction of the Bridge table. 
