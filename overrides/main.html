@@ -3,6 +3,13 @@
 <!-- Navigation -->
 {% block site_nav %}
 
+{% block outdated %}
+  You're not viewing the latest version.
+  <a href="{{ '../' ~ base_url }}">
+    <strong>Click here to go to latest.</strong>
+  </a>
+{% endblock %}
+
 <!-- Main navigation -->
 {% if nav %}
   <div class="md-sidebar md-sidebar--primary"
