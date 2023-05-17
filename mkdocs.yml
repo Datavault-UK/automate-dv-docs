@@ -31,6 +31,7 @@ theme:
 
   highlightjs: true
   features:
+    - announce.dismiss
     - navigation.top
     - navigation.indexes
 
