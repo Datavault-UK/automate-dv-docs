@@ -94,13 +94,13 @@ nav:
 extra:
   social:
     - icon: 'fontawesome/solid/globe'
-      link: 'https://www.data-vault.co.uk'
+      link: 'https://www.automate-dv.com'
     - icon: 'fontawesome/brands/github'
       link: 'https://github.com/Datavault-UK/'
     - icon: 'fontawesome/brands/twitter'
-      link: 'https://twitter.com/datavault_uk'
+      link: 'https://twitter.com/Automate_DV'
     - icon: 'fontawesome/brands/linkedin'
-      link: 'https://www.linkedin.com/company/business-thinking-limited'
+      link: 'https://www.linkedin.com/showcase/dbtvault/'
     - icon: 'fontawesome/brands/facebook'
       link: 'https://www.facebook.com/DataVaultUK/'
 
