@@ -113,7 +113,7 @@ example provided to help better convey the difference.
         - CUSTOMER_REF
         - NATIONALITY 
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: CUSTOMER_ID
         order_by: BOOKING_DATE
     {% endset %}
@@ -177,7 +177,7 @@ example provided to help better convey the difference.
             - CUSTOMER_REF
             - NATIONALITY 
         ranked_columns:
-          DBTVAULT_RANK:
+          AUTOMATE_DV_RANK:
             partition_by: CUSTOMER_ID
             order_by: BOOKING_DATE
         {%- endset -%}
@@ -327,7 +327,7 @@ example provided to help better convey the difference.
         {%- set yaml_metadata -%}
         source_model: raw_source
         ranked_columns:
-          DBTVAULT_RANK:
+          AUTOMATE_DV_RANK:
             partition_by: CUSTOMER_ID
             order_by: BOOKING_DATE
         {%- endset -%}

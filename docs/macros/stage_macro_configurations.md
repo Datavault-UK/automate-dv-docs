@@ -538,7 +538,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: CUSTOMER_HK
         order_by: LOAD_DATETIME
       SAT_BOOKING_RANK:
@@ -549,7 +549,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -558,7 +558,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: 
             - CUSTOMER_HK
             - CUSTOMER_REF
@@ -573,7 +573,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -584,7 +584,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: 
             - CUSTOMER_HK
             - CUSTOMER_REF
@@ -600,7 +600,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -611,7 +611,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: CUSTOMER_HK
         order_by:
            LOAD_DATETIME: DESC
@@ -623,7 +623,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -632,7 +632,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: 
           - CUSTOMER_HK
           - CUSTOMER_REF
@@ -647,6 +647,6 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```

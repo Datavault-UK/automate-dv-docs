@@ -120,14 +120,14 @@ Examples of output for dbt runs using the [eff_sat](macros/index.md#effsat) macr
     ```text 
     15:24:16 | Concurrency: 4 threads (target='snowflake')
     15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
-    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
-    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.automate_dv_test.EFF_SAT]
+    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.automate_dv_test.EFF_SAT]
+    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.automate_dv_test.EFF_SAT]
+    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.automate_dv_test.EFF_SAT]
+    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.automate_dv_test.EFF_SAT]
+    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.automate_dv_test.EFF_SAT]
+    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.automate_dv_test.EFF_SAT]
+    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.automate_dv_test.EFF_SAT]
     15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
     15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
     ```
@@ -252,7 +252,7 @@ column.
 #### Usage
 
 ```jinja
-{{ config(materialized='vault_insert_by_rank', rank_column='DBTVAULT_RANK', rank_source_models='MY_STAGE') }}
+{{ config(materialized='vault_insert_by_rank', rank_column='AUTOMATE_DV_RANK', rank_source_models='MY_STAGE') }}
 
 {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
                        src_start_date=src_start_date, src_end_date=src_end_date,
@@ -278,7 +278,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: "CUSTOMER_HK"
         order_by: "LOAD_DATETIME"
     ```
@@ -288,7 +288,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
+      AUTOMATE_DV_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
     ```
 
 !!! note

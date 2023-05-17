@@ -143,7 +143,7 @@ This can be one of:
 ```yaml
 vars:
   enable_ghost_records: false
-  system_record_value: 'DBTVAULT_SYSTEM'
+  system_record_value: 'AUTOMATE_DV_SYSTEM'
 ```
 
 #### enable_ghost_records
@@ -159,7 +159,7 @@ Before adding the ghost record, the satellite macro will check there is not alre
 
 #### system_record_value
 
-This will set the record source system for the ghost record. The default is 'DBTVAULT_SYSTEM' and can be changed to any string.
+This will set the record source system for the ghost record. The default is 'AUTOMATE_DV_SYSTEM' and can be changed to any string.
 
 !!! note
     If this is changed on an existing project, the source system of already loaded ghost records will not be changed.
@@ -339,7 +339,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
@@ -360,14 +360,14 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATE_DV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -384,7 +384,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
@@ -394,7 +394,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATE_DV.TEST.MY_STAGE_2
             QUALIFY row_number = 1
         ),
         
@@ -432,7 +432,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             QUALIFY row_number = 1
         ),
         
@@ -442,7 +442,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATE_DV.TEST.MY_STAGE_2
             QUALIFY row_number = 1
         ),
         
@@ -466,7 +466,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATE_DV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -485,7 +485,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -507,7 +507,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -515,7 +515,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATE_DV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -532,7 +532,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE 
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -543,7 +543,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATE_DV.TEST.MY_STAGE_2
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -582,7 +582,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -593,7 +593,7 @@ Generates SQL to build a Hub table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATE_DV.TEST.MY_STAGE_2
             WHERE CUSTOMER_HK IS NOT NULL
             QUALIFY row_number = 1
         ),
@@ -618,7 +618,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATE_DV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -640,7 +640,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -666,7 +666,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -675,7 +675,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATE_DV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -695,7 +695,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -710,7 +710,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -757,7 +757,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -772,7 +772,7 @@ Generates SQL to build a Hub table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
             ) h
             WHERE h.row_number = 1
@@ -802,7 +802,7 @@ Generates SQL to build a Hub table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
+            LEFT JOIN AUTOMATE_DV.TEST.hub AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -866,7 +866,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -890,7 +890,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -900,7 +900,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATE_DV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -918,7 +918,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -931,7 +931,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+            FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -973,7 +973,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -986,7 +986,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY rr.CUSTOMER_HK
                        ORDER BY rr.LOAD_DATE ASC
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
             WHERE rr.CUSTOMER_HK IS NOT NULL
             AND rr.ORDER_FK IS NOT NULL
             AND rr.BOOKING_FK IS NOT NULL
@@ -1014,7 +1014,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATE_DV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1033,7 +1033,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             AND ORDER_FK IS NOT NULL
             AND BOOKING_FK IS NOT NULL
@@ -1057,7 +1057,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE CUSTOMER_HK IS NOT NULL
             AND ORDER_FK IS NOT NULL
             AND BOOKING_FK IS NOT NULL
@@ -1067,7 +1067,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATE_DV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1085,7 +1085,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
         ),
         
         row_rank_2 AS (
@@ -1094,7 +1094,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATE_DV.TEST.MY_STAGE_2
         ),
         
         stage_union AS (
@@ -1135,7 +1135,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
         ),
         
         row_rank_2 AS (
@@ -1144,7 +1144,7 @@ Generates SQL to build a Link table using the provided parameters.
                        PARTITION BY CUSTOMER_HK
                        ORDER BY LOAD_DATE
                    ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
+            FROM AUTOMATE_DV.TEST.MY_STAGE_2
         ),
         
         stage_union AS (
@@ -1171,7 +1171,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATE_DV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1193,7 +1193,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1221,7 +1221,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1232,7 +1232,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATE_DV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1253,7 +1253,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1270,7 +1270,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1320,7 +1320,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1337,7 +1337,7 @@ Generates SQL to build a Link table using the provided parameters.
                            PARTITION BY rr.CUSTOMER_HK
                            ORDER BY rr.LOAD_DATE ASC
                        ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
+                FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
                 WHERE rr.CUSTOMER_HK IS NOT NULL
                 AND rr.ORDER_FK IS NOT NULL
                 AND rr.BOOKING_FK IS NOT NULL
@@ -1370,7 +1370,7 @@ Generates SQL to build a Link table using the provided parameters.
         records_to_insert AS (
             SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
             FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
+            LEFT JOIN AUTOMATE_DV.TEST.link AS d
             ON a.CUSTOMER_HK = d.CUSTOMER_HK
             WHERE d.CUSTOMER_HK IS NULL
         )
@@ -1426,7 +1426,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1444,7 +1444,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
+            FROM AUTOMATE_DV.TEST.raw_stage_hashed
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1452,7 +1452,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            LEFT JOIN AUTOMATE_DV.TEST.t_link AS tgt
             ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
             WHERE tgt.TRANSACTION_HK IS NULL
         )
@@ -1467,7 +1467,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1484,14 +1484,14 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
+            FROM AUTOMATE_DV.TEST.raw_stage_hashed
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            LEFT JOIN AUTOMATE_DV.TEST.t_link AS tgt
             ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
             WHERE tgt.TRANSACTION_HK IS NULL
         )
@@ -1506,7 +1506,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
+            FROM AUTOMATE_DV.TEST.MY_STAGE
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1524,7 +1524,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         ```sql
         WITH stage AS (
             SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
+            FROM AUTOMATE_DV.TEST.raw_stage_hashed
             WHERE TRANSACTION_HK IS NOT NULL
             AND CUSTOMER_FK IS NOT NULL
         ),
@@ -1532,7 +1532,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         records_to_insert AS (
             SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
             FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
+            LEFT JOIN AUTOMATE_DV.TEST.t_link AS tgt
             ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
             WHERE tgt.TRANSACTION_HK IS NULL
         )
@@ -1595,7 +1595,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
 
@@ -1612,7 +1612,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
             WHERE CUSTOMER_HK IS NOT NULL
         ),
         
@@ -1624,7 +1624,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                     PARTITION BY c.CUSTOMER_HK
                     ORDER BY c.LOAD_DATE DESC
                 ) AS rank
-            FROM DBTVAULT.TEST.SATELLITE AS c
+            FROM AUTOMATE_DV.TEST.SATELLITE AS c
             JOIN (
                 SELECT DISTINCT source_data.CUSTOMER_PK
                 FROM source_data
@@ -1650,7 +1650,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_PHONE", a."CUSTOMER_DOB", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
             WHERE a."CUSTOMER_PK" IS NOT NULL
         ),
 
@@ -1659,7 +1659,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             NULL AS "CUSTOMER_DOB",
             NULL AS "CUSTOMER_PHONE",
             TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
+            CAST('AUTOMATE_DV_SYSTEM' AS VARCHAR) AS "SOURCE",
             TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
@@ -1681,7 +1681,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         ```sql
         WITH source_data AS (
             SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_DOB", a."CUSTOMER_PHONE", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM DBTVAULT.TEST.MY_STAGE AS a
+            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
             WHERE a."CUSTOMER_PK" IS NOT NULL
         ),
 
@@ -1693,7 +1693,7 @@ Generates SQL to build a Satellite table using the provided parameters.
                        PARTITION BY current_records."CUSTOMER_HK"
                        ORDER BY current_records."LOAD_DATE" DESC
                     ) AS rank
-                FROM DBTVAULT.TEST.SATELLITE AS current_records
+                FROM AUTOMATE_DV.TEST.SATELLITE AS current_records
                     JOIN (
                         SELECT DISTINCT source_data."CUSTOMER_HK"
                         FROM source_data
@@ -1708,7 +1708,7 @@ Generates SQL to build a Satellite table using the provided parameters.
             NULL AS "CUSTOMER_DOB",
             NULL AS "CUSTOMER_PHONE",
             TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
+            CAST('AUTOMATE_DV_SYSTEM' AS VARCHAR) AS "SOURCE",
             TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
             CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
