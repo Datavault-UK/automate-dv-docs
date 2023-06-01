@@ -5,7 +5,7 @@ This demonstration was developed to give users a further understanding of how db
 a Data Vault using an actual data set.  
 
 For a more detailed guide on how to use the provided macros create your own Data Vault using AutomateDV, 
-with a simplified example, take a look at our [walk-through](../tutorial/index.md) guide.
+with a simplified example, take a look at our [tutorials](../tutorial/index.md).
 
 We will:
 

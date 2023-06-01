@@ -25,6 +25,6 @@ Read more: [AutomateDV pre-requisite knowledge](../index.md#pre-requisite)
 
 - [Install dbt](https://docs.getdbt.com/dbt-cli/installation) and [set up dbt on your preferred platform](https://docs.getdbt.com/dbt-cli/configure-your-profile)
 
-- [Install AutomateDV](https://hub.getdbt.com/datavault-uk/automate-dv/latest/)
+- [Install AutomateDV](https://hub.getdbt.com/datavault-uk/automate_dv/latest/)
 
 --8<-- "includes/abbreviations.md"
