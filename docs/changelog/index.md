@@ -11,11 +11,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
+# [v0.9.7] - 2023-07-05
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.7)](https://automate-dv.readthedocs.io/en/v0.9.7/?badge=v0.9.7)
+
+[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
+
+## New
+
+### Databricks and Postgres
+
+**Databricks and Postgres are now fully supported in v0.9.7!**
+
+- Transactional Links ([t_link macro](../macros/index.md#tlink))
+- Effectivity Satellites ([eff_sat macro](../macros/index.md#effsat))
+- Multi-active Satellites ([ma_sat macro](../macros/index.md#masat))
+- Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
+- Point in Time tables (PITs) ([pit macro](../macros/index.md#pit))
+- Bridges ([bridge macro](../macros/index.md#bridge))
+
+## Fixes
+
+### All platforms
+
+#### Error handling and error messages 
+
+- Cases where escape characters are empty now correctly use the platform default instead.
+- Cases where too many iterations (>100,000) would occur for custom vault_insert_by_x materialisations on SQLServer now raise an error.
+
+### Postgres
+- Fixed a hashing length bug (#176)
+
+# [v0.9.6] - 2023-05-16
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.6)](https://automate-dv.readthedocs.io/en/v0.9.6/?badge=v0.9.6)
+
+[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
+
+## The rebrand update! - dbtvault is now AutomateDV
+
+## Changes
+
+- Macros are now called using `automate_dv` instead of `dbtvault`. e.g. `automate_dv.hub(...)`
+- The default `system_record_value` is now `AUTOMATE_DV_SYSTEM` instead of `DBTVAULT_SYSTEM`
+
 # [v0.9.5] - 2023-03-22
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.5)](https://automate-dv.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
 
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://automate-dv.readthedocs.io/en/latest/versions/)
-
 
 ## Fixes
 

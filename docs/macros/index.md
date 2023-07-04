@@ -246,26 +246,24 @@ with no equivalent in another platform.
 
 Thanks for your patience and continued support!
 
-| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks**                                      | Postgres**                                        | Redshift**                                        |
-|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|
-| hash           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| stage          | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| hub            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| link           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| sat            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| t_link         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| eff_sat        | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| ma_sat         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| xts            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| pit            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks                                   | Postgres                                       | Redshift**                                        |
+|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|----------------------------------------------|------------------------------------------------|---------------------------------------------------|
+| hash           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| stage          | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| hub            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| link           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| sat            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| t_link         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| eff_sat        | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| ma_sat         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| xts            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| pit            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
 
 !!! note "**"
     These platforms are either planned or actively being worked on by the community and/or internal AutomateDV team.
     See the issues below for more information:
 
-    - [Databricks](https://github.com/Datavault-UK/automate-dv/issues/98)
-    - [Postgres](https://github.com/Datavault-UK/automate-dv/issues/117)
     - [Redshift](https://github.com/Datavault-UK/automate-dv/issues/86)
 
 ### Limitations
@@ -1385,6 +1383,8 @@ ___
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/snowflake/t_link.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/bigquery/t_link.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/sqlserver/t_link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/databricks/t_link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/postgres/t_link.sql)
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -2074,6 +2074,8 @@ ___
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/snowflake/eff_sat.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/bigquery/eff_sat.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/sqlserver/eff_sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/databricks/eff_sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/postgres/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -2718,6 +2720,8 @@ ___
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/snowflake/ma_sat.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/bigquery/ma_sat.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/sqlserver/ma_sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/databricks/ma_sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/postgres/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -3078,6 +3082,8 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/snowflake/xts.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/bigquery/xts.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/sqlserver/xts.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/databricks/xts.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/postgres/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -3500,6 +3506,8 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/snowflake/pit.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/bigquery/pit.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/sqlserver/pit.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/databricks/pit.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/postgres/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -3778,6 +3786,8 @@ ___
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/snowflake/bridge.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/bigquery/bridge.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/sqlserver/bridge.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/databricks/bridge.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/postgres/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
