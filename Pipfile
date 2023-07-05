@@ -3,13 +3,6 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-dbt-core = "==1.1.0"
-dbt-snowflake = "==1.1.0"
-dbt-bigquery = "==1.1.0"
-dbt-sqlserver = "==1.1.0"
-dbt-databricks = "==1.1.0"
-dbt-postgres = "==1.1.0"
 
 [packages]
 mkdocs-material = "*"
@@ -19,5 +12,13 @@ mkdocs-with-pdf = "*"
 mkdocs-video = "*"
 invoke = "*"
 
+[dev-packages]
+dbt-core = "==1.4.6"
+dbt-snowflake = "==1.4.3"
+dbt-bigquery = "==1.4.3"
+dbt-sqlserver = "==1.4.3"
+dbt-databricks = "==1.4.3"
+dbt-postgres = "==1.4.6"
+
 [requires]
-python_version = "3.9"
+python_version = "3.11"
