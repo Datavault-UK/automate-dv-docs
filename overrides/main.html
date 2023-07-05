@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
+{% block announce %}
+  We've rebranded - dbtvault is now AutomateDV! Blog post coming soon,
+  for now <a href="https://github.com/Datavault-UK/automate-dv/releases/tag/v0.9.6">read our release notes</a> for more info!
+{% endblock %}
+
+{% block outdated %}
+  You're not viewing the latest version.
+  <a href="{{ '../' ~ base_url }}">
+    <strong>Click here to go to latest.</strong>
+  </a>
+{% endblock %}
+
 <!-- Navigation -->
 {% block site_nav %}
 
@@ -10,7 +22,8 @@
     <div class="nav-cube">
         <a href="{{ config.site_url | default(nav.homepage.url, true) | url }}"
         title="{{ config.site_name }}">
-            <img src="{{ config.theme.banner | url }}" alt="dbtvault">
+          <img src="{{ config.theme.banner_dark | url }}#only-light" alt="Automate-DV">
+          <img src="{{ config.theme.banner_light | url }}#only-dark" alt="Automate-DV">
         </a>
     </div>
     <div class="md-sidebar__scrollwrap">
@@ -39,7 +52,7 @@
 {% block content %}
   <!-- Edit button -->
   {% if page.edit_url %}
-    <a href="{{ page.edit_url | replace('dbtvault', 'dbtvault-docs')}} "
+    <a href="{{ page.edit_url | replace('automate_dv', 'automate-dv-docs')}} "
       title="{{ lang.t('edit.link.title') }}"
       class="md-content__button md-icon">
       {% include ".icons/material/pencil.svg" %}
@@ -52,7 +65,6 @@
   {% if page and page.meta %}
     {% if page.meta.git_revision_date_localized or
           page.meta.revision_date %}
-      {% include "partials/source-link.html" %}
     {% endif %}
   {% endif %}
 {% endblock %}

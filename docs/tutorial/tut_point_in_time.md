@@ -52,15 +52,15 @@ Create a new dbt model as before. We'll call this one `pit_customer`.
 === "pit_customer.sql"
 
     ``` jinja
-    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                    as_of_dates_table=as_of_dates_table,
-                    satellites=satellites,
-                    stage_tables=stage_tables,
-                    src_ldts=src_ldts) }}
+    {{ automate_dv.pit(source_model=source_model, src_pk=src_pk,
+                       as_of_dates_table=as_of_dates_table,
+                       satellites=satellites,
+                       stage_tables=stage_tables,
+                       src_ldts=src_ldts) }}
     ```
 
 To create a PIT model, we simply copy and paste the above template into a model named after the PIT we
-are creating. dbtvault will generate a PIT using parameters provided in the next steps.
+are creating. AutomateDV will generate a PIT using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -231,11 +231,11 @@ Now, our model should look like the following:
     {% set stage_tables = metadata_dict['stage_tables'] %}
     {% set src_ldts = metadata_dict['src_ldts'] %}
 
-    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                    as_of_dates_table=as_of_dates_table,
-                    satellites=satellites,
-                    stage_tables=stage_tables,
-                    src_ldts=src_ldts) }}
+    {{ automate_dv.pit(source_model=source_model, src_pk=src_pk,
+                       as_of_dates_table=as_of_dates_table,
+                       satellites=satellites,
+                       stage_tables=stage_tables,
+                       src_ldts=src_ldts) }}
     ```
 
 !!! Note 

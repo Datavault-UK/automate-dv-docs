@@ -61,14 +61,14 @@ Create a new dbt model as before. We'll call this one `ma_sat_customer_detail`.
 === "ma_sat_customer_detail.sql"
 
     ```jinja
-    {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
-                       src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
-                       src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                          src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
+                          src_source=src_source, source_model=source_model) }}
     ```
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [ma_sat](../macros/index.md#ma_sat) macro.
+Let's look at the metadata we need to provide to the [ma_sat](../macros/index.md#masat) macro.
 
 #### Materialisation
 
@@ -76,7 +76,7 @@ The recommended materialisation for **Multi-Active Satellites** is `incremental`
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [multi-active satellite macro](../macros/index.md#ma_sat).
+Let's look at the metadata we need to provide to the [multi-active satellite macro](../macros/index.md#masat).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
@@ -116,14 +116,14 @@ When we provide the metadata above, our model should look like the following:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.ma_sat(src_pk=metadata_dict['src_pk'],
-                       src_cdk=metadata_dict['src_cdk'],
-                       src_payload=metadata_dict['src_payload'],
-                       src_hashdiff=metadata_dict['src_hashdiff'],
-                       src_eff=metadata_dict['src_eff'],
-                       src_ldts=metadata_dict['src_ldts'],
-                       src_source=metadata_dict['src_source'],
-                       source_model=metadata_dict['source_model']) }}
+    {{ automate_dv.ma_sat(src_pk=metadata_dict['src_pk'],
+                          src_cdk=metadata_dict['src_cdk'],
+                          src_payload=metadata_dict['src_payload'],
+                          src_hashdiff=metadata_dict['src_hashdiff'],
+                          src_eff=metadata_dict['src_eff'],
+                          src_ldts=metadata_dict['src_ldts'],
+                          src_source=metadata_dict['src_source'],
+                          source_model=metadata_dict['source_model']) }}
     ```
 
 !!! Note

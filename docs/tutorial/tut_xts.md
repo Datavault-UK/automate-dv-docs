@@ -13,7 +13,7 @@ The name of the Satellite that the payload is being staged to. This allows us to
 
 
 !!! note "Understanding the src_satellite parameter"
-    [Read More](../metadata.md#understanding-the-src_satellite-parameter)
+    [Read More](../metadata.md#understanding-the-srcsatellite-parameter)
 
 
 #### Hashdiff (src_satellite.hashdiff)
@@ -35,12 +35,12 @@ Create a new dbt model as before. We'll call this one `xts_customer`.
 === "xts_customer.sql"
 
     ```jinja
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 To create a XTS model, we simply copy and paste the above template into a model named after the XTS we
-are creating. dbtvault will generate an XTS using parameters provided in the next steps.
+are creating. AutomateDV will generate an XTS using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -94,8 +94,8 @@ When we provide the metadata above, our model should now look like the following
     {% set src_ldts = metadata_dict["src_ldts"] %}
     {% set src_source = metadata_dict["src_source"] %}
 
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 !!! Note

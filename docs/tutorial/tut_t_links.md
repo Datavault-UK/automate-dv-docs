@@ -52,13 +52,13 @@ Create a new dbt model as before. We'll call this one `t_link_transaction`.
 === "t_link_transaction.sql"
 
     ```jinja
-    {{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
-                       src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                       source_model=source_model)                                 }}
+    {{ automate_dv.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
+                          src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                          source_model=source_model)                                 }}
     ```
 
 To create a Transactional Link model, we simply copy and paste the above template into a model named after the Transactional Link we
-are creating. dbtvault will generate a Transactional Link using parameters provided in the next steps.
+are creating. AutomateDV will generate a Transactional Link using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -66,7 +66,7 @@ The recommended materialisation for **Transactional Links** is `incremental`, as
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [t_link macro](../macros/index.md#t_link).
+Let's look at the metadata we need to provide to the [t_link macro](../macros/index.md#tlink).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
@@ -108,13 +108,13 @@ When we provide the metadata above, our model should look like the following:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.t_link(src_pk=metadata_dict["src_pk"],
-                       src_fk=metadata_dict["src_fk"],
-                       src_payload=metadata_dict["src_payload"],
-                       src_eff=metadata_dict["src_eff"],
-                       src_ldts=metadata_dict["src_ldts"],
-                       src_source=metadata_dict["src_source"],
-                       source_model=metadata_dict["source_model"]) }}
+    {{ automate_dv.t_link(src_pk=metadata_dict["src_pk"],
+                          src_fk=metadata_dict["src_fk"],
+                          src_payload=metadata_dict["src_payload"],
+                          src_eff=metadata_dict["src_eff"],
+                          src_ldts=metadata_dict["src_ldts"],
+                          src_source=metadata_dict["src_source"],
+                          source_model=metadata_dict["source_model"]) }}
     ```
 
 !!! Note

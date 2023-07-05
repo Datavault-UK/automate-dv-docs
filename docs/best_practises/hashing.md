@@ -1,160 +1,18 @@
-We advise you follow these best practices when using dbtvault.
-
-## Single record per key, per load (incremental)
-
-At the current time, dbtvault will load discrete records with the same primary key (hash key) simultaneously. This means
-that any deltas formed by loading these records in individual cycles get lost. For Hubs and Links this is not a problem,
-as there are no temporal attributes, but for structures such as Satellites this will produce erroneous loads.
-
-Until a future release solves this limitation for structures configured with the built-in **incremental
-materialisation**, we advise that you use one of our provided [custom materialisations](materialisations.md).
-
-These materialisations are fully configurable and automatically iterate over records, to load each batch/iteration
-separately.
-
-We are working on removing this limitation and implementing 'intra-period' loading. If you have any questions, please
-get in touch.
-
-[Read More](#materialisations)
-
-## Record source table code
-
-We suggest you use a code for your record source. This can be anything that makes sense for your particular context,
-though usually an integer or alpha-numeric value works well. The code often gets used to look up the full table name in
-a reference table.
-
-You may do this with dbtvault by providing the code as a constant in the [staging](tutorial/tut_staging.md) layer, using
-the [stage](macros/index.md#stage) macro. The [staging walk-through](tutorial/tut_staging.md) presents this exact use-case in
-the code examples.
-
-If there is already a source in the raw staging layer, you may keep this or override it using
-the [stage](macros/index.md#stage) macro.
-
-## Column name quoting and escaping
-
-By default, dbtvault automatically quotes columns in all macro code, aside from with derived columns which must be 
-[explicitly configured to be escaped](./macros/stage_macro_configurations.md#escaping-column-names-that-are-not-sql-compliant).
-
-This escaping approach to make it easier to deal with non-compliant and awkward column names in your source data.
-
-## NULL Handling
-
-The handling of nulls is important in Data Vault 2.0 because - as a general rule - nulls represent a lack of something,
-and therefore do not mean anything to the business. This means we do not want records or keys containing nulls ending up
-in our raw vault. dbtvault, without any configuration from the user, will ignore all NULLs being loaded into 
-Hubs and Links, with slightly different handling for other table types. This is documented in the sections below.
-
-Sometimes though, columns might have a null value in the source data and there is a requirement to import the associated 
-records anyway, because they still carry business meaning. For this case, we provide users the option to configure
-how NULLs in business keys are handled, using the Data Vault standard of replacing them with 'tokens' (i.e. placeholders).
-
-dbtvault's [business-key Null handling feature](./macros/stage_macro_configurations.md#null-columns) provides this option; 
-the null key can be replaced by a default value and the original null value stored in an additional column. 
-The key might be required, for instance where it is the basis for a hashed primary key, or it might be optional. 
-
-The default replacement value for a required key is -1 and for an optional key is -2. The replacement process is enabled 
-by a configuration setting in [staging](./macros/stage_macro_configurations.md#null-columns).
-
-!!! tip
-    The null keys default values can be configured, [Read more](./macros/index.md#global-variables)
-
-If not configured by the user, NULLs get handled in the built-in hashing processes in dbtvault:
-
-- Nulls get replaced with a placeholder; by default this is `^^`.
-- If all components of a non-hashdiff (PK/HK) hashed column are NULL, then the whole key will evaluate as NULL and the record will not be loaded.
-- If all components of a hashdiff hashed column are NULL, then the hashdiff will be a hash of `^^` multiplied by how
-  many columns the hashdiff is composed of and separated by the concat string, which is `||` by default. e.g.
-  ```text
-    ^^||^^||^^ = 3C92E664B39D90428DBC94975B5DDA58
-  ```
-
-!!! tip
-    The concat (`||`) and null (`^^`) strings can be configured, [Read more](./macros/index.md#global-variables)
-
-This is described in more depth below (with code examples).
-
-dbtvault has built-in support for ensuring nulls do not get loaded into the raw vault. Null handling has been described
-below for each structure:
-
-### Staging
-
-All records get loaded and hashes evaluated as null according to the descriptions above and details in the hashing
-sections below.
-
-Keys containing null values are replaced according to configuration settings [stage](macros/index.md#stage). 
-
-### Hubs
-
-If the primary key is NULL, then the record does not get loaded.
-
-### Links
-
-If the primary or ANY of the foreign keys are null, then the record does not get loaded.
-
-### Satellites
-
-If the primary key is NULL, then the record does not get loaded.
-
-### Transactional Links
-
-If the primary or ANY of the foreign keys are null, then the record does not get loaded.
-
-### Effectivity Satellites
-
-If the driving key column(s) or secondary foreign key (sfk) column(s) are null then the record does not get loaded.
-
-!!! note 
-    There is no logic to exclude records with null PKs because the PK of an Effectivity Satellite should be all the
-    SFK and DFK columns (so the PK will evaluate as null if they are all null).
-
-## Materialisations
-
-All raw vault structures support both the built-in dbt incremental materialisation and
-dbtvault's [custom materialisations](materialisations.md).
-
-[Read more about incremental models](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/configuring-incremental-models/)
-
-### Table and View
-
-dbtvault macros do not support Table or View materialisations. You will be able to create your models if these
-materialisations are set, however they will behave unpredictably. We have no plans to support these materialisations, as
-they fundamentally break and oppose Data Vault 2.0 standards.
-
-### Recommended Materialisations
-
 !!! seealso "See Also"
-    - [bridge_incremental](materialisations.md#bridge_incremental)
-    - [pit_incremental](materialisations.md#pit_incremental)
-
-| Structure                    | incremental      | bridge_incremental | pit_incremental    |
-|------------------------------|------------------|--------------------|--------------------|
-| Hub                          | :material-check: |                    |                    |
-| Link                         | :material-check: |                    |                    |
-| Transactional Link           | :material-check: |                    |                    |
-| Satellite                    | :material-check: |                    |                    |
-| Effectivity Satellite        | :material-check: |                    |                    |
-| Multi-Active Satellite       | :material-check: |                    |                    |
-| Extended Tracking Satellites | :material-check: |                    |                    |
-| Bridge Tables                |                  | :material-check:   |                    |
-| Point In Time Tables         |                  |                    | :material-check:   |
-
-## Hashing
-
-!!! seealso "See Also"
-    - [hash](macros/index.md#hash-macro)
-    - [hash_columns](macros/stage_macro_configurations.md#hashed-columns)
+    - [hash](../macros/index.md#hash-macro)
+    - [hash_columns](../macros/stage_macro_configurations.md#hashed-columns)
  
 ### The drawbacks of using MD5
 
-By default, dbtvault uses MD5 hashing to calculate hashes using [hash](macros/index.md#hash-macro)
-and [hash_columns](macros/stage_macro_configurations.md#hashed-columns). If your table contains more than a few billion rows, then there is a chance
+By default, AutomateDV uses MD5 hashing to calculate hashes using [hash](../macros/index.md#hash-macro)
+and [hash_columns](../macros/stage_macro_configurations.md#hashed-columns). If your table contains more than a few billion rows, then there is a chance
 of a clash: where two different values generate the same hash value
-(see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collision_vulnerabilities)).
+(see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collisi76on_vulnerabilities)).
 
 For this reason, it **should not be** used for cryptographic purposes either.
 
 You can however, choose between MD5 and SHA-256 in
-dbtvault, [read below](best_practices.md#choosing-a-hashing-algorithm-in-dbtvault), which will help with reducing the
+AutomateDV, [read below](#choosing-a-hashing-algorithm), which will help with reducing the
 possibility of collision in larger data sets.
 
 #### Personally Identifiable Information (PII)
@@ -163,7 +21,7 @@ Although we do not use hashing for the purposes of security (but rather optimisa
 MD5 and SHA-256 could still pose a security risk for your organisation. If any of your presentation layer (marts) tables
 or views containing any hashed PII data, an attacker may be able to brute-force the hashing to gain access to the PII.
 For this reason, we highly recommend concatenating a _salt_ to your hashed columns in the staging layer using
-the [stage](macros/index.md#stage) macro.
+the [stage](../macros/index.md#stage) macro.
 
 It's generally ill-advised to store this salt in the database alongside your hashed values, so we recommend injecting it
 as an environment variable for dbt to access via
@@ -191,7 +49,7 @@ been a change in the payload. This triggers the load of a new Satellite record. 
 we'd have to compare each column in turn and handle nulls to see if a change had occurred.
 
 Hashing is sensitive to column ordering. If you provide the `is_hashdiff: true` flag to your column specification in
-the [stage](macros/index.md#stage) macro, dbtvault will automatically sort the provided columns alphabetically. Columns will
+the [stage](../macros/index.md#stage) macro, AutomateDV will automatically sort the provided columns alphabetically. Columns will
 be sorted by their alias.
 
 ### How do we hash?
@@ -217,7 +75,7 @@ Single-column hashing step by step:
    hash to the same value. For example <code>1001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> and <code>&nbsp;1001</code>.
 
 3. `UPPER` Next we eliminate problems where the casing in a string will cause a different hash value to be generated for
-   the same word, for example `DBTVAULT` and `dbtvault`.
+   the same word, for example `AUTOMATE_DV` and `automate_dv`.
 
 4. `NULLIF ''` At this point we ensure that if an empty string has been provided, it will be considered `NULL`. This
    kind of problem can arise if data gets ingested into your warehouse from semi-structured data such as JSON or CSV,
@@ -285,16 +143,16 @@ of the record, and the payload of the record.
 
 !!! note
 
-    Prior to dbtvault v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
-    In dbtvault v0.7.4, macros have been updated to include logic to ensure the primary key is checked
+    Prior to AutomateDV v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
+    In AutomateDV v0.7.4, macros have been updated to include logic to ensure the primary key is checked
     in addition to the hashdiff when detecting new records. It is still best practice to include the natural keys, however. 
 
 ### Hashing best practices
 
 Best practices for hashing include:
 
-- Alpha sorting Hashdiff columns. As mentioned, dbtvault can do this for us, so no worries!
-  Refer to the [stage](macros/index.md#stage) docs for details on how to do this.
+- Alpha sorting Hashdiff columns. As mentioned, AutomateDV can do this for us, so no worries!
+  Refer to the [stage](../macros/index.md#stage) docs for details on how to do this.
 
 - Ensure all **Hub** columns used to calculate a primary key hash get presented in the same order across all staging
   tables
@@ -340,16 +198,16 @@ Below is an example satellite YAML config from a Satellite model:
 The highlighted lines show the syntax required to alias a column named `CUSTOMER_HASHDIFF` (present in the
 `stg_customer_details_hashed` staging layer) as `HASHDIFF`.
 
-### Choosing a hashing algorithm in dbtvault
+### Choosing a hashing algorithm
 
 You may choose between `MD5` and `SHA-256` hashing. `SHA-256` is an option for users who wish to reduce the hashing
 collision rates in larger data sets.
 
 !!! note
 
-    If a hashing algorithm configuration is missing or invalid, dbtvault will use `MD5` by default. 
+    If a hashing algorithm configuration is missing or invalid, AutomateDV will use `MD5` by default. 
 
-Configuring the hashing algorithm which will be used by dbtvault is simple: add a global variable to your
+Configuring the hashing algorithm which will be used by AutomateDV is simple: add a global variable to your
 `dbt_project.yml` as follows:
 
 === "dbt_project.yml"
@@ -418,7 +276,7 @@ The strings can be changed by the user, and this is achieved in the same way as 
     ), '##!!##!!##')) AS BINARY(16)) AS CUSTOMER_HK
     ```
 
-### The future of hashing in dbtvault
+### The future of hashing in AutomateDV
 
 We plan to provide users with the ability to disable hashing entirely.
 
