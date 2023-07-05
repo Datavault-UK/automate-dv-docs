@@ -1,0 +1,20 @@
+version: 1
+
+staging:
+  primed_stages:
+    - model_name: stg_customer
+      source_model: CUSTOMER
+      hashed_columns:
+        CUSTOMER_HK: c_custkey
+      derived_columns:
+        CUSTOMER_ID: c_custkey
+        LOAD_DATETIME: "!1998-01-01"
+        RECORD_SOURCE: "!TPCH_CUSTOMER"
+    - model_name: stg_orders
+      source_model: ORDERS
+      hashed_columns:
+        CUSTOMER_HK: O_CUSTKEY
+      derived_columns:
+        CUSTOMER_ID: O_CUSTKEY
+        LOAD_DATETIME: "!1998-01-01"
+        RECORD_SOURCE: "!TPCH_ORDERS"

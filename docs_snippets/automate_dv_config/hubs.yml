@@ -1,0 +1,32 @@
+version: 1
+
+raw_vault:
+  hubs:
+    - model_name: hub_customer
+      source_model: stg_customer
+      src_pk: CUSTOMER_HK
+      src_nk: CUSTOMER_ID
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+    - model_name: hub_customer_incremental
+      source_model: stg_customer
+      src_pk: CUSTOMER_HK
+      src_nk: CUSTOMER_ID
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+    - model_name: hub_orders_multi_source
+      source_model:
+        - stg_customer
+        - stg_orders
+      src_pk: CUSTOMER_HK
+      src_nk: CUSTOMER_ID
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+    - model_name: hub_orders_multi_source_incremental
+      source_model:
+        - stg_customer
+        - stg_orders
+      src_pk: CUSTOMER_HK
+      src_nk: CUSTOMER_ID
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
