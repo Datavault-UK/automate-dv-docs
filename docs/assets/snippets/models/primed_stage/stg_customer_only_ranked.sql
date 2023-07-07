@@ -2,8 +2,8 @@
 source_model: CUSTOMER
 ranked_columns:
   AUTOMATE_DV_RANK:
-    partition_by: CUSTOMER_HK
-    order_by: LOAD_DATETIME
+    partition_by: C_CUSTKEY
+    order_by: C_NATIONKEY
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}
