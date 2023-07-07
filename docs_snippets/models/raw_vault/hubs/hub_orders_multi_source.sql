@@ -1,3 +1,7 @@
+{{ config(
+    full_refresh=true
+) }}
+
 {%- set source_model = ["stg_customer", "stg_orders"] -%}
 {%- set src_pk = "CUSTOMER_HK" -%}
 {%- set src_nk = "CUSTOMER_ID" -%}

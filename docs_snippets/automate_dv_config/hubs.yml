@@ -3,6 +3,9 @@ version: 1
 raw_vault:
   hubs:
     - model_name: hub_customer
+      model_config:
+        dbt_config:
+          full_refresh: true
       source_model: stg_customer
       src_pk: CUSTOMER_HK
       src_nk: CUSTOMER_ID
@@ -15,6 +18,9 @@ raw_vault:
       src_ldts: LOAD_DATETIME
       src_source: RECORD_SOURCE
     - model_name: hub_orders_multi_source
+      model_config:
+        dbt_config:
+          full_refresh: true
       source_model:
         - stg_customer
         - stg_orders
