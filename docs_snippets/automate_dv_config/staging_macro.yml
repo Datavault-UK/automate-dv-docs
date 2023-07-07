@@ -1,0 +1,44 @@
+version: 1
+
+staging:
+  primed_stages:
+    - model_name: stg_customer_all
+      source_model: CUSTOMER
+      hashed_columns:
+        CUSTOMER_HK: c_custkey
+      derived_columns:
+        CUSTOMER_ID: c_custkey
+        LOAD_DATETIME: "!1998-01-01"
+        RECORD_SOURCE: "!TPCH_CUSTOMER"
+      null_columns:
+        required:
+          - CUSTOMER_ID
+        optional:
+          - C_NATIONKEY
+      ranked_columns:
+        AUTOMATE_DV_RANK:
+          partition_by: CUSTOMER_HK
+          order_by: LOAD_DATETIME
+
+    - model_name: stg_customer_only_source
+      source_model: CUSTOMER
+
+    - model_name: stg_customer_only_hashed
+      source_model: CUSTOMER
+      hashed_columns:
+        CUSTOMER_HK: c_custkey
+
+    - model_name: stg_customer_only_null
+      source_model: CUSTOMER
+      null_columns:
+        required:
+          - CUSTOMER_ID
+        optional:
+          - C_NATIONKEY
+
+    - model_name: stg_customer_only_ranked
+      source_model: CUSTOMER
+      ranked_columns:
+        AUTOMATE_DV_RANK:
+          partition_by: CUSTOMER_HK
+          order_by: LOAD_DATETIME

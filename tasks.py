@@ -40,13 +40,21 @@ def dbt_run_twice(c, target='snowflake'):
 
 
 @task
-def copy_samples(c):
+def generate_models(c):
+    with c.cd('./docs_snippets'):
+        c.run('automate-dv generate models')
+
+
+@task
+def make_samples(c):
     targets = ['snowflake',
                # 'bigquery', 'sqlserver', 'postgres', 'databricks'
                ]
 
     reset_and_copy('./docs_snippets/models/',
                    f'./docs/assets/snippets/models/')
+
+    generate_models(c)
 
     for target in targets:
         print(f"Running dbt with {target}...")
@@ -62,4 +70,4 @@ def copy_samples(c):
 
 
 if __name__ == '__main__':
-    copy_samples(Context())
+    make_samples(Context())

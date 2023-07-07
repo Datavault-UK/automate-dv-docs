@@ -333,25 +333,25 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        --8<-- "docs/assets/snippets/snowflake/raw_vault/hubs/hub_customer.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_customer.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        --8<-- "docs/assets/snippets/snowflake/raw_vault/hubs/hub_customer_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_customer_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        --8<-- "docs/assets/snippets/snowflake/raw_vault/hubs/hub_orders_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        --8<-- "docs/assets/snippets/snowflake/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
 === "Google BigQuery"
@@ -359,25 +359,25 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        --8<-- "docs/assets/snippets/bigquery/raw_vault/hubs/hub_customer.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer.sql"
         ```
 
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        --8<-- "docs/assets/snippets/bigquery/raw_vault/hubs/hub_customer_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer_incremental.sql"
         ```
 
     === "Multi-Source (Base Load)"
 
         ```sql
-        --8<-- "docs/assets/snippets/bigquery/raw_vault/hubs/hub_orders_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        --8<-- "docs/assets/snippets/bigquery/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -385,25 +385,25 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        --8<-- "docs/assets/snippets/sqlserver/raw_vault/hubs/hub_customer.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_customer.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        --8<-- "docs/assets/snippets/sqlserver/raw_vault/hubs/hub_customer_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_customer_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        --8<-- "docs/assets/snippets/sqlserver/raw_vault/hubs/hub_orders_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        --8<-- "docs/assets/snippets/sqlserver/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
 === "Postgres"
@@ -411,25 +411,25 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_customer.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_customer.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_customer_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_customer_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_orders_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        --8<-- "docs/assets/snippets/postgres/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
 === "Databricks"
@@ -437,25 +437,25 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_customer.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_customer.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_customer_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_customer_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_orders_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        --8<-- "docs/assets/snippets/databricks/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 ___
 
@@ -475,8 +475,8 @@ Generates SQL to build a Link table using the provided parameters.
 
 ``` jinja
 {{ automate_dv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                 src_extra_columns=src_extra_columns,
-                 src_source=src_source, source_model=source_model) }}
+                    src_extra_columns=src_extra_columns,
+                    src_source=src_source, source_model=source_model) }}
 ```                                             
 
 #### Parameters
@@ -3728,499 +3728,34 @@ Generates SQL to build a staging area using the provided parameters.
 
 === "Snowflake"
 
-    === "All variables"
+    === "All configurations"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        derived_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            'STG_BOOKING' AS RECORD_SOURCE,
-            BOOKING_DATE AS EFFECTIVE_FROM
-        
-            FROM source_data
-        ),
-        
-        null_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            RECORD_SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
-            IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
-            IFNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
-            NATIONALITY AS NATIONALITY_ORIGINAL,
-            IFNULL(NATIONALITY, '-2') AS NATIONALITY
-
-            FROM derived_columns
-        ),
-
-        hashed_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_NAME_ORIGINAL,
-            NATIONALITY_ORIGINAL,
-        
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM derived_columns
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_NAME_ORIGINAL,
-            NATIONALITY_ORIGINAL,
-            CUSTOMER_HK,
-            CUST_CUSTOMER_HASHDIFF,
-            CUSTOMER_HASHDIFF
-        
-            FROM hashed_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_all.sql"
         ```
 
-    === "Only source"
+    === "Only source columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT *
-            
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-            
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-            
-            FROM source_data
-        )
-        
-        SELECT * FROM columns_to_select
-        ```
-
-    === "Only derived"
-
-        ```sql
-        WITH source_data AS (
-
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        derived_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            'STG_BOOKING' AS RECORD_SOURCE,
-            LOAD_DATE AS EFFECTIVE_FROM
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            SOURCE,
-            EFFECTIVE_FROM
-        
-            FROM derived_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        WITH source_data AS (
-
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        null_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
-            IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
-            IFNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
-            NATIONALITY AS NATIONALITY_ORIGINAL,
-            IFNULL(NATIONALITY, '-2') AS NATIONALITY
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_ID,
-            CUSTOMER_NAME_ORIGINAL,
-            CUSTOMER_NAME,
-            NATIONALITY_ORIGINAL,
-            NATIONALITY
-        
-            FROM null_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_null.sql"
         ```
 
-    === "Only hashing"
+    === "Only hashed columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        hashed_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-        
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            CUSTOMER_HK,
-            CUST_CUSTOMER_HASHDIFF,
-            CUSTOMER_HASHDIFF
-        
-            FROM hashed_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_hashed.sql"
         ```
 
-    === "Only ranked"
+    === "Only ranked columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        ranked_columns AS (
-        
-            SELECT *,
-        
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS DBTVAULT_RANK,
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS SAT_LOAD_RANK
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            DBTVAULT_RANK,
-            SAT_LOAD_RANK
-        
-            FROM ranked_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_ranked.sql"
         ```
 
 === "MS SQL Server"
