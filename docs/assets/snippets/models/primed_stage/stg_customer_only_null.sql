@@ -2,7 +2,7 @@
 source_model: CUSTOMER
 null_columns:
   required:
-    - CUSTOMER_ID
+    - C_CUSTKEY
   optional:
     - C_NATIONKEY
 {%- endset -%}

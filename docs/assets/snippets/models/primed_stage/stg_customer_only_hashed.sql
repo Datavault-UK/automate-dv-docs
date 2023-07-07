@@ -1,7 +1,7 @@
 {%- set yaml_metadata -%}
 source_model: CUSTOMER
 hashed_columns:
-  CUSTOMER_HK: c_custkey
+  CUSTOMER_HK: C_CUSTKEY
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}

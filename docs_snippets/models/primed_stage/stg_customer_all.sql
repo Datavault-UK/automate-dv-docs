@@ -1,11 +1,11 @@
 {%- set yaml_metadata -%}
 source_model: CUSTOMER
 derived_columns:
-  CUSTOMER_ID: c_custkey
+  CUSTOMER_ID: C_CUSTKEY
   LOAD_DATETIME: '!1998-01-01'
   RECORD_SOURCE: '!TPCH_CUSTOMER'
 hashed_columns:
-  CUSTOMER_HK: c_custkey
+  CUSTOMER_HK: C_CUSTKEY
 ranked_columns:
   AUTOMATE_DV_RANK:
     partition_by: CUSTOMER_HK

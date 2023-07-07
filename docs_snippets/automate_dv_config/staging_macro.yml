@@ -5,9 +5,9 @@ staging:
     - model_name: stg_customer_all
       source_model: CUSTOMER
       hashed_columns:
-        CUSTOMER_HK: c_custkey
+        CUSTOMER_HK: C_CUSTKEY
       derived_columns:
-        CUSTOMER_ID: c_custkey
+        CUSTOMER_ID: C_CUSTKEY
         LOAD_DATETIME: "!1998-01-01"
         RECORD_SOURCE: "!TPCH_CUSTOMER"
       null_columns:
@@ -26,13 +26,13 @@ staging:
     - model_name: stg_customer_only_hashed
       source_model: CUSTOMER
       hashed_columns:
-        CUSTOMER_HK: c_custkey
+        CUSTOMER_HK: C_CUSTKEY
 
     - model_name: stg_customer_only_null
       source_model: CUSTOMER
       null_columns:
         required:
-          - CUSTOMER_ID
+          - C_CUSTKEY
         optional:
           - C_NATIONKEY
 
@@ -40,5 +40,5 @@ staging:
       source_model: CUSTOMER
       ranked_columns:
         AUTOMATE_DV_RANK:
-          partition_by: CUSTOMER_HK
-          order_by: LOAD_DATETIME
+          partition_by: C_CUSTKEY
+          order_by: C_NATIONKEY

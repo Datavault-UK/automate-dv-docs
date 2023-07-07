@@ -4,5 +4,4 @@ source_model: CUSTOMER
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-{{ automate_dv.stage(,
-                     source_model=metadata_dict["source_model"]) }}
+{{ automate_dv.stage(source_model=metadata_dict["source_model"]) }}
