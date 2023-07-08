@@ -23,7 +23,7 @@ derived_columns AS (
     o_clerk,
     o_shippriority,
     o_comment,
-    O_CUSTKEY AS CUSTOMER_ID,
+    o_custkey AS CUSTOMER_ID,
     '1998-01-01' AS LOAD_DATETIME,
     'TPCH_ORDERS' AS RECORD_SOURCE
     FROM source_data
@@ -42,7 +42,7 @@ hashed_columns AS (
     CUSTOMER_ID,
     LOAD_DATETIME,
     RECORD_SOURCE,
-    CAST(UPPER(MD5(NULLIF(UPPER(TRIM(CAST(O_CUSTKEY AS VARCHAR(16)))), ''))) AS STRING) AS CUSTOMER_HK
+    CAST(UPPER(MD5(NULLIF(UPPER(TRIM(CAST(o_custkey AS VARCHAR(16)))), ''))) AS STRING) AS CUSTOMER_HK
     FROM derived_columns
 ),
 columns_to_select AS (
