@@ -47,9 +47,13 @@ def generate_models(c):
 
 @task
 def make_samples(c):
-    targets = ['snowflake',
-               # 'bigquery', 'sqlserver', 'postgres', 'databricks'
-               ]
+    targets = [
+        # 'snowflake',
+        'bigquery',
+        # 'sqlserver',
+        # 'postgres',
+        # 'databricks'
+    ]
 
     reset_and_copy('./docs_snippets/models/',
                    f'./docs/assets/snippets/models/')

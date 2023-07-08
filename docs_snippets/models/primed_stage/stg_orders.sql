@@ -1,11 +1,11 @@
 {%- set yaml_metadata -%}
 source_model: ORDERS
 derived_columns:
-  CUSTOMER_ID: O_CUSTKEY
+  CUSTOMER_ID: o_custkey
   LOAD_DATETIME: '!1998-01-01'
   RECORD_SOURCE: '!TPCH_ORDERS'
 hashed_columns:
-  CUSTOMER_HK: O_CUSTKEY
+  CUSTOMER_HK: o_custkey
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}

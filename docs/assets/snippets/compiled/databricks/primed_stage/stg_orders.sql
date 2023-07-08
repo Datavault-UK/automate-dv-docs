@@ -10,7 +10,7 @@ WITH source_data AS (
     o_clerk,
     o_shippriority,
     o_comment
-    FROM "DBTVAULT_DEV"."TEST"."ORDERS"
+    FROM `hive_metastore`.`dbtvault`.`ORDERS`
 ),
 derived_columns AS (
     SELECT
@@ -42,7 +42,7 @@ hashed_columns AS (
     CUSTOMER_ID,
     LOAD_DATETIME,
     RECORD_SOURCE,
-    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(O_CUSTKEY AS VARCHAR(MAX)))), '')), 2) AS CUSTOMER_HK
+    CAST(UPPER(MD5(NULLIF(UPPER(TRIM(CAST(O_CUSTKEY AS VARCHAR(16)))), ''))) AS STRING) AS CUSTOMER_HK
     FROM derived_columns
 ),
 columns_to_select AS (

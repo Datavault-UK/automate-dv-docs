@@ -9,7 +9,7 @@ WITH source_data AS (
     c_acctbal,
     c_mktsegment,
     c_comment
-    FROM "DBTVAULT_DEV"."TEST"."CUSTOMER"
+    FROM `hive_metastore`.`dbtvault`.`CUSTOMER`
 ),
 derived_columns AS (
     SELECT
@@ -39,7 +39,7 @@ hashed_columns AS (
     CUSTOMER_ID,
     LOAD_DATETIME,
     RECORD_SOURCE,
-    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(MAX)))), '')), 2) AS CUSTOMER_HK
+    CAST(UPPER(MD5(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(16)))), ''))) AS STRING) AS CUSTOMER_HK
     FROM derived_columns
 ),
 columns_to_select AS (

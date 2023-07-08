@@ -21,10 +21,27 @@ derived_columns AS (
     c_acctbal,
     c_mktsegment,
     c_comment,
-    c_custkey AS CUSTOMER_ID,
+    C_CUSTKEY AS CUSTOMER_ID,
     '1998-01-01' AS LOAD_DATETIME,
     'TPCH_CUSTOMER' AS RECORD_SOURCE
     FROM source_data
+),
+null_columns AS (
+    SELECT
+    c_custkey,
+    c_name,
+    c_address,
+    c_phone,
+    c_acctbal,
+    c_mktsegment,
+    c_comment,
+    LOAD_DATETIME,
+    RECORD_SOURCE,
+    CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
+        ISNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
+    C_NATIONKEY AS C_NATIONKEY_ORIGINAL,
+        ISNULL(C_NATIONKEY, '-2') AS C_NATIONKEY
+    FROM derived_columns
 ),
 hashed_columns AS (
     SELECT
@@ -39,15 +56,21 @@ hashed_columns AS (
     CUSTOMER_ID,
     LOAD_DATETIME,
     RECORD_SOURCE,
-    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(MAX)))), '')), 2) AS CUSTOMER_HK
-    FROM derived_columns
+    CUSTOMER_ID_ORIGINAL,
+    C_NATIONKEY_ORIGINAL,
+    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(C_CUSTKEY AS VARCHAR(MAX)))), '')), 2) AS CUSTOMER_HK
+    FROM null_columns
+),
+ranked_columns AS (
+    SELECT *,
+    RANK() OVER (PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS AUTOMATE_DV_RANK
+    FROM hashed_columns
 ),
 columns_to_select AS (
     SELECT
     c_custkey,
     c_name,
     c_address,
-    c_nationkey,
     c_phone,
     c_acctbal,
     c_mktsegment,
@@ -55,7 +78,11 @@ columns_to_select AS (
     CUSTOMER_ID,
     LOAD_DATETIME,
     RECORD_SOURCE,
-    CUSTOMER_HK
-    FROM hashed_columns
+    CUSTOMER_ID_ORIGINAL,
+    C_NATIONKEY,
+    C_NATIONKEY_ORIGINAL,
+    CUSTOMER_HK,
+    AUTOMATE_DV_RANK
+    FROM ranked_columns
 )
 SELECT * FROM columns_to_select

@@ -361,13 +361,13 @@ Generates SQL to build a Hub table using the provided parameters.
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer.sql"
         ```
-
+    
     === "Single-Source (Subsequent Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer_incremental.sql"
         ```
-
+    
     === "Multi-Source (Base Load)"
 
         ```sql

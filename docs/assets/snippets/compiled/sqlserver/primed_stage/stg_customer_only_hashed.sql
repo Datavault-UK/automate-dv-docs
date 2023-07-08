@@ -11,21 +11,6 @@ WITH source_data AS (
     c_comment
     FROM "DBTVAULT_DEV"."TEST"."CUSTOMER"
 ),
-derived_columns AS (
-    SELECT
-    c_custkey,
-    c_name,
-    c_address,
-    c_nationkey,
-    c_phone,
-    c_acctbal,
-    c_mktsegment,
-    c_comment,
-    c_custkey AS CUSTOMER_ID,
-    '1998-01-01' AS LOAD_DATETIME,
-    'TPCH_CUSTOMER' AS RECORD_SOURCE
-    FROM source_data
-),
 hashed_columns AS (
     SELECT
     c_custkey,
@@ -36,11 +21,8 @@ hashed_columns AS (
     c_acctbal,
     c_mktsegment,
     c_comment,
-    CUSTOMER_ID,
-    LOAD_DATETIME,
-    RECORD_SOURCE,
-    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(MAX)))), '')), 2) AS CUSTOMER_HK
-    FROM derived_columns
+    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(C_CUSTKEY AS VARCHAR(MAX)))), '')), 2) AS CUSTOMER_HK
+    FROM source_data
 ),
 columns_to_select AS (
     SELECT
@@ -52,9 +34,6 @@ columns_to_select AS (
     c_acctbal,
     c_mktsegment,
     c_comment,
-    CUSTOMER_ID,
-    LOAD_DATETIME,
-    RECORD_SOURCE,
     CUSTOMER_HK
     FROM hashed_columns
 )
