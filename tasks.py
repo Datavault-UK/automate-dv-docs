@@ -67,7 +67,7 @@ def make_samples(c):
 
         tgt_compiled = f'./docs/assets/snippets/compiled/{target}'
 
-        print(f"Copy files to snippets directory...")
+        print(f"Copy files to snippets directory for '{target}' ...")
 
         reset_and_copy('./docs_snippets/target/compiled/docs_snippets/models/',
                        tgt_compiled)
