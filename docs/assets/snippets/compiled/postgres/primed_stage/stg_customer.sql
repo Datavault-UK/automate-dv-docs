@@ -39,7 +39,7 @@ hashed_columns AS (
     CUSTOMER_ID,
     LOAD_DATETIME,
     RECORD_SOURCE,
-    CAST(UPPER(MD5(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR))), ''))) AS BYTEA) AS CUSTOMER_HK
+    DECODE(MD5(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR))), '')), 'hex') AS CUSTOMER_HK
     FROM derived_columns
 ),
 columns_to_select AS (

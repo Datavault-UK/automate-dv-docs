@@ -301,8 +301,8 @@ Generates SQL to build a Hub table using the provided parameters.
 ``` jinja
 
 {{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                src_extra_columns=src_extra_columns,
-                src_source=src_source, source_model=source_model) }}
+                   src_extra_columns=src_extra_columns,
+                   src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -507,166 +507,25 @@ Generates SQL to build a Link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN AUTOMATE_DV.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-                
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT ru.*,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY ru.CUSTOMER_HK
-                       ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union AS ru
-            WHERE ru.ORDER_FK IS NOT NULL
-            AND ru.BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT ru.*,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY ru.CUSTOMER_HK
-                       ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union AS ru
-            WHERE ru.ORDER_FK IS NOT NULL
-            AND ru.BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN AUTOMATE_DV.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_multi_source_incremental.sql"
         ```
 
 === "Google BigQuery"
@@ -674,156 +533,25 @@ Generates SQL to build a Link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN AUTOMATE_DV.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-                
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE_2
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            WHERE row_number = 1
-            UNION ALL
-            SELECT * FROM row_rank_2
-            WHERE row_number = 1
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_multi_source.sql"
         ```
-
+    
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM AUTOMATE_DV.TEST.MY_STAGE_2
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            WHERE row_number = 1
-            UNION ALL
-            SELECT * FROM row_rank_2
-            WHERE row_number = 1
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN AUTOMATE_DV.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_multi_source_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -831,200 +559,78 @@ Generates SQL to build a Link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order.sql"
         ```
     
     === "Single-Source (Subsequent Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN AUTOMATE_DV.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-                
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *
-            FROM
-            (
-                SELECT ru.*,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY ru.CUSTOMER_HK
-                           ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                       ) AS row_rank_number
-                FROM stage_union AS ru
-                WHERE ru.ORDER_FK IS NOT NULL
-                AND ru.BOOKING_FK IS NOT NULL
-            ) r
-            WHERE r.row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
     === "Multi-Source (Subsequent Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM AUTOMATE_DV.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM AUTOMATE_DV.TEST.MY_STAGE_2 AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *
-            FROM
-            (
-                SELECT ru.*,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY ru.CUSTOMER_HK
-                           ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                       ) AS row_rank_number
-                FROM stage_union AS ru
-                WHERE ru.ORDER_FK IS NOT NULL
-                AND ru.BOOKING_FK IS NOT NULL
-            ) r
-            WHERE r.row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN AUTOMATE_DV.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_multi_source_incremental.sql"
         ```
 
+=== "Postgres"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order.sql"
+        ```
+    
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_multi_source_incremental.sql"
+        ```
+
+=== "Databricks"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order.sql"
+        ```
+    
+    === "Single-Source (Subsequent Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Subsequent Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_multi_source_incremental.sql"
+        ```
 ___
 
 ### t_link

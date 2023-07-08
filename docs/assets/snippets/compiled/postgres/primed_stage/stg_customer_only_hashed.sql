@@ -21,7 +21,7 @@ hashed_columns AS (
     c_acctbal,
     c_mktsegment,
     c_comment,
-    CAST(UPPER(MD5(NULLIF(UPPER(TRIM(CAST(C_CUSTKEY AS VARCHAR))), ''))) AS BYTEA) AS CUSTOMER_HK
+    DECODE(MD5(NULLIF(UPPER(TRIM(CAST(C_CUSTKEY AS VARCHAR))), '')), 'hex') AS CUSTOMER_HK
     FROM source_data
 ),
 columns_to_select AS (
