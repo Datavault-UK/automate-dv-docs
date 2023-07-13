@@ -46,7 +46,7 @@ def generate_models(c):
 
 
 @task
-def make_samples(c):
+def make_samples(c, platform=None):
     targets = [
         'snowflake',
         'bigquery',
@@ -54,6 +54,9 @@ def make_samples(c):
         'postgres',
         'databricks'
     ]
+
+    if platform in targets and platform:
+        targets = [platform]
 
     reset_and_copy('./docs_snippets/models/',
                    f'./docs/assets/snippets/models/')
