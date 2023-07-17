@@ -49,7 +49,7 @@ def generate_models(c):
 def make_samples(c, platform=None, dbt_command="build"):
     targets = [
         'snowflake',
-        # 'bigquery',
+        'bigquery',
         'sqlserver',
         'postgres',
         'databricks'

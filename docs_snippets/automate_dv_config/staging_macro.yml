@@ -14,7 +14,7 @@ staging:
         required:
           - CUSTOMER_ID
         optional:
-          - C_NATIONKEY
+          - C_NAME
       ranked_columns:
         AUTOMATE_DV_RANK:
           partition_by: CUSTOMER_HK
@@ -34,7 +34,7 @@ staging:
         required:
           - C_CUSTKEY
         optional:
-          - C_NATIONKEY
+          - C_NAME
 
     - model_name: stg_customer_only_ranked
       source_model: CUSTOMER

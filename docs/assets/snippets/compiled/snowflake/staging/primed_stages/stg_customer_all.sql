@@ -28,8 +28,8 @@ derived_columns AS (
 null_columns AS (
     SELECT
     C_CUSTKEY,
-    C_NAME,
     C_ADDRESS,
+    C_NATIONKEY,
     C_PHONE,
     C_ACCTBAL,
     C_MKTSEGMENT,
@@ -38,8 +38,8 @@ null_columns AS (
     RECORD_SOURCE,
     CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
         IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-    C_NATIONKEY AS C_NATIONKEY_ORIGINAL,
-        IFNULL(C_NATIONKEY, '-2') AS C_NATIONKEY
+    C_NAME AS C_NAME_ORIGINAL,
+        IFNULL(C_NAME, '-2') AS C_NAME
     FROM derived_columns
 ),
 hashed_columns AS (
@@ -56,7 +56,7 @@ hashed_columns AS (
     LOAD_DATETIME,
     RECORD_SOURCE,
     CUSTOMER_ID_ORIGINAL,
-    C_NATIONKEY_ORIGINAL,
+    C_NAME_ORIGINAL,
     CAST(MD5_BINARY(NULLIF(UPPER(TRIM(CAST(C_CUSTKEY AS VARCHAR))), '')) AS BINARY(16)) AS CUSTOMER_HK
     FROM null_columns
 ),
@@ -68,8 +68,8 @@ ranked_columns AS (
 columns_to_select AS (
     SELECT
     C_CUSTKEY,
-    C_NAME,
     C_ADDRESS,
+    C_NATIONKEY,
     C_PHONE,
     C_ACCTBAL,
     C_MKTSEGMENT,
@@ -78,8 +78,8 @@ columns_to_select AS (
     LOAD_DATETIME,
     RECORD_SOURCE,
     CUSTOMER_ID_ORIGINAL,
-    C_NATIONKEY,
-    C_NATIONKEY_ORIGINAL,
+    C_NAME,
+    C_NAME_ORIGINAL,
     CUSTOMER_HK,
     AUTOMATE_DV_RANK
     FROM ranked_columns

@@ -14,7 +14,7 @@ null_columns:
   required:
     - CUSTOMER_ID
   optional:
-    - C_NATIONKEY
+    - C_NAME
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}
