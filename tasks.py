@@ -32,11 +32,11 @@ def trim_sql_files_in_path(tgt_dir: Path):
 
 
 @task
-def dbt_run_twice(c, target='snowflake'):
+def dbt_run_twice(c, target='snowflake', dbt_command='build'):
     with c.cd('./docs_snippets'):
         c.run('dbt clean')
-        c.run(f'dbt build --target={target} --full-refresh')
-        c.run(f'dbt build --target={target}')
+        c.run(f'dbt {dbt_command} --target={target} --full-refresh')
+        c.run(f'dbt {dbt_command} --target={target}')
 
 
 @task
@@ -46,7 +46,7 @@ def generate_models(c):
 
 
 @task
-def make_samples(c, platform=None):
+def make_samples(c, platform=None, dbt_command="build"):
     targets = [
         'snowflake',
         'bigquery',
@@ -64,9 +64,9 @@ def make_samples(c, platform=None):
     generate_models(c)
 
     for target in targets:
-        print(f"Running dbt with {target}...")
+        print(f"Running dbt ({dbt_command}) with {target}...")
 
-        dbt_run_twice(c, target=target)
+        dbt_run_twice(c, target=target, dbt_command=dbt_command)
 
         tgt_compiled = f'./docs/assets/snippets/compiled/{target}'
 
