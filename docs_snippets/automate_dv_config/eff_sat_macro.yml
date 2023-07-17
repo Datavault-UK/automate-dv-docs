@@ -2,7 +2,7 @@ version: 1
 
 raw_vault:
   eff_sats:
-    - model_name: eff_sat_customer_phone
+    - model_name: eff_sat_customer_order
       automate_dv_config:
         dbt_config:
           full_refresh: true
@@ -16,7 +16,7 @@ raw_vault:
       src_ldts: LOAD_DATETIME
       src_source: RECORD_SOURCE
 
-    - model_name: eff_sat_customer_phone_incremental
+    - model_name: eff_sat_customer_order_incremental
       source_model: stg_customer
       src_pk: CUSTOMER_ORDER_HK
       src_dfk: CUSTOMER_HK
@@ -27,7 +27,7 @@ raw_vault:
       src_ldts: LOAD_DATETIME
       src_source: RECORD_SOURCE
 
-    - model_name: eff_sat_customer_phone_incremental_nae
+    - model_name: eff_sat_customer_order_incremental_nae
       automate_dv_config:
         dbt_config:
           is_auto_end_dating: false

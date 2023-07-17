@@ -3,6 +3,8 @@ source_model: CUSTOMER
 derived_columns:
   ORDER_ID: '!1'
   CUSTOMER_ID: c_custkey
+  CUSTOMER_NAME: c_name
+  CUSTOMER_PHONE: c_phone
   CUSTOMER_PHONE_LOCATOR_ID: '1'
   LOAD_DATETIME: '!1998-07-01'
   EFFECTIVE_FROM: '!1998-01-01'
@@ -15,6 +17,8 @@ hashed_columns:
   CUSTOMER_ORDER_HK:
     - c_custkey
     - '!1'
+  HASHDIFF:
+    - c_custkey
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}
