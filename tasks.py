@@ -35,8 +35,8 @@ def trim_sql_files_in_path(tgt_dir: Path):
 def dbt_run_twice(c, target='snowflake'):
     with c.cd('./docs_snippets'):
         c.run('dbt clean')
-        c.run(f'dbt compile --target={target} --full-refresh')
-        c.run(f'dbt compile --target={target}')
+        c.run(f'dbt build --target={target} --full-refresh')
+        c.run(f'dbt build --target={target}')
 
 
 @task
