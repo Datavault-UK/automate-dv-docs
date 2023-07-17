@@ -10,6 +10,7 @@ staging:
         CUSTOMER_ID: c_custkey
         LOAD_DATETIME: "!1998-01-01"
         RECORD_SOURCE: "!TPCH_CUSTOMER"
+
     - model_name: stg_orders
       source_model: ORDERS
       hashed_columns:
@@ -18,3 +19,18 @@ staging:
         CUSTOMER_ID: o_custkey
         LOAD_DATETIME: "!1998-01-01"
         RECORD_SOURCE: "!TPCH_ORDERS"
+
+    - model_name: stg_transactions
+      source_model: ORDERS
+      derived_columns:
+        CUSTOMER_ID: o_custkey
+        ORDER_ID: o_orderkey
+        LOAD_DATETIME: "!1998-07-01"
+        EFFECTIVE_FROM: "!1998-01-01"
+        RECORD_SOURCE: "!TPCH_ORDERS"
+      hashed_columns:
+        TRANSACTION_HK:
+          - 'CUSTOMER_ID'
+          - 'ORDER_ID'
+        CUSTOMER_HK: 'CUSTOMER_ID'
+        ORDER_HK: 'ORDER_ID'

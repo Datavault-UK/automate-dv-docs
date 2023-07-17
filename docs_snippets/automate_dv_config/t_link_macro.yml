@@ -1,0 +1,42 @@
+version: 1
+
+raw_vault:
+  t_links:
+    - model_name: t_link_transactions
+      automate_dv_config:
+        dbt_config:
+          full_refresh: true
+      source_model: stg_transactions
+      src_pk: TRANSACTION_HK
+      src_fk:
+       - CUSTOMER_HK
+       - ORDER_HK
+      src_payload:
+        - o_orderdate
+        - o_orderpriority
+        - o_clerk
+        - o_shippriority
+        - o_comment
+        - o_totalprice
+        - o_orderstatus
+      src_ldts: LOAD_DATETIME
+      src_eff: EFFECTIVE_FROM
+      src_source: RECORD_SOURCE
+
+    - model_name: t_link_transactions_incremental
+      source_model: stg_transactions
+      src_pk: TRANSACTION_HK
+      src_fk:
+       - CUSTOMER_HK
+       - ORDER_HK
+      src_payload:
+        - o_orderdate
+        - o_orderpriority
+        - o_clerk
+        - o_shippriority
+        - o_comment
+        - o_totalprice
+        - o_orderstatus
+      src_ldts: LOAD_DATETIME
+      src_eff: EFFECTIVE_FROM
+      src_source: RECORD_SOURCE
