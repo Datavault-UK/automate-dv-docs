@@ -1,0 +1,42 @@
+version: 1
+
+raw_vault:
+  eff_sats:
+    - model_name: eff_sat_customer_phone
+      automate_dv_config:
+        dbt_config:
+          full_refresh: true
+      source_model: stg_customer
+      src_pk: CUSTOMER_ORDER_HK
+      src_dfk: CUSTOMER_HK
+      src_sfk: ORDER_HK
+      src_start_date: START_DATE
+      src_end_date: END_DATE
+      src_eff: EFFECTIVE_FROM
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+
+    - model_name: eff_sat_customer_phone_incremental
+      source_model: stg_customer
+      src_pk: CUSTOMER_ORDER_HK
+      src_dfk: CUSTOMER_HK
+      src_sfk: ORDER_HK
+      src_start_date: START_DATE
+      src_end_date: END_DATE
+      src_eff: EFFECTIVE_FROM
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+
+    - model_name: eff_sat_customer_phone_incremental_nae
+      automate_dv_config:
+        dbt_config:
+          is_auto_end_dating: false
+      source_model: stg_customer
+      src_pk: CUSTOMER_ORDER_HK
+      src_dfk: CUSTOMER_HK
+      src_sfk: ORDER_HK
+      src_start_date: START_DATE
+      src_end_date: END_DATE
+      src_eff: EFFECTIVE_FROM
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE

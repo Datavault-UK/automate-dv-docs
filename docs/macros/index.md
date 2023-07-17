@@ -1318,571 +1318,104 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 === "Snowflake"
 
     === "Base Load"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_phone.sql"
         ```
-
+    
     === "With auto end-dating (Subsequent)"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.EFFECTIVE_FROM AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            INNER JOIN latest_open AS lo
-            ON lo.ORDER_HK = h.ORDER_HK
-            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
-        ),
-        
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-            UNION
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
         ```
-        
-    === "Without auto end-dating (Subsequent)"   
-        
-        ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.START_DATE AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                h.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            LEFT JOIN Latest_open AS lo
-            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            LEFT JOIN latest_closed AS lc
-            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            WHERE TO_DATE(h.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
-            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
-            AND lc.ORDER_CUSTOMER_HK IS NULL
-        ),
 
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-        )
-        
-        SELECT * FROM records_to_insert
+    === "Without auto end-dating (Subsequent)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
         ```
 
 === "Google BigQuery"
 
     === "Base Load"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_phone.sql"
         ```
-
+    
     === "With auto end-dating (Subsequent)"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            WHERE b.ORDER_HK IS NOT NULL
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE DATE(c.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE DATE(d.END_DATE) != DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.EFFECTIVE_FROM AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE DATE(g.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            INNER JOIN latest_open AS lo
-            ON lo.ORDER_HK = h.ORDER_HK
-            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
-        ),
-        
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION DISTINCT
-            SELECT * FROM new_reopened_records
-            UNION DISTINCT
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
         ```
-        
-    === "Without auto end-dating (Subsequent)"   
-        
-        ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            WHERE b.ORDER_HK IS NOT NULL
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE DATE(c.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE DATE(d.END_DATE) != DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.START_DATE AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE DATE(g.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                h.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            LEFT JOIN Latest_open AS lo
-            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            LEFT JOIN latest_closed AS lc
-            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            WHERE DATE(h.END_DATE) != DATE('9999-12-31 23:59:59.999')
-            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
-            AND lc.ORDER_CUSTOMER_HK IS NULL
-        ),
 
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION DISTINCT
-            SELECT * FROM new_reopened_records
-            UNION DISTINCT
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
+    === "Without auto end-dating (Subsequent)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
         ```
+
 
 === "MS SQL Server"
 
     === "Base Load"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_phone.sql"
         ```
-
+    
     === "With auto end-dating (Subsequent)"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT *
-            FROM
-            (
-                SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                    ) AS row_num
-                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            ) l
-            WHERE l.row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE CONVERT(DATE, c.END_DATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE CONVERT(DATE, d.END_DATE) != CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.EFFECTIVE_FROM AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE CAST((g."END_DATE") AS DATE) = CAST(('9999-12-31 23:59:59.9999999') AS DATE)
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            INNER JOIN latest_open AS lo
-            ON lo.ORDER_HK = h.ORDER_HK
-            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
-        ),
-        
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-            UNION
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
         ```
-        
-    === "Without auto end-dating (Subsequent)"   
-        
-        ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT *
-            FROM
-            (
-                SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                    ) AS row_num
-                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            ) l
-            WHERE l.row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE CONVERT(DATE, c.END_DATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE CONVERT(DATE, d."END_DATE") != CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.START_DATE AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE CAST((g.END_DATE) AS DATE) = CAST(('9999-12-31 23:59:59.9999999') AS DATE)
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                h.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            LEFT JOIN Latest_open AS lo
-            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            LEFT JOIN latest_closed AS lc
-            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            WHERE CAST((h.END_DATE) AS DATE) != CAST(('9999-12-31 23:59:59.9999999') AS DATE)
-            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
-            AND lc.ORDER_CUSTOMER_HK IS NULL
-        ),
 
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-        )
-        
-        SELECT * FROM records_to_insert
+    === "Without auto end-dating (Subsequent)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
+        ```
+
+
+=== "Postgres"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_phone.sql"
+        ```
+    
+    === "With auto end-dating (Subsequent)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
+        ```
+
+    === "Without auto end-dating (Subsequent)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
+        ```
+
+
+=== "Databricks"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_phone.sql"
+        ```
+    
+    === "With auto end-dating (Subsequent)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
+        ```
+
+    === "Without auto end-dating (Subsequent)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
         ```
 
 #### Auto end-dating
