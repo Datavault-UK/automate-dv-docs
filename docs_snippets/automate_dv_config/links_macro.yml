@@ -3,7 +3,7 @@ version: 1
 raw_vault:
   links:
     - model_name: link_customer_order
-      model_config:
+      automate_dv_config:
         dbt_config:
           full_refresh: true
       source_model: stg_customer
@@ -12,7 +12,7 @@ raw_vault:
       src_ldts: LOAD_DATETIME
       src_source: RECORD_SOURCE
     - model_name: link_customer_order_incremental
-      model_config:
+      automate_dv_config:
         dbt_config:
           full_refresh: true
       source_model: stg_customer
@@ -21,7 +21,7 @@ raw_vault:
       src_ldts: LOAD_DATETIME
       src_source: RECORD_SOURCE
     - model_name: link_customer_order_multi_source
-      model_config:
+      automate_dv_config:
         dbt_config:
           full_refresh: true
       source_model: stg_customer
@@ -30,7 +30,7 @@ raw_vault:
       src_ldts: LOAD_DATETIME
       src_source: RECORD_SOURCE
     - model_name: link_customer_order_multi_source_incremental
-      model_config:
+      automate_dv_config:
         dbt_config:
           full_refresh: true
       source_model: stg_customer

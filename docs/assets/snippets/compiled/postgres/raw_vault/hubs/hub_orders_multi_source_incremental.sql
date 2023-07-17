@@ -24,8 +24,5 @@ row_rank_union AS (SELECT DISTINCT ON (ru.CUSTOMER_HK) ru.*
 records_to_insert AS (
     SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATETIME, a.RECORD_SOURCE
     FROM row_rank_union AS a
-    LEFT JOIN "dbtvault_db"."development"."hub_orders_multi_source_incremental" AS d
-    ON a.CUSTOMER_HK = d.CUSTOMER_HK
-    WHERE d.CUSTOMER_HK IS NULL
 )
 SELECT * FROM records_to_insert
