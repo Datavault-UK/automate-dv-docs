@@ -3337,31 +3337,31 @@ Generates SQL to build a staging area using the provided parameters.
     === "All configurations"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_all.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_all.sql"
         ```
 
     === "Only source columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_source.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_null.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_null.sql"
         ```
 
     === "Only hashed columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_hashed.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_hashed.sql"
         ```
 
     === "Only ranked columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/primed_stage/stg_customer_only_ranked.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_ranked.sql"
         ```
 
 === "Google BigQuery"
@@ -3369,62 +3369,62 @@ Generates SQL to build a staging area using the provided parameters.
     === "All configurations"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/primed_stage/stg_customer_all.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_all.sql"
         ```
 
     === "Only source columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/primed_stage/stg_customer_only_source.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/primed_stage/stg_customer_only_null.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_null.sql"
         ```
 
     === "Only hashed columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/primed_stage/stg_customer_only_hashed.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_hashed.sql"
         ```
 
     === "Only ranked columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/primed_stage/stg_customer_only_ranked.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_ranked.sql"
 
 === "MS SQL Server"
 
     === "All configurations"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/primed_stage/stg_customer_all.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_all.sql"
         ```
 
     === "Only source columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/primed_stage/stg_customer_only_source.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/primed_stage/stg_customer_only_null.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_null.sql"
         ```
 
     === "Only hashed columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/primed_stage/stg_customer_only_hashed.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_hashed.sql"
         ```
 
     === "Only ranked columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/primed_stage/stg_customer_only_ranked.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_ranked.sql"
         ```
 
 === "Postgres"
@@ -3432,31 +3432,31 @@ Generates SQL to build a staging area using the provided parameters.
     === "All configurations"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/primed_stage/stg_customer_all.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_all.sql"
         ```
 
     === "Only source columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/primed_stage/stg_customer_only_source.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/primed_stage/stg_customer_only_null.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_null.sql"
         ```
 
     === "Only hashed columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/primed_stage/stg_customer_only_hashed.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_hashed.sql"
         ```
 
     === "Only ranked columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/primed_stage/stg_customer_only_ranked.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_ranked.sql"
         ```
 
 === "Databricks"
@@ -3464,31 +3464,31 @@ Generates SQL to build a staging area using the provided parameters.
     === "All configurations"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/primed_stage/stg_customer_all.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_all.sql"
         ```
 
     === "Only source columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/primed_stage/stg_customer_only_source.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/primed_stage/stg_customer_only_null.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_null.sql"
         ```
 
     === "Only hashed columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/primed_stage/stg_customer_only_hashed.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_hashed.sql"
         ```
 
     === "Only ranked columns"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/primed_stage/stg_customer_only_ranked.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_ranked.sql"
         ```
 
 ### Stage Macro Configurations

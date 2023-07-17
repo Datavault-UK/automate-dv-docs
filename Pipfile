@@ -10,6 +10,7 @@ mkdocs-git-revision-date-localized-plugin = "*"
 mkdocs-with-pdf = "*"
 mkdocs-video = "*"
 invoke = "*"
+automate-dv-cli = {path = "./../automate-dv-cli"}
 
 [dev-packages]
 dbt-core = "==1.4.6"
