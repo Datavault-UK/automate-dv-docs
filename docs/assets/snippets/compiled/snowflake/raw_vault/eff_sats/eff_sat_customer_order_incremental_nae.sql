@@ -11,7 +11,7 @@ latest_records AS (
                     PARTITION BY b.CUSTOMER_ORDER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                ) AS row_num
-        FROM ALEX_HIGGS.AUTOMATE_DV_DOCS_SAMPLES.eff_sat_customer_phone_incremental AS b
+        FROM ALEX_HIGGS.AUTOMATE_DV_DOCS_SAMPLES.eff_sat_customer_order_incremental_nae AS b
     )AS inner_rank
         WHERE row_num = 1),
 latest_open AS (

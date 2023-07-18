@@ -1,10 +1,6 @@
-{{ config(
-    full_refresh=true
-) }}
-
 {%- set source_model = "stg_customer" -%}
 {%- set src_pk = "CUSTOMER_HK" -%}
-{%- set src_cdk = ["CUSTOMER_PHONE", "CUSTOMER_PHONE_LOCATOR_ID"] -%}
+{%- set src_cdk = "CUSTOMER_PHONE" -%}
 {%- set src_payload = ["CUSTOMER_NAME"] -%}
 {%- set src_hashdiff = "HASHDIFF" -%}
 {%- set src_eff = "EFFECTIVE_FROM" -%}

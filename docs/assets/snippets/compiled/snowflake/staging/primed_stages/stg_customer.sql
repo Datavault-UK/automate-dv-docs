@@ -22,6 +22,8 @@ derived_columns AS (
     C_COMMENT,
     '1' AS ORDER_ID,
     c_custkey AS CUSTOMER_ID,
+    c_name AS CUSTOMER_NAME,
+    c_phone AS CUSTOMER_PHONE,
     1 AS CUSTOMER_PHONE_LOCATOR_ID,
     '1998-07-01' AS LOAD_DATETIME,
     '1998-01-01' AS EFFECTIVE_FROM,
@@ -42,6 +44,8 @@ hashed_columns AS (
     C_COMMENT,
     ORDER_ID,
     CUSTOMER_ID,
+    CUSTOMER_NAME,
+    CUSTOMER_PHONE,
     CUSTOMER_PHONE_LOCATOR_ID,
     LOAD_DATETIME,
     EFFECTIVE_FROM,
@@ -53,7 +57,10 @@ hashed_columns AS (
     CAST(MD5_BINARY(NULLIF(CONCAT(
         IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR))), ''), '^^'), '||',
         IFNULL(NULLIF(UPPER(TRIM(CAST('1' AS VARCHAR))), ''), '^^')
-    ), '^^||^^')) AS BINARY(16)) AS CUSTOMER_ORDER_HK
+    ), '^^||^^')) AS BINARY(16)) AS CUSTOMER_ORDER_HK,
+    CAST(MD5_BINARY(NULLIF(CONCAT(
+        IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR))), ''), '^^')
+    ), '^^')) AS BINARY(16)) AS HASHDIFF
     FROM derived_columns
 ),
 columns_to_select AS (
@@ -68,6 +75,8 @@ columns_to_select AS (
     C_COMMENT,
     ORDER_ID,
     CUSTOMER_ID,
+    CUSTOMER_NAME,
+    CUSTOMER_PHONE,
     CUSTOMER_PHONE_LOCATOR_ID,
     LOAD_DATETIME,
     EFFECTIVE_FROM,
@@ -76,7 +85,8 @@ columns_to_select AS (
     RECORD_SOURCE,
     CUSTOMER_HK,
     ORDER_HK,
-    CUSTOMER_ORDER_HK
+    CUSTOMER_ORDER_HK,
+    HASHDIFF
     FROM hashed_columns
 )
 SELECT * FROM columns_to_select
