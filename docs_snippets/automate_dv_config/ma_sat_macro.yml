@@ -8,7 +8,9 @@ raw_vault:
           full_refresh: true
       source_model: stg_customer
       src_pk: CUSTOMER_HK
-      src_cdk: CUSTOMER_PHONE
+      src_cdk:
+        - CUSTOMER_PHONE
+        - CUSTOMER_PHONE_LOCATOR_ID
       src_hashdiff: HASHDIFF
       src_payload:
         - CUSTOMER_NAME
@@ -19,7 +21,9 @@ raw_vault:
     - model_name: ma_sat_customer_address_incremental
       source_model: stg_customer
       src_pk: CUSTOMER_HK
-      src_cdk: CUSTOMER_PHONE
+      src_cdk:
+        - CUSTOMER_PHONE
+        - CUSTOMER_PHONE_LOCATOR_ID
       src_hashdiff: HASHDIFF
       src_payload:
         - CUSTOMER_NAME

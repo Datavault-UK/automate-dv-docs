@@ -1322,19 +1322,19 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
     === "With auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
     === "Without auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
 
 === "Google BigQuery"
@@ -1342,19 +1342,19 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
     === "With auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
     === "Without auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
 
 
@@ -1363,19 +1363,19 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
     === "With auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
     === "Without auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
 
 
@@ -1384,19 +1384,19 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
     === "With auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
     === "Without auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
 
 
@@ -1405,19 +1405,19 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
     === "With auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
     === "Without auto end-dating (Subsequent)"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_phone_incremental_nae.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
 
 #### Auto end-dating
