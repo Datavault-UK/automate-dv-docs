@@ -11,7 +11,7 @@ latest_records AS (
                     PARTITION BY b.CUSTOMER_ORDER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                ) AS row_num
-        FROM `dbtvault-341416`.`dbtvault`.`eff_sat_customer_phone_incremental_nae` AS b
+        FROM `dbtvault-341416`.`dbtvault`.`eff_sat_customer_order_incremental` AS b
     )AS inner_rank
         WHERE row_num = 1),
 latest_open AS (
