@@ -8,7 +8,7 @@ WITH source_data AS (
     c_acctbal,
     c_mktsegment,
     c_comment
-    FROM `dbtvault`.`CUSTOMER`
+    FROM `hive_metastore`.`dbtvault`.`CUSTOMER`
 ),
 derived_columns AS (
     SELECT
@@ -67,8 +67,9 @@ hashed_columns AS (
         IFNULL(NULLIF(UPPER(TRIM(CAST('1' AS VARCHAR(16)))), ''), '^^')
     ), '^^||^^'))) AS STRING) AS CUSTOMER_ORDER_HK,
     CAST(UPPER(MD5(NULLIF(CONCAT(
-        IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(16)))), ''), '^^')
-    ), '^^'))) AS STRING) AS HASHDIFF
+        IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(16)))), ''), '^^'), '||',
+        IFNULL(NULLIF(UPPER(TRIM(CAST('1' AS VARCHAR(16)))), ''), '^^')
+    ), '^^||^^'))) AS STRING) AS HASHDIFF
     FROM derived_columns
 ),
 columns_to_select AS (

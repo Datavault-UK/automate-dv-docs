@@ -8,7 +8,7 @@ WITH source_data AS (
     c_acctbal,
     c_mktsegment,
     c_comment
-    FROM `dbtvault`.`CUSTOMER`
+    FROM `hive_metastore`.`dbtvault`.`CUSTOMER`
 ),
 hashed_columns AS (
     SELECT

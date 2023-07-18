@@ -1,6 +1,6 @@
 WITH source_data AS (
     SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_ADDRESS, a.CUSTOMER_PHONE, a.ACCBAL, a.MKTSEGMENT, a.COMMENT, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.RECORD_SOURCE
-    FROM `dbtvault`.`stg_customer` AS a
+    FROM `hive_metastore`.`dbtvault`.`stg_customer` AS a
     WHERE a.CUSTOMER_HK IS NOT NULL
 ),
 latest_records AS (
@@ -11,7 +11,7 @@ latest_records AS (
                PARTITION BY current_records.CUSTOMER_HK
                ORDER BY current_records.LOAD_DATETIME DESC
             ) AS rank
-        FROM `dbtvault`.`satellite_incremental` AS current_records
+        FROM `hive_metastore`.`dbtvault`.`satellite_incremental` AS current_records
             JOIN (
                 SELECT DISTINCT source_data.CUSTOMER_HK
                 FROM source_data
@@ -38,7 +38,7 @@ records_to_insert AS (
     SELECT
         g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_ADDRESS, g.CUSTOMER_PHONE, g.ACCBAL, g.MKTSEGMENT, g.COMMENT, g.EFFECTIVE_FROM, g.LOAD_DATETIME, g.RECORD_SOURCE
         FROM ghost AS g
-        WHERE NOT EXISTS ( SELECT 1 FROM `dbtvault`.`satellite_incremental` AS h WHERE h.HASHDIFF = g.HASHDIFF )
+        WHERE NOT EXISTS ( SELECT 1 FROM `hive_metastore`.`dbtvault`.`satellite_incremental` AS h WHERE h.HASHDIFF = g.HASHDIFF )
     UNION 
     SELECT DISTINCT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_NAME, stage.CUSTOMER_ADDRESS, stage.CUSTOMER_PHONE, stage.ACCBAL, stage.MKTSEGMENT, stage.COMMENT, stage.EFFECTIVE_FROM, stage.LOAD_DATETIME, stage.RECORD_SOURCE
     FROM source_data AS stage

@@ -23,6 +23,7 @@ hashed_columns:
     - '!1'
   HASHDIFF:
     - c_custkey
+    - '!1'
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}

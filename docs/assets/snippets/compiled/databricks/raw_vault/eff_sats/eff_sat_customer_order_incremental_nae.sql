@@ -1,6 +1,6 @@
 WITH source_data AS (
     SELECT a.CUSTOMER_ORDER_HK, a.CUSTOMER_HK, a.ORDER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.RECORD_SOURCE
-    FROM `dbtvault`.`stg_customer` AS a
+    FROM `hive_metastore`.`dbtvault`.`stg_customer` AS a
     WHERE a.CUSTOMER_HK IS NOT NULL
     AND a.ORDER_HK IS NOT NULL
 ),
@@ -11,7 +11,7 @@ latest_records AS (
                     PARTITION BY b.CUSTOMER_ORDER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                ) AS row_num
-        FROM `dbtvault`.`eff_sat_customer_order_incremental_nae` AS b
+        FROM `hive_metastore`.`dbtvault`.`eff_sat_customer_order_incremental_nae` AS b
     )AS inner_rank
         WHERE row_num = 1),
 latest_open AS (

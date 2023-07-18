@@ -67,8 +67,9 @@ hashed_columns AS (
         IFNULL(NULLIF(UPPER(TRIM(CAST('1' AS STRING))), ''), '^^')
     ), '^^||^^')))) AS STRING) AS CUSTOMER_ORDER_HK,
     CAST(UPPER(TO_HEX(MD5(NULLIF(CONCAT(
-        IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS STRING))), ''), '^^')
-    ), '^^')))) AS STRING) AS HASHDIFF
+        IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS STRING))), ''), '^^'), '||',
+        IFNULL(NULLIF(UPPER(TRIM(CAST('1' AS STRING))), ''), '^^')
+    ), '^^||^^')))) AS STRING) AS HASHDIFF
     FROM derived_columns
 ),
 columns_to_select AS (

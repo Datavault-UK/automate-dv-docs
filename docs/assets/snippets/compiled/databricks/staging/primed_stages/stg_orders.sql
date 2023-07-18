@@ -9,7 +9,7 @@ WITH source_data AS (
     o_clerk,
     o_shippriority,
     o_comment
-    FROM `dbtvault`.`ORDERS`
+    FROM `hive_metastore`.`dbtvault`.`ORDERS`
 ),
 derived_columns AS (
     SELECT

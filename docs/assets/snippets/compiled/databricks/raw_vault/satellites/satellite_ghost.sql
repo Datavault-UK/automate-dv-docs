@@ -1,6 +1,6 @@
 WITH source_data AS (
     SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_ADDRESS, a.CUSTOMER_PHONE, a.ACCBAL, a.MKTSEGMENT, a.COMMENT, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.RECORD_SOURCE
-    FROM `dbtvault`.`stg_customer` AS a
+    FROM `hive_metastore`.`dbtvault`.`stg_customer` AS a
     WHERE a.CUSTOMER_HK IS NOT NULL
 ),
 ghost AS (

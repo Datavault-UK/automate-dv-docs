@@ -4,7 +4,7 @@ WITH row_rank_1 AS (
                PARTITION BY rr.CUSTOMER_HK
                ORDER BY rr.LOAD_DATETIME
            ) AS row_number
-    FROM `dbtvault`.`stg_customer` AS rr
+    FROM `hive_metastore`.`dbtvault`.`stg_customer` AS rr
     WHERE rr.CUSTOMER_HK IS NOT NULL
     AND rr.CUSTOMER_ID IS NOT NULL
     QUALIFY row_number = 1

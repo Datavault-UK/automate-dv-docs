@@ -67,8 +67,9 @@ hashed_columns AS (
         COALESCE(NULLIF(UPPER(TRIM(CAST('1' AS VARCHAR))), ''), '^^')
     ), '^^||^^')), 'hex') AS CUSTOMER_ORDER_HK,
     DECODE(MD5(NULLIF(CONCAT(
-        COALESCE(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR))), ''), '^^')
-    ), '^^')), 'hex') AS HASHDIFF
+        COALESCE(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR))), ''), '^^'), '||',
+        COALESCE(NULLIF(UPPER(TRIM(CAST('1' AS VARCHAR))), ''), '^^')
+    ), '^^||^^')), 'hex') AS HASHDIFF
     FROM derived_columns
 ),
 columns_to_select AS (

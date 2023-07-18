@@ -12,6 +12,7 @@ staging:
           - "!1"
         HASHDIFF:
           - c_custkey
+          - "!1"
       derived_columns:
         ORDER_ID: "!1"
         CUSTOMER_ID: c_custkey
