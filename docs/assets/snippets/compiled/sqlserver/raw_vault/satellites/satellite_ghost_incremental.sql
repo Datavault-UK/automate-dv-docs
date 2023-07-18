@@ -3,6 +3,24 @@ WITH source_data AS (
     FROM "DBTVAULT_DEV"."TEST"."stg_customer" AS a
     WHERE a.CUSTOMER_HK IS NOT NULL
 ),
+
+latest_records AS (
+    SELECT a.CUSTOMER_HK, a.HASHDIFF, a.LOAD_DATETIME
+    FROM (
+        SELECT current_records.CUSTOMER_HK, current_records.HASHDIFF, current_records.LOAD_DATETIME,
+            RANK() OVER (
+               PARTITION BY current_records.CUSTOMER_HK
+               ORDER BY current_records.LOAD_DATETIME DESC
+            ) AS rank
+        FROM "DBTVAULT_DEV"."TEST"."satellite_ghost_incremental" AS current_records
+            JOIN (
+                SELECT DISTINCT source_data.CUSTOMER_HK
+                FROM source_data
+            ) AS source_records
+                ON current_records.CUSTOMER_HK = source_records.CUSTOMER_HK
+    ) AS a
+    WHERE a.rank = 1
+),
 ghost AS (
     SELECT
     CAST(NULL AS varchar) AS CUSTOMER_NAME,
@@ -22,9 +40,14 @@ records_to_insert AS (
     SELECT
         g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_ADDRESS, g.CUSTOMER_PHONE, g.ACCBAL, g.MKTSEGMENT, g.COMMENT, g.EFFECTIVE_FROM, g.LOAD_DATETIME, g.RECORD_SOURCE
         FROM ghost AS g
-    UNION 
+        WHERE NOT EXISTS ( SELECT 1 FROM "DBTVAULT_DEV"."TEST"."satellite_ghost_incremental" AS h WHERE h.HASHDIFF = g.HASHDIFF )
+    UNION
     SELECT DISTINCT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_NAME, stage.CUSTOMER_ADDRESS, stage.CUSTOMER_PHONE, stage.ACCBAL, stage.MKTSEGMENT, stage.COMMENT, stage.EFFECTIVE_FROM, stage.LOAD_DATETIME, stage.RECORD_SOURCE
     FROM source_data AS stage
+    LEFT JOIN latest_records
+    ON latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
+        AND latest_records.HASHDIFF = stage.HASHDIFF
+    WHERE latest_records.HASHDIFF IS NULL
 )
 
 SELECT * FROM records_to_insert
