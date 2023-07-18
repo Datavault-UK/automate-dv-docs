@@ -1,0 +1,69 @@
+version: 1
+
+raw_vault:
+  satellites:
+    - model_name: satellite
+      automate_dv_config:
+        dbt_config:
+          full_refresh: true
+      source_model: stg_customer
+      src_pk: CUSTOMER_HK
+      src_hashdiff: HASHDIFF
+      src_payload:
+        - CUSTOMER_NAME
+        - CUSTOMER_ADDRESS
+        - CUSTOMER_PHONE
+        - ACCBAL
+        - MKTSEGMENT
+        - COMMENT
+      src_eff: EFFECTIVE_FROM
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+
+    - model_name: satellite_incremental
+      source_model: stg_customer
+      src_pk: CUSTOMER_HK
+      src_hashdiff: HASHDIFF
+      src_payload:
+        - CUSTOMER_NAME
+        - CUSTOMER_ADDRESS
+        - CUSTOMER_PHONE
+        - ACCBAL
+        - MKTSEGMENT
+        - COMMENT
+      src_eff: EFFECTIVE_FROM
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+
+    - model_name: satellite_ghost
+      automate_dv_config:
+        dbt_config:
+          full_refresh: true
+      source_model: stg_customer
+      src_pk: CUSTOMER_HK
+      src_hashdiff: HASHDIFF
+      src_payload:
+        - CUSTOMER_NAME
+        - CUSTOMER_ADDRESS
+        - CUSTOMER_PHONE
+        - ACCBAL
+        - MKTSEGMENT
+        - COMMENT
+      src_eff: EFFECTIVE_FROM
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE
+
+    - model_name: satellite_ghost_incremental
+      source_model: stg_customer
+      src_pk: CUSTOMER_HK
+      src_hashdiff: HASHDIFF
+      src_payload:
+        - CUSTOMER_NAME
+        - CUSTOMER_ADDRESS
+        - CUSTOMER_PHONE
+        - ACCBAL
+        - MKTSEGMENT
+        - COMMENT
+      src_eff: EFFECTIVE_FROM
+      src_ldts: LOAD_DATETIME
+      src_source: RECORD_SOURCE

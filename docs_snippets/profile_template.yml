@@ -5,6 +5,7 @@ fixed:
   database: ALEX_HIGGS
   query_tag: automate-dv-cli-dev
   role: ALEX_HIGGS
+  user: ALEX_HIGGS
   schema: AUTOMATE_DV_DOCS_SAMPLES
   threads: 4
   type: snowflake

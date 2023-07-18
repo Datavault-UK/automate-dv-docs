@@ -19,3 +19,9 @@ models:
   docs_snippets:
     raw_vault:
       materialized: incremental
+
+vars:
+  enable_ghost_records: true
+  system_record_value: 'AUTOMATE_DV_SYSTEM'
+
+

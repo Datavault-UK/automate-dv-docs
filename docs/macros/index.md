@@ -797,281 +797,51 @@ Generates SQL to build a Satellite table using the provided parameters.
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite.sql"
         ```
     
     === "Subsequent Loads"
         
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE
-            FROM (
-                SELECT current_records.CUSTOMER_HK, current_records.HASHDIFF, current_records.LOAD_DATE,
-                RANK() OVER (
-                    PARTITION BY c.CUSTOMER_HK
-                    ORDER BY c.LOAD_DATE DESC
-                ) AS rank
-            FROM AUTOMATE_DV.TEST.SATELLITE AS c
-            JOIN (
-                SELECT DISTINCT source_data.CUSTOMER_PK
-                FROM source_data
-            ) AS source_records
-                ON c.CUSTOMER_PK = source_records.CUSTOMER_PK
-            QUALIFY rank = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-                ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_incremental.sql"
         ```
 
     === "Base Load with Ghost Record"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_PHONE", a."CUSTOMER_DOB", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
-            WHERE a."CUSTOMER_PK" IS NOT NULL
-        ),
-
-        ghost AS (SELECT
-            NULL AS "CUSTOMER_NAME",
-            NULL AS "CUSTOMER_DOB",
-            NULL AS "CUSTOMER_PHONE",
-            TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('AUTOMATE_DV_SYSTEM' AS VARCHAR) AS "SOURCE",
-            TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
-        ),
-
-        records_to_insert AS (SELECT
-                g."CUSTOMER_HK", g."HASHDIFF", g."CUSTOMER_NAME", g."CUSTOMER_PHONE", g."CUSTOMER_DOB", g."EFFECTIVE_FROM", g."LOAD_DATE", g."SOURCE"
-                FROM ghost AS g
-            UNION
-            SELECT DISTINCT stage."CUSTOMER_PK", stage."HASHDIFF", stage."CUSTOMER_NAME", stage."CUSTOMER_PHONE", stage."CUSTOMER_DOB", stage."EFFECTIVE_FROM", stage."LOAD_DATE", stage."SOURCE"
-            FROM source_data AS stage
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_ghost.sql"
         ```
 
     === "Subsequent Loads with Ghost Record"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_DOB", a."CUSTOMER_PHONE", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM AUTOMATE_DV.TEST.MY_STAGE AS a
-            WHERE a."CUSTOMER_PK" IS NOT NULL
-        ),
-
-        latest_records AS (
-            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."LOAD_DATE"
-            FROM (
-                SELECT current_records."CUSTOMER_HK", current_records."HASHDIFF", current_records."LOAD_DATE",
-                    RANK() OVER (
-                       PARTITION BY current_records."CUSTOMER_HK"
-                       ORDER BY current_records."LOAD_DATE" DESC
-                    ) AS rank
-                FROM AUTOMATE_DV.TEST.SATELLITE AS current_records
-                    JOIN (
-                        SELECT DISTINCT source_data."CUSTOMER_HK"
-                        FROM source_data
-                    ) AS source_records
-                        ON current_records."CUSTOMER_HK" = source_records."CUSTOMER_HK"
-            ) AS a
-            WHERE a.rank = 1
-        ),
-
-        ghost AS (SELECT
-            NULL AS "CUSTOMER_NAME",
-            NULL AS "CUSTOMER_DOB",
-            NULL AS "CUSTOMER_PHONE",
-            TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('AUTOMATE_DV_SYSTEM' AS VARCHAR) AS "SOURCE",
-            TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
-        ),
-        
-        records_to_insert AS (SELECT
-                g."CUSTOMER_HK", g."HASHDIFF", g."CUSTOMER_NAME", g."CUSTOMER_DOB", g."CUSTOMER_PHONE", g."EFFECTIVE_FROM", g."LOAD_DATE", g."SOURCE"
-                FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
-            UNION
-            SELECT DISTINCT stage."CUSTOMER_HK", stage."HASHDIFF", stage."CUSTOMER_NAME", stage."CUSTOMER_DOB", stage."CUSTOMER_PHONE", stage."EFFECTIVE_FROM", stage."LOAD_DATE", stage."SOURCE"
-            FROM source_data AS stage
-            LEFT JOIN latest_records
-            ON latest_records."CUSTOMER_HK" = stage."CUSTOMER_HK"
-                AND latest_records."HASHDIFF" = stage."HASHDIFF"
-            WHERE latest_records."HASHDIFF" IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_ghost_incremental.sql"
         ```
+
 === "Google BigQuery"
 
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite.sql"
         ```
-
+    
     === "Subsequent Loads"
-
+        
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        latest_records AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.LOAD_DATE
-            FROM (
-                SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE, 
-                RANK() OVER (
-                PARTITION BY c.CUSTOMER_HK
-                ORDER BY c.LOAD_DATE DESC
-                ) AS rank
-                FROM DBTVAULT.TEST.SATELLITE AS c
-                JOIN (  
-                SELECT DISTICT source_data.CUSTOMER_HK
-                FROM source_data
-                ) AS source_records
-                ON c.CUSTOMER_HK = source_records.CUSTOMER_HK
-                ) AS a
-            WHERE a.rank = 1
-        ),
-
-        records_to_insert AS (
-            SELECT DISTICT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_recods.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-            OR latest_records.HASHDIFF IS NULL
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_incremental.sql"
         ```
 
     === "Base Load with Ghost Record"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
-            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
-            WHERE a.`CUSTOMER_PK` IS NOT NULL
-        ),
-        
-        ghost AS (SELECT
-            CAST(NULL AS STRING) AS `CUSTOMER_NAME`,
-            CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
-            CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
-            CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
-            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
-            CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
-        ),
-        
-        records_to_insert AS (SELECT
-                g.`CUSTOMER_HK`, g.`HASHDIFF`, g.`CUSTOMER_NAME`, g.`CUSTOMER_DOB`, g.`CUSTOMER_PHONE`, g.`EFFECTIVE_FROM`, g.`LOAD_DATE`, g.`SOURCE`
-                FROM ghost AS g
-            UNION DISTINCT
-            SELECT DISTINCT stage.`CUSTOMER_HK`, stage.`HASHDIFF`, stage.`CUSTOMER_NAME`, stage.`CUSTOMER_DOB`, stage.`CUSTOMER_PHONE`, stage.`EFFECTIVE_FROM`, stage.`LOAD_DATE`, stage.`SOURCE`
-            FROM source_data AS stage
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Load with Ghost Record"
+    === "Subsequent Loads with Ghost Record"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
-            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
-            WHERE a.`CUSTOMER_PK` IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`LOAD_DATE`
-            FROM (
-                SELECT current_records.`CUSTOMER_HK`, current_records.`HASHDIFF`, current_records.`LOAD_DATE`,
-                    RANK() OVER (
-                       PARTITION BY current_records.`CUSTOMER_HK`
-                       ORDER BY current_records.`LOAD_DATE` DESC
-                    ) AS rank
-                FROM `DBTVAULT`.`TEST`.`SATELLITE` AS current_records
-                    JOIN (
-                        SELECT DISTINCT source_data.`CUSTOMER_HK`
-                        FROM source_data
-                    ) AS source_records
-                        ON current_records.`CUSTOMER_HK` = source_records.`CUSTOMER_HK`
-            ) AS a
-            WHERE a.rank = 1
-        ),
-
-        ghost AS (SELECT
-            CAST(NULL AS STRING) AS `CUSTOMER_NAME`,
-            CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
-            CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
-            CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
-            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
-            CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
-        ),
-        
-        records_to_insert AS (SELECT
-                g.`CUSTOMER_HK`, g.`HASHDIFF`, g.`CUSTOMER_NAME`, g.`CUSTOMER_DOB`, g.`CUSTOMER_PHONE`, g.`EFFECTIVE_FROM`, g.`LOAD_DATE`, g.`SOURCE`
-                FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM `DBTVAULT`.`TEST`.`SATELLITE` AS h WHERE h.`HASHDIFF` = g.`HASHDIFF` )
-            UNION DISTINCT
-            SELECT DISTINCT stage.`CUSTOMER_HK`, stage.`HASHDIFF`, stage.`CUSTOMER_NAME`, stage.`CUSTOMER_DOB`, stage.`CUSTOMER_PHONE`, stage.`EFFECTIVE_FROM`, stage.`LOAD_DATE`, stage.`SOURCE`
-            FROM source_data AS stage
-            LEFT JOIN latest_records
-            ON latest_records.`CUSTOMER_HK` = stage.`CUSTOMER_HK`
-                AND latest_records.`HASHDIFF` = stage.`HASHDIFF`
-            WHERE latest_records.`HASHDIFF` IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_ghost_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -1079,143 +849,77 @@ Generates SQL to build a Satellite table using the provided parameters.
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite.sql"
         ```
     
     === "Subsequent Loads"
         
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.LOAD_DATE
-            FROM
-            (
-                SELECT current_records.CUSTOMER_PK, current_records.HASHDIFF, current_records.LOAD_DATE,
-                    RANK() OVER (
-                       PARTITION BY current_records.CUSTOMER_PK
-                       ORDER BY current_records.LOAD_DATE DESC
-                    ) AS rank
-                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
-                JOIN (
-                    SELECT DISTINCT source_data.CUSTOMER_PK
-                    FROM source_data
-                ) AS source_records
-                ON current_records.CUSTOMER_PK = source_records.CUSTOMER_PK
-            ) AS a
-            WHERE a.rank = 1
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_incremental.sql"
         ```
+
     === "Base Load with Ghost Record"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        ghost AS (SELECT
-            NULL AS CUSTOMER_NAME,
-            NULL AS CUSTOMER_DOB,
-            NULL AS CUSTOMER_PHONE,
-            CAST('1900-01-01' AS DATE) AS LOAD_DATE,
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
-            CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
-        ),
-
-        records_to_insert AS (
-            SELECT g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_PHONE, g.CUSTOMER_DOB, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
-            FROM ghost AS g
-            UNION
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_ghost.sql"
         ```
 
+    === "Subsequent Loads with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_ghost_incremental.sql"
+        ```
+
+=== "Postgres"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite.sql"
+        ```
+    
     === "Subsequent Loads"
         
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.LOAD_DATE
-            FROM
-            (
-                SELECT current_records.CUSTOMER_PK, current_records.HASHDIFF, current_records.LOAD_DATE,
-                    RANK() OVER (
-                       PARTITION BY current_records.CUSTOMER_PK
-                       ORDER BY current_records.LOAD_DATE DESC
-                    ) AS rank
-                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
-                JOIN (
-                    SELECT DISTINCT source_data.CUSTOMER_PK
-                    FROM source_data
-                ) AS source_records
-                ON current_records.CUSTOMER_PK = source_records.CUSTOMER_PK
-            ) AS a
-            WHERE a.rank = 1
-        ),
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_incremental.sql"
+        ```
 
-        ghost AS (SELECT
-            NULL AS CUSTOMER_NAME,
-            NULL AS CUSTOMER_DOB,
-            NULL AS CUSTOMER_PHONE,
-            CAST('1900-01-01' AS DATE) AS LOAD_DATE,
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
-            CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
-        ),
+    === "Base Load with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_ghost.sql"
+        ```
 
-        records_to_insert AS (SELECT
-                g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_DOB, g.CUSTOMER_PHONE, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
-                FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
-            UNION
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
-        )
+    === "Subsequent Loads with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_ghost_incremental.sql"
+        ```
+
+=== "Databricks"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite.sql"
+        ```
+    
+    === "Subsequent Loads"
         
-        SELECT * FROM records_to_insert
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_incremental.sql"
+        ```
+
+    === "Base Load with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_ghost.sql"
+        ```
+
+    === "Subsequent Loads with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_ghost_incremental.sql"
         ```
 
 #### Ghost records
