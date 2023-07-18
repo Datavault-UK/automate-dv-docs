@@ -675,13 +675,13 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 #### Example Output
 === "Snowflake"
 
-    === "Single-Source (Base Load)"
+    === "Base Load"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Subsequent Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -689,13 +689,13 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 
 === "Google BigQuery"
 
-    === "Single-Source (Base Load)"
+    === "Base Load"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Subsequent Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -703,13 +703,13 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 
 === "MS SQL Server"
 
-    === "Single-Source (Base Load)"
+    === "Base Load"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Subsequent Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -717,13 +717,13 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 
 === "Postgres"
 
-    === "Single-Source (Base Load)"
+    === "Base Load"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Subsequent Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -731,13 +731,13 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 
 === "Databricks"
 
-    === "Single-Source (Base Load)"
+    === "Base Load"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Subsequent Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/t_links/t_link_transactions_incremental.sql"
