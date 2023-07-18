@@ -8,7 +8,7 @@ WITH source_data AS (
     c_acctbal,
     c_mktsegment,
     c_comment
-    FROM `hive_metastore`.`dbtvault`.`CUSTOMER`
+    FROM `dbtvault`.`CUSTOMER`
 ),
 null_columns AS (
     SELECT

@@ -1,6 +1,6 @@
 WITH source_data AS (
     SELECT a.CUSTOMER_ORDER_HK, a.CUSTOMER_HK, a.ORDER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.RECORD_SOURCE
-    FROM `dbtvault-341416`.`dbtvault`.`stg_customer` AS a
+    FROM "dbtvault_db"."development"."stg_customer" AS a
     WHERE a.CUSTOMER_HK IS NOT NULL
     AND a.ORDER_HK IS NOT NULL
 ),
@@ -11,18 +11,18 @@ latest_records AS (
                     PARTITION BY b.CUSTOMER_ORDER_HK
                     ORDER BY b.LOAD_DATETIME DESC
                ) AS row_num
-        FROM `dbtvault-341416`.`dbtvault`.`eff_sat_customer_order_incremental` AS b
+        FROM "dbtvault_db"."development"."eff_sat_customer_order_incremental_nae" AS b
     )AS inner_rank
         WHERE row_num = 1),
 latest_open AS (
     SELECT c.CUSTOMER_ORDER_HK, c.CUSTOMER_HK, c.ORDER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.RECORD_SOURCE
     FROM latest_records AS c
-    WHERE DATE(c.END_DATE) = DATE(PARSE_DATETIME('%F %H:%M:%E6S', '9999-12-31 23:59:59.999999'))
+    WHERE TO_DATE(c.END_DATE::VARCHAR, 'YYY-MM-DD') = TO_DATE(to_char(timestamp '9999-12-31 23:59:59.999', 'YYYY-MM-DD HH24:MI:SS.MS')::timestamp::VARCHAR, 'YYY-MM-DD')
 ),
 latest_closed AS (
     SELECT d.CUSTOMER_ORDER_HK, d.CUSTOMER_HK, d.ORDER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.RECORD_SOURCE
     FROM latest_records AS d
-    WHERE DATE(d.END_DATE) != DATE(PARSE_DATETIME('%F %H:%M:%E6S', '9999-12-31 23:59:59.999999'))
+    WHERE TO_DATE(d.END_DATE::VARCHAR, 'YYY-MM-DD') != TO_DATE(to_char(timestamp '9999-12-31 23:59:59.999', 'YYYY-MM-DD HH24:MI:SS.MS')::timestamp::VARCHAR, 'YYY-MM-DD')
 ),
 new_open_records AS (
     SELECT DISTINCT
@@ -50,7 +50,7 @@ new_reopened_records AS (
     FROM source_data AS g
     INNER JOIN latest_closed AS lc
     ON g.CUSTOMER_ORDER_HK = lc.CUSTOMER_ORDER_HK
-    WHERE DATE(g.END_DATE) = DATE(PARSE_DATETIME('%F %H:%M:%E6S', '9999-12-31 23:59:59.999999'))
+    WHERE TO_DATE(g.END_DATE::VARCHAR, 'YYY-MM-DD') = TO_DATE(to_char(timestamp '9999-12-31 23:59:59.999', 'YYYY-MM-DD HH24:MI:SS.MS')::timestamp::VARCHAR, 'YYY-MM-DD')
 ),
 new_closed_records AS (
     SELECT DISTINCT
@@ -66,15 +66,15 @@ new_closed_records AS (
     ON lo.CUSTOMER_ORDER_HK = h.CUSTOMER_ORDER_HK
     LEFT JOIN latest_closed AS lc
     ON lc.CUSTOMER_ORDER_HK = h.CUSTOMER_ORDER_HK
-    WHERE DATE(h.END_DATE) != DATE(PARSE_DATETIME('%F %H:%M:%E6S', '9999-12-31 23:59:59.999999'))
+    WHERE TO_DATE(h.END_DATE::VARCHAR, 'YYY-MM-DD') != TO_DATE(to_char(timestamp '9999-12-31 23:59:59.999', 'YYYY-MM-DD HH24:MI:SS.MS')::timestamp::VARCHAR, 'YYY-MM-DD')
     AND lo.CUSTOMER_ORDER_HK IS NOT NULL
     AND lc.CUSTOMER_ORDER_HK IS NULL
 ),
 records_to_insert AS (
     SELECT * FROM new_open_records
-    UNION DISTINCT
+    UNION
     SELECT * FROM new_reopened_records
-    UNION DISTINCT
+    UNION
     SELECT * FROM new_closed_records
 )
 SELECT * FROM records_to_insert

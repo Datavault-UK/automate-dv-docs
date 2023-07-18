@@ -1,6 +1,6 @@
 WITH source_data AS (
     SELECT a.CUSTOMER_ORDER_HK, a.CUSTOMER_HK, a.ORDER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.RECORD_SOURCE
-    FROM `hive_metastore`.`dbtvault`.`stg_customer` AS a
+    FROM `dbtvault`.`stg_customer` AS a
     WHERE a.CUSTOMER_HK IS NOT NULL
     AND a.ORDER_HK IS NOT NULL
 ),

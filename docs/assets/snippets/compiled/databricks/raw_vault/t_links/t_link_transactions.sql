@@ -1,6 +1,6 @@
 WITH stage AS (
     SELECT TRANSACTION_HK, CUSTOMER_HK, ORDER_HK, o_orderdate, o_orderpriority, o_clerk, o_shippriority, o_comment, o_totalprice, o_orderstatus, EFFECTIVE_FROM, LOAD_DATETIME, RECORD_SOURCE
-    FROM `hive_metastore`.`dbtvault`.`stg_transactions`
+    FROM `dbtvault`.`stg_transactions`
     WHERE TRANSACTION_HK IS NOT NULL
     AND CUSTOMER_HK IS NOT NULL
     AND ORDER_HK IS NOT NULL

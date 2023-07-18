@@ -8,7 +8,7 @@ WITH source_data AS (
     c_acctbal,
     c_mktsegment,
     c_comment
-    FROM `hive_metastore`.`dbtvault`.`CUSTOMER`
+    FROM `dbtvault`.`CUSTOMER`
 ),
 derived_columns AS (
     SELECT
@@ -22,11 +22,17 @@ derived_columns AS (
     c_comment,
     '1' AS ORDER_ID,
     c_custkey AS CUSTOMER_ID,
+    c_name AS CUSTOMER_NAME,
+    c_phone AS CUSTOMER_PHONE,
+    c_address AS CUSTOMER_ADDRESS,
+    c_acctbal AS ACCBAL,
+    c_mktsegment AS MKTSEGMENT,
+    c_comment AS COMMENT,
     1 AS CUSTOMER_PHONE_LOCATOR_ID,
-    '1998-07-01' AS LOAD_DATETIME,
-    '1998-01-01' AS EFFECTIVE_FROM,
-    '1998-01-01' AS START_DATE,
-    '1998-01-01' AS END_DATE,
+    CAST('1998-07-01' AS TIMESTAMP) AS LOAD_DATETIME,
+    CAST('1998-01-01' AS TIMESTAMP) AS EFFECTIVE_FROM,
+    CAST('1998-01-01' AS TIMESTAMP) AS START_DATE,
+    CAST('1998-01-01' AS TIMESTAMP) AS END_DATE,
     'TPCH_ORDERS' AS RECORD_SOURCE
     FROM source_data
 ),
@@ -42,6 +48,12 @@ hashed_columns AS (
     c_comment,
     ORDER_ID,
     CUSTOMER_ID,
+    CUSTOMER_NAME,
+    CUSTOMER_PHONE,
+    CUSTOMER_ADDRESS,
+    ACCBAL,
+    MKTSEGMENT,
+    COMMENT,
     CUSTOMER_PHONE_LOCATOR_ID,
     LOAD_DATETIME,
     EFFECTIVE_FROM,
@@ -53,7 +65,10 @@ hashed_columns AS (
     CAST(UPPER(MD5(NULLIF(CONCAT(
         IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(16)))), ''), '^^'), '||',
         IFNULL(NULLIF(UPPER(TRIM(CAST('1' AS VARCHAR(16)))), ''), '^^')
-    ), '^^||^^'))) AS STRING) AS CUSTOMER_ORDER_HK
+    ), '^^||^^'))) AS STRING) AS CUSTOMER_ORDER_HK,
+    CAST(UPPER(MD5(NULLIF(CONCAT(
+        IFNULL(NULLIF(UPPER(TRIM(CAST(c_custkey AS VARCHAR(16)))), ''), '^^')
+    ), '^^'))) AS STRING) AS HASHDIFF
     FROM derived_columns
 ),
 columns_to_select AS (
@@ -68,6 +83,12 @@ columns_to_select AS (
     c_comment,
     ORDER_ID,
     CUSTOMER_ID,
+    CUSTOMER_NAME,
+    CUSTOMER_PHONE,
+    CUSTOMER_ADDRESS,
+    ACCBAL,
+    MKTSEGMENT,
+    COMMENT,
     CUSTOMER_PHONE_LOCATOR_ID,
     LOAD_DATETIME,
     EFFECTIVE_FROM,
@@ -76,7 +97,8 @@ columns_to_select AS (
     RECORD_SOURCE,
     CUSTOMER_HK,
     ORDER_HK,
-    CUSTOMER_ORDER_HK
+    CUSTOMER_ORDER_HK,
+    HASHDIFF
     FROM hashed_columns
 )
 SELECT * FROM columns_to_select

@@ -1,0 +1,50 @@
+WITH source_data AS (
+    SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_ADDRESS, a.CUSTOMER_PHONE, a.ACCBAL, a.MKTSEGMENT, a.COMMENT, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.RECORD_SOURCE
+    FROM ALEX_HIGGS.AUTOMATE_DV_DOCS_SAMPLES.stg_customer AS a
+    WHERE a.CUSTOMER_HK IS NOT NULL
+),
+latest_records AS (
+    SELECT a.CUSTOMER_HK, a.HASHDIFF, a.LOAD_DATETIME
+    FROM (
+        SELECT current_records.CUSTOMER_HK, current_records.HASHDIFF, current_records.LOAD_DATETIME,
+            RANK() OVER (
+               PARTITION BY current_records.CUSTOMER_HK
+               ORDER BY current_records.LOAD_DATETIME DESC
+            ) AS rank
+        FROM ALEX_HIGGS.AUTOMATE_DV_DOCS_SAMPLES.satellite_ghost_incremental AS current_records
+            JOIN (
+                SELECT DISTINCT source_data.CUSTOMER_HK
+                FROM source_data
+            ) AS source_records
+                ON current_records.CUSTOMER_HK = source_records.CUSTOMER_HK
+    ) AS a
+    WHERE a.rank = 1
+),
+ghost AS (
+    SELECT
+    NULL AS CUSTOMER_NAME,
+    NULL AS CUSTOMER_PHONE,
+    NULL AS CUSTOMER_ADDRESS,
+    NULL AS ACCBAL,
+    NULL AS MKTSEGMENT,
+    NULL AS COMMENT,
+    TO_TIMESTAMP_NTZ('1900-01-01 00:00:00') AS LOAD_DATETIME,
+    TO_TIMESTAMP_NTZ('1900-01-01 00:00:00') AS EFFECTIVE_FROM,
+    CAST('AUTOMATE_DV_SYSTEM' AS VARCHAR) AS RECORD_SOURCE,
+    CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
+    CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
+),
+records_to_insert AS (
+    SELECT
+        g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_ADDRESS, g.CUSTOMER_PHONE, g.ACCBAL, g.MKTSEGMENT, g.COMMENT, g.EFFECTIVE_FROM, g.LOAD_DATETIME, g.RECORD_SOURCE
+        FROM ghost AS g
+        WHERE NOT EXISTS ( SELECT 1 FROM ALEX_HIGGS.AUTOMATE_DV_DOCS_SAMPLES.satellite_ghost_incremental AS h WHERE h.HASHDIFF = g.HASHDIFF )
+    UNION 
+    SELECT DISTINCT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_NAME, stage.CUSTOMER_ADDRESS, stage.CUSTOMER_PHONE, stage.ACCBAL, stage.MKTSEGMENT, stage.COMMENT, stage.EFFECTIVE_FROM, stage.LOAD_DATETIME, stage.RECORD_SOURCE
+    FROM source_data AS stage
+    LEFT JOIN latest_records
+    ON latest_records.CUSTOMER_HK = stage.CUSTOMER_HK
+        AND latest_records.HASHDIFF = stage.HASHDIFF
+    WHERE latest_records.HASHDIFF IS NULL
+)
+SELECT * FROM records_to_insert
