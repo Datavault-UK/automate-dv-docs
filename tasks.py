@@ -2,11 +2,11 @@ from distutils import dir_util
 from pathlib import Path
 
 from invoke import task, Context
-
+import os
 
 def reset_and_copy(src_dir, tgt_dir):
-    if Path(tgt_dir).exists():
-        dir_util.remove_tree(tgt_dir)
+    # if Path(tgt_dir).exists():
+    #     dir_util.remove_tree(tgt_dir)
 
     dir_util.copy_tree(src_dir, tgt_dir)
 
@@ -32,11 +32,26 @@ def trim_sql_files_in_path(tgt_dir: Path):
 
 
 @task
-def dbt_run_twice(c, target='snowflake', dbt_command='build'):
+def dbt_run_twice(c, target='snowflake', dbt_command='build', selection=None, exclude=None):
     with c.cd('./docs_snippets'):
         c.run('dbt clean')
-        c.run(f'dbt {dbt_command} --target={target} --full-refresh')
-        c.run(f'dbt {dbt_command} --target={target}')
+
+        extra = ""
+
+        if selection:
+            extra += f"-s {selection}"
+
+        if exclude:
+            extra += f"--exclude {exclude}"
+
+        command_1 = f'dbt {dbt_command} {extra} --target={target} --full-refresh'
+        command_2 = f'dbt {dbt_command} {extra} --target={target}'
+
+        print("Running command: ", command_1)
+        c.run(command_1)
+
+        print("Running command: ", command_2)
+        c.run(command_2)
 
 
 @task
@@ -45,8 +60,9 @@ def generate_models(c):
         c.run('automate-dv generate models')
 
 
+@task(iterable=['env_var'])
 @task
-def make_samples(c, platform=None, dbt_command="build"):
+def make_samples(c, platform=None, dbt_command="build", selection=None, exclude=None, env_var=None):
     targets = [
         'snowflake',
         'bigquery',
@@ -54,6 +70,14 @@ def make_samples(c, platform=None, dbt_command="build"):
         'postgres',
         'databricks'
     ]
+
+    if env_var:
+        print("Setting env vars...")
+        for var in env_var:
+            k = var.split(':')[0]
+            v = var.split(':')[1]
+            print(f"Setting {k}={v}")
+            os.environ[k] = v
 
     if platform in targets and platform:
         targets = [platform]
@@ -66,7 +90,7 @@ def make_samples(c, platform=None, dbt_command="build"):
     for target in targets:
         print(f"Running dbt ({dbt_command}) with {target}...")
 
-        dbt_run_twice(c, target=target, dbt_command=dbt_command)
+        dbt_run_twice(c, target=target, dbt_command=dbt_command, selection=selection, exclude=exclude)
 
         tgt_compiled = f'./docs/assets/snippets/compiled/{target}'
 

@@ -39,6 +39,8 @@ raw_vault:
       automate_dv_config:
         dbt_config:
           full_refresh: true
+          tags:
+            - "ghost"
       source_model: stg_customer
       src_pk: CUSTOMER_HK
       src_hashdiff: HASHDIFF
@@ -54,6 +56,10 @@ raw_vault:
       src_source: RECORD_SOURCE
 
     - model_name: satellite_ghost_incremental
+      automate_dv_config:
+        dbt_config:
+          tags:
+            - "ghost"
       source_model: stg_customer
       src_pk: CUSTOMER_HK
       src_hashdiff: HASHDIFF

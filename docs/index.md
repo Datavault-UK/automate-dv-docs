@@ -49,7 +49,6 @@ consistent as possible.
 AutomateDV reduces the need to write SQL by hand to load the Data Vault, which is a repetitive, time-consuming 
 and potentially error-prone task.
 
-
 ## What are the advantages of AutomateDV?
 dbt works with the AutomateDV package to:
 

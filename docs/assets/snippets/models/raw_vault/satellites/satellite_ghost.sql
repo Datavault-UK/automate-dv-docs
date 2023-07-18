@@ -1,5 +1,6 @@
 {{ config(
-    full_refresh=true
+    full_refresh=true,
+    tags=["ghost"]
 ) }}
 
 {%- set source_model = "stg_customer" -%}

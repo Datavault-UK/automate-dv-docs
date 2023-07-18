@@ -1,3 +1,7 @@
+{{ config(
+    tags=["ghost"]
+) }}
+
 {%- set source_model = "stg_customer" -%}
 {%- set src_pk = "CUSTOMER_HK" -%}
 {%- set src_payload = ["CUSTOMER_NAME", "CUSTOMER_ADDRESS", "CUSTOMER_PHONE",

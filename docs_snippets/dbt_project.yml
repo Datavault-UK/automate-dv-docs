@@ -21,7 +21,7 @@ models:
       materialized: incremental
 
 vars:
-  enable_ghost_records: true
+  enable_ghost_records: "{{ env_var('GHOST_FLAG') | as_bool }}"
   system_record_value: 'AUTOMATE_DV_SYSTEM'
 
 

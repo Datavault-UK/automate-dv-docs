@@ -1203,13 +1203,13 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/ma_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
     === "Subsequent Loads"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/ma_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 === "Google BigQuery"
@@ -1217,13 +1217,13 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/ma_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
     === "Subsequent Loads"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/ma_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -1231,13 +1231,13 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/ma_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
     === "Subsequent Loads"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/ma_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 === "Postgres"
@@ -1245,13 +1245,13 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/ma_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
     === "Subsequent Loads"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/ma_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 === "Databricks"
@@ -1259,13 +1259,13 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/ma_sat_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
     === "Subsequent Loads"
     
         ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/ma_sat_customer_phone_incremental.sql"
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 ### xts
