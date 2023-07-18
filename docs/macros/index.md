@@ -1275,6 +1275,8 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/snowflake/xts.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/bigquery/xts.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/sqlserver/xts.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/databricks/xts.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.6/macros/tables/postgres/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -1314,119 +1316,19 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * 
-            FROM satellite_a
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* 
-            FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_c AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_d AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-            UNION ALL
-            SELECT * FROM satellite_c
-            UNION ALL
-            SELECT * FROM satellite_d
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
         ```
 
 === "Google Bigquery"
@@ -1434,260 +1336,79 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * 
-            FROM satellite_a
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* 
-            FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        WITH 
-
-        satellite_a AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_b AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-            )
-            WHERE d.HASHDIFF IS NULL
-            AND d.LOAD_DATE IS NULL
-            AND d.SATELLITE_NAME IS NULL
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        
-        WITH 
-
-        satellite_a AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_b AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_c AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_d AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_e AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_f AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-            UNION ALL
-            SELECT * FROM satellite_c
-            UNION ALL
-            SELECT * FROM satellite_d
-            UNION ALL
-            SELECT * FROM satellite_e
-            UNION ALL
-            SELECT * FROM satellite_f
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-            AND d.LOAD_DATE IS NULL
-            AND d.SATELLITE_NAME IS NULL
-        )
-
-    SELECT * FROM records_to_insert
-    ```
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
+        ```
 
 === "MS SQL Server"
 
     === "Single-Source"
 
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * 
-            FROM satellite_a
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* 
-            FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
+        ```
+
+=== "Postgres"
+
+    === "Single-Source"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/xts_customer_phone.sql"
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
         
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
+        ```
+
+    === "Multi-Source"
         
-        satellite_c AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
+        ```
+
+=== "Databricks"
+
+    === "Single-Source"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/xts_customer_phone.sql"
+        ```
+
+    === "Single-Source with Multiple Satellite Feeds"
         
-        satellite_d AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
+        ```
+
+    === "Multi-Source"
         
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-            UNION ALL
-            SELECT * FROM satellite_c
-            UNION ALL
-            SELECT * FROM satellite_d
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
         ```
 
 ### pit
