@@ -66,7 +66,7 @@ def make_samples(c, platform=None, dbt_command="build", selection=None, exclude=
     targets = [
         'snowflake',
         'bigquery',
-        # 'sqlserver',
+        'sqlserver',
         'postgres',
         'databricks'
     ]
