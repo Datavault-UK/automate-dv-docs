@@ -4,6 +4,7 @@ from pathlib import Path
 from invoke import task, Context
 import os
 
+
 def reset_and_copy(src_dir, tgt_dir):
     # if Path(tgt_dir).exists():
     #     dir_util.remove_tree(tgt_dir)
@@ -32,26 +33,33 @@ def trim_sql_files_in_path(tgt_dir: Path):
 
 
 @task
-def dbt_run_twice(c, target='snowflake', dbt_command='build', selection=None, exclude=None):
+def run_dbt(c, target='snowflake', dbt_command='build'):
     with c.cd('./docs_snippets'):
         c.run('dbt clean')
 
-        extra = ""
+        # Without ghosts
 
-        if selection:
-            extra += f"-s {selection}"
-
-        if exclude:
-            extra += f"--exclude {exclude}"
-
-        command_1 = f'dbt {dbt_command} {extra} --target={target} --full-refresh'
-        command_2 = f'dbt {dbt_command} {extra} --target={target}'
+        command_1 = f'dbt {dbt_command} --exclude tag:ghost --target={target} --full-refresh'
+        command_2 = f'dbt {dbt_command} --exclude tag:ghost --target={target}'
 
         print("Running command: ", command_1)
         c.run(command_1)
 
         print("Running command: ", command_2)
         c.run(command_2)
+
+        # With ghosts
+
+        command_3 = f"dbt {dbt_command} -s +tag:ghost --target={target} --full-refresh " \
+                    f"--vars 'enable_ghost_records: true'"
+        command_4 = f"dbt {dbt_command} -s +tag:ghost --target={target} " \
+                    f"--vars 'enable_ghost_records: true'"
+
+        print("Running command: ", command_3)
+        c.run(command_3)
+
+        print("Running command: ", command_4)
+        c.run(command_4)
 
 
 @task
@@ -62,7 +70,7 @@ def generate_models(c):
 
 @task(iterable=['env_var'])
 @task
-def make_samples(c, platform=None, dbt_command="build", selection=None, exclude=None, env_var=None):
+def make_samples(c, platform=None, dbt_command="build"):
     targets = [
         'snowflake',
         'bigquery',
@@ -70,14 +78,6 @@ def make_samples(c, platform=None, dbt_command="build", selection=None, exclude=
         'postgres',
         'databricks'
     ]
-
-    if env_var:
-        print("Setting env vars...")
-        for var in env_var:
-            k = var.split(':')[0]
-            v = var.split(':')[1]
-            print(f"Setting {k}={v}")
-            os.environ[k] = v
 
     if platform in targets and platform:
         targets = [platform]
@@ -90,7 +90,7 @@ def make_samples(c, platform=None, dbt_command="build", selection=None, exclude=
     for target in targets:
         print(f"Running dbt ({dbt_command}) with {target}...")
 
-        dbt_run_twice(c, target=target, dbt_command=dbt_command, selection=selection, exclude=exclude)
+        run_dbt(c, target=target, dbt_command=dbt_command)
 
         tgt_compiled = f'./docs/assets/snippets/compiled/{target}'
 
