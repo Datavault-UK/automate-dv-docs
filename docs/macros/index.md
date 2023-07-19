@@ -334,7 +334,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_customer.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_customer_incremental.sql"
@@ -346,7 +346,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
@@ -360,7 +360,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer_incremental.sql"
@@ -372,7 +372,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
@@ -386,7 +386,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_customer.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_customer_incremental.sql"
@@ -398,7 +398,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
@@ -412,7 +412,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_customer.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_customer_incremental.sql"
@@ -424,7 +424,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
@@ -438,7 +438,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_customer.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_customer_incremental.sql"
@@ -450,7 +450,7 @@ Generates SQL to build a Hub table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
@@ -508,7 +508,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_incremental.sql"
@@ -520,7 +520,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_multi_source_incremental.sql"
@@ -534,7 +534,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_incremental.sql"
@@ -546,7 +546,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_multi_source_incremental.sql"
@@ -560,7 +560,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_incremental.sql"
@@ -572,7 +572,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_multi_source_incremental.sql"
@@ -586,7 +586,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_incremental.sql"
@@ -598,7 +598,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_multi_source_incremental.sql"
@@ -612,7 +612,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_incremental.sql"
@@ -624,7 +624,7 @@ Generates SQL to build a Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_multi_source_incremental.sql"
@@ -679,7 +679,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -693,7 +693,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -707,7 +707,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -721,7 +721,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -735,7 +735,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/t_links/t_link_transactions_incremental.sql"
@@ -798,7 +798,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
         
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_incremental.sql"
@@ -810,7 +810,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Loads with Ghost Record"
+    === "Incremental Loads with Ghost Record"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_ghost_incremental.sql"
@@ -824,7 +824,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
         
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_incremental.sql"
@@ -836,7 +836,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Loads with Ghost Record"
+    === "Incremental Loads with Ghost Record"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_ghost_incremental.sql"
@@ -850,7 +850,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
         
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_incremental.sql"
@@ -862,7 +862,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Loads with Ghost Record"
+    === "Incremental Loads with Ghost Record"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_ghost_incremental.sql"
@@ -876,7 +876,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
         
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_incremental.sql"
@@ -888,7 +888,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Loads with Ghost Record"
+    === "Incremental Loads with Ghost Record"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_ghost_incremental.sql"
@@ -902,7 +902,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
         
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_incremental.sql"
@@ -914,7 +914,7 @@ Generates SQL to build a Satellite table using the provided parameters.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Loads with Ghost Record"
+    === "Incremental Loads with Ghost Record"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_ghost_incremental.sql"
@@ -926,7 +926,7 @@ Ghost Records are system-generated records which are added to Satellites to prov
 downstream. AutomateDV will generate ghost records if the [global variable](#ghost-record-configuration) is set to `true`.
 
 !!! tip "New in v0.9.1"
-    Ghost Records are here! More details (including examples of how it works) coming soon!
+    Ghost Records are here!
 
 #### Hashdiff Aliasing
 
@@ -1027,13 +1027,13 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
-    === "With auto end-dating (Subsequent)"
+    === "With auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "Without auto end-dating (Subsequent)"
+    === "Without auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
@@ -1047,13 +1047,13 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
-    === "With auto end-dating (Subsequent)"
+    === "With auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "Without auto end-dating (Subsequent)"
+    === "Without auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
@@ -1068,13 +1068,13 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
-    === "With auto end-dating (Subsequent)"
+    === "With auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "Without auto end-dating (Subsequent)"
+    === "Without auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
@@ -1089,13 +1089,13 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
-    === "With auto end-dating (Subsequent)"
+    === "With auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "Without auto end-dating (Subsequent)"
+    === "Without auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
@@ -1110,13 +1110,13 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order.sql"
         ```
     
-    === "With auto end-dating (Subsequent)"
+    === "With auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "Without auto end-dating (Subsequent)"
+    === "Without auto end-dating (Incremental)"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
@@ -1204,7 +1204,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
@@ -1218,7 +1218,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
@@ -1232,7 +1232,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
@@ -1246,7 +1246,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
@@ -1260,7 +1260,7 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
     
         ```sql
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
@@ -1314,19 +1314,19 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/xts_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/xts/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/xts/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/xts/xts_customer_phone_multi_source.sql"
         ```
 
 === "Google Bigquery"
@@ -1334,19 +1334,19 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/xts_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/xts/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/xts/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/xts/xts_customer_phone_multi_source.sql"
         ```
 
 === "MS SQL Server"
@@ -1354,60 +1354,26 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/xts_customer_phone.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone_multi_source.sql"
         ```
 
 === "Postgres"
-
-    === "Single-Source"
-
-        ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/xts_customer_phone.sql"
-        ```
-
-    === "Single-Source with Multiple Satellite Feeds"
-        
-        ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
-        ```
-
-    === "Multi-Source"
-        
-        ```sql
-        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
-        ```
+    Example Coming soon!
 
 === "Databricks"
-
-    === "Single-Source"
-
-        ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/xts_customer_phone.sql"
-        ```
-
-    === "Single-Source with Multiple Satellite Feeds"
-        
-        ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/xts_customer_phone_multi_sat.sql"
-        ```
-
-    === "Multi-Source"
-        
-        ```sql
-        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/xts_customer_phone_multi_source.sql"
-        ```
+    Example Coming soon!
 
 ### pit
 
@@ -1455,211 +1421,26 @@ Generates SQL to build a Point-In-Time (PIT) table.
     === "Base Load"
 
         ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE AS a
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN as_of_dates AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-        )
-        
-        SELECT DISTINCT * FROM pit
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/pits/base_load.sql"
         ```
 
     === "Incremental Load"
 
         ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE
-        ),
-        
-        last_safe_load_datetime AS (
-            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME 
-            FROM (
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-            ) a
-        ),
-        
-        as_of_grain_old_entries AS (
-            SELECT DISTINCT AS_OF_DATE 
-            FROM DBTVAULT.TEST.PIT_CUSTOMER
-        ),
-        
-        as_of_grain_lost_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_grain_old_entries AS a
-            LEFT OUTER JOIN as_of_dates AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        as_of_grain_new_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_dates AS a
-            LEFT OUTER JOIN as_of_grain_old_entries AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        min_date AS (
-            SELECT min(AS_OF_DATE) AS MIN_DATE
-            FROM as_of_dates
-        ),
-        
-        backfill_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_pks AS (
-            SELECT a.CUSTOMER_PK
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-            UNION
-            SELECT AS_OF_DATE
-            FROM as_of_grain_new_entries
-        ),
-        
-        overlap AS (
-            SELECT a.*
-            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
-            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
-                ON a.CUSTOMER_PK = b.CUSTOMER_PK
-            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        -- Back-fill any newly arrived hubs, set all historical pit dates to ghost records
-        
-        backfill_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM new_rows_pks AS a
-            INNER JOIN backfill_as_of AS b
-                ON (1=1 )
-        ),
-        
-        backfill AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_DETAILS_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_LOGIN_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,        
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM backfill_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN new_rows_as_of AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-            UNION ALL
-            SELECT * FROM overlap
-            UNION ALL
-            SELECT * FROM backfill
-        )
-        
-        SELECT DISTINCT * FROM pit
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/pits/incremental_load.sql"
         ```
 
 === "Google Bigquery"
-    Coming soon!
+    Example Coming soon!
 
 === "MS SQL Server"
-    Coming soon!
+    Example Coming soon!
+
+=== "Postgres"
+    Example Coming soon!
+
+=== "Databricks"
+    Example Coming soon!
 
 #### As Of Date Tables
 
@@ -1739,197 +1520,26 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
     === "Base Load"
 
         ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
-            INNER JOIN AS_OF AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-        
-        all_rows AS (
-            SELECT * FROM new_rows
-        ),
-        
-        candidate_rows AS (
-            SELECT *,
-                ROW_NUMBER() OVER (
-                    PARTITION BY AS_OF_DATE,
-                        LINK_CUSTOMER_ORDER_PK
-                    ORDER BY
-                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
-                    ) AS row_num
-            FROM all_rows
-            QUALIFY row_num = 1
-        ),
-        
-        bridge AS (
-            SELECT
-                c.CUSTOMER_PK,
-                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
-            FROM candidate_rows AS c
-            WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        )
-        
-        SELECT * FROM bridge
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/bridges/base_load.sql"
         ```
 
-    === "Subsequent Loads"
-        
+    === "Incremental Load"
+
         ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
-        ),
-        
-        last_safe_load_datetime AS (
-            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
-            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT_DEV.TEST.STG_CUSTOMER_ORDER
-                        
-                    ) AS l
-        ),
-        
-        as_of_grain_old_entries AS (
-            SELECT DISTINCT AS_OF_DATE
-            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER
-        ),
-        
-        as_of_grain_lost_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_grain_old_entries AS a
-            LEFT OUTER JOIN as_of AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        as_of_grain_new_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of AS a
-            LEFT OUTER JOIN as_of_grain_old_entries AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        min_date AS (
-            SELECT min(AS_OF_DATE) AS MIN_DATE
-            FROM as_of
-        ),
-        
-        new_rows_pks AS (
-            SELECT h.CUSTOMER_PK
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS h
-            WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of
-            WHERE as_of.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-            UNION
-            SELECT as_of_date
-            FROM as_of_grain_new_entries
-        ),
-        
-        overlap_pks AS (
-            SELECT p.CUSTOMER_PK
-            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER AS p
-            INNER JOIN DBTVAULT_DEV.TEST.HUB_CUSTOMER as h
-                ON p.CUSTOMER_PK = h.CUSTOMER_PK
-            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        overlap_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of AS p
-            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        overlap AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-                            ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM overlap_pks AS a
-            INNER JOIN overlap_as_of AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
-            INNER JOIN NEW_ROWS_AS_OF AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-        
-        all_rows AS (
-            SELECT * FROM new_rows
-            UNION ALL
-            SELECT * FROM overlap
-        ),
-        
-        candidate_rows AS (
-            SELECT *,
-                ROW_NUMBER() OVER (
-                    PARTITION BY AS_OF_DATE,
-                        LINK_CUSTOMER_ORDER_PK
-                    ORDER BY
-                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
-                    ) AS row_num
-            FROM all_rows
-            QUALIFY row_num = 1
-        ),
-        
-        bridge AS (
-            SELECT
-                c.CUSTOMER_PK,
-                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
-            FROM candidate_rows AS c
-            WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        )
-        
-        SELECT * FROM bridge
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/bridges/incremental_load.sql"
         ```
 
-=== "Google BigQuery"
-    Coming soon!
+=== "Google Bigquery"
+    Example Coming soon!
 
 === "MS SQL Server"
-    Coming soon!
+    Example Coming soon!
+
+=== "Postgres"
+    Example Coming soon!
+
+=== "Databricks"
+    Example Coming soon!
 
 #### As Of Date Table Structures
 
