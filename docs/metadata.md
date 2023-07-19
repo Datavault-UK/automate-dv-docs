@@ -1080,7 +1080,7 @@ ___
           PK: CUSTOMER_HK
         ldts:
           LDTS: LOAD_DATETIME
-    stage_tables:
+    stage_tables_ldts:
       STG_CUSTOMER_DETAILS: LOAD_DATETIME
       STG_CUSTOMER_LOGIN: LOAD_DATETIME
       STG_CUSTOMER_PROFILE: LOAD_DATETIME
@@ -1093,7 +1093,7 @@ ___
                        src_pk=metadata_dict['src_pk'],
                        as_of_dates_table=metadata_dict['as_of_dates_table'],
                        satellites=metadata_dict['satellites'],
-                       stage_tables=metadata_dict['stage_tables'],
+                       stage_tables_ldts=metadata_dict['stage_tables_ldts'],
                        src_ldts=metadata_dict['src_ldts']) }}
     ```
 
