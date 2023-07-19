@@ -246,34 +246,25 @@ with no equivalent in another platform.
 
 Thanks for your patience and continued support!
 
-| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks                                   | Postgres                                       | Redshift**                                        |
-|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|----------------------------------------------|------------------------------------------------|---------------------------------------------------|
-| hash           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| stage          | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| hub            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| link           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| sat            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| t_link         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| eff_sat        | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| ma_sat         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| xts            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| pit            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
-| bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }  | :fontawesome-solid-circle-minus:{ .not-required } |
+| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks                                    | Postgres                                      | Redshift**                                        |
+|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|---------------------------------------------------|
+| hash           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| stage          | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| hub            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| link           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| sat            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| t_link         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| eff_sat        | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| ma_sat         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| xts            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| pit            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
+| bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } |
 
 !!! note "**"
     These platforms are either planned or actively being worked on by the community and/or internal AutomateDV team.
     See the issues below for more information:
 
     - [Redshift](https://github.com/Datavault-UK/automate-dv/issues/86)
-
-### Limitations
-
-This section documents platform-specific limitations.
-
-#### Postgres
-
-Due to the way Postgres handles CTEs, AutomateDV's [custom materialisations](../materialisations.md) are not yet 
-available for use on Postgres. An exception will be raised if their use is attempted.
 
 ## Table templates
 
