@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
-# [v0.9.7] - 2023-07-05
+# [v0.9.7] - 2023-07-19
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.7)](https://automate-dv.readthedocs.io/en/v0.9.7/?badge=v0.9.7)
 
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
@@ -22,9 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Databricks and Postgres are now fully supported in v0.9.7!**
 
-- Transactional Links ([t_link macro](../macros/index.md#tlink))
-- Effectivity Satellites ([eff_sat macro](../macros/index.md#effsat))
-- Multi-active Satellites ([ma_sat macro](../macros/index.md#masat))
+- Transactional Links ([t_link macro](../macros/index.md#t_link))
+- Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
+- Multi-active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
 - Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
 - Point in Time tables (PITs) ([pit macro](../macros/index.md#pit))
 - Bridges ([bridge macro](../macros/index.md#bridge))
