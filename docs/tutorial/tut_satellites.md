@@ -55,13 +55,13 @@ Create a new dbt model as before. We'll call this one `sat_customer_detail`.
 === "sat_customer_detail.sql"
 
     ```jinja
-    {{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
-                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                    source_model=source_model)                                        }}
+    {{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                       src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                       source_model=source_model)                                        }}
     ```
 
 To create a Satellite model, we simply copy and paste the above template into a model named after the Satellite we
-are creating. dbtvault will generate a Satellite using parameters provided in the next steps.
+are creating. AutomateDV will generate a Satellite using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -87,7 +87,7 @@ staging layer which map to them:
 | src_source   | RECORD_SOURCE                                        |
 
 !!! Note
-    We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practices.md#hashdiff-aliasing)
+    We're supplying a mapping (dictionary) to our `src_hashdiff` parameter, [Read More](../best_practises/hashing.md#hashdiff-aliasing)
 
 When we provide the metadata above, our model should look like the following:
 
@@ -113,13 +113,13 @@ When we provide the metadata above, our model should look like the following:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
-                    src_hashdiff=metadata_dict["src_hashdiff"],
-                    src_payload=metadata_dict["src_payload"],
-                    src_eff=metadata_dict["src_eff"],
-                    src_ldts=metadata_dict["src_ldts"],
-                    src_source=metadata_dict["src_source"],
-                    source_model=metadata_dict["source_model"])   }}
+    {{ automate_dv.sat(src_pk=metadata_dict["src_pk"],
+                       src_hashdiff=metadata_dict["src_hashdiff"],
+                       src_payload=metadata_dict["src_payload"],
+                       src_eff=metadata_dict["src_eff"],
+                       src_ldts=metadata_dict["src_ldts"],
+                       src_source=metadata_dict["src_source"],
+                       source_model=metadata_dict["source_model"])   }}
     ```
 
 !!! Note

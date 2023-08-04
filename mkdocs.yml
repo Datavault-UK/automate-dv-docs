@@ -1,20 +1,22 @@
-site_name: dbtvault
+site_name: AutomateDV
 site_author: Datavault
 site_dir: 'site'
-repo_name: 'Datavault-UK/dbtvault'
-site_url: 'https://dbtvault.readthedocs.io/'
-repo_url: 'https://github.com/Datavault-UK/dbtvault'
+repo_name: 'Datavault-UK/automate-dv'
+site_url: 'https://automate-dv.readthedocs.io/'
+repo_url: 'https://github.com/Datavault-UK/automate-dv'
 dev_addr: 127.0.0.1:8001
+edit_uri: ""
 
 theme:
   name: 'material'
   custom_dir: 'overrides'
   show_sidebar: true
   logo: 'assets/images/logo.png'
-  banner: 'assets/images/docs-banner.png'
   favicon: 'assets/images/favicon.ico'
+  banner_dark: 'assets/images/banner/docs-banner-adv-drk.png'
+  banner_light: 'assets/images/banner/docs-banner-adv-lgt.png'
   palette:
-    - scheme: material
+    - scheme: default
       primary: 'black'
       accent: 'indigo'
       toggle:
@@ -26,8 +28,10 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
+
   highlightjs: true
   features:
+    - announce.dismiss
     - navigation.top
     - navigation.indexes
 
@@ -54,24 +58,31 @@ nav:
       - Loading the vault: 'worked_example/we_loading.md'
   - Metadata Reference: 'metadata.md'
   - Macros:
-      - Macros: 'macros/index.md'
+      - 'macros/index.md'
       - Stage Macro Configurations: 'macros/stage_macro_configurations.md'
   - Materialisations: 'materialisations.md'
-  - Best Practices: 'best_practices.md'
+  - Best Practices:
+      - 'best_practises/index.md'
+      - Hashing: 'best_practises/hashing.md'
+      - Escaping: 'best_practises/escaping.md'
+      - NULL Handling: 'best_practises/null_handling.md'
+      - Loading: 'best_practises/loading.md'
+      - Materialisations: 'best_practises/materialisations.md'
   - Migration Guides: 'migration_guides.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
-  - Versions: 'versions.md'
+  - dbt Compatibility: 'versions.md'
   - Changelog:
       - Stable Releases: 'changelog/index.md'
       - Beta Releases: 'changelog/beta.md'
+      - Archived Releases: 'changelog/archived.md'
   - Contributing:
       - Getting Started: 'contributing/index.md'
       - Style Guides:
           - Tutorials: 'contributing/style_guides/tutorials.md'
   - Licence: 'LICENSE.md'
   - Find Us:
-      - GitHub: 'https://github.com/Datavault-UK/dbtvault'
+      - GitHub: 'https://github.com/Datavault-UK/automate-dv'
       - Facebook: 'https://www.facebook.com/DataVaultUK/'
       - Twitter: 'https://twitter.com/datavault_uk'
       - LinkedIn: 'https://www.linkedin.com/company/business-thinking-limited'
@@ -84,13 +95,13 @@ nav:
 extra:
   social:
     - icon: 'fontawesome/solid/globe'
-      link: 'https://www.data-vault.co.uk'
+      link: 'https://www.automate-dv.com'
     - icon: 'fontawesome/brands/github'
       link: 'https://github.com/Datavault-UK/'
     - icon: 'fontawesome/brands/twitter'
-      link: 'https://twitter.com/datavault_uk'
+      link: 'https://twitter.com/Automate_DV'
     - icon: 'fontawesome/brands/linkedin'
-      link: 'https://www.linkedin.com/company/business-thinking-limited'
+      link: 'https://www.linkedin.com/showcase/dbtvault/'
     - icon: 'fontawesome/brands/facebook'
       link: 'https://www.facebook.com/DataVaultUK/'
 
@@ -126,4 +137,4 @@ extra_css:
   - 'stylesheets/all.css'
   - 'stylesheets/icons.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2022 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
+copyright: AutomateDV (f.k.a dbtvault) and documentation &copy; Business Thinking trading as Datavault 2019-2023 - Data Vault 2.0™ is a trademark of Empowered Holdings LLP - dbt is a registered trademark of dbt labs

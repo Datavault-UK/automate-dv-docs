@@ -36,7 +36,7 @@ The second level keys will be _pk_ and _ldts_.
 The third level key will be _'PK'_ and _'LDTS'_. The expected value for the _'PK'_ key is the Hash Key column name of the Satellite (e.g. CUSTOMER_HK). 
 The expected value for the _'LDTS'_ key is the Load Date/Timestamp column name of the Satellite (e.g. LOAD_DATETIME).
 
-#### Stage Models (stage_tables)
+#### Stage Models (stage_tables_ldts)
 This is a dictionary that contains the names of the Load Date/Timestamp columns for each stage table sourcing the Satellites.
 
 The keys in the dictionary will be the stage table names (e.g. 'STG_CUSTOMER_DETAILS), whereas the values will be 
@@ -52,15 +52,15 @@ Create a new dbt model as before. We'll call this one `pit_customer`.
 === "pit_customer.sql"
 
     ``` jinja
-    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                    as_of_dates_table=as_of_dates_table,
-                    satellites=satellites,
-                    stage_tables=stage_tables,
-                    src_ldts=src_ldts) }}
+    {{ automate_dv.pit(source_model=source_model, src_pk=src_pk,
+                       as_of_dates_table=as_of_dates_table,
+                       satellites=satellites,
+                       stage_tables_ldts=stage_tables_ldts,
+                       src_ldts=src_ldts) }}
     ```
 
 To create a PIT model, we simply copy and paste the above template into a model named after the PIT we
-are creating. dbtvault will generate a PIT using parameters provided in the next steps.
+are creating. AutomateDV will generate a PIT using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -81,7 +81,7 @@ Let's look at the metadata we need to provide to the [pit](../metadata.md#point-
 |                   | {"SAT_CUSTOMER_LOGIN":                                                        |
 |                   | &emsp;&emsp;{"pk": {"PK": "CUSTOMER_HK"}, {"ldts": {"LDTS": "LOAD_DATETIME"}} |
 |                   | }                                                                             |
-| stage_tables      | {"STG_CUSTOMER_DETAILS": "LOAD_DATETIME",                                     |
+| stage_tables_ldts | {"STG_CUSTOMER_DETAILS": "LOAD_DATETIME",                                     |
 |                   | "STG_CUSTOMER_LOGIN": "LOAD_DATETIME"}                                        |
 | src_ldts          | LOAD_DATETIME                                                                 |
 
@@ -228,14 +228,14 @@ Now, our model should look like the following:
     {% set src_pk = metadata_dict['src_pk'] %}
     {% set as_of_dates_table = metadata_dict['as_of_dates_table'] %}
     {% set satellites = metadata_dict['satellites'] %}
-    {% set stage_tables = metadata_dict['stage_tables'] %}
+    {% set stage_tables_ldts = metadata_dict['stage_tables_ldts'] %}
     {% set src_ldts = metadata_dict['src_ldts'] %}
 
-    {{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                    as_of_dates_table=as_of_dates_table,
-                    satellites=satellites,
-                    stage_tables=stage_tables,
-                    src_ldts=src_ldts) }}
+    {{ automate_dv.pit(source_model=source_model, src_pk=src_pk,
+                       as_of_dates_table=as_of_dates_table,
+                       satellites=satellites,
+                       stage_tables_ldts=stage_tables_ldts,
+                       src_ldts=src_ldts) }}
     ```
 
 !!! Note 

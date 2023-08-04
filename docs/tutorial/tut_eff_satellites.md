@@ -103,14 +103,14 @@ Create a new dbt model as before.
 === "eff_sat_customer_nation.sql"
 
     ```jinja
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
     ```
 
 To create an Effectivity Satellite model, we simply copy and paste the above template into a model named after the Effectivity
-Satellite we are creating. dbtvault will generate an Effectivity Satellite using parameters provided in the next steps.
+Satellite we are creating. AutomateDV will generate an Effectivity Satellite using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -118,7 +118,7 @@ The recommended materialisation for **Effectivity Satellites** is `incremental`,
 
 ### Adding the metadata 
 
-Let's look at the metadata we need to provide to the [eff_sat](../macros/index.md#eff_sat) macro. 
+Let's look at the metadata we need to provide to the [eff_sat](../macros/index.md#effsat) macro. 
 
 See our [metadata reference](../metadata.md#effectivity-satellites) for more detail on how to provide metadata.
 
@@ -157,12 +157,12 @@ When we provide the metadata above, our model should look like the following:
     {%- set src_ldts = "LOAD_DATETIME"    -%}
     {%- set src_source = "RECORD_SOURCE"  -%}
     
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, 
-                        src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, 
-                        src_source=src_source,
-                        source_model=source_model) }}
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, 
+                           src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, 
+                           src_source=src_source,
+                           source_model=source_model) }}
     ```
 
 ### Running dbt

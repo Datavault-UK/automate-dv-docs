@@ -45,16 +45,16 @@ Create a new dbt model as before. We'll call this one `bridge_customer_order`.
 === "bridge_customer_order.sql"
 
     ``` jinja
-    {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                       src_ldts=src_ldts,
-                       bridge_walk=bridge_walk,
-                       as_of_dates_table=as_of_dates_table,
-                       stage_tables_ldts=stage_tables_ldts) }}
+    {{ automate_dv.bridge(source_model=source_model, src_pk=src_pk,
+                          src_ldts=src_ldts,
+                          bridge_walk=bridge_walk,
+                          as_of_dates_table=as_of_dates_table,
+                          stage_tables_ldts=stage_tables_ldts) }}
     ```
 
 
 To create a Bridge model, we simply copy and paste the above template into a model named after the Bridge table we
-are creating. dbtvault will generate a Bridge table using parameters provided in the following steps.
+are creating. AutomateDV will generate a Bridge table using parameters provided in the following steps.
 
 #### Materialisation
 
@@ -300,11 +300,11 @@ In the end, our model should look like the following:
     {% set bridge_walk = metadata_dict["bridge_walk"] %}
     {% set stage_tables_ldts = metadata_dict["stage_tables_ldts"] %}
 
-    {{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                       src_ldts=src_ldts,
-                       bridge_walk=bridge_walk,
-                       as_of_dates_table=as_of_dates_table,
-                       stage_tables_ldts=stage_tables_ldts) }}
+    {{ automate_dv.bridge(source_model=source_model, src_pk=src_pk,
+                          src_ldts=src_ldts,
+                          bridge_walk=bridge_walk,
+                          as_of_dates_table=as_of_dates_table,
+                          stage_tables_ldts=stage_tables_ldts) }}
     ```
 
 ### Running dbt

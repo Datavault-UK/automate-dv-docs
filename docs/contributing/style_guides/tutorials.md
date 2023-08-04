@@ -20,12 +20,12 @@ Create a new dbt model as before. We'll call this one `<example structure name>`
 === "<example structure name>.sql"
 
     ```jinja
-    {{ dbtvault.<macro name>(argument_1=argument_1, argument_2=argument_2, ...,
+    {{ automate_dv.<macro name>(argument_1=argument_1, argument_2=argument_2, ...,
                              argument_n=argument_n) }}
     ```
 
 To create a <type of structure> model, we simply copy and paste the above template into a model named after the <type of structure> we
-are creating. dbtvault will generate a <type of structure> using parameters provided in the next steps.
+are creating. AutomateDV will generate a <type of structure> using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -69,8 +69,8 @@ When we provide the metadata above, our model should look like the following:
 {%- set src_ldts = "LOAD_DATETIME"      -%}
 {%- set src_source = "RECORD_SOURCE"    -%}
 
-{{ dbtvault.<type of structure>(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
+{{ automate_dv.<type of structure>(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                                   src_source=src_source, source_model=source_model) }}
 ```
 
 !!! Note
