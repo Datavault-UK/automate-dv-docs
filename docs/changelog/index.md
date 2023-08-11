@@ -13,25 +13,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [v0.10.0] - 2023-08-14
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.10.0)](https://automate-dv.readthedocs.io/en/v0.10.0/?badge=v0.10.0)
-
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
 
 ## New
 
 ### All Platforms
 
-- Reference Tables ([ref_table](../macros/index.md#ref_table)) [Tutorial](../tutorial/tut_ref_tables.md)
+- Reference Tables ([ref_table](../macros/index.md#ref_table)) 
+
+    - [Tutorial](../tutorial/tut_ref_tables.md)
 
 ## Improved 
 
 ### All Platforms
 
-- Satellite loading restriction removed :tada::tada::tada: [Migration Guide](../migration_guides.md#migrating-from-097-to-0100) 
+- Satellite loading restriction removed :tada::tada::tada:
 
-### 
+    - [Migration Guide](../migration_guides.md#migrating-from-097-to-0100) 
+    - Updated [Loading Guide](../best_practises/loading.md#satellites) 
+
+
 # [v0.9.7] - 2023-07-19
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.7)](https://automate-dv.readthedocs.io/en/v0.9.7/?badge=v0.9.7)
-
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
 
 ## New
@@ -61,7 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [v0.9.6] - 2023-05-16
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.6)](https://automate-dv.readthedocs.io/en/v0.9.6/?badge=v0.9.6)
-
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
 
 ## The rebrand update! - dbtvault is now AutomateDV
@@ -73,7 +75,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # [v0.9.5] - 2023-03-22
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.5)](https://automate-dv.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
-
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://automate-dv.readthedocs.io/en/latest/versions/)
 
 ## Fixes
