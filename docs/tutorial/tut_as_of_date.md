@@ -5,9 +5,6 @@ An example of a usual date range could be all dates from the last 3 months.
 
 Periodically, the As of Date table would be refreshed, to accommodate for the new reporting period.
 
-!!! note
-    As of Date tables will soon be 
-
 ### Structure
 
 The As of Date table consists of a single date/datetime column, and is currently generated using the 
@@ -94,11 +91,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our metadata provided and our model complete, we can run dbt to create our As of Dates, as follows:
 
-=== "< dbt v0.20.x"
-    `dbt run -m as_of_date`
-
-=== "> dbt v0.21.0"
-    `dbt run -s as_of_date`
+`dbt run -s as_of_date`
 
 The resulting As of Date table will look like this:
 

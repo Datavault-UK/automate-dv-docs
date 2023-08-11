@@ -50,6 +50,7 @@ nav:
       - As of Date Tables: 'tutorial/tut_as_of_date.md'
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
       - Bridge Tables: 'tutorial/tut_bridges.md'
+      - Reference Tables: 'tutorial/tut_ref_tables.md'
   - Worked example:
       - Getting Started: 'worked_example/index.md'
       - Project setup: 'worked_example/we_setup.md'

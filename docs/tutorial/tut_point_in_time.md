@@ -246,11 +246,7 @@ Now, our model should look like the following:
 
 With our model complete and our YAML written, we can run dbt to create our `pit_customer` table.
 
-=== "< dbt v0.20.x"
-    `dbt run -m +pit_customer`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +pit_customer`
+`dbt run -s +pit_customer`
 
 The resulting Point in Time table would look like this:
 

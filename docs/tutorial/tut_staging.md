@@ -142,11 +142,7 @@ In summary this model will:
 
 With our model complete and our YAML written, we can run dbt:
 
-=== "< dbt v0.20.x"
-    `dbt run -m v_stg_orders`
-
-=== "> dbt v0.21.0"
-    `dbt run -s v_stg_orders`
+`dbt run -s v_stg_orders`
 
 The resulting stage view will look like this:
 
