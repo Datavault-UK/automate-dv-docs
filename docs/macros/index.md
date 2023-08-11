@@ -1579,6 +1579,12 @@ Generates SQL to build a Reference table using the provided parameters.
 | src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .not-required } |
 | source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
+!!! tip
+    [Read the tutorial](../tutorial/tut_ref_tables.md) for more details
+
+#### Example Metadata
+
+[See examples](../metadata.md#reference-tables)
 
 #### Example Output
 

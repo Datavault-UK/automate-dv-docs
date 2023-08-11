@@ -147,7 +147,7 @@ When we provide the metadata above, our model should look like the following:
     ```
 
 !!! Note
-    See our [metadata reference](../metadata.md#) for more detail on how to provide metadata to Reference Tables.
+    See our [metadata reference](../metadata.md#reference-tables) for more detail on how to provide metadata to Reference Tables.
 
 ### Running dbt
 
