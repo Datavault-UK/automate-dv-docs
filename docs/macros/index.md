@@ -1551,11 +1551,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/snowflake/ref_table.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/bigquery/ref_table.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/sqlserver/ref_table.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/databricks/ref_table.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.0/macros/tables/postgres/ref_table.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/snowflake/ref_table.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/bigquery/ref_table.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/sqlserver/ref_table.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/databricks/ref_table.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/postgres/ref_table.sql)
 
 Generates SQL to build a Reference table using the provided parameters.
 
@@ -1563,66 +1563,36 @@ Generates SQL to build a Reference table using the provided parameters.
 
 ``` jinja
 
-{{ dbtvault.ref_table(src_pk=src_pk, src_ldts=src_ldts,
-                src_extra_columns=src_extra_columns,
-                src_source=src_source, source_model=source_model) }}
+{{ automate_dv.ref_table(src_pk=src_pk, src_ldts=src_ldts,
+                         src_extra_columns=src_extra_columns,
+                         src_ldts=src_ldts, src_source=src_source,
+                         source_model=source_model) }}
 ```
 
 #### Parameters
 
 | Parameter         | Description                                 | Type                | Required?                                         |
 |-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
-| src_pk            | Source primary key column                   | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
 | src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
-| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .required }     |
-| src_source        | Name of the column containing the source ID | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
-| source_model      | Staging model name                          | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .not-required } |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .not-required } |
+| source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 
 #### Example Output
 
-=== "Snowflake"
+=== "Base Load"
 
-    === "Single-Source (Base Load)"
-    
-        ```sql
-        WITH to_insert AS (
-            SELECT DISTINCT
-            a."DATE_PK", a."YEAR", a."MONTH", a."DAY", a."DAY_OF_WEEK", a."LOAD_DATE", a."SOURCE"
-            FROM [DATABASE_NAME].[SCHEMA_NAME].raw_source_ref_table AS a
-            WHERE a."DATE_PK" IS NOT NULL
-        ),
-        
-        non_historized AS (
-            SELECT
-            a."DATE_PK", a."YEAR", a."MONTH", a."DAY", a."DAY_OF_WEEK", a."LOAD_DATE", a."SOURCE"
-            FROM to_insert AS a
-        )
-        
-        SELECT * FROM non_historized
-        ```
-    
-    === "Single-Source (Subsequent Loads)"
-    
-        ```sql
-        WITH to_insert AS (
-            SELECT DISTINCT
-            a."DATE_PK", a."YEAR", a."MONTH", a."DAY", a."DAY_OF_WEEK", a."LOAD_DATE", a."SOURCE"
-            FROM [DATABASE_NAME].[SCHEMA_NAME].raw_source_ref_table AS a
-            WHERE a."DATE_PK" IS NOT NULL
-        ),
-        
-        non_historized AS (
-            SELECT
-            a."DATE_PK", a."YEAR", a."MONTH", a."DAY", a."DAY_OF_WEEK", a."LOAD_DATE", a."SOURCE"
-            FROM to_insert AS a
-            LEFT JOIN [DATABASE_NAME].[SCHEMA_NAME].test_ref_table_macro_correctly_generates_sql_for_incremental_single_source AS d
-            ON a."DATE_PK" = d."DATE_PK"
-            WHERE d."DATE_PK" IS NULL
-        )
-        
-        SELECT * FROM non_historized
-        ```
+    ```sql
+    --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ref_tables/ref_tables_base.sql"
+    ```
+
+=== "Incremental Load"
+
+    ```sql
+    --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ref_tables/ref_tables_incremental.sql"
+    ```
 
 ___
 

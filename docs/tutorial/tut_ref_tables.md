@@ -70,7 +70,7 @@ In the Airport example above, this would be the `Code` column, which is the iden
 !!! note
     It is important to note here that the PK of a Reference table is not a hash key, it is the natural identifier for a reference data record.
 
-#### Extra Columns (src_extra_columns)
+#### Extra Columns (src_extra_columns) - Optional
 
 This parameter simply takes a list of column names which will be added to the Reference Table, this allows you to add
 any relevant data alongside the main reference data (i.e. the Primary Key/Code). Some examples of columns which could be added here, are below:
