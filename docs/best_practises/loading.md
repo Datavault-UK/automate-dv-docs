@@ -39,15 +39,15 @@ in more detail below.
 If you have multiple records for a primary key in a single load (batch) we first compare all hashdiff values aside 
 from the first in date order (src_ldts) and take every record which has a different hashdiff from the previous record's hashdiff in that batch. 
 
-As this always skips the first record (as the first record will not have a previous previous record) we handle this separately.
+As this always skips the first record (as the first record will not have a previous record) we handle this separately.
 
 For a base load, we then insert all of these changed records, as well as the first record. 
-The first record is always different from all of the rest due to ordering by the LDTS (earliest first), 
+The first record is always different from all the rest due to ordering by the LDTS (earliest first), 
 unless a true duplicate is present in which case we only take one instance. 
 
 ### Incremental load
 
-For an incremental load, we follow the same process as a Base load except we treat the first record differently. In an incrmenetal load we
+For an incremental load, we follow the same process as a Base load except we treat the first record differently. In an incremental load we
 insert the first record of a batch only if it is different from the latest record in the existing Satellite. 
 
 If the first record is the same as the latest Satellite record, then by definition the first record in our set of differing hashdiffs must be different.
@@ -61,7 +61,7 @@ The Load Date/Timestamp (universally in AutomateDV, the src_ldts parameter) is i
 ## Record source table code
 
 We suggest you use a code for your record source. This can be anything that makes sense for your particular context,
-though usually an integer or alpha-numeric value works well. The code often gets used to look up the full table name in
+though usually an integer or alphanumeric value works well. The code often gets used to look up the full table name in
 a reference table.
 
 You may do this with AutomateDV by providing the code as a constant in the [staging](../tutorial/tut_staging.md) layer, using
