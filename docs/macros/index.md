@@ -1547,6 +1547,61 @@ An As of Date table contains a single column of dates used to construct the hist
 
 ___
 
+### ref_table
+
+###### view source:
+
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/snowflake/ref_table.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/bigquery/ref_table.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/sqlserver/ref_table.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/databricks/ref_table.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/postgres/ref_table.sql)
+
+Generates SQL to build a Reference table using the provided parameters.
+
+#### Usage
+
+``` jinja
+
+{{ automate_dv.ref_table(src_pk=src_pk, src_ldts=src_ldts,
+                         src_extra_columns=src_extra_columns,
+                         src_ldts=src_ldts, src_source=src_source,
+                         source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .not-required } |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .not-required } |
+| source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
+
+!!! tip
+    [Read the tutorial](../tutorial/tut_ref_tables.md) for more details
+
+#### Example Metadata
+
+[See examples](../metadata.md#reference-tables)
+
+#### Example Output
+
+=== "Base Load"
+
+    ```sql
+    --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ref_tables/ref_tables_base.sql"
+    ```
+
+=== "Incremental Load"
+
+    ```sql
+    --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ref_tables/ref_tables_incremental.sql"
+    ```
+
+___
+
 ## Staging Macros
 
 ###### (macros/staging)

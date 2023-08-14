@@ -19,7 +19,7 @@ This is usually a formal identification for the record, such as a customer ID or
 order number. Usually called the business key because this value has meaning in
 business processes such as transactions and events.
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
 #### Record Source (src_source)
@@ -87,11 +87,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our metadata provided and our model complete, we can run dbt to create our `hub_customer` Hub, as follows:
 
-=== "< dbt v0.20.x"
-    `dbt run -m +hub_customer`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +hub_customer`
+`dbt run -s +hub_customer`
 
 The resulting Hub table will look like this:
 

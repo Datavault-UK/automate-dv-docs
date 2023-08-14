@@ -18,7 +18,7 @@ and create a hash on a concatenation of them.
 Foreign keys referencing the primary key for each Hub referenced in the Link (2 or more depending on the number of Hubs 
 referenced) 
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
 #### Record Source (src_source)
@@ -87,11 +87,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our metadata provided and our model complete, we can run dbt to create our `link_customer_order` Link, as follows:
 
-=== "< dbt v0.20.x"
-    `dbt run -m +link_customer_order`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +link_customer_order`
+`dbt run -s +link_customer_order`
 
 The resulting Link table will look like this:
 

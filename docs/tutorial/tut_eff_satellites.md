@@ -7,7 +7,11 @@ have them and how they work.
 Say we have a Table A. Table A contains a column which is a foreign key link to a Table B. In the Data Vault we model
 this as a Link, as follows:
 
-![alt text](../assets/images/basic_hub_link.png "A basic hub/link model")
+<figure markdown>
+
+  ![A basic hub/link model](../assets/images/basic_hub_link.png)
+
+</figure>
 
 A Link does not have any temporal data; it declares that there is a relationship between A and B, but nothing about when or for how long.
 
@@ -78,7 +82,7 @@ satellite record. It records that a record is valid from a specific point in tim
 If the link relationship changes, then the record with the old relation should no longer be valid, and it will no 
 longer have the most recent `EFFECTIVE_FROM` value. 
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
 #### Record Source (src_source)
@@ -170,11 +174,7 @@ When we provide the metadata above, our model should look like the following:
 With our metadata provided and our model complete, we can run dbt to create `eff_sat_customer_nation` 
 Effectivity Satellite, as follows:
 
-=== "< dbt v0.20.x"
-    `dbt run -m +eff_sat_customer_nation`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +eff_sat_customer_nation`
+`dbt run -s +eff_sat_customer_nation`
 
 The resulting Effectivity Satellite table will look like this:
 

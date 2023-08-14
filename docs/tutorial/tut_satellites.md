@@ -30,7 +30,7 @@ longer have the most recent `EFFECTIVE_FROM` value.
 !!! note
     This is an optional metadata column which can be useful later on, and is **not** part of the DataVault 2.0 standard. 
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
 #### Record Source (src_source)
@@ -129,11 +129,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our model complete and our YAML written, we can run dbt to create our `sat_customer_detail` Satellite.
 
-=== "< dbt v0.20.x"
-    `dbt run -m +sat_customer_detail`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +sat_customer_detail`
+`dbt run -s +sat_customer_detail`
     
 The resulting Satellite table will look like this:
 

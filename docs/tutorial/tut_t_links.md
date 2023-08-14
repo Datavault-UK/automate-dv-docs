@@ -27,7 +27,7 @@ An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the busines
 transaction record. It records that a record is valid from a specific point in time. For a Transactional Link, this
 is usually the date on which the transaction occurred. 
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. this identifies when the record first gets loaded into the database.
 
 #### Record Source (src_source)
@@ -125,11 +125,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our model complete and our YAML written, we can run dbt to create our `t_link_transaction` Transactional Link.
 
-=== "< dbt v0.20.x"
-    `dbt run -m +t_link_transaction`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +t_link_transaction`
+`dbt run -s +t_link_transaction`
 
 The resulting Transactional Link table will look like this:
 
