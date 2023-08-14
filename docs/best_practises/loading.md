@@ -58,10 +58,12 @@ The first record in the batch will not be inserted if it is the same as the late
 
 The Load Date/Timestamp (universally in AutomateDV, the src_ldts parameter) is important for audit purposes and allows us to track what we knew when.
 
+This audit column records when the record was first loaded into the database. 
+
 Ideally, you should set it to a record available in the source data. For example when using Fivetran, it is often sensible to use `_FIVETRAN_SYNCED`.
 
 Otherwise, we recommend using [dbt's `run_started_at` variable](https://docs.getdbt.com/reference/dbt-jinja-functions/run_started_at) as 
-the value fo your derived column. Please see an example below.
+the value for your derived column. Please see an example below.
 
 ```yaml
 source_model: MY_STAGE
