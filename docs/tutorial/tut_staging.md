@@ -11,9 +11,6 @@ Prefer a video? This video has a great overview of the content on this page.
 1. The AutomateDV package assumes you've already loaded a table with raw data 
 from a source system or feed; this is referred to as the 'raw staging layer' or 'landing zone'.
 
-2. All records in a single load must be for the same load datetime. This restriction is not applicable to Hubs and Links.
-   We will be removing this restriction for other structures in the future. 
-
 ### Getting started
 
 The raw staging table needs to be prepared with additional columns so that we may load our raw vault.
@@ -142,11 +139,7 @@ In summary this model will:
 
 With our model complete and our YAML written, we can run dbt:
 
-=== "< dbt v0.20.x"
-    `dbt run -m v_stg_orders`
-
-=== "> dbt v0.21.0"
-    `dbt run -s v_stg_orders`
+`dbt run -s v_stg_orders`
 
 The resulting stage view will look like this:
 

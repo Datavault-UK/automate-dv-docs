@@ -1157,6 +1157,45 @@ ___
 
 ___
 
+### Reference Tables
+
+#### Parameters
+
+[ref_table macro parameters](macros/index.md#ref_table)
+
+#### Metadata
+
+=== "Without Record Source and Load Date/Timestamp"
+
+    ```jinja
+    {{ config(materialized='incremental') }}
+                                                     
+    {%- set source_model = 'v_stg_flights'           -%}
+    {%- set src_pk = 'CODE'                          -%}
+    {%- set src_extra_columns = ['NAME', 'COMMENTS'] -%}
+    
+    {{ automate_dv.ref_table(src_pk=src_pk, 
+                             src_extra_columns=src_extra_columns,
+                             source_model=source_model) }}
+    ```
+
+=== "With Record Source and Load Date/Timestamp"
+
+    ```jinja
+    {{ config(materialized='incremental') }}
+                                                     
+    {%- set source_model = 'v_stg_flights'           -%}
+    {%- set src_pk = 'CODE'                          -%}
+    {%- set src_extra_columns = ['NAME', 'COMMENTS'] -%}
+    {%- set src_ldts = 'LOAD_DATIME'                 -%}
+    {%- set src_source = 'RECORD_SOURCE'             -%}
+    
+    {{ automate_dv.ref_table(src_pk=src_pk, 
+                             src_ldts=src_ldts, src_source=src_source, 
+                             src_extra_columns=src_extra_columns,
+                             source_model=source_model) }}
+    ```
+
 ### The problem with metadata
 
 When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger
