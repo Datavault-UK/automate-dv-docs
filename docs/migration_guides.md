@@ -2,7 +2,7 @@
 
 ### Changes
 
-The `sat()` macro has finally had its limitations removed and should be more performance and robust against 
+The `sat()` macro has finally had its limitations removed and should be more performant and robust against 
 loading intraday/multi-batch data. See the updated [loading docs](./best_practises/loading.md#satellites) for more details on how this works.
 
 #### What does this mean for me?
