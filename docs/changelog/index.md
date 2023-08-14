@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### All Platforms
 
-- Satellite loading restriction removed :tada::tada::tada:
+Satellite loading limitations resolved :tada::tada::tada:
 
     - [Migration Guide](../migration_guides.md#migrating-from-097-to-0100) 
     - Updated [Loading Guide](../best_practises/loading.md#satellites) 
