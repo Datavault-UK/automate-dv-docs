@@ -1575,8 +1575,8 @@ Generates SQL to build a Reference table using the provided parameters.
 |-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
 | src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
 | src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
-| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-check:{ .not-required } |
-| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-check:{ .not-required } |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-minus:{ .not-required } |
 | source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
