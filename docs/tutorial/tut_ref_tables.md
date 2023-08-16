@@ -15,7 +15,7 @@ A few examples of data that might belong in a reference table instead of a Hub i
 
 It is important to understand that a reference table is not necessarily always the best approach in storing a
 reference to this kind of data, and in some cases it may be more appropriate to model the data as a an attribute on a
-SSatellite.
+Satellite.
 
 This is usually the case when the attribute in question is related to a Hub you have already identified in a model.
 
