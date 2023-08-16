@@ -3,8 +3,29 @@ WITH source_data AS (
     FROM ALEX_HIGGS.AUTOMATE_DV_DOCS_SAMPLES.stg_customer AS a
     WHERE a.CUSTOMER_HK IS NOT NULL
 ),
+first_record_in_set AS (
+    SELECT
+    sd.CUSTOMER_HK, sd.HASHDIFF, sd.CUSTOMER_NAME, sd.CUSTOMER_ADDRESS, sd.CUSTOMER_PHONE, sd.ACCBAL, sd.MKTSEGMENT, sd.COMMENT, sd.EFFECTIVE_FROM, sd.LOAD_DATETIME, sd.RECORD_SOURCE,
+    RANK() OVER (
+            PARTITION BY sd.CUSTOMER_HK
+            ORDER BY sd.LOAD_DATETIME ASC
+        ) as asc_rank
+    FROM source_data as sd
+    QUALIFY asc_rank = 1
+),
+unique_source_records AS (
+    SELECT DISTINCT
+        sd.CUSTOMER_HK, sd.HASHDIFF, sd.CUSTOMER_NAME, sd.CUSTOMER_ADDRESS, sd.CUSTOMER_PHONE, sd.ACCBAL, sd.MKTSEGMENT, sd.COMMENT, sd.EFFECTIVE_FROM, sd.LOAD_DATETIME, sd.RECORD_SOURCE
+    FROM source_data as sd
+    QUALIFY sd.HASHDIFF != LAG(sd.HASHDIFF) OVER (
+        PARTITION BY sd.CUSTOMER_HK
+        ORDER BY sd.LOAD_DATETIME ASC)
+),
 records_to_insert AS (
-    SELECT DISTINCT stage.CUSTOMER_HK, stage.HASHDIFF, stage.CUSTOMER_NAME, stage.CUSTOMER_ADDRESS, stage.CUSTOMER_PHONE, stage.ACCBAL, stage.MKTSEGMENT, stage.COMMENT, stage.EFFECTIVE_FROM, stage.LOAD_DATETIME, stage.RECORD_SOURCE
-    FROM source_data AS stage
+    SELECT frin.CUSTOMER_HK, frin.HASHDIFF, frin.CUSTOMER_NAME, frin.CUSTOMER_ADDRESS, frin.CUSTOMER_PHONE, frin.ACCBAL, frin.MKTSEGMENT, frin.COMMENT, frin.EFFECTIVE_FROM, frin.LOAD_DATETIME, frin.RECORD_SOURCE
+    FROM first_record_in_set AS frin
+    UNION
+    SELECT usr.CUSTOMER_HK, usr.HASHDIFF, usr.CUSTOMER_NAME, usr.CUSTOMER_ADDRESS, usr.CUSTOMER_PHONE, usr.ACCBAL, usr.MKTSEGMENT, usr.COMMENT, usr.EFFECTIVE_FROM, usr.LOAD_DATETIME, usr.RECORD_SOURCE
+    FROM unique_source_records as usr
 )
 SELECT * FROM records_to_insert

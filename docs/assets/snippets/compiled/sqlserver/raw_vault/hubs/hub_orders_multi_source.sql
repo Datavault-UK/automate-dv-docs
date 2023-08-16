@@ -6,7 +6,7 @@ WITH row_rank_1 AS (
                    PARTITION BY rr.CUSTOMER_HK
                    ORDER BY rr.LOAD_DATETIME
                ) AS row_number
-        FROM "DBTVAULT_DEV"."TEST"."stg_customer" AS rr
+        FROM "AUTOMATE_DV_TEST"."TEST"."stg_customer" AS rr
         WHERE rr.CUSTOMER_HK IS NOT NULL
     ) h
     WHERE h.row_number = 1
@@ -19,7 +19,7 @@ row_rank_2 AS (
                    PARTITION BY rr.CUSTOMER_HK
                    ORDER BY rr.LOAD_DATETIME
                ) AS row_number
-        FROM "DBTVAULT_DEV"."TEST"."stg_orders" AS rr
+        FROM "AUTOMATE_DV_TEST"."TEST"."stg_orders" AS rr
         WHERE rr.CUSTOMER_HK IS NOT NULL
     ) h
     WHERE h.row_number = 1

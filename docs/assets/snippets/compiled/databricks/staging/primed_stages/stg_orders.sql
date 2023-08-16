@@ -23,10 +23,10 @@ derived_columns AS (
     o_shippriority,
     o_comment,
     o_custkey AS CUSTOMER_ID,
-    CAST('1998-07-01' AS TIMESTAMP) AS LOAD_DATETIME,
-    CAST('1998-01-01' AS TIMESTAMP) AS EFFECTIVE_FROM,
-    CAST('1998-01-01' AS TIMESTAMP) AS START_DATE,
-    CAST('1998-01-01' AS TIMESTAMP) AS END_DATE,
+    cast('1998-07-01' as date) AS LOAD_DATETIME,
+    cast('1998-01-01' as date) AS EFFECTIVE_FROM,
+    cast('1998-01-01' as date) AS START_DATE,
+    cast('1998-01-01' as date) AS END_DATE,
     'TPCH_ORDERS' AS RECORD_SOURCE
     FROM source_data
 ),
