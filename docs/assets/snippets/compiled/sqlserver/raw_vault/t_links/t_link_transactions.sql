@@ -1,6 +1,6 @@
 WITH stage AS (
     SELECT TRANSACTION_HK, CUSTOMER_HK, ORDER_HK, o_orderdate, o_orderpriority, o_clerk, o_shippriority, o_comment, o_totalprice, o_orderstatus, EFFECTIVE_FROM, LOAD_DATETIME, RECORD_SOURCE
-    FROM "DBTVAULT_DEV"."TEST"."stg_transactions"
+    FROM "AUTOMATE_DV_TEST"."TEST"."stg_transactions"
     WHERE TRANSACTION_HK IS NOT NULL
     AND CUSTOMER_HK IS NOT NULL
     AND ORDER_HK IS NOT NULL

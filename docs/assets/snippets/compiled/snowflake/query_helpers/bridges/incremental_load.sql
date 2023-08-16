@@ -3,19 +3,15 @@ WITH as_of AS (
      FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
      WHERE a.AS_OF_DATE <= CURRENT_DATE()
 ),
-
 last_safe_load_datetime AS (
     SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
     FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT_DEV.TEST.STG_CUSTOMER_ORDER
-
             ) AS l
 ),
-
 as_of_grain_old_entries AS (
     SELECT DISTINCT AS_OF_DATE
     FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER
 ),
-
 as_of_grain_lost_entries AS (
     SELECT a.AS_OF_DATE
     FROM as_of_grain_old_entries AS a
@@ -23,7 +19,6 @@ as_of_grain_lost_entries AS (
         ON a.AS_OF_DATE = b.AS_OF_DATE
     WHERE b.AS_OF_DATE IS NULL
 ),
-
 as_of_grain_new_entries AS (
     SELECT a.AS_OF_DATE
     FROM as_of AS a
@@ -31,18 +26,15 @@ as_of_grain_new_entries AS (
         ON a.AS_OF_DATE = b.AS_OF_DATE
     WHERE b.AS_OF_DATE IS NULL
 ),
-
 min_date AS (
     SELECT min(AS_OF_DATE) AS MIN_DATE
     FROM as_of
 ),
-
 new_rows_pks AS (
     SELECT h.CUSTOMER_PK
     FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS h
     WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
 ),
-
 new_rows_as_of AS (
     SELECT AS_OF_DATE
     FROM as_of
@@ -51,7 +43,6 @@ new_rows_as_of AS (
     SELECT as_of_date
     FROM as_of_grain_new_entries
 ),
-
 overlap_pks AS (
     SELECT p.CUSTOMER_PK
     FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER AS p
@@ -61,7 +52,6 @@ overlap_pks AS (
         AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
         AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
 ),
-
 overlap_as_of AS (
     SELECT AS_OF_DATE
     FROM as_of AS p
@@ -69,7 +59,6 @@ overlap_as_of AS (
         AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
         AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
 ),
-
 overlap AS (
     SELECT
         a.CUSTOMER_PK,
@@ -86,7 +75,6 @@ overlap AS (
         ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
         AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
 ),
-
 new_rows AS (
     SELECT
         a.CUSTOMER_PK,
@@ -102,13 +90,11 @@ new_rows AS (
         ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
         AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
 ),
-
 all_rows AS (
     SELECT * FROM new_rows
     UNION ALL
     SELECT * FROM overlap
 ),
-
 candidate_rows AS (
     SELECT *,
         ROW_NUMBER() OVER (
@@ -120,7 +106,6 @@ candidate_rows AS (
     FROM all_rows
     QUALIFY row_num = 1
 ),
-
 bridge AS (
     SELECT
         c.CUSTOMER_PK,
@@ -128,5 +113,4 @@ bridge AS (
     FROM candidate_rows AS c
     WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
 )
-
 SELECT * FROM bridge

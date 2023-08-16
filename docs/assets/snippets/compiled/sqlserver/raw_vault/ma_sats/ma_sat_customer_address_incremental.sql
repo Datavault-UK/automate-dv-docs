@@ -1,6 +1,6 @@
     WITH source_data AS (
     SELECT DISTINCT s.CUSTOMER_HK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_PHONE_LOCATOR_ID, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATETIME, s.RECORD_SOURCE
-    FROM "DBTVAULT_DEV"."TEST"."stg_customer" AS s
+    FROM "AUTOMATE_DV_TEST"."TEST"."stg_customer" AS s
     WHERE s.CUSTOMER_HK IS NOT NULL
         AND s.CUSTOMER_PHONE IS NOT NULL
         AND s.CUSTOMER_PHONE_LOCATOR_ID IS NOT NULL
@@ -34,7 +34,7 @@ latest_records AS (
            RANK() OVER (PARTITION BY inner_mas.CUSTOMER_HK
                         ORDER BY inner_mas.LOAD_DATETIME DESC
            ) AS latest_rank
-    FROM "DBTVAULT_DEV"."TEST"."ma_sat_customer_address_incremental" AS inner_mas
+    FROM "AUTOMATE_DV_TEST"."TEST"."ma_sat_customer_address_incremental" AS inner_mas
     INNER JOIN (SELECT DISTINCT s.CUSTOMER_HK FROM source_data as s ) AS spk
         ON inner_mas.CUSTOMER_HK = spk.CUSTOMER_HK
     ) AS mas

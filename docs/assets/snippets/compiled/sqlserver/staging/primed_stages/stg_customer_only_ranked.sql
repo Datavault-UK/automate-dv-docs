@@ -8,7 +8,7 @@ WITH source_data AS (
     c_acctbal,
     c_mktsegment,
     c_comment
-    FROM "DBTVAULT_DEV"."TEST"."CUSTOMER"
+    FROM "AUTOMATE_DV_TEST"."TEST"."CUSTOMER"
 ),
 ranked_columns AS (
     SELECT *,

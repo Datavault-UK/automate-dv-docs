@@ -6,7 +6,7 @@ WITH row_rank_1 AS (
                    PARTITION BY rr.CUSTOMER_HK
                    ORDER BY rr.LOAD_DATETIME
                ) AS row_number
-        FROM "DBTVAULT_DEV"."TEST"."stg_customer" AS rr
+        FROM "AUTOMATE_DV_TEST"."TEST"."stg_customer" AS rr
         WHERE rr.CUSTOMER_HK IS NOT NULL
     ) h
     WHERE h.row_number = 1
@@ -19,7 +19,7 @@ row_rank_2 AS (
                    PARTITION BY rr.CUSTOMER_HK
                    ORDER BY rr.LOAD_DATETIME
                ) AS row_number
-        FROM "DBTVAULT_DEV"."TEST"."stg_orders" AS rr
+        FROM "AUTOMATE_DV_TEST"."TEST"."stg_orders" AS rr
         WHERE rr.CUSTOMER_HK IS NOT NULL
     ) h
     WHERE h.row_number = 1
@@ -45,7 +45,7 @@ row_rank_union AS (
 records_to_insert AS (
     SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATETIME, a.RECORD_SOURCE
     FROM row_rank_union AS a
-    LEFT JOIN "DBTVAULT_DEV"."TEST"."hub_orders_multi_source_incremental" AS d
+    LEFT JOIN "AUTOMATE_DV_TEST"."TEST"."hub_orders_multi_source_incremental" AS d
     ON a.CUSTOMER_HK = d.CUSTOMER_HK
     WHERE d.CUSTOMER_HK IS NULL
 )

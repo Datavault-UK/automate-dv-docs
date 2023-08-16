@@ -2,7 +2,6 @@ WITH as_of_dates AS (
     SELECT *
     FROM DBTVAULT.TEST.AS_OF_DATE AS a
 ),
-
 new_rows_as_of_dates AS (
     SELECT
         a.CUSTOMER_PK,
@@ -11,7 +10,6 @@ new_rows_as_of_dates AS (
     INNER JOIN as_of_dates AS b
     ON (1=1)
 ),
-
 new_rows AS (
     SELECT
         a.CUSTOMER_PK,
@@ -35,9 +33,7 @@ new_rows AS (
     GROUP BY
         a.CUSTOMER_PK, a.AS_OF_DATE
 ),
-
 pit AS (
     SELECT * FROM new_rows
 )
-
 SELECT DISTINCT * FROM pit

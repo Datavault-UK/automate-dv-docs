@@ -3,19 +3,16 @@ WITH satellite_a AS (
     FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
     WHERE CUSTOMER_PK IS NOT NULL
 ),
-
 satellite_b AS (
     SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
     FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
     WHERE CUSTOMER_PK IS NOT NULL
 ),
-
 union_satellites AS (
     SELECT * FROM satellite_a
     UNION ALL
     SELECT * FROM satellite_b
 ),
-
 records_to_insert AS (
     SELECT DISTINCT union_satellites.* FROM union_satellites
     LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
@@ -27,5 +24,4 @@ records_to_insert AS (
         AND d.LOAD_DATE IS NULL
         AND d.SATELLITE_NAME IS NULL
 )
-
 SELECT * FROM records_to_insert

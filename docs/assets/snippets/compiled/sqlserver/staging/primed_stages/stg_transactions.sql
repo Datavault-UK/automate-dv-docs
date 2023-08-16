@@ -9,7 +9,7 @@ WITH source_data AS (
     o_clerk,
     o_shippriority,
     o_comment
-    FROM `dbtvault-341416`.`dbtvault`.`ORDERS`
+    FROM "AUTOMATE_DV_TEST"."TEST"."ORDERS"
 ),
 derived_columns AS (
     SELECT
@@ -24,10 +24,10 @@ derived_columns AS (
     o_comment,
     o_custkey AS CUSTOMER_ID,
     o_orderkey AS ORDER_ID,
-    CAST('1998-07-01' AS DATETIME) AS LOAD_DATETIME,
-    CAST('1998-01-01' AS DATETIME) AS EFFECTIVE_FROM,
-    CAST('1998-01-01' AS DATETIME) AS START_DATE,
-    CAST('1998-01-01' AS DATETIME) AS END_DATE,
+    try_cast('1998-07-01' as date) AS LOAD_DATETIME,
+    try_cast('1998-01-01' as date) AS EFFECTIVE_FROM,
+    try_cast('1998-01-01' as date) AS START_DATE,
+    try_cast('1998-01-01' as date) AS END_DATE,
     'TPCH_ORDERS' AS RECORD_SOURCE
     FROM source_data
 ),
@@ -49,12 +49,12 @@ hashed_columns AS (
     START_DATE,
     END_DATE,
     RECORD_SOURCE,
-    CAST(UPPER(TO_HEX(MD5(NULLIF(CONCAT(
-        IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS STRING))), ''), '^^'), '||',
-        IFNULL(NULLIF(UPPER(TRIM(CAST(ORDER_ID AS STRING))), ''), '^^')
-    ), '^^||^^')))) AS STRING) AS TRANSACTION_HK,
-    CAST(UPPER(TO_HEX(MD5(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS STRING))), '')))) AS STRING) AS CUSTOMER_HK,
-    CAST(UPPER(TO_HEX(MD5(NULLIF(UPPER(TRIM(CAST(ORDER_ID AS STRING))), '')))) AS STRING) AS ORDER_HK
+    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(CONCAT(
+        ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(MAX)))), ''), '^^'), '||',
+        ISNULL(NULLIF(UPPER(TRIM(CAST(ORDER_ID AS VARCHAR(MAX)))), ''), '^^')
+    ), '^^||^^')), 2) AS TRANSACTION_HK,
+    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(MAX)))), '')), 2) AS CUSTOMER_HK,
+    CONVERT(BINARY(16), HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(ORDER_ID AS VARCHAR(MAX)))), '')), 2) AS ORDER_HK
     FROM derived_columns
 ),
 columns_to_select AS (

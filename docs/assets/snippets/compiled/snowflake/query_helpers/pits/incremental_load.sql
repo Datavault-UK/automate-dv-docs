@@ -2,7 +2,6 @@ WITH as_of_dates AS (
     SELECT *
     FROM DBTVAULT.TEST.AS_OF_DATE
 ),
-
 last_safe_load_datetime AS (
     SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
     FROM (
@@ -13,12 +12,10 @@ last_safe_load_datetime AS (
         SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
     ) a
 ),
-
 as_of_grain_old_entries AS (
     SELECT DISTINCT AS_OF_DATE
     FROM DBTVAULT.TEST.PIT_CUSTOMER
 ),
-
 as_of_grain_lost_entries AS (
     SELECT a.AS_OF_DATE
     FROM as_of_grain_old_entries AS a
@@ -26,7 +23,6 @@ as_of_grain_lost_entries AS (
         ON a.AS_OF_DATE = b.AS_OF_DATE
     WHERE b.AS_OF_DATE IS NULL
 ),
-
 as_of_grain_new_entries AS (
     SELECT a.AS_OF_DATE
     FROM as_of_dates AS a
@@ -34,24 +30,20 @@ as_of_grain_new_entries AS (
         ON a.AS_OF_DATE = b.AS_OF_DATE
     WHERE b.AS_OF_DATE IS NULL
 ),
-
 min_date AS (
     SELECT min(AS_OF_DATE) AS MIN_DATE
     FROM as_of_dates
 ),
-
 backfill_as_of AS (
     SELECT AS_OF_DATE
     FROM as_of_dates AS a
     WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
 ),
-
 new_rows_pks AS (
     SELECT a.CUSTOMER_PK
     FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
     WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
 ),
-
 new_rows_as_of AS (
     SELECT AS_OF_DATE
     FROM as_of_dates AS a
@@ -60,7 +52,6 @@ new_rows_as_of AS (
     SELECT AS_OF_DATE
     FROM as_of_grain_new_entries
 ),
-
 overlap AS (
     SELECT a.*
     FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
@@ -70,9 +61,7 @@ overlap AS (
         AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
         AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
 ),
-
 -- Back-fill any newly arrived hubs, set all historical pit dates to ghost records
-
 backfill_rows_as_of_dates AS (
     SELECT
         a.CUSTOMER_PK,
@@ -81,7 +70,6 @@ backfill_rows_as_of_dates AS (
     INNER JOIN backfill_as_of AS b
         ON (1=1 )
 ),
-
 backfill AS (
     SELECT
         a.CUSTOMER_PK,
@@ -105,7 +93,6 @@ backfill AS (
     GROUP BY
         a.CUSTOMER_PK, a.AS_OF_DATE
 ),
-
 new_rows_as_of_dates AS (
     SELECT
         a.CUSTOMER_PK,
@@ -114,7 +101,6 @@ new_rows_as_of_dates AS (
     INNER JOIN new_rows_as_of AS b
     ON (1=1)
 ),
-
 new_rows AS (
     SELECT
         a.CUSTOMER_PK,
@@ -138,7 +124,6 @@ new_rows AS (
     GROUP BY
         a.CUSTOMER_PK, a.AS_OF_DATE
 ),
-
 pit AS (
     SELECT * FROM new_rows
     UNION ALL
@@ -146,5 +131,4 @@ pit AS (
     UNION ALL
     SELECT * FROM backfill
 )
-
 SELECT DISTINCT * FROM pit

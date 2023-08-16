@@ -3,7 +3,6 @@ WITH as_of AS (
      FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
      WHERE a.AS_OF_DATE <= CURRENT_DATE()
 ),
-
 new_rows AS (
     SELECT
         a.CUSTOMER_PK,
@@ -19,11 +18,9 @@ new_rows AS (
         ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
         AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
 ),
-
 all_rows AS (
     SELECT * FROM new_rows
 ),
-
 candidate_rows AS (
     SELECT *,
         ROW_NUMBER() OVER (
@@ -35,7 +32,6 @@ candidate_rows AS (
     FROM all_rows
     QUALIFY row_num = 1
 ),
-
 bridge AS (
     SELECT
         c.CUSTOMER_PK,
@@ -43,5 +39,4 @@ bridge AS (
     FROM candidate_rows AS c
     WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
 )
-
 SELECT * FROM bridge
