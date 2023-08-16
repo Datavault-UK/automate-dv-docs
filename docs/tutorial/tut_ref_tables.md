@@ -64,11 +64,11 @@ of references being stored. AutomateDV implements a very generic approach to Ref
 
 #### Primary Key (src_pk)
 
-The primary for a reference table in most instances is a code which identifies the reference data. 
+The primary key for a reference table in most instances is a code which identifies the reference data. 
 In the Airport example above, this would be the `Code` column, which is the identifier for the Airport record. 
 
 !!! note
-    It is important to note here that the PK of a Reference table is not a hash key, it is the natural identifier for a reference data record.
+    It is important to note here that the PK of a Reference table is _**not**_ a hash key, it is the natural identifier for a reference data record.
 
 #### Extra Columns (src_extra_columns) - Optional
 
