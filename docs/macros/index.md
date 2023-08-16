@@ -739,7 +739,7 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/`sat`.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/sat.sql)
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/sat.sql)
 [![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/sat.sql)
@@ -760,7 +760,7 @@ Generates SQL to build a Satellite table using the provided parameters.
 
 | Parameter         | Description                                 | Type                | Required?                                         |
 |-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
-| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_pk            | Source primary key column                   | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
 | src_hashdiff      | Source hashdiff column                      | String              | :fontawesome-solid-circle-check:{ .required }     |
 | src_payload       | Source payload column(s)                    | List[String]        | :fontawesome-solid-circle-check:{ .required }     |
 | src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |

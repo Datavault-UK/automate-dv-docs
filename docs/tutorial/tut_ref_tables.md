@@ -15,7 +15,7 @@ A few examples of data that might belong in a reference table instead of a Hub i
 
 It is important to understand that a reference table is not necessarily always the best approach in storing a
 reference to this kind of data, and in some cases it may be more appropriate to model the data as a an attribute on a
-SSatellite.
+Satellite.
 
 This is usually the case when the attribute in question is related to a Hub you have already identified in a model.
 
@@ -64,11 +64,11 @@ of references being stored. AutomateDV implements a very generic approach to Ref
 
 #### Primary Key (src_pk)
 
-The primary for a reference table in most instances is a code which identifies the reference data. 
+The primary key for a reference table in most instances is a code which identifies the reference data. 
 In the Airport example above, this would be the `Code` column, which is the identifier for the Airport record. 
 
 !!! note
-    It is important to note here that the PK of a Reference table is not a hash key, it is the natural identifier for a reference data record.
+    It is important to note here that the PK of a Reference table is _**not**_ a hash key, it is the natural identifier for a reference data record.
 
 #### Extra Columns (src_extra_columns) - Optional
 
