@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
+___
+
 # [v0.10.0] - 2023-08-14
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.10.0)](https://automate-dv.readthedocs.io/en/v0.10.0/?badge=v0.10.0)
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
@@ -29,9 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Satellite loading limitations resolved :tada::tada::tada:
 
-    - [Migration Guide](../migration_guides.md#migrating-from-097-to-0100) 
-    - Updated [Loading Guide](../best_practises/loading.md#satellites) 
+- [Migration Guide](../migration_guides.md#migrating-from-097-to-0100) 
+- Updated [Loading Guide](../best_practises/loading.md#satellites) 
 
+
+___
 
 # [v0.9.7] - 2023-07-19
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.7)](https://automate-dv.readthedocs.io/en/v0.9.7/?badge=v0.9.7)
@@ -62,6 +66,8 @@ Satellite loading limitations resolved :tada::tada::tada:
 ### Postgres
 - Fixed a hashing length bug (#176)
 
+___
+
 # [v0.9.6] - 2023-05-16
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.6)](https://automate-dv.readthedocs.io/en/v0.9.6/?badge=v0.9.6)
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
@@ -72,6 +78,8 @@ Satellite loading limitations resolved :tada::tada::tada:
 
 - Macros are now called using `automate_dv` instead of `dbtvault`. e.g. `automate_dv.hub(...)`
 - The default `system_record_value` is now `AUTOMATE_DV_SYSTEM` instead of `DBTVAULT_SYSTEM`
+
+___
 
 # [v0.9.5] - 2023-03-22
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.5)](https://automate-dv.readthedocs.io/en/v0.9.5/?badge=v0.9.5)
@@ -91,7 +99,9 @@ Satellite loading limitations resolved :tada::tada::tada:
 ### Databricks
 - Fixed an issue related to #183 but for MD5 hashing in Databricks
 
-## [v0.9.4] - 2023-02-16
+___
+
+# [v0.9.4] - 2023-02-16
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.4)](https://automate-dv.readthedocs.io/en/v0.9.4/?badge=v0.9.4)
 
 This is a minor hotfix update. More bug fixes to come soon! :smile: 
@@ -100,7 +110,9 @@ This is a minor hotfix update. More bug fixes to come soon! :smile:
 
 - Binary type not defaulting correctly (Snowflake) (#183)
 
-## [v0.9.3] - 2023-01-27
+___
+
+# [v0.9.3] - 2023-01-27
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.3)](https://automate-dv.readthedocs.io/en/v0.9.3/?badge=v0.9.3)
 
 ## Fixes
@@ -115,7 +127,9 @@ This is a minor hotfix update. More bug fixes to come soon! :smile:
 
 Thank you to all those who were being patient for this release. The delay was due to us wanting to release this with a few other bug fixes and new features. This additional content is being released at a later date so that we could get this dbt-utils fix out to our community sooner.
 
-## [v0.9.2] - 2022-12-22
+___
+
+# [v0.9.2] - 2022-12-22
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.2)](https://automate-dv.readthedocs.io/en/v0.9.2/?badge=v0.9.2)
 
 ## Fixes
@@ -124,7 +138,9 @@ Thank you to all those who were being patient for this release. The delay was du
 
 In other news: Happy Holidays!
 
-## [v0.9.1] - 2022-12-16
+___
+
+# [v0.9.1] - 2022-12-16
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.1)](https://automate-dv.readthedocs.io/en/v0.9.1/?badge=v0.9.1)
 
 ## New 
@@ -177,7 +193,9 @@ Related issues:
 - Split best practises into separate pages for ease of navigation and to reduce clutter
 - Moved old release notes to a new "archived" releases page
 
-## [v0.9.0] - 2022-09-13
+___
+
+# [v0.9.0] - 2022-09-13
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.9.0)](https://automate-dv.readthedocs.io/en/v0.9.0/?badge=v0.9.0)
 
@@ -259,7 +277,9 @@ etc. (https://github.com/Datavault-UK/automate-dv/issues/114, https://github.com
 
 [View on GitHub](https://github.com/Datavault-UK/automate-dv/releases/tag/v0.9.0])
 
-## [v0.8.3] - 2022-05-10
+___
+
+# [v0.8.3] - 2022-05-10
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.3)](https://automate-dv.readthedocs.io/en/v0.8.3/?badge=v0.8.3)
 
@@ -288,7 +308,9 @@ All existing macros are now supported by all platforms!
 - Fixed an issue where hashed columns with lower-case columns provided to an `exclude_columns` config, behaved
   incorrectly ([#110](https://github.com/Datavault-UK/automate-dv/issues/110))
 
-## [v0.8.2] - 2022-03-14
+___
+
+# [v0.8.2] - 2022-03-14
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.2)](https://automate-dv.readthedocs.io/en/v0.8.2/?badge=v0.8.2)
 
@@ -312,7 +334,9 @@ See our [Platform support matrix](../macros/index.md#platform-support) for more 
 - Fixed `vault_insert_by_x` issues for MS SQL Server
 - Fixed (increased) datetime precision in `max_datetime` for Google BigQuery
 
-## [v0.8.1] - 2022-02-22
+___
+
+# [v0.8.1] - 2022-02-22
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.1)](https://automate-dv.readthedocs.io/en/v0.8.1/?badge=v0.8.1)
 
@@ -323,7 +347,9 @@ HOTFIX RELEASE
 - Fixed a bug where `vault_insert_by_rank` unintentionally used logic from `vault_insert_by_period` when in full-refresh
   mode or replacing an existing view.
 
-## [v0.8.0] - 2022-02-21
+___
+
+# [v0.8.0] - 2022-02-21
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.8.0)](https://automate-dv.readthedocs.io/en/v0.8.0/?badge=v0.8.0)
 
@@ -353,7 +379,9 @@ to you in the future!
   spaces, and other oddities.
   The type of quotes is configurable, please refer to the docs linked above.
 
-## [v0.7.9] - 2021-12-13
+___
+
+# [v0.7.9] - 2021-12-13
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.9)](https://automate-dv.readthedocs.io/en/v0.7.9/?badge=v0.7.9)
 
@@ -390,7 +418,9 @@ to you in the future!
 - Multi-Active Satellite record duplication under some
   circumstances [#50](https://github.com/Datavault-UK/automate-dv/issues/50)
 
-## [v0.7.8] - 2021-10-25
+___
+
+# [v0.7.8] - 2021-10-25
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.8)](https://automate-dv.readthedocs.io/en/v0.7.8/?badge=v0.7.8)
 
@@ -420,7 +450,9 @@ to you in the future!
 - Concatenation string can now be user defined
 - Null placeholder string can now be user defined
 
-## [v0.7.7] - 2021-08-24
+___
+
+# [v0.7.7] - 2021-08-24
 
 - Re-release of v0.7.6.1 to ensure deployment to dbt Hub
 
@@ -439,14 +471,18 @@ packages:
     revision: v0.7.6.1
 ```
 
-## [v0.7.6] - 2021-07-13
+___
+
+# [v0.7.6] - 2021-07-13
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.6)](https://automate-dv.readthedocs.io/en/v0.7.6/?badge=v0.7.6)
 
 - Updated to dbt 0.20.0 and incorporated `adapter.dispatch`
   changes [(#32)](https://github.com/Datavault-UK/automate-dv/issues/32)
 
-## [v0.7.5] - 2021-06-10
+___
+
+# [v0.7.5] - 2021-06-10
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.5)](https://automate-dv.readthedocs.io/en/v0.7.5/?badge=v0.7.5)
 
@@ -467,7 +503,9 @@ packages:
 - Performance improvement for the Satellite macro, which aims to reduce the number of records handled in the
   initial selection of records from the source data.
 
-## [v0.7.4] - 2021-03-27
+___
+
+# [v0.7.4] - 2021-03-27
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.4)](https://automate-dv.readthedocs.io/en/v0.7.4/?badge=v0.7.4)
 
@@ -490,7 +528,9 @@ packages:
 - Payload in Transactional (Non-Historised) Links now optional
 - Effective From in Satellites now optional
 
-## [v0.7.3] - 2021-01-28
+___
+
+# [v0.7.3] - 2021-01-28
 
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.3)](https://automate-dv.readthedocs.io/en/v0.7.3/?badge=v0.7.3)
 

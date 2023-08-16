@@ -5,7 +5,9 @@ These releases are so old now, we'd rather you did not use them! They are archiv
 [View Stable Releases](index.md){ .md-button .md-button--primary }
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 
-## [v0.7.2] - 2021-01-26
+#___
+
+# [v0.7.2] - 2021-01-26
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.2)](https://automate-dv.readthedocs.io/en/v0.7.2/?badge=v0.7.2)
 
 ### New
@@ -40,7 +42,9 @@ These releases are so old now, we'd rather you did not use them! They are archiv
 - Added a short guide on [extending AutomateDV](../extending.md)
 - Updated all SQL snippets to reflect changes
 
-## [v0.7.1] - 2020-12-18
+#___
+
+# [v0.7.1] - 2020-12-18
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.1)](https://automate-dv.readthedocs.io/en/v0.7.1/?badge=v0.7.1)
 
 ### New
@@ -73,7 +77,9 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - dbt_utils dependency is now explicit [Issue #15](https://github.com/Datavault-UK/automate-dv/issues/15)
 
-## [v0.7.0] - 2020-09-25
+#___
+
+# [v0.7.0] - 2020-09-25
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.7.0)](https://automate-dv.readthedocs.io/en/v0.7.0/?badge=v0.7.0)
 
 ### New
@@ -98,7 +104,9 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - Support for dbt versions prior to v0.18.0 [Upgrading to v0.18.0](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-18-0/)
 
-## [v0.6.2] - 2020-08-06
+#___
+
+# [v0.6.2] - 2020-08-06
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.6.2)](https://automate-dv.readthedocs.io/en/v0.6.2/?badge=v0.6.2)
 
 ### Fixed
@@ -113,7 +121,9 @@ Guidance will be released for alternatives to model-scoped `dbt_project.yml` var
 
 Read more about the [config-version](https://docs.getdbt.com/docs/guides/migration-guide/upgrading-to-0-17-0/) setting.
 
-## [v0.6.1] - 2020-06-24
+#___
+
+# [v0.6.1] - 2020-06-24
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.6.1)](https://automate-dv.readthedocs.io/en/v0.6.1/?badge=v0.6.1)
 
 ### Added
@@ -193,7 +203,9 @@ Read [Migrating from v0.4](https://automate-dv.readthedocs.io/en/v0.7.6/migratio
 - Hashing a single column which contains a `NULL` value now works as intended (related to: [hash](../macros/index.md#hash-macro), 
 _**multi_hash**_, [staging](../macros/index.md#staging-macros)).   
 
-## [v0.4.1] - 2020-01-08
+#___
+
+# [v0.4.1] - 2020-01-08
 
 ### Added
 

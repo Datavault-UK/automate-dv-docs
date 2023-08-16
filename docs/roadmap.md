@@ -22,7 +22,6 @@ In future releases, we hope to include the following:
 - Status Tracking Satellites
 - Record Tracking Satellites
 - Improved support for loading Data Vault 2.0 structures
-- Reference Tables
 - Mart loading helpers
 - And more!
 
