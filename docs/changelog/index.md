@@ -334,7 +334,7 @@ See our [Platform support matrix](../macros/index.md#platform-support) for more 
 - Fixed `vault_insert_by_x` issues for MS SQL Server
 - Fixed (increased) datetime precision in `max_datetime` for Google BigQuery
 
-#___
+___
 
 # [v0.8.1] - 2022-02-22
 
@@ -347,7 +347,7 @@ HOTFIX RELEASE
 - Fixed a bug where `vault_insert_by_rank` unintentionally used logic from `vault_insert_by_period` when in full-refresh
   mode or replacing an existing view.
 
-#___
+___
 
 # [v0.8.0] - 2022-02-21
 
@@ -379,7 +379,7 @@ to you in the future!
   spaces, and other oddities.
   The type of quotes is configurable, please refer to the docs linked above.
 
-#___
+___
 
 # [v0.7.9] - 2021-12-13
 
@@ -418,7 +418,7 @@ to you in the future!
 - Multi-Active Satellite record duplication under some
   circumstances [#50](https://github.com/Datavault-UK/automate-dv/issues/50)
 
-#___
+___
 
 # [v0.7.8] - 2021-10-25
 
@@ -450,7 +450,7 @@ to you in the future!
 - Concatenation string can now be user defined
 - Null placeholder string can now be user defined
 
-#___
+___
 
 # [v0.7.7] - 2021-08-24
 
@@ -471,7 +471,7 @@ packages:
     revision: v0.7.6.1
 ```
 
-#___
+___
 
 # [v0.7.6] - 2021-07-13
 
@@ -480,7 +480,7 @@ packages:
 - Updated to dbt 0.20.0 and incorporated `adapter.dispatch`
   changes [(#32)](https://github.com/Datavault-UK/automate-dv/issues/32)
 
-#___
+___
 
 # [v0.7.5] - 2021-06-10
 
@@ -503,7 +503,7 @@ packages:
 - Performance improvement for the Satellite macro, which aims to reduce the number of records handled in the
   initial selection of records from the source data.
 
-#___
+___
 
 # [v0.7.4] - 2021-03-27
 
@@ -528,7 +528,7 @@ packages:
 - Payload in Transactional (Non-Historised) Links now optional
 - Effective From in Satellites now optional
 
-#___
+___
 
 # [v0.7.3] - 2021-01-28
 
