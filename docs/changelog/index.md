@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ___
 
-# [v0.10.1] - 2023-08-25
+# [v0.10.1] - 2023-08-28
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.10.1)](https://automate-dv.readthedocs.io/en/v0.10.0/?badge=v0.10.0)
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
 
