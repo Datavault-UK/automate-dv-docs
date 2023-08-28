@@ -172,7 +172,7 @@ The below tables describe what a ghost record will look like:
     | 000000...   | 000000... | _NULL_        | _NULL_       | _NULL_         | 1900-01-01 00:00:00 | 1900-01-01 00:00:00 | AUTOMATE_DV_SYSTEM |
 
 !!! note "Ghost record source code"
-    Check out how this works [under-the-hood](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/supporting/ghost_records/create_ghost_record.sql)
+    Check out how this works [under-the-hood](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/supporting/ghost_records/create_ghost_record.sql)
 
 #### enable_ghost_records
 
@@ -305,11 +305,11 @@ for your Data Vault 2.0 Data Warehouse.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/hub.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/hub.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/hub.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/hub.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/hub.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/hub.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/hub.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/hub.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/hub.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -480,11 +480,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/link.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/link.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
@@ -652,11 +652,11 @@ ___
 
 ### t_link
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/t_link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/t_link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/t_link.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/t_link.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/t_link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/t_link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/t_link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/t_link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/t_link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/t_link.sql)
 
 Generates SQL to build a Transactional Link table using the provided parameters.
 
@@ -767,11 +767,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/`sat`.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/sat.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/sat.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/`sat`.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
@@ -988,14 +988,6 @@ This section covers global variables ([var](https://docs.getdbt.com/docs/build/p
         --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_ghost_incremental.sql"
         ```
 
-#### Ghost records
-
-Ghost Records are system-generated records which are added to Satellites to provide equi-join performance in PIT tables
-downstream. AutomateDV will generate ghost records if the [global variable](#ghost-record-configuration) is set to `true`.
-
-!!! tip "New in v0.9.1"
-    Ghost Records are here!
-
 #### Hashdiff Aliasing
 
 If you have multiple Satellites using a single stage as its data source, then you will need to
@@ -1045,11 +1037,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/eff_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/eff_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/eff_sat.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/eff_sat.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/eff_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/eff_sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/eff_sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
@@ -1224,11 +1216,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/ma_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/ma_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/ma_sat.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/ma_sat.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/ma_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/ma_sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/ma_sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
@@ -1338,11 +1330,11 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/xts.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/xts.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/xts.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/xts.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/xts.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/xts.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/xts.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/xts.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/xts.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
@@ -1447,11 +1439,11 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/pit.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/pit.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/pit.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/pit.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/pit.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/pit.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/pit.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/pit.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/pit.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/pit.sql)
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -1542,11 +1534,11 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/snowflake/bridge.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/bigquery/bridge.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/sqlserver/bridge.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/databricks/bridge.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/tables/postgres/bridge.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/snowflake/bridge.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/bigquery/bridge.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/bridge.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/bridge.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/bridge.sql)
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
