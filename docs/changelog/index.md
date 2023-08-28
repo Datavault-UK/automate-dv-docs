@@ -24,7 +24,7 @@ ___
 - Fixed the case where repeating a load would cause duplicates when using the Satellites as released in 0.10.0 (#207)
   - Implemented as a new Behaviour Flag for Satellites `apply_source_filter` 
     - [Read more in loading best practises](../best_practises/loading.md#the-apply_source_filter-config-option)
-    - [Read more on sat() macro Behaviour Flags](../best_practises/loading.md#the-apply_source_filter-config-option)
+    - [Read more on sat() macro Behaviour Flags](../macros/#satellite-behaviour-flags)
 
 ___
 
