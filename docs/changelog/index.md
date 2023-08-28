@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ___
 
+# [v0.10.1] - 2023-08-28
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.10.1)](https://automate-dv.readthedocs.io/en/v0.10.0/?badge=v0.10.0)
+[![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
+
+## Fixes 
+
+### All Platforms
+
+- Fixed the case where repeating a load would cause duplicates when using the Satellites as released in 0.10.0 (#207)
+  - Implemented as a new Behaviour Flag for Satellites `apply_source_filter` 
+    - [Read more in loading best practises](../best_practises/loading.md#the-apply_source_filter-config-option)
+    - [Read more on sat() macro Behaviour Flags](../macros/#satellite-behaviour-flags)
+
+___
+
 # [v0.10.0] - 2023-08-14
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.10.0)](https://automate-dv.readthedocs.io/en/v0.10.0/?badge=v0.10.0)
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
@@ -21,7 +36,7 @@ ___
 
 ### All Platforms
 
-- Reference Tables ([ref_table](../macros/index.md#ref_table)) 
+- Reference Tables ([ref_table macro](../macros/index.md#ref_table)) 
 
     - [Tutorial](../tutorial/tut_ref_tables.md)
 

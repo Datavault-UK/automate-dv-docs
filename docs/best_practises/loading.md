@@ -54,6 +54,66 @@ If the first record is the same as the latest Satellite record, then by definiti
 The first record in the batch will not be inserted if it is the same as the latest in the existing Satellite.
 
 
+### Assumptions made by AutomateDV
+
+!!! note 
+    These assumptions really only affect Satellites, or any other structures which rely on tracking changes over time (history).
+
+The AutomateDV macros are intended for use alongside the Data Vault standard loading approach which assumes a batch contains delta feeds only.
+
+A load may contain multiple 'batches', i.e. multiple days of data (groups of records with the same LDTS) and even intra-day feeds where
+you may get multiple days of data, where each day contains multiple changes to each record for a given PK/HK.
+
+Since AutomateDV v0.10.0 the above scenarios are accounted for, and we have added further guardrails and loading versatility to Satellites (no inta-day prior to v0.10.0).
+
+THis said, it is still highly recommended to still ensure delta/atomic feeds of data from your stage. Apart from causing unpredictable results, it will also incur a hit to performance 
+to load all data in every load. 
+
+#### The `apply_source_filter` config option
+
+!!! tip "New in v0.10.1"
+
+If it cannot be guaranteed that a load contains **_new_** deltas (i.e. data which has not been loaded before) then we recommend enabling the
+`apply_source_filter` config in your Satellites. This is done on a per-satellite basis if using config blocks, or can be applied to all Satellites
+using YAML configs (see the [dbt docs](https://docs.getdbt.com/reference/model-configs#configuring-models)).
+
+This will add an additional guardrail (to those added in v0.10.0) which will filter the data coming from the `source_model` during **_incremental loads_**.
+
+Please note, that though convenient, this is not a substitution for designing your loading and staging approach correctly and using this
+config option **_may_** incur performance penalties due to the additional JOIN logic.
+
+```sql
+-- Code simplified for brevity
+-- All PK checks will have multiple checks for each PK if src_pk is a list (composite PK)
+...,
+
+valid_stg AS (
+    SELECT s.*
+    FROM source_data AS s
+    LEFT JOIN latest_records AS sat
+    ON s.pk = sat.pk 
+    WHERE sat.CUSTOMER_PK IS NULL
+    OR s.LOAD_DATE > (
+        SELECT MAX(LOAD_DATE) FROM latest_records AS sat
+        WHERE sat.pk = s.pk 
+    )
+),
+
+...
+```
+
+It is important to note that this ensures **_new and unseen_** records are always loaded, whilst ignoring records already loaded 
+(i.e. records prior to the MAX LDTS of the existing Satellite records).
+
+##### Incremental predicates
+
+You may have noticed this is similar to dbt's built-in [incremental predicates](https://docs.getdbt.com/docs/build/incremental-models#about-incremental_predicates)
+and you would be correct. We've added this as a convenience option for our users. 
+
+Though enabling `apply_source_filter` is more convenient, you may see better performance using incremental predicates instead, as dbt filters the data in the DML (MERGE statement) 
+prior to the model accessing the data from its SELECT.
+
+
 ## Load Date/Timestamp Value
 
 The Load Date/Timestamp (universally in AutomateDV, the src_ldts parameter) is important for audit purposes and allows us to track what we knew when.

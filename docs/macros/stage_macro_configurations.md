@@ -271,9 +271,6 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 
 ### Escaping column names that are not SQL compliant
 
-!!! note
-    As of AutomateDV 0.9.1, columns are **_not_** escaped by default. 
-
 To enable the escaping functionality, a mapping of the source column name and an escape flag must be provided.
 Alternatively, for computed derived columns, escape characters can be explicitly coded within the function itself.
 
