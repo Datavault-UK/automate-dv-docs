@@ -99,7 +99,7 @@ characters: '`^^`'
 
 #### hash_content_casing
 
-This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hashing.
+This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hash value.
 
 This can be one of:
 
@@ -129,16 +129,11 @@ This can be one of:
         CAST((MD5_BINARY(NULLIF(TRIM(CAST(CUSTOMER_ID AS VARCHAR)), ''))) AS BINARY(16)) AS CUSTOMER_HK
         ```
 
-!!! tip "New in v0.9.1"
-    We've added this config to give you more options when hashing. If there is logic difference between uppercase
+!!! info
+    We've added this config to give you more options when hashing. If there is logical difference between uppercase
     and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
 
 ### Ghost Record configuration
-
-!!! tip "New in v0.9.1"
-    Ghost Records are here! This is our first iteration of Ghost Records functionality. Please give us feedback on
-    GitHub or Slack :smile:
-
 
 ```yaml
 vars:
@@ -146,11 +141,44 @@ vars:
   system_record_value: 'AUTOMATE_DV_SYSTEM'
 ```
 
+#### How Ghost Records work
+
+In the Data Vault standards, ghost records are intended to provide equi-join capabilities for PIT tables when queries on a satellite
+at a point in time would otherwise return no records. Instead of having to handle NULLs and incur performance penalties for joins which
+do not return records, the ghost record is a single record inserted into a Satellite upon its first creation which can be used instead.
+
+In AutomateDV this is implemented as an optional CTE which only gets created in the above circumstances and when the `enable_ghost_records` global variable is set to `true`.
+
+A Ghost Record does not inherently mean anything (it is for performance only), and so the value of each column is set to `NULL` or a sensible meaningless value. 
+
+The below tables describe what a ghost record will look like:
+
+=== "Parameters"
+
+    | Parameter                        | Value                            |
+    |----------------------------------|----------------------------------|
+    | src_pk Binary MD5/SHA256)        | 0000..(x32) / 0000..(x64)        |
+    | src_hashdiff (Binary MD5/SHA256) | 0000..(x32) / 0000..(x64)        |
+    | src_payload (Any)                | NULL                             |
+    | src_extra_columns (Any)          | NULL                             |
+    | src_eff (Date/Timestamp)         | 1900-01-01 / 1900-01-01 00:00:00 |
+    | src_ldts (Date/Timestamp)        | 1900-01-01 / 1900-01-01 00:00:00 |
+    | src_source (String)              | AUTOMATE_DV_SYSTEM (default)     |
+
+=== "Data"
+
+    | CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE | EFFECTIVE_FROM      | LOAD_DATETIME       | RECORD_SOURCE      |
+    |-------------|-----------|---------------|--------------|----------------|---------------------|---------------------|--------------------|
+    | 000000...   | 000000... | _NULL_        | _NULL_       | _NULL_         | 1900-01-01 00:00:00 | 1900-01-01 00:00:00 | AUTOMATE_DV_SYSTEM |
+
+!!! note "Ghost record source code"
+    Check out how this works [under-the-hood](https://github.com/Datavault-UK/automate-dv/blob/v0.9.7/macros/supporting/ghost_records/create_ghost_record.sql)
+
 #### enable_ghost_records
 
 Enable the use of ghost records in your project. This can either be true or false, `true` will enable the configuration and `false` will disable it.
 
-This will insert a ghost record to a satellite table whether it is a new table or pre-loaded. 
+This will insert a ghost record to a satellite table whether it is a new table or pre-existing. 
 
 Before adding the ghost record, the satellite macro will check there is not already one loaded.
 
@@ -159,10 +187,10 @@ Before adding the ghost record, the satellite macro will check there is not alre
 
 #### system_record_value
 
-This will set the record source system for the ghost record. The default is 'AUTOMATE_DV_SYSTEM' and can be changed to any string.
+This will set the record source system for the ghost record. The default is `AUTOMATE_DV_SYSTEM` and can be changed to any string.
 
 !!! note
-    If this is changed on an existing project, the source system of already loaded ghost records will not be changed.
+    If this is changed on an existing project, the source system of already loaded ghost records will not be changed unless you `--full-refresh`.
 
 ### NULL Key configurations
 
@@ -774,6 +802,55 @@ Generates SQL to build a Satellite table using the provided parameters.
 
 !!! tip
     [Read the tutorial](../tutorial/tut_satellites.md) for more details
+
+#### Satellite Behaviour Flags
+
+This section covers global variables ([var](https://docs.getdbt.com/docs/build/project-variables)) and [config](https://docs.getdbt.com/reference/model-configs#configuring-models) options that affect the behaviour of satellites.
+
+| Parameter            | Description                                             | Type    | Flag type | Required?                                         |
+|----------------------|---------------------------------------------------------|---------|-----------|---------------------------------------------------|
+| apply_source_filter  | Adds additional logic to filter the `source_model` data | Boolean | config    | :fontawesome-solid-circle-minus:{ .not-required } |
+| enable_ghost_records | Adds a single ghost record to the satellite             | Boolean | var       | :fontawesome-solid-circle-minus:{ .not-required } |
+
+
+=== "apply_source_filter (config)"
+
+    !!! tip "Added in v0.10.1"
+    
+    This config option adds a WHERE clause (in incremental mode) using an additional CTE in the SQL code to filter the `source_model`'s data
+    
+    This ensures that records in the source data are filtered so that only records with `src_ldts` after the MAX ldts in the existing Satellite
+    are processed during the satellite load.
+    
+    **It is intended for this config option to be used if you cannot guarantee atomic/idempotent batches i.e. only data which has not been loaded yet in your stage data.**
+
+    === "Example (model file)"
+    
+        ```sql
+
+        -- sat_customer_details.sql
+        {{
+          config(
+            apply_source_filter = true
+          )
+        }}
+
+        {% set src_pk = ... %}
+        ...
+
+        {{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                           src_extra_columns=src_extra_columns,
+                           src_eff=src_eff, src_ldts=src_ldts, 
+                           src_source=src_source, source_model=source_model) }}
+        
+        ```
+    
+=== "enable_ghost_records (var)"
+
+    This global variable option enables additional logic to add a ghost record **_upon first creation_** OR **_once when running in incremental mode_** 
+    if a ghost record has not already been added.
+    
+    [Read more](#ghost-record-configuration) about ghost records. 
 
 #### Example Metadata
 
@@ -1816,7 +1893,7 @@ Generates SQL to build a staging area using the provided parameters.
 
 ### Stage Macro Configurations
 
-[Navigate to our dedicated Stage Macro page](stage_macro_configurations.md)
+[Stage Macro In-Depth](stage_macro_configurations.md){: .md-button .md-button--primary .btn }
 
 ## Supporting Macros
 
