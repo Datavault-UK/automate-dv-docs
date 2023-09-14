@@ -123,7 +123,7 @@ This audit column records when the record was first loaded into the database.
 The Load Date/Timestamp should be the same for every record loaded in a batch, for every table loaded - this means that if 5 tables are being loaded in parallel, 
 they should all have the same value for ldts. It is not correct to have the time that the model (sql file) itself gets executed as it will cause problems for audit. 
 
-THe above information explains why using something like `CURRENT_TIMESTAMP` - though seemingly a good idea at first - does not make sense for the LDTS value. 
+The above information explains why using something like `CURRENT_TIMESTAMP` - though seemingly a good idea at first - does not make sense for the LDTS value. 
 
 Ideally, you should set it to a record generated from your ingestion tool of choice. For example when using Fivetran, it is often sensible to use `_FIVETRAN_SYNCED`.
 
