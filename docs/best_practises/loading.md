@@ -116,20 +116,42 @@ prior to the model accessing the data from its SELECT.
 
 ## Load Date/Timestamp Value
 
-The Load Date/Timestamp (universally in AutomateDV, the src_ldts parameter) is important for audit purposes and allows us to track what we knew when.
+The Load Date/Timestamp (universally in AutomateDV, the `src_ldts` parameter) is important for audit purposes and allows us to track what we knew when.
 
 This audit column records when the record was first loaded into the database. 
 
-Ideally, you should set it to a record available in the source data. For example when using Fivetran, it is often sensible to use `_FIVETRAN_SYNCED`.
+The Load Date/Timestamp should be the same for every record loaded in a batch, for every table loaded - this means that if 5 tables are being loaded in parallel, 
+they should all have the same value for ldts. It is not correct to have the time that the model (sql file) itself gets executed as it will cause problems for audit. 
 
-Otherwise, we recommend using [dbt's `run_started_at` variable](https://docs.getdbt.com/reference/dbt-jinja-functions/run_started_at) as 
-the value for your derived column. Please see an example below.
+The above information explains why using something like `CURRENT_TIMESTAMP` - though seemingly a good idea at first - does not make sense for the LDTS value. 
+
+Ideally, you should set it to a record generated from your ingestion tool of choice. For example when using Fivetran, it is often sensible to use `_FIVETRAN_SYNCED`.
+
+Otherwise, we recommend using the [dbt's `run_started_at` variable](https://docs.getdbt.com/reference/dbt-jinja-functions/run_started_at) as 
+the value for your derived column. This variable provides the time when a dbt run started.
+
+
+
+Please see an example below.
 
 ```yaml
 source_model: MY_STAGE
 derived_columns:
   LOAD_DATETIME: TO_TIMESTAMP('{{ run_started_at.strftime("%Y-%m-%d %H:%M:%S.%f") }}')
 ```
+
+## Applied Date (Effectivity Date / Effective From)
+
+This column (`src_eff` in macros where this applies) is the business-effective date of a record. 
+
+This is different from the Load Date. The Applied Date is when the real-world event represented by a record took place, 
+examples include ORDER_DATE, FLIGHT_DATETIME and more. Including this in Satellites, for example, is optional and is not
+used in any of the loading logic; it is for processing in business rules and the presentation layer downstream where 
+Bi-temporarily (having two timelines; when it happened src_eff - and when we knew it - src_ldts) is important to the 
+business.
+
+It is important to not 'invent' the Applied Date. Only include an applied date in relevant objects where data already 
+exists in the source system feeding that object.
 
 ## Record source table code
 
