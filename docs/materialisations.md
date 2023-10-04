@@ -224,7 +224,7 @@ Example incremental logic containing a `LEFT OUTER JOIN` (taken from AutomateDV'
 === "hub Macro LEFT OUTER JOIN"
 
     ```jinja
-    {%- if is_incremental() %}
+    {%- if dbtvault.is_any_incremental() %}
     LEFT JOIN {{ this }} AS d
     ON a.CUSTOMER_HK = d.CUSTOMER_HK
     WHERE d.CUSTOMER_HK IS NULL
