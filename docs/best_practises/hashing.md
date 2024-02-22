@@ -11,7 +11,7 @@ of a clash: where two different values generate the same hash value
 
 For this reason, it **should not be** used for cryptographic purposes either.
 
-You can however, choose between MD5 and SHA-256 in
+You can however, choose between MD5 (`md5`), SHA-1 (`sha1`) and SHA-256 (`sha`) in
 AutomateDV, [read below](#choosing-a-hashing-algorithm), which will help with reducing the
 possibility of collision in larger data sets.
 
@@ -200,11 +200,10 @@ The highlighted lines show the syntax required to alias a column named `CUSTOMER
 
 ### Choosing a hashing algorithm
 
-You may choose between `MD5` and `SHA-256` hashing. `SHA-256` is an option for users who wish to reduce the hashing
-collision rates in larger data sets.
+You may choose between different types of hashing algorithm. Using a SHA-type algorithm 
+is an option for users who wish to reduce the hashing collision rates in larger data sets.
 
 !!! note
-
     If a hashing algorithm configuration is missing or invalid, AutomateDV will use `MD5` by default. 
 
 Configuring the hashing algorithm which will be used by AutomateDV is simple: add a global variable to your
@@ -231,11 +230,41 @@ Configuring the hashing algorithm which will be used by AutomateDV is simple: ad
       - "dbt_modules"
     
     vars:
-      hash: SHA # or MD5
+      hash: SHA # or other options below
     ```
+## Configuring
 
-It is possible to configure a hashing algorithm on a model-by-model basis using the hierarchical structure of the `yaml`
-file. We recommend you keep the hashing algorithm consistent across all tables, however, as per best practice.
+### Hashing by Platform
+
+|              | Support & Output Type                                          |                                                                    |                                                                |
+|--------------|:---------------------------------------------------------------|--------------------------------------------------------------------|----------------------------------------------------------------|
+| **Platform** | MD5                                                            | SHA-1                                                              | SHA-256                                                        |
+| Snowflake    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16)    | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20)    | :fontawesome-solid-circle-check:{ .required } \| BINARY(32)    |
+| Databricks   | :fontawesome-solid-circle-check:{ .required } \| VARCHAR(16)** | :fontawesome-solid-circle-check:{ .required }     \| VARCHAR(20)** | :fontawesome-solid-circle-check:{ .required } \| VARCHAR(32)** |
+| BigQuery     | :fontawesome-solid-circle-check:{ .required } \| STRING**      | :fontawesome-solid-circle-check:{ .required }     \| STRING**      | :fontawesome-solid-circle-check:{ .required } \| STRING**      |
+| SQLServer    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16)    | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20)    | :fontawesome-solid-circle-check:{ .required } \| BINARY(32)    |
+| Postgres     | :fontawesome-solid-circle-check:{ .required } \| BYTEA         | :fontawesome-solid-circle-minus:{ .not-required }*                 | :fontawesome-solid-circle-check:{ .required } \| BYTEA         |  
+ 
+!!! info
+    \*SHA-1 Hashing is not supported on Postgres due to needing the pgcrypto extension to implement it fully.  
+    \*\*We are aware that STRING/VARCHAR hashes are suboptimal and are actively working on a solution.
+
+### Options
+
+| MD5   | SHA-1  | SHA-256 |
+|-------|--------|---------|
+| `md5` | `sha1` | `sha`   |
+
+
+!!! info
+    These values are case insensitive, e.g. both `sha1` and `SHA1` will work. 
+
+### Configuring specific models
+
+It is possible to configure a hashing algorithm at a more targeted scope rather than globally, 
+using the hierarchical structure of the dbt `yaml` configurations. 
+
+This is not recommended, and instead we recommend keeping the hash algorithm consistent across all models, as per best practice.
 
 Read the [dbt documentation](https://docs.getdbt.com/reference/dbt-jinja-functions/var) for further information on
 variable scoping.
@@ -244,7 +273,8 @@ variable scoping.
 
     Stick with your chosen algorithm unless you can afford to full-refresh, and you still have access to source
     data. Changing between hashing configurations when data has already been loaded will require a full-refresh of your
-    models in order to re-calculate all hashes.
+    models in order to re-calculate all hashes. In production, migration is possible but more complex and must be 
+    handled with care.
 
 ### Configuring hash strings
 
@@ -276,7 +306,7 @@ The strings can be changed by the user, and this is achieved in the same way as 
     ), '##!!##!!##')) AS BINARY(16)) AS CUSTOMER_HK
     ```
 
-### The future of hashing in AutomateDV
+## The future of hashing in AutomateDV
 
 We plan to provide users with the ability to disable hashing entirely.
 

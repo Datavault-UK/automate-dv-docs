@@ -73,6 +73,7 @@ nav:
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
   - dbt Compatibility: 'versions.md'
+  - Platform Support: 'platform_support.md'
   - Changelog:
       - Stable Releases: 'changelog/index.md'
       - Beta Releases: 'changelog/beta.md'
