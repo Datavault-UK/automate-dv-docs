@@ -257,7 +257,7 @@ Configuring the hashing algorithm which will be used by AutomateDV is simple: ad
 
 
 !!! info
-    These values are case insensitive, e.g. both `sha1` and `SHA1` will work. 
+    These values are case-insensitive, e.g. both `sha1` and `SHA1` will work. 
 
 ### Configuring specific models
 
