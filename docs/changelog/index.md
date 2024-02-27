@@ -13,6 +13,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ___
 
+# [v0.10.2] - 2024-02-27
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.10.2)](https://automate-dv.readthedocs.io/en/v0.10.2/?badge=v0.10.2)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.3%20%3C%3D1.7.x-orange?logo=dbt)
+
+## New
+
+### dbt Versions
+
+:+1: Officially tested on dbt 1.7.x
+
+### All Platforms
+
+- A new SHA-1 Hashing option is now available for all platforms!* [docs](../best_practises/hashing.md#configuring)
+
+###### *Not available on Postgres due to requiring pgcrypto extension
+
+## Fixed
+
+### All Platforms
+
+- Fixed an issue where the payload-exclusion feature was not enable for payload definitions in Multi-Active Satellites (#217)
+- Fixed an issue where in some cases duplicates would be loaded into Satellites (#221)
+
+### SQLServer/Postgres
+
+- Fixed multiple SQL code case inconsistencies causing compilation issues in SQLServer (#211, #209)
+
+
+## Notes
+
+- dbt SQLServer 1.7.x has caused the `vault_insert_by_x` materialisations provided by AutomateDV to behave inconsistently - both materialisations have been temporarily disabled in SQLServer _**only**_ and will raise an error, and output an error message when used on SQLServer _**only**_.
+
+___
+
 # [v0.10.1] - 2023-08-28
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.10.1)](https://automate-dv.readthedocs.io/en/v0.10.0/?badge=v0.10.0)
 [![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.3%20%3C=1.4.x-orange?logo=dbt)](https://dbtvault.readthedocs.io/en/latest/versions/)
@@ -24,7 +58,7 @@ ___
 - Fixed the case where repeating a load would cause duplicates when using the Satellites as released in 0.10.0 (#207)
   - Implemented as a new Behaviour Flag for Satellites `apply_source_filter` 
     - [Read more in loading best practises](../best_practises/loading.md#the-apply_source_filter-config-option)
-    - [Read more on sat() macro Behaviour Flags](../macros/#satellite-behaviour-flags)
+    - [Read more on sat() macro Behaviour Flags](../macros/index.md/#satellite-behaviour-flags)
 
 ___
 
