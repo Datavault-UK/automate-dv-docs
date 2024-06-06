@@ -72,6 +72,7 @@ vars:
   concat_string: '||'
   null_placeholder_string: '^^'
   hash_content_casing: 'UPPER'
+  enable_native_hashes: false
 ```
 
 #### hash
@@ -81,6 +82,7 @@ Configure the type of hashing.
 This can be one of:
 
 - MD5
+- SHA-1 
 - SHA
 
 [Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm)
@@ -92,7 +94,9 @@ characters: '`||`'
 
 [Read more](../best_practises/hashing.md#multi-column-hashing)
 
-#### null_placeholder_string
+#### null_placeholder_string (1)
+{ .annotate }
+1. Default `'^^'`
 
 Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
 characters: '`^^`'
@@ -132,6 +136,12 @@ This can be one of:
 !!! info
     We've added this config to give you more options when hashing. If there is logical difference between uppercase
     and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
+
+#### enable_native_hashes
+
+!!! tip "New in v0.11.0"
+
+_Applies to Databricks and Google BigQuery only_
 
 ### Ghost Record configuration
 
