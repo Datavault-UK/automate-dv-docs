@@ -13,7 +13,7 @@ The name of the Satellite that the payload is being staged to. This allows us to
 
 
 !!! note "Understanding the src_satellite parameter"
-    [Read More](../metadata.md#understanding-the-srcsatellite-parameter)
+    [Read More](../metadata.md#understanding-the-src_satellite-parameter)
 
 
 #### Hashdiff (src_satellite.hashdiff)

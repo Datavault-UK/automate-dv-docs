@@ -58,7 +58,7 @@ ___
 - Fixed the case where repeating a load would cause duplicates when using the Satellites as released in 0.10.0 (#207)
   - Implemented as a new Behaviour Flag for Satellites `apply_source_filter` 
     - [Read more in loading best practises](../best_practises/loading.md#the-apply_source_filter-config-option)
-    - [Read more on sat() macro Behaviour Flags](../macros/index.md/#satellite-behaviour-flags)
+    - [Read more on sat() macro Behaviour Flags](../macros/index.md#satellite-behaviour-flags)
 
 ___
 
@@ -196,9 +196,9 @@ ___
 
 ### New Features: 
 
-:star2: Ghost Records -> [docs](../macros#ghost-record-configuration)
+:star2: Ghost Records -> [docs](../macros/index.md#ghost-record-configuration)
 
-:star2: Hashing Casing config (#123) -> [Docs](../macros#hash_content_casing)
+:star2: Hashing Casing config (#123) -> [Docs](../macros/index.md#hash_content_casing)
 
 ### dbt Versions
 
@@ -350,7 +350,7 @@ All existing macros are now supported by all platforms!
 ##### Effectivity Satellites
 
 - Fixed an issue affecting auto-end-dating in flip-flop
-  situations [eff_sat](../macros/index.md#effsat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
+  situations [eff_sat](../macros/index.md#eff_sat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
 
 ##### Staging
 
@@ -369,12 +369,12 @@ More Google BigQuery and MS SQL Server support, plus fixes!
 
 #### Google BigQuery and MS SQL Server
 
-- T-Links ([t_link macro](../macros/index.md#tlink))
-- Effectivity Satellites ([eff_sat macro](../macros/index.md#effsat))
-- Multi-Active Satellites ([ma_sat macro](../macros/index.md#masat))
+- T-Links ([t_link macro](../macros/index.md#t_link))
+- Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
+- Multi-Active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
 - Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
 
-See our [Platform support matrix](../macros/index.md#platform-support) for more details.
+See our [Platform support matrix](../platform_support.md) for more details.
 
 ### Fixed
 
@@ -417,13 +417,13 @@ to you in the future!
 - Satellites (sat macro)
 
 !!! tip "New"
-[Platform support matrix](../macros/index.md#platform-support)
+[Platform support matrix](../platform_support.md)
 
 #### All platforms
 
 - Column Escaping ([#28](https://github.com/Datavault-UK/automate-dv/issues/28)
   , [#23](https://github.com/Datavault-UK/automate-dv/issues/23))
-  - [Docs](../macros/index.md#escapecharleftescapecharright):
+  - [Docs](../macros/index.md#escape_char_leftescape_char_right):
   AutomateDV now automatically surrounds all column names with quotes. This is to allow for columns with reserved words,
   spaces, and other oddities.
   The type of quotes is configurable, please refer to the docs linked above.
@@ -453,8 +453,8 @@ ___
 
 #### Materialisations
 
-- Custom materialisation for PITs [Docs](../materialisations.md#pitincremental)
-- Custom materialisation for Bridges [Docs](../materialisations.md#bridgeincremental)
+- Custom materialisation for PITs [Docs](../materialisations.md#pit_incremental)
+- Custom materialisation for Bridges [Docs](../materialisations.md#bridge_incremental)
 
 #### Behind the Scenes
 
@@ -570,7 +570,7 @@ ___
 - Added check for matching primary key when inserting new satellite records in the sat macro. This removes the
   requirement to
   add the natural key to the hashdiff, but it is still
-  recommended. [Read More](../best_practises/hashing#hashdiff-components)
+  recommended. [Read More](../best_practises/hashing.md#hashdiff-components)
 
 ### Quality of Life
 

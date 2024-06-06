@@ -1341,7 +1341,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     [Read the tutorial](../tutorial/tut_xts.md) for more details
 
 !!! note "Understanding the src_satellite parameter"
-    [Read More](../metadata.md#understanding-the-srcsatellite-parameter)
+    [Read More](../metadata.md#understanding-the-src_satellite-parameter)
 
 #### Example Metadata
 
@@ -1409,12 +1409,6 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone_multi_source.sql"
         ```
 
-=== "Postgres"
-    Example Coming soon!
-
-=== "Databricks"
-    Example Coming soon!
-
 ### pit
 
 ###### view source:
@@ -1424,6 +1418,12 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/pit.sql)
 [![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/pit.sql)
 [![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/pit.sql)
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    Since AutomateDV v0.11.0, the **pit()** macro is now deprecated. This is because it is not currently fit-for-purpose and needs significant usability
+    and peformance improvements, as well as a design overhaul. An improved implementation will be released in a future version of AutomateDV.
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -1470,18 +1470,6 @@ Generates SQL to build a Point-In-Time (PIT) table.
         --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/pits/incremental_load.sql"
         ```
 
-=== "Google Bigquery"
-    Example Coming soon!
-
-=== "MS SQL Server"
-    Example Coming soon!
-
-=== "Postgres"
-    Example Coming soon!
-
-=== "Databricks"
-    Example Coming soon!
-
 #### As Of Date Tables
 
 An As of Date table contains a single column of dates (a date spine) used to construct the history in the PIT. A typical
@@ -1519,6 +1507,12 @@ ___
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/bridge.sql)
 [![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/bridge.sql)
 [![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/bridge.sql)
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    Since AutomateDV v0.11.0, the **bridge()** macro is now deprecated. This is because it is not currently fit-for-purpose and needs significant usability
+    and peformance improvements, as well as a design overhaul. An improved implementation will be released in a future version of AutomateDV.
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.

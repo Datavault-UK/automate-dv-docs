@@ -12,8 +12,8 @@ they fundamentally break and oppose Data Vault 2.0 standards (i.e. are not inser
 ### Recommended Materialisations
 
 !!! seealso "See Also"
-    - [bridge_incremental](../materialisations.md#bridgeincremental)
-    - [pit_incremental](../materialisations.md#pitincremental)
+    - [bridge_incremental](../materialisations.md#bridge_incremental)
+    - [pit_incremental](../materialisations.md#pit_incremental)
 
 | Structure                    | incremental      | bridge_incremental | pit_incremental    |
 |------------------------------|------------------|--------------------|--------------------|

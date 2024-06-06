@@ -528,7 +528,7 @@ Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window func
 ### Defining and configuring Ranked columns
 
 This stage configuration is a helper for
-the [vault_insert_by_rank](../materialisations.md#vaultinsertbyrank-insert-by-rank) materialisation.
+the [vault_insert_by_rank](../materialisations.md#vault_insert_by_rank-insert-by-rank) materialisation.
 The `ranked_columns` configuration allows you to define ranked columns to generate, as follows:
 
 === "Single item parameters"
