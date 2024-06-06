@@ -75,7 +75,14 @@ vars:
   enable_native_hashes: false
 ```
 
-#### hash
+<div class="annotate" markdown>
+#### hash (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    hash: 'MD5'
+    ```
 
 Configure the type of hashing.
 
@@ -87,21 +94,39 @@ This can be one of:
 
 [Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm)
 
-#### concat_string
 
-Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe
-characters: '`||`'
+<div class="annotate" markdown>
+#### concat_string (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    concat_string: 'upper'
+    ```
+
+Configure the string value to use for concatenating strings together when hashing.
 
 [Read more](../best_practises/hashing.md#multi-column-hashing)
 
+<div class="annotate" markdown>
 #### null_placeholder_string (1)
-{ .annotate }
-1. Default `'^^'`
+</div>
 
-Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
-characters: '`^^`'
+1.  **Default Value:** 
+    ```yaml
+    null_placeholder_string: '^^'
+    ```
 
-#### hash_content_casing
+Configure the string value to use for replacing `NULL` values when hashing.
+
+<div class="annotate" markdown>
+#### hash_content_casing (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    hash_content_casing: 'UPPER'
+    ```
 
 This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hash value.
 
@@ -137,11 +162,31 @@ This can be one of:
     We've added this config to give you more options when hashing. If there is logical difference between uppercase
     and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
 
-#### enable_native_hashes
+<div class="annotate" markdown>
+#### enable_native_hashes (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    enable_native_hashes: false
+    ```
 
 !!! tip "New in v0.11.0"
 
-_Applies to Databricks and Google BigQuery only_
+    _Applies to Databricks and Google BigQuery only_
+
+This option allows users to enable native binary hashes in AutomateDV which uses `BINARY` (or equivalent) data types for platforms which did not 
+previously hash as binary in AutomateDV. These platforms are _Databricks_ and _Google BigQuery_, which - prior to AutomateDV v0.11.0 -
+created hashes using the `STRING` (or equivalent) data type.
+
+This led to a hit on performance, and was a non-standard approach. They were originally implemented as Strings either because
+the Binary data type did not exist, or as an oversight on our part. 
+
+This flag is `false` by default to avoid breaking hash calculation for users already using 
+AutomateDV on Databricks and Google BigQuery prior to v0.11.0. If you are starting a new project, 
+it is **_highly recommended_** to set this to `true` from the start. 
+
+See [Hashing by Platform](../best_practises/hashing.md#hashing-by-platform) for a full list of data types
 
 ### Ghost Record configuration
 

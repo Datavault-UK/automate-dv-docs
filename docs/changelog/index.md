@@ -198,7 +198,7 @@ ___
 
 :star2: Ghost Records -> [docs](../macros/index.md#ghost-record-configuration)
 
-:star2: Hashing Casing config (#123) -> [Docs](../macros/index.md#hash_content_casing)
+:star2: Hashing Casing config (#123) -> [Docs](../macros/index.md#global-variables)
 
 ### dbt Versions
 

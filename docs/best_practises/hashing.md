@@ -206,6 +206,9 @@ is an option for users who wish to reduce the hashing collision rates in larger 
 !!! note
     If a hashing algorithm configuration is missing or invalid, AutomateDV will use `MD5` by default. 
 
+!!! tip
+    SHA-1 Hashing is recommended by the Data Vault Alliance
+
 Configuring the hashing algorithm which will be used by AutomateDV is simple: add a global variable to your
 `dbt_project.yml` as follows:
 
@@ -232,6 +235,7 @@ Configuring the hashing algorithm which will be used by AutomateDV is simple: ad
     vars:
       hash: SHA # or other options below
     ```
+
 ## Configuring
 
 ### Hashing by Platform
@@ -247,7 +251,8 @@ Configuring the hashing algorithm which will be used by AutomateDV is simple: ad
  
 !!! info
     \*SHA-1 Hashing is not supported on Postgres due to needing the pgcrypto extension to implement it fully.  
-    \*\*Since v0.11.0, with `enable_native_hashing` enabled. STRING/VARCHAR hashes are used without this config enabled, for backwards compatibility purposes. 
+    \*\*Since v0.11.0, with `enable_native_hashing` enabled. STRING/VARCHAR hashes are used without this config enabled, 
+    for backwards compatibility purposes. See [Global variables](../macros/index.md#global-variables) for more information
 
 ### Options
 
@@ -289,7 +294,6 @@ The strings can be changed by the user, and this is achieved in the same way as 
 === "dbt_project.yml hash string configuration"
 
     ```yaml
-    
     ...
     vars:
       concat_string: '!!'

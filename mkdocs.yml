@@ -28,7 +28,8 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
-
+  icon:
+    annotation: material/arrow-right-circle-outline
   highlightjs: true
   features:
     - announce.dismiss
