@@ -117,7 +117,7 @@ Most Reference Tables are `incremental`/`table` materialized, though they may be
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [ref_table macro](../macros/index.md#reftable).
+Let's look at the metadata we need to provide to the [ref_table macro](../macros/index.md#ref_table).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 

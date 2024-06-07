@@ -136,7 +136,7 @@ example provided to help better convey the difference.
 
     !!! note
         '!' at the beginning of strings is syntactic sugar provided by AutomateDV for creating constant values. 
-        [Read More](macros/index.md#constants-derived-columns)
+        [Read More](macros/stage_macro_configurations.md#defining-constants)
 
 ### Staging
 
@@ -579,7 +579,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[t_link macro parameters](macros/index.md#tlink)
+[t_link macro parameters](macros/index.md#t_link)
 
 #### Metadata
 
@@ -788,7 +788,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Parameters
 
-[eff_sat macro parameters](macros/index.md#effsat)
+[eff_sat macro parameters](macros/index.md#eff_sat)
 
 #### Metadata
 
@@ -844,7 +844,7 @@ Hashdiff aliasing allows you to set an alias for the `HASHDIFF` column.
 
 #### Parameters
 
-[ma_sat macro parameters](macros/index.md#masat)
+[ma_sat macro parameters](macros/index.md#ma_sat)
 
 #### Metadata
 

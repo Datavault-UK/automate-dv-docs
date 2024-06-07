@@ -51,7 +51,7 @@ the raw stage via dbt models if you don't need to, and can simply reference tabl
 [dbt source](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources).
 
 The model provided in the 'Final model' section below, shows the use of the 'source style' 
-[source_model syntax](../macros/index.md#sourcemodel-syntax).
+[source_model syntax](../macros/index.md#source_model-syntax).
 
 ##### Derived columns
 

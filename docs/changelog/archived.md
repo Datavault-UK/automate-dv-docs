@@ -17,7 +17,7 @@ These releases are so old now, we'd rather you did not use them! They are archiv
   
 - The hashed_columns exclude flag in staging can now be provided without a list of columns, and AutomateDV will hash everything. [Docs](../macros/index.md#stage-macro-configurations)
 
-- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../materialisations.md#vaultinsertbyrank-insert-by-rank)
+- Rank Load Materialisation: Iteratively load your vault structures over a configured ranking [Read More](../materialisations.md#vault_insert_by_rank-insert-by-rank)
 
 - The stage macro now has a new `ranked_columns` configuration section to support the above materialisation. [Read More](../macros/index.md#stage-macro-configurations)
 
@@ -70,7 +70,7 @@ users wishing to override macro implementations. Documentation will be made avai
 
 ### Fixed
 
-- Fixed a bug in the [vault_insert_by_period](../materialisations.md#vaultinsertbyperiod-insert-by-period) materialization which caused orphaned temporary relations 
+- Fixed a bug in the [vault_insert_by_period](../materialisations.md#vault_insert_by_period-insert-by-period) materialization which caused orphaned temporary relations 
   under specific circumstances. [Issue #18](https://github.com/Datavault-UK/automate-dv/issues/18)
   
 - Stage macro conversion to CTE fixes [Issue #17](https://github.com/Datavault-UK/automate-dv/issues/17)
@@ -86,9 +86,9 @@ users wishing to override macro implementations. Documentation will be made avai
 
 - Effectivity Satellites: A newly supported Data Vault 2.0 structure.  
 [Read more](../tutorial/tut_eff_satellites.md)   
-[Macro Reference](../macros/index.md#effsat) 
+[Macro Reference](../macros/index.md#eff_sat) 
 
-- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../materialisations.md#vaultinsertbyperiod-insert-by-period)
+- Period Load Materialisation: Iteratively load your vault structures over a configured period [Read More](../materialisations.md#vault_insert_by_period-insert-by-period)
 - dbt Docs: The built-in dbt docs site (`dbt docs serve`) now includes documentation for AutomateDV*. 
 - dbt v0.18.0 support [dbt v0.18.0 Release Notes](https://github.com/dbt-labs/dbt/releases/tag/v0.18.0)
 
