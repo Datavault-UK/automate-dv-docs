@@ -72,32 +72,61 @@ vars:
   concat_string: '||'
   null_placeholder_string: '^^'
   hash_content_casing: 'UPPER'
+  enable_native_hashes: false
 ```
 
-#### hash
+<div class="annotate" markdown>
+#### hash (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    hash: 'MD5'
+    ```
 
 Configure the type of hashing.
 
 This can be one of:
 
 - MD5
+- SHA-1 
 - SHA
 
 [Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm)
 
-#### concat_string
 
-Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe
-characters: '`||`'
+<div class="annotate" markdown>
+#### concat_string (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    concat_string: 'upper'
+    ```
+
+Configure the string value to use for concatenating strings together when hashing.
 
 [Read more](../best_practises/hashing.md#multi-column-hashing)
 
-#### null_placeholder_string
+<div class="annotate" markdown>
+#### null_placeholder_string (1)
+</div>
 
-Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
-characters: '`^^`'
+1.  **Default Value:** 
+    ```yaml
+    null_placeholder_string: '^^'
+    ```
 
-#### hash_content_casing
+Configure the string value to use for replacing `NULL` values when hashing.
+
+<div class="annotate" markdown>
+#### hash_content_casing (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    hash_content_casing: 'UPPER'
+    ```
 
 This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hash value.
 
@@ -133,6 +162,32 @@ This can be one of:
     We've added this config to give you more options when hashing. If there is logical difference between uppercase
     and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
 
+<div class="annotate" markdown>
+#### enable_native_hashes (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    enable_native_hashes: false
+    ```
+
+!!! tip "New in v0.11.0"
+
+    _Applies to Databricks and Google BigQuery only_
+
+This option allows users to enable native binary hashes in AutomateDV which uses `BINARY` (or equivalent) data types for platforms which did not 
+previously hash as binary in AutomateDV. These platforms are _Databricks_ and _Google BigQuery_, which - prior to AutomateDV v0.11.0 -
+created hashes using the `STRING` (or equivalent) data type.
+
+This led to a hit on performance, and was a non-standard approach. They were originally implemented as Strings either because
+the Binary data type did not exist, or as an oversight on our part. 
+
+This flag is `false` by default to avoid breaking hash calculation for users already using 
+AutomateDV on Databricks and Google BigQuery prior to v0.11.0. If you are starting a new project, 
+it is **_highly recommended_** to set this to `true` from the start. 
+
+See [Hashing by Platform](../best_practises/hashing.md#hashing-by-platform) for a full list of data types
+
 ### Ghost Record configuration
 
 ```yaml
@@ -149,7 +204,7 @@ do not return records, the ghost record is a single record inserted into a Satel
 
 In AutomateDV this is implemented as an optional CTE which only gets created in the above circumstances and when the `enable_ghost_records` global variable is set to `true`.
 
-A Ghost Record does not inherently mean anything (it is for performance only), and so the value of each column is set to `NULL` or a sensible meaningless value. 
+A Ghost Record does not inherently mean anything (it is for performance only), and so the value of each column is set to `NULL` or a sensible _meaningless_ value. 
 
 The below tables describe what a ghost record will look like:
 
@@ -171,8 +226,13 @@ The below tables describe what a ghost record will look like:
     |-------------|-----------|---------------|--------------|----------------|---------------------|---------------------|--------------------|
     | 000000...   | 000000... | _NULL_        | _NULL_       | _NULL_         | 1900-01-01 00:00:00 | 1900-01-01 00:00:00 | AUTOMATE_DV_SYSTEM |
 
-!!! note "Ghost record source code"
-    Check out how this works [under-the-hood](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/supporting/ghost_records/create_ghost_record.sql)
+
+!!! tip "Improved Ghost Record handling"
+
+    Since v0.11.0, Ghost record types are inferred from the source instead of parameter-based inference. 
+    This prevents incorrect representations for composite key columns (e.g., a non-binary column in src_pk). 
+    While thoroughly tested, some edge cases may yield unpredictable results.
+    [**_Please_** let us know](https://github.com/Datavault-UK/automate-dv/issues) if you find any anomalies!
 
 #### enable_ghost_records
 
@@ -1331,7 +1391,7 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     [Read the tutorial](../tutorial/tut_xts.md) for more details
 
 !!! note "Understanding the src_satellite parameter"
-    [Read More](../metadata.md#understanding-the-srcsatellite-parameter)
+    [Read More](../metadata.md#understanding-the-src_satellite-parameter)
 
 #### Example Metadata
 
@@ -1399,12 +1459,6 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
         --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone_multi_source.sql"
         ```
 
-=== "Postgres"
-    Example Coming soon!
-
-=== "Databricks"
-    Example Coming soon!
-
 ### pit
 
 ###### view source:
@@ -1414,6 +1468,12 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/pit.sql)
 [![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/pit.sql)
 [![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/pit.sql)
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    Since AutomateDV v0.11.0, the **pit()** macro is now deprecated. This is because it is not currently fit-for-purpose and needs significant usability
+    and peformance improvements, as well as a design overhaul. An improved implementation will be released in a future version of AutomateDV.
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
@@ -1460,18 +1520,6 @@ Generates SQL to build a Point-In-Time (PIT) table.
         --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/pits/incremental_load.sql"
         ```
 
-=== "Google Bigquery"
-    Example Coming soon!
-
-=== "MS SQL Server"
-    Example Coming soon!
-
-=== "Postgres"
-    Example Coming soon!
-
-=== "Databricks"
-    Example Coming soon!
-
 #### As Of Date Tables
 
 An As of Date table contains a single column of dates (a date spine) used to construct the history in the PIT. A typical
@@ -1509,6 +1557,12 @@ ___
 [![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/sqlserver/bridge.sql)
 [![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/databricks/bridge.sql)
 [![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/tables/postgres/bridge.sql)
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    Since AutomateDV v0.11.0, the **bridge()** macro is now deprecated. This is because it is not currently fit-for-purpose and needs significant usability
+    and peformance improvements, as well as a design overhaul. An improved implementation will be released in a future version of AutomateDV.
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.

@@ -13,4 +13,4 @@ mkdocs-with-pdf = "*"
 mkdocs-video = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.11"

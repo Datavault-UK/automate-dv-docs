@@ -11,6 +11,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
+---
+
+# [v0.11.0] - 2024-06-07
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.0)](https://automate-dv.readthedocs.io/en/v0.11.0/?badge=v0.11.0)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.3%20%3C%3D1.8.x-orange?logo=dbt)
+
+## The 'Jossy' release
+
+This release is dedicated to our friend and colleague at Datavault who recently left the company. Your hard work, dedication, and significant contributions to this release and to AutomateDV over the years have been invaluable. You will always be remembered and greatly missed! Thank you ❤️  
+
+## New
+
+### dbt Versions
+
+👍 Officially tested on dbt 1.8.x _**(on all platforms except MS SQLServer, which does not yet support 1.8.x)**_
+
+### All Platforms
+
+- **QUALIFY Statement Usage**: Improved across all applicable platforms. Previously, the in-line WINDOW + QUALIFY syntax was not used correctly; instead, columns were materialized before applying QUALIFY. This issue has now been resolved, resulting in a noticeable performance improvement.
+
+### Google BigQuery & Databricks
+
+- Native Hashing now available , hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration)
+   - Hashes now correctly use the `BYTES` type on BigQuery (instead of `STRING`)
+   - Hashes now correctly use the `BINARY` type on Databricks (instead of `STRING`)
+   
+   :fast_forward: Enable this with the new `enable_native_hashes` global variable.  
+   _**Note this behaviour is opt-in to avoid forcing a breaking change**_
+
+## Fixed
+
+### All Platforms
+
+- Fix for multi-column `src_pk` fields not working with Ghost Records correctly ([#232](https://github.com/Datavault-UK/automate-dv/issues/232))
+- Fixed an issue introduced in 0.10.0 which caused a column not found error during incremental satellite loads ([#227](https://github.com/Datavault-UK/automate-dv/issues/227))
+- Fixed an issue where setting `enable_ghost_records` to false resulted in the use of local Ghost Records with incorrect values in PITs ([#196](https://github.com/Datavault-UK/automate-dv/issues/196))
+- Fixed an issue where some loading edge-cases would trigger a cartesian JOIN in Effectivity Satellites
+- Fixed an edge case for duplicate ghost records during base loads in Satellites
+
+### Databricks 
+
+- Fixed [#219](https://github.com/Datavault-UK/automate-dv/issues/219) as a result of the new Native Hashing functionality described above. 
+
+### Microsoft SQLServer
+
+- Resolved an issue caused by the transition from `CONCAT_WS` to `CONCAT` in v0.9.1 ([#188](https://github.com/Datavault-UK/automate-dv/issues/188))
+  - `CONCAT_WS` is now correctly used on Databricks, MS SQLServer, Snowflake, and Postgres. For Google BigQuery, which does not support CONCAT_WS, CONCAT continues to be used.
+
+## Deprecations
+
+### **PITs & Bridges**
+We are planning a major overhaul and re-implementation of these macros to address performance issues and ensure compliance with DV 2.0 standards. They are currently not meeting their intended purposes effectively.
+
+### **Custom Materializations** 
+In version 0.10.0, we introduced new functionality that replaces the `vault_insert_by_x` materializations (improved satellite loading etc.). These materializations were initially designed to provide an option for rapid iterative development of incremental loading patterns in local environments for development and testing, allowing users to bypass the need for a comprehensive PSA or delta-loading solution. In this release, v0.11.0, we are deprecating the `vault_insert_by_x` materializations to encourage the use of more robust solutions.
+
 ___
 
 # [v0.10.2] - 2024-02-27
@@ -33,12 +89,12 @@ ___
 
 ### All Platforms
 
-- Fixed an issue where the payload-exclusion feature was not enable for payload definitions in Multi-Active Satellites (#217)
-- Fixed an issue where in some cases duplicates would be loaded into Satellites (#221)
+- Fixed an issue where the payload-exclusion feature was not enable for payload definitions in Multi-Active Satellites [#217](https://github.com/Datavault-UK/automate-dv/issues/217)
+- Fixed an issue where in some cases duplicates would be loaded into Satellites [#221](https://github.com/Datavault-UK/automate-dv/issues/221)
 
 ### SQLServer/Postgres
 
-- Fixed multiple SQL code case inconsistencies causing compilation issues in SQLServer (#211, #209)
+- Fixed multiple SQL code case inconsistencies causing compilation issues in SQLServer ([#211](https://github.com/Datavault-UK/automate-dv/issues/211), [#209](https://github.com/Datavault-UK/automate-dv/issues/209))
 
 
 ## Notes
@@ -58,7 +114,7 @@ ___
 - Fixed the case where repeating a load would cause duplicates when using the Satellites as released in 0.10.0 (#207)
   - Implemented as a new Behaviour Flag for Satellites `apply_source_filter` 
     - [Read more in loading best practises](../best_practises/loading.md#the-apply_source_filter-config-option)
-    - [Read more on sat() macro Behaviour Flags](../macros/index.md/#satellite-behaviour-flags)
+    - [Read more on sat() macro Behaviour Flags](../macros/index.md#satellite-behaviour-flags)
 
 ___
 
@@ -196,9 +252,9 @@ ___
 
 ### New Features: 
 
-:star2: Ghost Records -> [docs](../macros#ghost-record-configuration)
+:star2: Ghost Records -> [docs](../macros/index.md#ghost-record-configuration)
 
-:star2: Hashing Casing config (#123) -> [Docs](../macros#hash_content_casing)
+:star2: Hashing Casing config (#123) -> [Docs](../macros/index.md#global-variables)
 
 ### dbt Versions
 
@@ -350,7 +406,7 @@ All existing macros are now supported by all platforms!
 ##### Effectivity Satellites
 
 - Fixed an issue affecting auto-end-dating in flip-flop
-  situations [eff_sat](../macros/index.md#effsat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
+  situations [eff_sat](../macros/index.md#eff_sat) ([#115](https://github.com/Datavault-UK/automate-dv/issues/115))
 
 ##### Staging
 
@@ -369,12 +425,12 @@ More Google BigQuery and MS SQL Server support, plus fixes!
 
 #### Google BigQuery and MS SQL Server
 
-- T-Links ([t_link macro](../macros/index.md#tlink))
-- Effectivity Satellites ([eff_sat macro](../macros/index.md#effsat))
-- Multi-Active Satellites ([ma_sat macro](../macros/index.md#masat))
+- T-Links ([t_link macro](../macros/index.md#t_link))
+- Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
+- Multi-Active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
 - Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
 
-See our [Platform support matrix](../macros/index.md#platform-support) for more details.
+See our [Platform support matrix](../platform_support.md) for more details.
 
 ### Fixed
 
@@ -417,13 +473,13 @@ to you in the future!
 - Satellites (sat macro)
 
 !!! tip "New"
-[Platform support matrix](../macros/index.md#platform-support)
+[Platform support matrix](../platform_support.md)
 
 #### All platforms
 
 - Column Escaping ([#28](https://github.com/Datavault-UK/automate-dv/issues/28)
   , [#23](https://github.com/Datavault-UK/automate-dv/issues/23))
-  - [Docs](../macros/index.md#escapecharleftescapecharright):
+  - [Docs](../macros/index.md#escape_char_leftescape_char_right):
   AutomateDV now automatically surrounds all column names with quotes. This is to allow for columns with reserved words,
   spaces, and other oddities.
   The type of quotes is configurable, please refer to the docs linked above.
@@ -453,8 +509,8 @@ ___
 
 #### Materialisations
 
-- Custom materialisation for PITs [Docs](../materialisations.md#pitincremental)
-- Custom materialisation for Bridges [Docs](../materialisations.md#bridgeincremental)
+- Custom materialisation for PITs [Docs](../materialisations.md#pit_incremental)
+- Custom materialisation for Bridges [Docs](../materialisations.md#bridge_incremental)
 
 #### Behind the Scenes
 
@@ -570,7 +626,7 @@ ___
 - Added check for matching primary key when inserting new satellite records in the sat macro. This removes the
   requirement to
   add the natural key to the hashdiff, but it is still
-  recommended. [Read More](../best_practises/hashing#hashdiff-components)
+  recommended. [Read More](../best_practises/hashing.md#hashdiff-components)
 
 ### Quality of Life
 

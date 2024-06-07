@@ -17,12 +17,20 @@ documented below.
 For normal use, you should use the standard incremental materialisation in most cases. Please refer to our [best practises for recommended materialisations](https://automate-dv.readthedocs.io/en/latest/best_practises/materialisations/#recommended-materialisations). 
 
 !!! warning 
-    These are not to be used for daily loads or even first-time (base) loads as they have ill performance. 
+    These are not to be used for daily loads or even first-time (base) loads as they are ill-performant. 
     Their main use case is for low-volume tables for testing or development purposes and users are not advised to use these in production
 
 ### vault_insert_by_period (Insert by Period)
 
 ([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/vault_insert_by_period_materialization.sql))
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    This materialisation was initially designed to provide an option for rapid iterative development of
+    incremental loading patterns in local environments for development and testing, allowing users to bypass
+    the need for a comprehensive PSA or delta-loading solution. It is being deprecated to encourage the use
+    of more robust solutions.
 
 This materialisation is based on
 the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
@@ -104,7 +112,7 @@ The first period load will be repeated but no duplicates should be inserted when
 
 ##### Run Output
 
-Examples of output for dbt runs using the [eff_sat](macros/index.md#effsat) macro and this materialisation.
+Examples of output for dbt runs using the [eff_sat](macros/index.md#eff_sat) macro and this materialisation.
 
 === "Initial/Base load"
 
@@ -234,6 +242,14 @@ Example incremental logic containing a `LEFT OUTER JOIN` (taken from AutomateDV'
 ### vault_insert_by_rank (Insert by Rank)
 
 ([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/vault_insert_by_rank_materialization.sql))
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    This materialisation was initially designed to provide an option for rapid iterative development of
+    incremental loading patterns in local environments for development and testing, allowing users to bypass
+    the need for a comprehensive PSA or delta-loading solution. It is being deprecated to encourage the use
+    of more robust solutions.
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
 arbitrary rank column, created in the staging layer.

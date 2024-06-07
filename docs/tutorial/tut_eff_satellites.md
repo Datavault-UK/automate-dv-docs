@@ -122,7 +122,7 @@ The recommended materialisation for **Effectivity Satellites** is `incremental`,
 
 ### Adding the metadata 
 
-Let's look at the metadata we need to provide to the [eff_sat](../macros/index.md#effsat) macro. 
+Let's look at the metadata we need to provide to the [eff_sat](../macros/index.md#eff_sat) macro. 
 
 See our [metadata reference](../metadata.md#effectivity-satellites) for more detail on how to provide metadata.
 

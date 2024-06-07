@@ -206,6 +206,9 @@ is an option for users who wish to reduce the hashing collision rates in larger 
 !!! note
     If a hashing algorithm configuration is missing or invalid, AutomateDV will use `MD5` by default. 
 
+!!! tip
+    SHA-1 Hashing is recommended by the Data Vault Alliance
+
 Configuring the hashing algorithm which will be used by AutomateDV is simple: add a global variable to your
 `dbt_project.yml` as follows:
 
@@ -232,22 +235,24 @@ Configuring the hashing algorithm which will be used by AutomateDV is simple: ad
     vars:
       hash: SHA # or other options below
     ```
+
 ## Configuring
 
 ### Hashing by Platform
 
-|              | Support & Output Type                                          |                                                                    |                                                                |
-|--------------|:---------------------------------------------------------------|--------------------------------------------------------------------|----------------------------------------------------------------|
-| **Platform** | MD5                                                            | SHA-1                                                              | SHA-256                                                        |
-| Snowflake    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16)    | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20)    | :fontawesome-solid-circle-check:{ .required } \| BINARY(32)    |
-| Databricks   | :fontawesome-solid-circle-check:{ .required } \| VARCHAR(16)** | :fontawesome-solid-circle-check:{ .required }     \| VARCHAR(20)** | :fontawesome-solid-circle-check:{ .required } \| VARCHAR(32)** |
-| BigQuery     | :fontawesome-solid-circle-check:{ .required } \| STRING**      | :fontawesome-solid-circle-check:{ .required }     \| STRING**      | :fontawesome-solid-circle-check:{ .required } \| STRING**      |
-| SQLServer    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16)    | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20)    | :fontawesome-solid-circle-check:{ .required } \| BINARY(32)    |
-| Postgres     | :fontawesome-solid-circle-check:{ .required } \| BYTEA         | :fontawesome-solid-circle-minus:{ .not-required }*                 | :fontawesome-solid-circle-check:{ .required } \| BYTEA         |  
+|              | Support & Output Type                                       |                                                                 |                                                             |
+|--------------|:------------------------------------------------------------|-----------------------------------------------------------------|-------------------------------------------------------------|
+| **Platform** | MD5                                                         | SHA-1                                                           | SHA-256                                                     |
+| Snowflake    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16) | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20) | :fontawesome-solid-circle-check:{ .required } \| BINARY(32) |
+| Databricks   | :fontawesome-solid-circle-check:{ .required } \| BINARY**   | :fontawesome-solid-circle-check:{ .required }     \| BINARY**   | :fontawesome-solid-circle-check:{ .required } \| BINARY**   |
+| BigQuery     | :fontawesome-solid-circle-check:{ .required } \| BYTES**    | :fontawesome-solid-circle-check:{ .required }     \| BYTES**    | :fontawesome-solid-circle-check:{ .required } \| BYTES**    |
+| SQLServer    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16) | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20) | :fontawesome-solid-circle-check:{ .required } \| BINARY(32) |
+| Postgres     | :fontawesome-solid-circle-check:{ .required } \| BYTEA      | :fontawesome-solid-circle-minus:{ .not-required }*              | :fontawesome-solid-circle-check:{ .required } \| BYTEA      |  
  
 !!! info
     \*SHA-1 Hashing is not supported on Postgres due to needing the pgcrypto extension to implement it fully.  
-    \*\*We are aware that STRING/VARCHAR hashes are suboptimal and are actively working on a solution.
+    \*\*Since v0.11.0, with `enable_native_hashing` enabled. STRING/VARCHAR hashes are used without this config enabled, 
+    for backwards compatibility purposes. See [Global variables](../macros/index.md#global-variables) for more information
 
 ### Options
 
@@ -289,7 +294,6 @@ The strings can be changed by the user, and this is achieved in the same way as 
 === "dbt_project.yml hash string configuration"
 
     ```yaml
-    
     ...
     vars:
       concat_string: '!!'
