@@ -204,7 +204,7 @@ do not return records, the ghost record is a single record inserted into a Satel
 
 In AutomateDV this is implemented as an optional CTE which only gets created in the above circumstances and when the `enable_ghost_records` global variable is set to `true`.
 
-A Ghost Record does not inherently mean anything (it is for performance only), and so the value of each column is set to `NULL` or a sensible meaningless value. 
+A Ghost Record does not inherently mean anything (it is for performance only), and so the value of each column is set to `NULL` or a sensible _meaningless_ value. 
 
 The below tables describe what a ghost record will look like:
 
@@ -226,8 +226,13 @@ The below tables describe what a ghost record will look like:
     |-------------|-----------|---------------|--------------|----------------|---------------------|---------------------|--------------------|
     | 000000...   | 000000... | _NULL_        | _NULL_       | _NULL_         | 1900-01-01 00:00:00 | 1900-01-01 00:00:00 | AUTOMATE_DV_SYSTEM |
 
-!!! note "Ghost record source code"
-    Check out how this works [under-the-hood](https://github.com/Datavault-UK/automate-dv/blob/v0.10.1/macros/supporting/ghost_records/create_ghost_record.sql)
+
+!!! tip "Improved Ghost Record handling"
+
+    Since v0.11.0, Ghost record types are inferred from the source instead of parameter-based inference. 
+    This prevents incorrect representations for composite key columns (e.g., a non-binary column in src_pk). 
+    While thoroughly tested, some edge cases may yield unpredictable results.
+    [**_Please_** let us know](https://github.com/Datavault-UK/automate-dv/issues) if you find any anomalies!
 
 #### enable_ghost_records
 

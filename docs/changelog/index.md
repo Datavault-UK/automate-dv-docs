@@ -11,6 +11,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Beta Releases](beta.md){ .md-button .md-button--primary }
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
+---
+
+# [v0.11.0] - 2024-06-07
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.0)](https://automate-dv.readthedocs.io/en/v0.11.0/?badge=v0.11.0)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.3%20%3C%3D1.8.x-orange?logo=dbt)
+
+## The 'Jossy' release
+
+This release is dedicated to our friend and colleague at Datavault who recently left the company. Your hard work, dedication, and significant contributions to this release and to AutomateDV over the years have been invaluable. You will always be remembered and greatly missed! Thank you ❤️  
+
+## New
+
+### dbt Versions
+
+👍 Officially tested on dbt 1.8.x _**(on all platforms except MS SQLServer, which does not yet support 1.8.x)**_
+
+### All Platforms
+
+- **QUALIFY Statement Usage**: Improved across all applicable platforms. Previously, the in-line WINDOW + QUALIFY syntax was not used correctly; instead, columns were materialized before applying QUALIFY. This issue has now been resolved, resulting in a noticeable performance improvement.
+
+### Google BigQuery & Databricks
+
+- Native Hashing now available , hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration)
+   - Hashes now correctly use the `BYTES` type on BigQuery (instead of `STRING`)
+   - Hashes now correctly use the `BINARY` type on Databricks (instead of `STRING`)
+   
+   :fast_forward: Enable this with the new `enable_native_hashes` global variable.  
+   _**Note this behaviour is opt-in to avoid forcing a breaking change**_
+
+## Fixed
+
+### All Platforms
+
+- Fix for multi-column `src_pk` fields not working with Ghost Records correctly ([#232](https://github.com/Datavault-UK/automate-dv/issues/232))
+- Fixed an issue introduced in 0.10.0 which caused a column not found error during incremental satellite loads ([#227](https://github.com/Datavault-UK/automate-dv/issues/227))
+- Fixed an issue where setting `enable_ghost_records` to false resulted in the use of local Ghost Records with incorrect values in PITs ([#196](https://github.com/Datavault-UK/automate-dv/issues/196))
+- Fixed an issue where some loading edge-cases would trigger a cartesian JOIN in Effectivity Satellites
+- Fixed an edge case for duplicate ghost records during base loads in Satellites
+
+### Databricks 
+
+- Fixed [#219](https://github.com/Datavault-UK/automate-dv/issues/219) as a result of the new Native Hashing functionality described above. 
+
+### Microsoft SQLServer
+
+- Resolved an issue caused by the transition from `CONCAT_WS` to `CONCAT` in v0.9.1 ([#188](https://github.com/Datavault-UK/automate-dv/issues/188))
+  - `CONCAT_WS` is now correctly used on Databricks, MS SQLServer, Snowflake, and Postgres. For Google BigQuery, which does not support CONCAT_WS, CONCAT continues to be used.
+
+## Deprecations
+
+### **PITs & Bridges**
+We are planning a major overhaul and re-implementation of these macros to address performance issues and ensure compliance with DV 2.0 standards. They are currently not meeting their intended purposes effectively.
+
+### **Custom Materializations** 
+In version 0.10.0, we introduced new functionality that replaces the `vault_insert_by_x` materializations (improved satellite loading etc.). These materializations were initially designed to provide an option for rapid iterative development of incremental loading patterns in local environments for development and testing, allowing users to bypass the need for a comprehensive PSA or delta-loading solution. In this release, v0.11.0, we are deprecating the `vault_insert_by_x` materializations to encourage the use of more robust solutions.
+
 ___
 
 # [v0.10.2] - 2024-02-27
@@ -33,12 +89,12 @@ ___
 
 ### All Platforms
 
-- Fixed an issue where the payload-exclusion feature was not enable for payload definitions in Multi-Active Satellites (#217)
-- Fixed an issue where in some cases duplicates would be loaded into Satellites (#221)
+- Fixed an issue where the payload-exclusion feature was not enable for payload definitions in Multi-Active Satellites [#217](https://github.com/Datavault-UK/automate-dv/issues/217)
+- Fixed an issue where in some cases duplicates would be loaded into Satellites [#221](https://github.com/Datavault-UK/automate-dv/issues/221)
 
 ### SQLServer/Postgres
 
-- Fixed multiple SQL code case inconsistencies causing compilation issues in SQLServer (#211, #209)
+- Fixed multiple SQL code case inconsistencies causing compilation issues in SQLServer ([#211](https://github.com/Datavault-UK/automate-dv/issues/211), [#209](https://github.com/Datavault-UK/automate-dv/issues/209))
 
 
 ## Notes
