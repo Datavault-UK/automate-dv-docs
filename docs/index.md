@@ -76,8 +76,8 @@ information:
 
 ### Blogs and Downloads
 
-- [What is Data Vault?](https://www.data-vault.co.uk/what-is-data-vault/)
-- [Agile Modeling: Not an Option Anymore](https://www.vertabelo.com/blog/data-vault-series-agile-modeling-not-an-option-anymore/)
+- [What is Data Vault?](https://data-vault.com/what-is-data-vault/)
+- [Data Valut Modelling Basics](https://vertabelo.com/blog/data-vault-series-data-vault-2-0-modeling-basics/)
 
 ## Roadmap and Changelog
 
