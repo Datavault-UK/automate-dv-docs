@@ -25,8 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### All Platforms
 
-- Fixed an edge case where data would be ignored when loading Satellites (#233)
-- Added improved support for out-of-sequence loading by making use of the `src_eff` parameter _**when provided**_
+- Fixed an edge case where data would be ignored when loading Satellites [#233](https://github.com/Datavault-UK/automate-dv/issues/233)
+- Added improved support for out-of-sequence loading by making use of the `src_eff` parameter _**when provided**_ [#253](https://github.com/Datavault-UK/automate-dv/issues/253)
 
 ---
 
