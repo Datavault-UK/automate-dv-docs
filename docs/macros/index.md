@@ -882,6 +882,21 @@ This section covers global variables ([var](https://docs.getdbt.com/docs/build/p
     
     [Read more](#ghost-record-configuration) about ghost records. 
 
+#### Providing the `src_eff` parameter
+
+Prior to AutomateDV v0.11.1, the `src_eff` parameter was not used in the Satellite SQL logic, but simply selected from source for metadata purposes.
+
+The intent behind this was to allow for reasoning about bi-temporality in downstream structures
+
+As of v0.11.1, the `src_eff` parameter is more than just metadata and will be used for improving the ordering logic **_when provided_**.
+
+This fixes a bug present prior to v0.11.1 which would struggle with multiple changes to the same keys in the same batch which may occur or 
+be sent in the wrong order due to source data issues or as a by-product of the business processes. 
+
+The `src_eff` parameter remains optional, so this logic is only introduced should you provide the `src_eff` parameter to the `sat()` macro.
+
+Please see this [GitHub Issue](https://github.com/Datavault-UK/automate-dv/issues/253) for more detail around the decision to introduce this change. 
+
 #### Example Metadata
 
 [See examples](../metadata.md#satellites)
