@@ -12,6 +12,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
 ---
+# [v0.11.1] - 2025-03-06
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.1)](https://automate-dv.readthedocs.io/en/v0.11.1/?badge=v0.11.1)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.4%20%3C%3D1.9.x-orange?logo=dbt)
+
+## New
+
+### dbt Versions
+
+👍 Officially tested on dbt v1.9.x 
+ **_Note: AutomateDV running with dbt v1.9 is currently untested on MS SQLServer due to compatibility issues. Use at your own risk._**
+
+### All Platforms
+
+- Fixed an edge case where data would be ignored when loading Satellites (#233)
+- Added improved support for out-of-sequence loading by making use of the `src_eff` parameter _**when provided**_
+
+---
 
 # [v0.11.0] - 2024-06-07
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.0)](https://automate-dv.readthedocs.io/en/v0.11.0/?badge=v0.11.0)
@@ -33,7 +50,7 @@ This release is dedicated to our friend and colleague at Datavault who recently 
 
 ### Google BigQuery & Databricks
 
-- Native Hashing now available , hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration)
+- Native Hashing now available, hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration)
    - Hashes now correctly use the `BYTES` type on BigQuery (instead of `STRING`)
    - Hashes now correctly use the `BINARY` type on Databricks (instead of `STRING`)
    
