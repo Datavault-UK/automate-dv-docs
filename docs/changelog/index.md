@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [View Archived Releases](archived.md){ .md-button .md-button--primary }
 
 ---
+
+# [v0.11.2] - 2025-03-12
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.2)](https://automate-dv.readthedocs.io/en/v0.11.2/?badge=v0.11.2)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.4%20%3C%3D1.9.x-orange?logo=dbt)
+
+## Hot fixes
+
+- Fixed an issue introduced in v0.11.1 which effectively forced the `src_eff` attribute to be required unintentionally [#255](https://github.com/Datavault-UK/automate-dv/issues/255)
+
+---
+
 # [v0.11.1] - 2025-03-06
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.1)](https://automate-dv.readthedocs.io/en/v0.11.1/?badge=v0.11.1)
 ![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.4%20%3C%3D1.9.x-orange?logo=dbt)
