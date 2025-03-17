@@ -77,10 +77,9 @@ information:
 ### Blogs and Downloads
 
 - [What is Data Vault?](https://www.data-vault.com/what-is-data-vault/)
-- Agile Modeling: Not an Option Anymore
-  - Original article now unavailable, however it can be found on the WayBackMachine 
-    [here](https://web.archive.org/web/20230329184416/https://vertabelo.com/blog/data-vault-series-agile-modeling-not-an-option-anymore/).
-    It is important to note that the content and topic of this article is also compiled and extended in Kent's book, listed above.
+- [Agile Modeling: Not an Option Anymore (via WayBackMachine)](https://web.archive.org/web/20230329184416/https://vertabelo.com/blog/data-vault-series-agile-modeling-not-an-option-anymore/)
+    - Original article now unavailable, however it can be found on the WayBackMachine (linked above).
+      It is important to note that the content and topic of this article is also compiled and extended in Kent's book, listed above.
 
 ## Roadmap and Changelog
 
