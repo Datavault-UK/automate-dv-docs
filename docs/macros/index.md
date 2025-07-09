@@ -15,10 +15,19 @@ This behaves differently for the [stage](#stage) macro, which supports either st
 
 #### ref style
 
-```yaml
-stg_customer:
-  source_model: 'raw_customer'
-```
+=== "model reference"
+
+    ```yaml
+    stg_customer:
+    source_model: 'raw_customer'
+    ```
+
+=== "versioned model"
+
+    ```yaml
+    stg_customer:
+    source_model: 'raw_customer.v1'
+    ```
 
 #### source style
 
