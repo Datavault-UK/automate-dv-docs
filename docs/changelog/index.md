@@ -13,6 +13,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+# [v0.11.4] - 2025-12-02
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.4)](https://automate-dv.readthedocs.io/en/v0.11.4/?badge=v0.11.4)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.9.x%20%3C=3.0.0-orange?logo=dbt)
+
+## Improved
+
+### Databricks
+
+- Numerous optimisations on join conditions for Databricks, for the follow table macros:
+  - `hub()`
+  - `sat()`
+  - `link()`
+  - `t_link()`
+  - `ref_table()`
+  - `eff_sat()`
+
+### dbt Fusion
+
+- Incremented maximum dbt version compatibility to be <3.0.0 to allow for dbt Fusion users (dbt Fusion is dbt 2.0.0)
+
+---
+
+# [v0.11.3] - 2025-09-16
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.3)](https://automate-dv.readthedocs.io/en/v0.11.3/?badge=v0.11.3)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.4%20%3C%3D1.9.x-orange?logo=dbt)
+
+## Fixed
+
+### All Platforms
+
+- Fixed #262: Replaced all usage of `itertools` with equivalent functionality 
+
+## Other
+
+- #263 Add support for dbt Fusion `config` changes. Thank you @b-per from the dbt Team
+
+---
+
 # [v0.11.2] - 2025-03-12
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.2)](https://automate-dv.readthedocs.io/en/v0.11.2/?badge=v0.11.2)
 ![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E%3D1.4%20%3C%3D1.9.x-orange?logo=dbt)
