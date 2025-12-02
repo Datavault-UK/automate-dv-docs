@@ -35,6 +35,7 @@ theme:
     - announce.dismiss
     - navigation.top
     - navigation.indexes
+    - content.tabs.link
 
 nav:
   - Home: 'index.md'
