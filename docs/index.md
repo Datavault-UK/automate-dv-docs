@@ -1,4 +1,4 @@
-# Welcome to AutomateDV!
+# Welcome to the AutomateDV docs!
 AutomateDV is a dbt package that generates & executes the ETL you need to build a Data Vault 2.0 Data Warehouse.
 
 !!! Note
@@ -61,7 +61,7 @@ dbt works with the AutomateDV package to:
 - Generate data flow diagrams showing data lineage.
 - Automatically build a documentation website.
 
-## Pre-requisite
+## Pre-requisites
 If you are going to use the AutomateDV package for your Data Vault 2.0 project, then we expect you to have some prior 
 knowledge about the Data Vault 2.0 method.
 
