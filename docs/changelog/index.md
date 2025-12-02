@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Databricks
 
-- Numerous optimisations on join conditions for Databricks, for the follow table macros:
+- Numerous optimisations on join conditions for Databricks, for the following table macros:
   - `hub()`
   - `sat()`
   - `link()`
