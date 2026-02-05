@@ -11,6 +11,7 @@ pymdown-extensions = "*"
 mkdocs-git-revision-date-localized-plugin = "*"
 mkdocs-with-pdf = "*"
 mkdocs-video = "*"
+mkdocs-redirects = "*"
 
 [requires]
 python_version = "3.11"

@@ -680,7 +680,7 @@ Generates SQL to build a Link table using the provided parameters.
         ```
 ___
 
-### t_link
+### nh_link
 
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/t_link.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/t_link.sql)
@@ -688,15 +688,19 @@ ___
 [![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/t_link.sql)
 [![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/t_link.sql)
 
-Generates SQL to build a Transactional Link table using the provided parameters.
+Generates SQL to build a Non-historized Link table using the provided parameters.
+
+!!! note
+    As of AutomateDV v0.11.5, this replaces the `t_link()` macro. 
+    The `t_link()` macro is deprecated but still available for backwards compatibility.    
 
 #### Usage
 
 ``` jinja
-{{ automate_dv.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
-                   src_extra_columns=src_extra_columns,
-                   src_eff=src_eff, src_ldts=src_ldts, 
-                   src_source=src_source, source_model=source_model) }}
+{{ automate_dv.nh_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
+                       src_extra_columns=src_extra_columns,
+                       src_eff=src_eff, src_ldts=src_ldts, 
+                       src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -713,13 +717,14 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 | source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
-    [Read the tutorial](../tutorial/tut_t_links.md) for more details
+    [Read the tutorial](../tutorial/tut_nh_links.md) for more details
 
 #### Example Metadata
 
 [See examples](../metadata.md#transactional-links)
 
 #### Example Output
+
 === "Snowflake"
 
     === "Base Load"

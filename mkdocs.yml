@@ -44,7 +44,7 @@ nav:
       - Staging: 'tutorial/tut_staging.md'
       - Hubs: 'tutorial/tut_hubs.md'
       - Links: 'tutorial/tut_links.md'
-      - Transactional Links: 'tutorial/tut_t_links.md'
+      - Non-Historized Links: 'tutorial/tut_nh_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi-Active Satellites: 'tutorial/tut_multi_active_satellites.md'
@@ -134,6 +134,9 @@ plugins:
   - search
   - git-revision-date-localized:
       type: timeago
+  - redirects:
+      redirect_maps:
+        'tutorial/tut_t_links.md': 'tutorial/tut_nh_links.md'
 
 extra_css:
   - 'stylesheets/extra.css'

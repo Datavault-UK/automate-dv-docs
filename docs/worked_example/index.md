@@ -21,7 +21,7 @@ These pre-requisites are separate from those found on the [getting started](../t
 be the only necessary requirements you will need to get started with the example project. 
 
 1. Some prior knowledge of Data Vault 2.0 architecture.
-Read more: [AutomateDV pre-requisite knowledge](../index.md#pre-requisite)
+Read more: [AutomateDV pre-requisite knowledge](../index.md#pre-requisites)
 
 2. A Snowflake trial account. [Sign up for a free 30-day trial here](https://trial.snowflake.com/ab/)
 

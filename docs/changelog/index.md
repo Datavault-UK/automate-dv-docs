@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+# [v0.11.5] - 2026-02-05
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.5)](https://automate-dv.readthedocs.io/en/v0.11.5/?badge=v0.11.5)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.9.x%20%3C=3.0.0-orange?logo=dbt)
+
+## New
+
+- A new `nh_link()` (Non-historized Link) macro is now available. This is an alias of the existing `t_link()` (Transactional Link) macro which will eventually be deprecated - for now the two are interchangeable. This change was made to fall in-line with modern Data Vault 2.0 naming. 
+
+## Fixes
+
+- [#268](https://github.com/Datavault-UK/automate-dv/pull/268) Update dbt fusion compatibility to better handle the dbt meta config due to a loud warning. Thank you to @JordyHeusdensDT for the suggestion and accompanying code
+- [#238](https://github.com/Datavault-UK/automate-dv/issues/238) Fixed how Databricks hashes are typed (now `STRING` not `VARCHAR`)  
+
+
+## Backend
+
+- Changes to many supporting, metadata processing and other backend macros to better fit new dbt Fusion macro linting/syntax recommendations as well as improve maintainability and reduce complexity. 
+
+___
+
 # [v0.11.4] - 2025-12-02
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.4)](https://automate-dv.readthedocs.io/en/v0.11.4/?badge=v0.11.4)
 ![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.9.x%20%3C=3.0.0-orange?logo=dbt)
@@ -99,7 +119,7 @@ This release is dedicated to our friend and colleague at Datavault who recently 
 
 ### Google BigQuery & Databricks
 
-- Native Hashing now available, hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration)
+- Native Hashing now available, hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration-)
    - Hashes now correctly use the `BYTES` type on BigQuery (instead of `STRING`)
    - Hashes now correctly use the `BINARY` type on Databricks (instead of `STRING`)
    
@@ -218,7 +238,7 @@ ___
 
 **Databricks and Postgres are now fully supported in v0.9.7!**
 
-- Transactional Links ([t_link macro](../macros/index.md#t_link))
+- Transactional Links ([t_link macro](../macros/index.md#nh_link))
 - Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
 - Multi-active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
 - Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
@@ -491,7 +511,7 @@ More Google BigQuery and MS SQL Server support, plus fixes!
 
 #### Google BigQuery and MS SQL Server
 
-- T-Links ([t_link macro](../macros/index.md#t_link))
+- T-Links ([t_link macro](../macros/index.md#nh_link))
 - Effectivity Satellites ([eff_sat macro](../macros/index.md#eff_sat))
 - Multi-Active Satellites ([ma_sat macro](../macros/index.md#ma_sat))
 - Extended Tracking Satellites ([xts macro](../macros/index.md#xts))
