@@ -119,7 +119,7 @@ This release is dedicated to our friend and colleague at Datavault who recently 
 
 ### Google BigQuery & Databricks
 
-- Native Hashing now available, hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration-)
+- Native Hashing now available, hashes no longer stored as strings!  [docs](../macros/index.md#hashing-configuration)
    - Hashes now correctly use the `BYTES` type on BigQuery (instead of `STRING`)
    - Hashes now correctly use the `BINARY` type on Databricks (instead of `STRING`)
    
