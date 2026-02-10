@@ -18,7 +18,7 @@ A Link does not have any temporal data; it declares that there is a relationship
 To solve this, we create an Effectivity Satellite from `LINK_A_B` called `EFF_SAT_A_B`. This contains information about 
 the status of `LINK_A_B`. Now we have two columns, `START_DATE` and `END_DATE`. When the Effectivity Satellite
 record is created, we set the `START_DATE` and leave the `END_DATE` empty, or in our case set it to the maximal date of
-`9999-31-12` to signify that the relationship will not expire - it is active, or 'open'.
+`9999-12-31` to signify that the relationship will not expire - it is active, or 'open'.
 
 Now imagine, the foreign key link in Table A changes for some reason, pointing to another record in Table B. 
 The foreign key column in the row changes to point to the new record and it no longer points to the old record. This
