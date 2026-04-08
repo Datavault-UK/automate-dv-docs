@@ -101,7 +101,7 @@ This can be one of:
 
 1.  **Default Value:** 
     ```yaml
-    concat_string: 'upper'
+    concat_string: '||'
     ```
 
 Configure the string value to use for concatenating strings together when hashing.
