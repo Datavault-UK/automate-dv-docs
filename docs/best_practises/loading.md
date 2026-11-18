@@ -77,6 +77,19 @@ If it cannot be guaranteed that a load contains **_new_** deltas (i.e. data whic
 `apply_source_filter` config in your Satellites. This is done on a per-satellite basis if using config blocks, or can be applied to all Satellites
 using YAML configs (see the [dbt docs](https://docs.getdbt.com/reference/model-configs#configuring-models)).
 
+!!! note "Configuration: config level vs. meta level"
+    The `apply_source_filter` config can be provided in two ways:
+
+    - **config level** (compatible with dbt Core): Set directly under `config()`
+    ```jinja
+    {{ config(apply_source_filter=true) }}
+    ```
+
+    - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
+    ```jinja
+    {{ config(meta={'apply_source_filter': true}) }}
+    ```
+
 This will add an additional guardrail (to those added in v0.10.0) which will filter the data coming from the `source_model` during **_incremental loads_**.
 
 Please note, that though convenient, this is not a substitution for designing your loading and staging approach correctly and using this

@@ -579,7 +579,7 @@ example provided to help better convey the difference.
 
 #### Parameters
 
-[t_link macro parameters](macros/index.md#t_link)
+[t_link macro parameters](macros/index.md#nh_link)
 
 #### Metadata
 

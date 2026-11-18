@@ -15,7 +15,7 @@ We will:
 ## Pre-requisites 
 
 1. Some prior knowledge of Data Vault 2.0 architecture. 
-Read more: [AutomateDV pre-requisite knowledge](../index.md#pre-requisite)
+Read more: [AutomateDV pre-requisite knowledge](../index.md#pre-requisites)
 
 2. We assume you already have a raw staging layer, PSA or Data Lake.
 
