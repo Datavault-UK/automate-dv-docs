@@ -1214,13 +1214,13 @@ ___
     {%- set yaml_metadata -%}
     source_model: sat_customer_details
     src_pk: CUSTOMER_HK
-    src_eff: EFFECTIVE_FROM
+    src_latest: EFFECTIVE_FROM
     {%- endset -%}
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
     {{ automate_dv.lat_sat(src_pk=metadata_dict["src_pk"],
-                           src_eff=metadata_dict["src_eff"],
+                           src_latest=metadata_dict["src_latest"],
                            source_model=metadata_dict["source_model"]) }}
     ```
 
@@ -1232,13 +1232,13 @@ ___
     {%- set yaml_metadata -%}
     source_model: sat_customer_details
     src_pk: CUSTOMER_HK
-    src_eff: LOAD_DATETIME
+    src_latest: LOAD_DATETIME
     {%- endset -%}
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
     {{ automate_dv.lat_sat(src_pk=metadata_dict["src_pk"],
-                           src_eff=metadata_dict["src_eff"],
+                           src_latest=metadata_dict["src_latest"],
                            source_model=metadata_dict["source_model"]) }}
     ```
 
@@ -1252,13 +1252,13 @@ ___
     src_pk:
       - CUSTOMER_HK
       - ORDER_HK
-    src_eff: EFFECTIVE_FROM
+    src_latest: EFFECTIVE_FROM
     {%- endset -%}
 
     {% set metadata_dict = fromyaml(yaml_metadata) %}
 
     {{ automate_dv.lat_sat(src_pk=metadata_dict["src_pk"],
-                           src_eff=metadata_dict["src_eff"],
+                           src_latest=metadata_dict["src_latest"],
                            source_model=metadata_dict["source_model"]) }}
     ```
 
