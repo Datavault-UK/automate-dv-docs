@@ -1,6 +1,6 @@
 version: 2
 
-# Build documentation with MkDocs
+# Build documentation with Zensical (mkdocs.yml is still the config file)
 mkdocs:
   configuration: mkdocs.yml
 
@@ -10,6 +10,12 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+  jobs:
+    build:
+      html:
+        - zensical build --clean --config-file mkdocs.yml
+        - mkdir -p $READTHEDOCS_OUTPUT/html
+        - cp -r site/. $READTHEDOCS_OUTPUT/html/
 
 python:
   install:
