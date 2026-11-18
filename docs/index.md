@@ -1,4 +1,4 @@
-# Welcome to AutomateDV!
+# Welcome to the AutomateDV docs!
 AutomateDV is a dbt package that generates & executes the ETL you need to build a Data Vault 2.0 Data Warehouse.
 
 !!! Note
@@ -28,7 +28,7 @@ The method covers the full approach for developing a Data Warehouse: architectur
 and includes a number of unique techniques. 
 
 If you want to learn about Data Vault 2.0, your best starting point is the book Building a Scalable Data Warehouse with 
-Data Vault 2.0 (see details [below](#pre-requisite)).
+Data Vault 2.0 (see details [below](#pre-requisites)).
 
 ## Why do Data Vault 2.0 and dbt integrate well? 
 The Data Vault 2.0 method uses a small set of standard building blocks to model your data warehouse 
@@ -61,7 +61,7 @@ dbt works with the AutomateDV package to:
 - Generate data flow diagrams showing data lineage.
 - Automatically build a documentation website.
 
-## Pre-requisite
+## Pre-requisites
 If you are going to use the AutomateDV package for your Data Vault 2.0 project, then we expect you to have some prior 
 knowledge about the Data Vault 2.0 method.
 
@@ -76,8 +76,10 @@ information:
 
 ### Blogs and Downloads
 
-- [What is Data Vault?](https://www.data-vault.co.uk/what-is-data-vault/)
-- [Agile Modeling: Not an Option Anymore](https://www.vertabelo.com/blog/data-vault-series-agile-modeling-not-an-option-anymore/)
+- [What is Data Vault?](https://www.data-vault.com/what-is-data-vault/)
+- [Agile Modeling: Not an Option Anymore (via WayBackMachine)](https://web.archive.org/web/20230329184416/https://vertabelo.com/blog/data-vault-series-agile-modeling-not-an-option-anymore/)
+    - Original article now unavailable, however it can be found on the WayBackMachine (linked above).
+      It is important to note that the content and topic of this article is also compiled and extended in Kent's book, listed above.
 
 ## Roadmap and Changelog
 

@@ -1,3 +1,15 @@
+/*
+config level (compatible with dbt Core):
+{{ config(
+    is_auto_end_dating=false
+) }}
+
+meta level (compatible with dbt Core and Fusion):
+{{ config(
+    meta={'is_auto_end_dating': false}
+) }}
+*/
+
 {{ config(
     is_auto_end_dating=false
 ) }}

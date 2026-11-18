@@ -680,7 +680,7 @@ Generates SQL to build a Link table using the provided parameters.
         ```
 ___
 
-### t_link
+### nh_link
 
 [![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/t_link.sql)
 [![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/t_link.sql)
@@ -688,15 +688,19 @@ ___
 [![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/t_link.sql)
 [![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/t_link.sql)
 
-Generates SQL to build a Transactional Link table using the provided parameters.
+Generates SQL to build a Non-historized Link table using the provided parameters.
+
+!!! note
+    As of AutomateDV v0.11.5, this replaces the `t_link()` macro. 
+    The `t_link()` macro is deprecated but still available for backwards compatibility.    
 
 #### Usage
 
 ``` jinja
-{{ automate_dv.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
-                   src_extra_columns=src_extra_columns,
-                   src_eff=src_eff, src_ldts=src_ldts, 
-                   src_source=src_source, source_model=source_model) }}
+{{ automate_dv.nh_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
+                       src_extra_columns=src_extra_columns,
+                       src_eff=src_eff, src_ldts=src_ldts, 
+                       src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -713,13 +717,14 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 | source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
-    [Read the tutorial](../tutorial/tut_t_links.md) for more details
+    [Read the tutorial](../tutorial/tut_nh_links.md) for more details
 
 #### Example Metadata
 
 [See examples](../metadata.md#transactional-links)
 
 #### Example Output
+
 === "Snowflake"
 
     === "Base Load"
@@ -846,16 +851,16 @@ This section covers global variables ([var](https://docs.getdbt.com/docs/build/p
 === "apply_source_filter (config)"
 
     !!! tip "Added in v0.10.1"
-    
+
     This config option adds a WHERE clause (in incremental mode) using an additional CTE in the SQL code to filter the `source_model`'s data
-    
+
     This ensures that records in the source data are filtered so that only records with `src_ldts` after the MAX ldts in the existing Satellite
     are processed during the satellite load.
-    
+
     **It is intended for this config option to be used if you cannot guarantee atomic/idempotent batches i.e. only data which has not been loaded yet in your stage data.**
 
-    === "Example (model file)"
-    
+    === "config level (compatible with dbt Core)"
+
         ```sql
 
         -- sat_customer_details.sql
@@ -870,10 +875,37 @@ This section covers global variables ([var](https://docs.getdbt.com/docs/build/p
 
         {{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
                            src_extra_columns=src_extra_columns,
-                           src_eff=src_eff, src_ldts=src_ldts, 
+                           src_eff=src_eff, src_ldts=src_ldts,
                            src_source=src_source, source_model=source_model) }}
-        
+
         ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```sql
+
+        -- sat_customer_details.sql
+        {{
+          config(
+            meta={'apply_source_filter': true}
+          )
+        }}
+
+        {% set src_pk = ... %}
+        ...
+
+        {{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                           src_extra_columns=src_extra_columns,
+                           src_eff=src_eff, src_ldts=src_ldts,
+                           src_source=src_source, source_model=source_model) }}
+
+        ```
+
+    !!! note "Configuration: config level vs. meta level"
+        The `apply_source_filter` config can be provided in two ways:
+
+        - **config level** (compatible with dbt Core): Set directly under `config()`
+        - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
     
 === "enable_ghost_records (var)"
 
@@ -1231,14 +1263,33 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 
 Auto end-dating is enabled by providing a config option as below:
 
-``` jinja
-{{ config(is_auto_end_dating=true) }}
+=== "config level (compatible with dbt Core)"
 
-{{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                       src_start_date=src_start_date, src_end_date=src_end_date,
-                       src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                       source_model=source_model) }}
-```
+    ``` jinja
+    {{ config(is_auto_end_dating=true) }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+=== "meta level (compatible with dbt Core and Fusion)"
+
+    ``` jinja
+    {{ config(meta={'is_auto_end_dating': true}) }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+!!! note "Configuration: config level vs. meta level"
+    The `is_auto_end_dating` config can be provided in two ways:
+
+    - **config level** (compatible with dbt Core): Set directly under `config()`
+    - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
 
 This will enable 3 extra CTEs in the Effectivity Satellite SQL generated by the macro. Examples of this SQL are in the
 Example Output section above. The result of this will be additional effectivity records with end dates included, which

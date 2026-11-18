@@ -53,51 +53,119 @@ range. More detail on how this works is below.
 
 === "Manual Load range #1"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30') }}
-    
-    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                           src_start_date=src_start_date, src_end_date=src_end_date,
-                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                           source_model=source_model) }}
-    ```
+    Specify only `start_date` - the load will start at this date and the `stop_date` will be set to the **current date**.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        start_date='2020-01-30') }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day', 'start_date': '2020-01-30'}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 === "Manual Load range #2"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30', stop_date='2020-04-30') }}
-    
-    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                           src_start_date=src_start_date, src_end_date=src_end_date,
-                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                           source_model=source_model) }}
-    ```
+    Specify both `start_date` and `stop_date` - the load will start at `start_date` and stop at `stop_date`.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        start_date='2020-01-30', stop_date='2020-04-30') }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day',
+                        'start_date': '2020-01-30', 'stop_date': '2020-04-30'}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 === "Manual Load range #3"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
-    
-    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                           src_start_date=src_start_date, src_end_date=src_end_date,
-                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                           source_model=source_model) }}
-    ```
+    Specify all three config options - manually provided configuration acts as an override. The load will start at `start_date` and stop at `stop_date`.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day',
+                        'start_date': '2020-01-30', 'stop_date': '2020-04-30',
+                        'date_source_models': var('source_model')}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 === "Inferred Load range"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    date_source_models=var('source_model')) }}
-    
-    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                           src_start_date=src_start_date, src_end_date=src_end_date,
-                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                           source_model=source_model) }}
-    ```
+    Specify `date_source_models` only - the models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field`.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        date_source_models=var('source_model')) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day',
+                        'date_source_models': var('source_model')}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 #### Initial/Base Load vs. Incremental Load
 
@@ -153,6 +221,13 @@ materialisation is configured, the start and end of the load will get defined di
 | All three config options     | Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    
 
 Please refer to the _Usage_ section above to see examples.
+
+!!! note "Configuration: config level vs. meta level"
+    The configuration elements (`timestamp_field`, `period`, `start_date`, `stop_date`, `date_source_models`)
+    can be provided in two ways:
+
+    - **config level** (compatible with dbt Core): Set directly under `config()`
+    - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
 
 #### Configuration Options
 
@@ -267,14 +342,35 @@ column.
 
 #### Usage
 
-```jinja
-{{ config(materialized='vault_insert_by_rank', rank_column='AUTOMATE_DV_RANK', rank_source_models='MY_STAGE') }}
+=== "config level (compatible with dbt Core)"
 
-{{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                       src_start_date=src_start_date, src_end_date=src_end_date,
-                       src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                       source_model=source_model) }}
-```
+    ```jinja
+    {{ config(materialized='vault_insert_by_rank', rank_column='AUTOMATE_DV_RANK', rank_source_models='MY_STAGE') }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+=== "meta level (compatible with dbt Core and Fusion)"
+
+    ```jinja
+    {{ config(materialized='vault_insert_by_rank',
+              meta={'rank_column': 'AUTOMATE_DV_RANK', 'rank_source_models': 'MY_STAGE'}) }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+!!! note "Configuration: config level vs. meta level"
+    The configuration elements (`rank_column`, `rank_source_models`)
+    can be provided in two ways:
+
+    - **config level** (compatible with dbt Core): Set directly under `config()`
+    - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
 
 #### Configuration Options
 

@@ -66,7 +66,7 @@ The recommended materialisation for **Transactional Links** is `incremental`, as
 
 ### Adding the metadata
 
-Let's look at the metadata we need to provide to the [t_link macro](../macros/index.md#t_link).
+Let's look at the metadata we need to provide to the [nh_link macro](../macros/index.md#nh_link).
 
 We provide the column names which we would like to select from the staging area (`source_model`).
 
