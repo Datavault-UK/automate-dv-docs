@@ -8,11 +8,8 @@ Prefer a video? This video has a great overview of the content on this page.
 
 ### Assumptions
 
-1. The dbtvault package assumes you've already loaded a table with raw data 
+1. The AutomateDV package assumes you've already loaded a table with raw data 
 from a source system or feed; this is referred to as the 'raw staging layer' or 'landing zone'.
-
-2. All records in a single load must be for the same load datetime. This restriction is not applicable to Hubs and Links.
-   We will be removing this restriction for other structures in the future. 
 
 ### Getting started
 
@@ -24,17 +21,17 @@ We also need to ensure column names align with target Hub or Link table column n
 ### Creating staging models
 
 To create a stage model, we simply copy and paste the below template into a model named after the staging table/view we
-are creating. dbtvault will generate a stage using parameters provided in the next steps.
+are creating. AutomateDV will generate a stage using parameters provided in the next steps.
 
 === "v_stg_orders.sql"
 
     ```sql
-    {{ dbtvault.stage(include_source_columns=true,
-                      source_model=source_model,
-                      derived_columns=derived_columns,
-                      null_columns=null_columns,
-                      hashed_columns=hashed_columns,
-                      ranked_columns=ranked_columns) }}
+    {{ automate_dv.stage(include_source_columns=true,
+                         source_model=source_model,
+                         derived_columns=derived_columns,
+                         null_columns=null_columns,
+                         hashed_columns=hashed_columns,
+                         ranked_columns=ranked_columns) }}
     ```
 
 #### Materialisation
@@ -67,7 +64,7 @@ The model provided in the 'Final model' section below, shows the use of the 'sou
 | END_DATE       | TO_DATE('9999-12-31')   |
 
 !!! Note "What is the '!'?"
-    This is some syntactic sugar provided by dbtvault to create constant values. [Read More](../macros/index.md#constants-derived-columns)
+    This is some syntactic sugar provided by AutomateDV to create constant values. [Read More](../macros/stage_macro_configurations.md#defining-constants)
     
 
 ##### Hashed columns
@@ -112,12 +109,12 @@ hashed_columns:
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-{{ dbtvault.stage(include_source_columns=true,
-                  source_model=metadata_dict['source_model'],
-                  derived_columns=metadata_dict['derived_columns'],
-                  null_columns=none,
-                  hashed_columns=metadata_dict['hashed_columns'],
-                  ranked_columns=none) }}
+{{ automate_dv.stage(include_source_columns=true,
+                     source_model=metadata_dict['source_model'],
+                     derived_columns=metadata_dict['derived_columns'],
+                     null_columns=none,
+                     hashed_columns=metadata_dict['hashed_columns'],
+                     ranked_columns=none) }}
 ```
 
 !!! Note
@@ -142,11 +139,7 @@ In summary this model will:
 
 With our model complete and our YAML written, we can run dbt:
 
-=== "< dbt v0.20.x"
-    `dbt run -m v_stg_orders`
-
-=== "> dbt v0.21.0"
-    `dbt run -s v_stg_orders`
+`dbt run -s v_stg_orders`
 
 The resulting stage view will look like this:
 

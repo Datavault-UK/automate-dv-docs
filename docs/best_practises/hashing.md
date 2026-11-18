@@ -4,15 +4,15 @@
  
 ### The drawbacks of using MD5
 
-By default, dbtvault uses MD5 hashing to calculate hashes using [hash](../macros/index.md#hash-macro)
+By default, AutomateDV uses MD5 hashing to calculate hashes using [hash](../macros/index.md#hash-macro)
 and [hash_columns](../macros/stage_macro_configurations.md#hashed-columns). If your table contains more than a few billion rows, then there is a chance
 of a clash: where two different values generate the same hash value
 (see [Collision vulnerabilities](https://en.wikipedia.org/wiki/MD5#Collisi76on_vulnerabilities)).
 
 For this reason, it **should not be** used for cryptographic purposes either.
 
-You can however, choose between MD5 and SHA-256 in
-dbtvault, [read below](#choosing-a-hashing-algorithm-in-dbtvault), which will help with reducing the
+You can however, choose between MD5 (`md5`), SHA-1 (`sha1`) and SHA-256 (`sha`) in
+AutomateDV, [read below](#choosing-a-hashing-algorithm), which will help with reducing the
 possibility of collision in larger data sets.
 
 #### Personally Identifiable Information (PII)
@@ -49,7 +49,7 @@ been a change in the payload. This triggers the load of a new Satellite record. 
 we'd have to compare each column in turn and handle nulls to see if a change had occurred.
 
 Hashing is sensitive to column ordering. If you provide the `is_hashdiff: true` flag to your column specification in
-the [stage](../macros/index.md#stage) macro, dbtvault will automatically sort the provided columns alphabetically. Columns will
+the [stage](../macros/index.md#stage) macro, AutomateDV will automatically sort the provided columns alphabetically. Columns will
 be sorted by their alias.
 
 ### How do we hash?
@@ -75,7 +75,7 @@ Single-column hashing step by step:
    hash to the same value. For example <code>1001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> and <code>&nbsp;1001</code>.
 
 3. `UPPER` Next we eliminate problems where the casing in a string will cause a different hash value to be generated for
-   the same word, for example `DBTVAULT` and `dbtvault`.
+   the same word, for example `AUTOMATE_DV` and `automate_dv`.
 
 4. `NULLIF ''` At this point we ensure that if an empty string has been provided, it will be considered `NULL`. This
    kind of problem can arise if data gets ingested into your warehouse from semi-structured data such as JSON or CSV,
@@ -143,15 +143,15 @@ of the record, and the payload of the record.
 
 !!! note
 
-    Prior to dbtvault v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
-    In dbtvault v0.7.4, macros have been updated to include logic to ensure the primary key is checked
+    Prior to AutomateDV v0.7.4 hashdiffs are **REQUIRED** to contain the natural keys of the record. 
+    In AutomateDV v0.7.4, macros have been updated to include logic to ensure the primary key is checked
     in addition to the hashdiff when detecting new records. It is still best practice to include the natural keys, however. 
 
 ### Hashing best practices
 
 Best practices for hashing include:
 
-- Alpha sorting Hashdiff columns. As mentioned, dbtvault can do this for us, so no worries!
+- Alpha sorting Hashdiff columns. As mentioned, AutomateDV can do this for us, so no worries!
   Refer to the [stage](../macros/index.md#stage) docs for details on how to do this.
 
 - Ensure all **Hub** columns used to calculate a primary key hash get presented in the same order across all staging
@@ -198,16 +198,18 @@ Below is an example satellite YAML config from a Satellite model:
 The highlighted lines show the syntax required to alias a column named `CUSTOMER_HASHDIFF` (present in the
 `stg_customer_details_hashed` staging layer) as `HASHDIFF`.
 
-### Choosing a hashing algorithm in dbtvault
+### Choosing a hashing algorithm
 
-You may choose between `MD5` and `SHA-256` hashing. `SHA-256` is an option for users who wish to reduce the hashing
-collision rates in larger data sets.
+You may choose between different types of hashing algorithm. Using a SHA-type algorithm 
+is an option for users who wish to reduce the hashing collision rates in larger data sets.
 
 !!! note
+    If a hashing algorithm configuration is missing or invalid, AutomateDV will use `MD5` by default. 
 
-    If a hashing algorithm configuration is missing or invalid, dbtvault will use `MD5` by default. 
+!!! tip
+    SHA-1 Hashing is recommended by the Data Vault Alliance
 
-Configuring the hashing algorithm which will be used by dbtvault is simple: add a global variable to your
+Configuring the hashing algorithm which will be used by AutomateDV is simple: add a global variable to your
 `dbt_project.yml` as follows:
 
 === "dbt_project.yml"
@@ -231,11 +233,43 @@ Configuring the hashing algorithm which will be used by dbtvault is simple: add 
       - "dbt_modules"
     
     vars:
-      hash: SHA # or MD5
+      hash: SHA # or other options below
     ```
 
-It is possible to configure a hashing algorithm on a model-by-model basis using the hierarchical structure of the `yaml`
-file. We recommend you keep the hashing algorithm consistent across all tables, however, as per best practice.
+## Configuring
+
+### Hashing by Platform
+
+|              | Support & Output Type                                       |                                                                 |                                                             |
+|--------------|:------------------------------------------------------------|-----------------------------------------------------------------|-------------------------------------------------------------|
+| **Platform** | MD5                                                         | SHA-1                                                           | SHA-256                                                     |
+| Snowflake    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16) | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20) | :fontawesome-solid-circle-check:{ .required } \| BINARY(32) |
+| Databricks   | :fontawesome-solid-circle-check:{ .required } \| BINARY**   | :fontawesome-solid-circle-check:{ .required }     \| BINARY**   | :fontawesome-solid-circle-check:{ .required } \| BINARY**   |
+| BigQuery     | :fontawesome-solid-circle-check:{ .required } \| BYTES**    | :fontawesome-solid-circle-check:{ .required }     \| BYTES**    | :fontawesome-solid-circle-check:{ .required } \| BYTES**    |
+| SQLServer    | :fontawesome-solid-circle-check:{ .required } \| BINARY(16) | :fontawesome-solid-circle-check:{ .required }     \| BINARY(20) | :fontawesome-solid-circle-check:{ .required } \| BINARY(32) |
+| Postgres     | :fontawesome-solid-circle-check:{ .required } \| BYTEA      | :fontawesome-solid-circle-minus:{ .not-required }*              | :fontawesome-solid-circle-check:{ .required } \| BYTEA      |  
+ 
+!!! info
+    \*SHA-1 Hashing is not supported on Postgres due to needing the pgcrypto extension to implement it fully.  
+    \*\*Since v0.11.0, with `enable_native_hashing` enabled. STRING/VARCHAR hashes are used without this config enabled, 
+    for backwards compatibility purposes. See [Global variables](../macros/index.md#global-variables) for more information
+
+### Options
+
+| MD5   | SHA-1  | SHA-256 |
+|-------|--------|---------|
+| `md5` | `sha1` | `sha`   |
+
+
+!!! info
+    These values are case-insensitive, e.g. both `sha1` and `SHA1` will work. 
+
+### Configuring specific models
+
+It is possible to configure a hashing algorithm at a more targeted scope rather than globally, 
+using the hierarchical structure of the dbt `yaml` configurations. 
+
+This is not recommended, and instead we recommend keeping the hash algorithm consistent across all models, as per best practice.
 
 Read the [dbt documentation](https://docs.getdbt.com/reference/dbt-jinja-functions/var) for further information on
 variable scoping.
@@ -244,7 +278,8 @@ variable scoping.
 
     Stick with your chosen algorithm unless you can afford to full-refresh, and you still have access to source
     data. Changing between hashing configurations when data has already been loaded will require a full-refresh of your
-    models in order to re-calculate all hashes.
+    models in order to re-calculate all hashes. In production, migration is possible but more complex and must be 
+    handled with care.
 
 ### Configuring hash strings
 
@@ -259,7 +294,6 @@ The strings can be changed by the user, and this is achieved in the same way as 
 === "dbt_project.yml hash string configuration"
 
     ```yaml
-    
     ...
     vars:
       concat_string: '!!'
@@ -276,7 +310,7 @@ The strings can be changed by the user, and this is achieved in the same way as 
     ), '##!!##!!##')) AS BINARY(16)) AS CUSTOMER_HK
     ```
 
-### The future of hashing in dbtvault
+## The future of hashing in AutomateDV
 
 We plan to provide users with the ability to disable hashing entirely.
 

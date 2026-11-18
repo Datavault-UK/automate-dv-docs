@@ -11,12 +11,26 @@ dbt comes with 4 standard materialisations:
 
 [Read more about materialisations here](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/materializations/)
 
-For dbtvault, we have created some custom materialisations which support Data Vault 2.0 specific patterns which are 
+For AutomateDV, we have created some custom materialisations which support Data Vault 2.0 specific patterns which are 
 documented below.
+
+For normal use, you should use the standard incremental materialisation in most cases. Please refer to our [best practises for recommended materialisations](https://automate-dv.readthedocs.io/en/latest/best_practises/materialisations/#recommended-materialisations). 
+
+!!! warning 
+    These are not to be used for daily loads or even first-time (base) loads as they are ill-performant. 
+    Their main use case is for low-volume tables for testing or development purposes and users are not advised to use these in production
 
 ### vault_insert_by_period (Insert by Period)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/vault_insert_by_period_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/vault_insert_by_period_materialization.sql))
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    This materialisation was initially designed to provide an option for rapid iterative development of
+    incremental loading patterns in local environments for development and testing, allowing users to bypass
+    the need for a comprehensive PSA or delta-loading solution. It is being deprecated to encourage the use
+    of more robust solutions.
 
 This materialisation is based on
 the [insert_by_period](https://github.com/dbt-labs/dbt-utils/blob/master/macros/materializations/insert_by_period_materialization.sql)
@@ -39,51 +53,119 @@ range. More detail on how this works is below.
 
 === "Manual Load range #1"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30') }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
+    Specify only `start_date` - the load will start at this date and the `stop_date` will be set to the **current date**.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        start_date='2020-01-30') }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day', 'start_date': '2020-01-30'}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 === "Manual Load range #2"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30', stop_date='2020-04-30') }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
+    Specify both `start_date` and `stop_date` - the load will start at `start_date` and stop at `stop_date`.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        start_date='2020-01-30', stop_date='2020-04-30') }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day',
+                        'start_date': '2020-01-30', 'stop_date': '2020-04-30'}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 === "Manual Load range #3"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
+    Specify all three config options - manually provided configuration acts as an override. The load will start at `start_date` and stop at `stop_date`.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        start_date='2020-01-30', stop_date='2020-04-30', date_source_models=var('source_model')) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day',
+                        'start_date': '2020-01-30', 'stop_date': '2020-04-30',
+                        'date_source_models': var('source_model')}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 === "Inferred Load range"
 
-    ```jinja 
-    {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
-    date_source_models=var('source_model')) }}
-    
-    {{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                        src_start_date=src_start_date, src_end_date=src_end_date,
-                        src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                        source_model=source_model) }}
-    ```
+    Specify `date_source_models` only - the models will be unioned together, and the minimum and maximum dates extracted from the data in the `timestamp_field`.
+
+    === "config level (compatible with dbt Core)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period', timestamp_field='LOAD_DATE', period='day',
+        date_source_models=var('source_model')) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```jinja
+        {{ config(materialized='vault_insert_by_period',
+                  meta={'timestamp_field': 'LOAD_DATE', 'period': 'day',
+                        'date_source_models': var('source_model')}) }}
+
+        {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                               src_start_date=src_start_date, src_end_date=src_end_date,
+                               src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                               source_model=source_model) }}
+        ```
 
 #### Initial/Base Load vs. Incremental Load
 
@@ -94,7 +176,7 @@ The first time a model with the materialisation applied is run, a `BASE LOAD` is
 first period in the load date range (e.g. The first day's data). All subsequent runs of the same model will execute
 incremental loads for each consecutive period.
 
-The first period load will be repeated but no duplicates should be inserted when using dbtvault macros.
+The first period load will be repeated but no duplicates should be inserted when using AutomateDV macros.
 
 ##### Run Output
 
@@ -114,14 +196,14 @@ Examples of output for dbt runs using the [eff_sat](macros/index.md#eff_sat) mac
     ```text 
     15:24:16 | Concurrency: 4 threads (target='snowflake')
     15:24:16 | 15:24:16 | 1 of 1 START vault_insert_by_period model TEST.EFF_SAT..... [RUN]
-    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.dbtvault_test.EFF_SAT]
-    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.dbtvault_test.EFF_SAT]
-    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.dbtvault_test.EFF_SAT]
-    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.dbtvault_test.EFF_SAT]
+    15:24:17 + Running for day 1 of 4 (2020-01-10) [model.automate_dv_test.EFF_SAT]
+    15:24:18 + Ran for day 1 of 4 (2020-01-10); 0 records inserted [model.automate_dv_test.EFF_SAT]
+    15:24:18 + Running for day 2 of 4 (2020-01-11) [model.automate_dv_test.EFF_SAT]
+    15:24:20 + Ran for day 2 of 4 (2020-01-11); 0 records inserted [model.automate_dv_test.EFF_SAT]
+    15:24:20 + Running for day 3 of 4 (2020-01-12) [model.automate_dv_test.EFF_SAT]
+    15:24:21 + Ran for day 3 of 4 (2020-01-12); 2 records inserted [model.automate_dv_test.EFF_SAT]
+    15:24:22 + Running for day 4 of 4 (2020-01-13) [model.automate_dv_test.EFF_SAT]
+    15:24:24 + Ran for day 4 of 4 (2020-01-13); 2 records inserted [model.automate_dv_test.EFF_SAT]
     15:24:24 | 1 of 1 OK created vault_insert_by_period model TEST.EFF_SAT [INSERT 4 in 8.13s]
     15:24:25 | 15:24:25 | Finished running 1 vault_insert_by_period model in 10.24s.
     ```
@@ -139,6 +221,13 @@ materialisation is configured, the start and end of the load will get defined di
 | All three config options     | Manually provided configuration acts as an override. The load will start at `start_date`, and stop at `stop_date`       | Manual Load range #3 |    
 
 Please refer to the _Usage_ section above to see examples.
+
+!!! note "Configuration: config level vs. meta level"
+    The configuration elements (`timestamp_field`, `period`, `start_date`, `stop_date`, `date_source_models`)
+    can be provided in two ways:
+
+    - **config level** (compatible with dbt Core): Set directly under `config()`
+    - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
 
 #### Configuration Options
 
@@ -170,7 +259,7 @@ See below for the platform-specific documentation.
 Providing a list of models with the `date_source_models` configuration option, will automatically load all data from the
 source with date or date-times between the minimum and maximum values contained in the `timestamp_field` column.
 
-When using the dbtvault table template macros, `date_source_models` should be the same as the `source_model` attribute
+When using the AutomateDV table template macros, `date_source_models` should be the same as the `source_model` attribute
 in the macro.
 
 This does not necessarily have to be the case however, and it is possible to create a waterlevel-like table as follows:
@@ -185,13 +274,13 @@ This does not necessarily have to be the case however, and it is possible to cre
 Where `LOAD_DATE` is provided to the materialisation as the `timestamp_field`, and `date_source_models` is provided
 as `waterlevel` (the model name).
 
-#### Using the materialisation with non-dbtvault SQL
+#### Using the materialisation with non-AutomateDV SQL
 
 Every [table template macro](macros/index.md#table-templates) includes a `__PERIOD_FILTER__` string in its SQL when used in
 conjunction with this materialisation.
 
 At runtime, this string is replaced with SQL which applies conditions to filter the dates contained in
-the `timestamp_field` to those specified in the load date range. If you are only using dbtvault table template macros
+the `timestamp_field` to those specified in the load date range. If you are only using AutomateDV table template macros
 with this materialisation, then there is no need for any additional work.
 
 However, If you are writing your own models and wish to use this materialisation, then you must include
@@ -199,21 +288,21 @@ a `WHERE __PERIOD_FILTER__`
 somewhere appropriate in your model. A CTE which selects from your source model and then includes the placeholder,
 should provide best results.
 
-See the [hub](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/tables/hub.sql) source code for 
+See the [hub](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/tables/hub.sql) source code for 
 a demonstration of this.
 
 #### Idempotent loads
 
-This materialisation supports idempotent loads when used with dbtvault macros. When calculating the `start` and `stop`
+This materialisation supports idempotent loads when used with AutomateDV macros. When calculating the `start` and `stop`
 dates of the load, a `COALESCE` function is applied. This `COALESCE` call compares the maximum timestamp contained in
 the `timestamp_field`, and the provided or inferred `start_date` and sets the `start_date`
 to whatever is larger (more recent). This means that any aborted loads will continue where they left off, and any
-duplicate loads will not have any effect (if using dbtvault macros).
+duplicate loads will not have any effect (if using AutomateDV macros).
 
-If you wish support idempotent loads in your own models which do not use dbtvault macros and use this materialisation, 
+If you wish support idempotent loads in your own models which do not use AutomateDV macros and use this materialisation, 
 the best approach is to use `LEFT OUTER JOINS` in your incremental logic to ensure duplicate records do not get loaded.
 
-Example incremental logic containing a `LEFT OUTER JOIN` (taken from dbtvault's hub macro):
+Example incremental logic containing a `LEFT OUTER JOIN` (taken from AutomateDV's hub macro):
 
 === "hub Macro LEFT OUTER JOIN"
 
@@ -227,7 +316,15 @@ Example incremental logic containing a `LEFT OUTER JOIN` (taken from dbtvault's 
 
 ### vault_insert_by_rank (Insert by Rank)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/vault_insert_by_rank_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/vault_insert_by_rank_materialization.sql))
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    This materialisation was initially designed to provide an option for rapid iterative development of
+    incremental loading patterns in local environments for development and testing, allowing users to bypass
+    the need for a comprehensive PSA or delta-loading solution. It is being deprecated to encourage the use
+    of more robust solutions.
 
 The `vault_insert_by_rank` custom materialisation provides the means to iteratively load raw vault structures from an
 arbitrary rank column, created in the staging layer.
@@ -245,14 +342,35 @@ column.
 
 #### Usage
 
-```jinja
-{{ config(materialized='vault_insert_by_rank', rank_column='DBTVAULT_RANK', rank_source_models='MY_STAGE') }}
+=== "config level (compatible with dbt Core)"
 
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                    src_start_date=src_start_date, src_end_date=src_end_date,
-                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                    source_model=source_model) }}
-```
+    ```jinja
+    {{ config(materialized='vault_insert_by_rank', rank_column='AUTOMATE_DV_RANK', rank_source_models='MY_STAGE') }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+=== "meta level (compatible with dbt Core and Fusion)"
+
+    ```jinja
+    {{ config(materialized='vault_insert_by_rank',
+              meta={'rank_column': 'AUTOMATE_DV_RANK', 'rank_source_models': 'MY_STAGE'}) }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+!!! note "Configuration: config level vs. meta level"
+    The configuration elements (`rank_column`, `rank_source_models`)
+    can be provided in two ways:
+
+    - **config level** (compatible with dbt Core): Set directly under `config()`
+    - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
 
 #### Configuration Options
 
@@ -272,7 +390,7 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: "CUSTOMER_HK"
         order_by: "LOAD_DATETIME"
     ```
@@ -282,11 +400,11 @@ A rank column can be created one of three ways:
     ```yaml
     source_model: "MY_STAGE"
     derived_columns:
-      DBTVAULT_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
+      AUTOMATE_DV_RANK: "RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME)"
     ```
 
 !!! note
-    [Read more](macros/index.md#defining-and-configuring-ranked-columns) about defining ranked columns.
+    [Read more](macros/stage_macro_configurations.md#defining-and-configuring-ranked-columns) about defining ranked columns.
 
 #### Which option?
 
@@ -301,7 +419,7 @@ A rank column can be created one of three ways:
 
 ### pit_incremental
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_pit_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/incremental_pit_materialization.sql))
 
 The `pit_incremental` custom materialisation is the required materialisation for the [PIT table](macros/index.md#pit) as it
 allows for a continuous reconstruction of the PIT table. 
@@ -317,16 +435,16 @@ populates the target table, for each run of the PIT model.
 ```jinja
 {{ config(materialized='pit_incremental') }}
 
-{{ dbtvault.pit(source_model=source_model, src_pk=src_pk,
-                    as_of_dates_table=as_of_dates_table,
-                    satellites=satellites,
-                    stage_tables=stage_tables,
-                    src_ldts=src_ldts) }}                    
+{{ automate_dv.pit(source_model=source_model, src_pk=src_pk,
+                   as_of_dates_table=as_of_dates_table,
+                   satellites=satellites,
+                   stage_tables_ldts=stage_tables_ldts,
+                   src_ldts=src_ldts) }}                    
 ```
 
 ### bridge_incremental
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.7.9/macros/materialisations/incremental_bridge_materialization.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/materialisations/incremental_bridge_materialization.sql))
 
 The `bridge_incremental` custom materialisation is the required materialisation for the [Bridge table](macros/index.md#bridge)
 as it allows for a continuous reconstruction of the Bridge table. 
@@ -342,9 +460,9 @@ populates the target table, for each run of the Bridge model.
 ```jinja
 {{ config(materialized='bridge_incremental') }}
 
-{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                       bridge_walk=bridge_walk,
-                       as_of_dates_table=as_of_dates_table,
-                       stage_tables_ldts=stage_tables_ldts,
-                       src_ldts=src_ldts) }}
+{{ automate_dv.bridge(source_model=source_model, src_pk=src_pk,
+                      bridge_walk=bridge_walk,
+                      as_of_dates_table=as_of_dates_table,
+                      stage_tables_ldts=stage_tables_ldts,
+                      src_ldts=src_ldts) }}
 ```

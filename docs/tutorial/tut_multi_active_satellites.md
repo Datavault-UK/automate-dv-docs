@@ -36,7 +36,7 @@ Satellite record. It records that a record is valid from a specific point in tim
 If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no 
 longer have the most recent `EFFECTIVE_FROM` value. 
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. This identifies when the record first gets loaded into the database.
 
 #### Record Source (src_source)
@@ -61,9 +61,9 @@ Create a new dbt model as before. We'll call this one `ma_sat_customer_detail`.
 === "ma_sat_customer_detail.sql"
 
     ```jinja
-    {{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
-                       src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
-                       src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                          src_payload=src_payload, src_eff=src_eff, src_ldts=src_ldts, 
+                          src_source=src_source, source_model=source_model) }}
     ```
 
 ### Adding the metadata
@@ -116,14 +116,14 @@ When we provide the metadata above, our model should look like the following:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.ma_sat(src_pk=metadata_dict['src_pk'],
-                       src_cdk=metadata_dict['src_cdk'],
-                       src_payload=metadata_dict['src_payload'],
-                       src_hashdiff=metadata_dict['src_hashdiff'],
-                       src_eff=metadata_dict['src_eff'],
-                       src_ldts=metadata_dict['src_ldts'],
-                       src_source=metadata_dict['src_source'],
-                       source_model=metadata_dict['source_model']) }}
+    {{ automate_dv.ma_sat(src_pk=metadata_dict['src_pk'],
+                          src_cdk=metadata_dict['src_cdk'],
+                          src_payload=metadata_dict['src_payload'],
+                          src_hashdiff=metadata_dict['src_hashdiff'],
+                          src_eff=metadata_dict['src_eff'],
+                          src_ldts=metadata_dict['src_ldts'],
+                          src_source=metadata_dict['src_source'],
+                          source_model=metadata_dict['source_model']) }}
     ```
 
 !!! Note
@@ -133,11 +133,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our model complete and our YAML written, we can run dbt to create our `ma_sat_customer_detail` Multi-Active Satellite.
 
-=== "< dbt v0.20.x"
-    `dbt run -m +ma_sat_customer_detail`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +ma_sat_customer_detail`
+`dbt run -s +ma_sat_customer_detail`
 
 The resulting Multi Active Satellite table will look like this:
 

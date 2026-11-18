@@ -19,15 +19,15 @@ First make sure the `requirements.txt` file is in your current working directory
 This will install dbt and all of its dependencies, ready for 
 development with dbt.
 
-## Install dbtvault
+## Install AutomateDV
 
-Next, we need to install dbtvault. 
-dbtvault has already been added to the `packages.yml` file provided with the example project, so all you need to do 
+Next, we need to install AutomateDV. 
+AutomateDV has already been added to the `packages.yml` file provided with the example project, so all you need to do 
 is run the following command, inside the folder where your `dbt_project.yml` resides:
  
 `dbt deps`
 
-## Setting up dbtvault with Snowflake
+## Setting up AutomateDV with Snowflake
 
 In the provided dbt project file (`dbt_project.yml`) the profile is named `snowflake-demo`.
 In your dbt profiles, you must create a connection with this name and provide the snowflake
@@ -176,8 +176,8 @@ Metadata for each structure is provided in each file, for example:
     {%- set src_ldts = "LOAD_DATE" -%}
     {%- set src_source = "RECORD_SOURCE" -%}
     
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 Take a look at our [metadata reference](../metadata.md) for a full reference and recommendations for providing metadata.

@@ -9,16 +9,25 @@ the `ref()` [function](https://docs.getdbt.com/reference/dbt-jinja-functions/ref
 [function](https://docs.getdbt.com/reference/dbt-jinja-functions/source)
 for [dbt sources](https://docs.getdbt.com/docs/building-a-dbt-project/using-sources/).
 
-dbtvault provides the means for specifying sources for Data Vault structures with a `source_model` argument.
+AutomateDV provides the means for specifying sources for Data Vault structures with a `source_model` argument.
 
 This behaves differently for the [stage](#stage) macro, which supports either style, shown below:
 
 #### ref style
 
-```yaml
-stg_customer:
-  source_model: 'raw_customer'
-```
+=== "model reference"
+
+    ```yaml
+    stg_customer:
+    source_model: 'raw_customer'
+    ```
+
+=== "versioned model"
+
+    ```yaml
+    stg_customer:
+    source_model: 'raw_customer.v1'
+    ```
 
 #### source style
 
@@ -59,10 +68,10 @@ the `.sql`).
 
 ## Global variables
 
-dbtvault provides
+AutomateDV provides
 user-overridable [global variables](https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-variables#defining-variables-in-dbt_projectyml)
-which allow you to configure different aspects of dbtvault. These variables will be expanded in future versions of
-dbtvault.
+which allow you to configure different aspects of AutomateDV. These variables will be expanded in future versions of
+AutomateDV.
 
 ### Hashing configuration 
 
@@ -72,34 +81,63 @@ vars:
   concat_string: '||'
   null_placeholder_string: '^^'
   hash_content_casing: 'UPPER'
+  enable_native_hashes: false
 ```
 
-#### hash
+<div class="annotate" markdown>
+#### hash (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    hash: 'MD5'
+    ```
 
 Configure the type of hashing.
 
 This can be one of:
 
 - MD5
+- SHA-1 
 - SHA
 
-[Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
+[Read more](../best_practises/hashing.md#choosing-a-hashing-algorithm)
 
-#### concat_string
 
-Configure the string value to use for concatenating strings together when hashing. By default, this is two pipe
-characters: '`||`'
+<div class="annotate" markdown>
+#### concat_string (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    concat_string: 'upper'
+    ```
+
+Configure the string value to use for concatenating strings together when hashing.
 
 [Read more](../best_practises/hashing.md#multi-column-hashing)
 
-#### null_placeholder_string
+<div class="annotate" markdown>
+#### null_placeholder_string (1)
+</div>
 
-Configure the string value to use for replacing `NULL` values when hashing. By default, this is two caret
-characters: '`^^`'
+1.  **Default Value:** 
+    ```yaml
+    null_placeholder_string: '^^'
+    ```
 
-#### hash_content_casing
+Configure the string value to use for replacing `NULL` values when hashing.
 
-This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hashing.
+<div class="annotate" markdown>
+#### hash_content_casing (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    hash_content_casing: 'UPPER'
+    ```
+
+This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hash value.
 
 This can be one of:
 
@@ -129,40 +167,99 @@ This can be one of:
         CAST((MD5_BINARY(NULLIF(TRIM(CAST(CUSTOMER_ID AS VARCHAR)), ''))) AS BINARY(16)) AS CUSTOMER_HK
         ```
 
-!!! tip "New in v0.9.1"
-    We've added this config to give you more options when hashing. If there is logic difference between uppercase
+!!! info
+    We've added this config to give you more options when hashing. If there is logical difference between uppercase
     and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
 
+<div class="annotate" markdown>
+#### enable_native_hashes (1)
+</div>
+
+1.  **Default Value:** 
+    ```yaml
+    enable_native_hashes: false
+    ```
+
+!!! tip "New in v0.11.0"
+
+    _Applies to Databricks and Google BigQuery only_
+
+This option allows users to enable native binary hashes in AutomateDV which uses `BINARY` (or equivalent) data types for platforms which did not 
+previously hash as binary in AutomateDV. These platforms are _Databricks_ and _Google BigQuery_, which - prior to AutomateDV v0.11.0 -
+created hashes using the `STRING` (or equivalent) data type.
+
+This led to a hit on performance, and was a non-standard approach. They were originally implemented as Strings either because
+the Binary data type did not exist, or as an oversight on our part. 
+
+This flag is `false` by default to avoid breaking hash calculation for users already using 
+AutomateDV on Databricks and Google BigQuery prior to v0.11.0. If you are starting a new project, 
+it is **_highly recommended_** to set this to `true` from the start. 
+
+See [Hashing by Platform](../best_practises/hashing.md#hashing-by-platform) for a full list of data types
+
 ### Ghost Record configuration
-
-!!! tip "New in v0.9.1"
-    Ghost Records are here! This is our first iteration of Ghost Records functionality. Please give us feedback on
-    GitHub or Slack :smile:
-
 
 ```yaml
 vars:
   enable_ghost_records: false
-  system_record_value: 'DBTVAULT_SYSTEM'
+  system_record_value: 'AUTOMATE_DV_SYSTEM'
 ```
+
+#### How Ghost Records work
+
+In the Data Vault standards, ghost records are intended to provide equi-join capabilities for PIT tables when queries on a satellite
+at a point in time would otherwise return no records. Instead of having to handle NULLs and incur performance penalties for joins which
+do not return records, the ghost record is a single record inserted into a Satellite upon its first creation which can be used instead.
+
+In AutomateDV this is implemented as an optional CTE which only gets created in the above circumstances and when the `enable_ghost_records` global variable is set to `true`.
+
+A Ghost Record does not inherently mean anything (it is for performance only), and so the value of each column is set to `NULL` or a sensible _meaningless_ value. 
+
+The below tables describe what a ghost record will look like:
+
+=== "Parameters"
+
+    | Parameter                        | Value                            |
+    |----------------------------------|----------------------------------|
+    | src_pk Binary MD5/SHA256)        | 0000..(x32) / 0000..(x64)        |
+    | src_hashdiff (Binary MD5/SHA256) | 0000..(x32) / 0000..(x64)        |
+    | src_payload (Any)                | NULL                             |
+    | src_extra_columns (Any)          | NULL                             |
+    | src_eff (Date/Timestamp)         | 1900-01-01 / 1900-01-01 00:00:00 |
+    | src_ldts (Date/Timestamp)        | 1900-01-01 / 1900-01-01 00:00:00 |
+    | src_source (String)              | AUTOMATE_DV_SYSTEM (default)     |
+
+=== "Data"
+
+    | CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE | EFFECTIVE_FROM      | LOAD_DATETIME       | RECORD_SOURCE      |
+    |-------------|-----------|---------------|--------------|----------------|---------------------|---------------------|--------------------|
+    | 000000...   | 000000... | _NULL_        | _NULL_       | _NULL_         | 1900-01-01 00:00:00 | 1900-01-01 00:00:00 | AUTOMATE_DV_SYSTEM |
+
+
+!!! tip "Improved Ghost Record handling"
+
+    Since v0.11.0, Ghost record types are inferred from the source instead of parameter-based inference. 
+    This prevents incorrect representations for composite key columns (e.g., a non-binary column in src_pk). 
+    While thoroughly tested, some edge cases may yield unpredictable results.
+    [**_Please_** let us know](https://github.com/Datavault-UK/automate-dv/issues) if you find any anomalies!
 
 #### enable_ghost_records
 
 Enable the use of ghost records in your project. This can either be true or false, `true` will enable the configuration and `false` will disable it.
 
-This will insert a ghost record to a satellite table whether it is a new table or pre-loaded. 
+This will insert a ghost record to a satellite table whether it is a new table or pre-existing. 
 
 Before adding the ghost record, the satellite macro will check there is not already one loaded.
 
 !!! note
-    If this is enabled on an existing project, the ghost-records will be inserted into 
+    If this is enabled on an existing project, the ghost-records will be inserted into the satellite on the first dbt run after enabling **_only_**
 
 #### system_record_value
 
-This will set the record source system for the ghost record. The default is 'DBTVAULT_SYSTEM' and can be changed to any string.
+This will set the record source system for the ghost record. The default is `AUTOMATE_DV_SYSTEM` and can be changed to any string.
 
 !!! note
-    If this is changed on an existing project, the source system of already loaded ghost records will not be changed.
+    If this is changed on an existing project, the source system of already loaded ghost records will not be changed unless you `--full-refresh`.
 
 ### NULL Key configurations
 
@@ -204,9 +301,8 @@ The default is variations on `9999-12-31 23:59:59.999999` where there is more or
 #### escape_char_left/escape_char_right
 
 Configure the characters to use to delimit SQL column names when [escaping](../best_practises/escaping.md). 
-Column names are delimited when using the [escaping](../best_practises/escaping.md) feature of dbtvault, 
-and by default both the delimiting characters are double quotes following the SQL:1999 standard. 
-If these are set to an empty string then the default for the platform will be used when the escaping feature is enabled.
+Column names are delimited when using the [escaping](../best_practises/escaping.md) feature of AutomateDV, 
+and by default both the delimiting characters are double quotes following the SQL:1999 standard.
 
 Here are some examples for different platforms:
 
@@ -237,47 +333,6 @@ Here are some examples for different platforms:
       escape_char_right: '"'
     ```
 
-## Platform Support
-
-The table below indicates which macros and templates are officially available for each platform.
-
-dbtvault is primarily developed on Snowflake, and we release support for other platforms as and when possible.
-Most of the time this will be at the same time as the Snowflake release unless it is snowflake-only functionality
-with no equivalent in another platform.
-
-Thanks for your patience and continued support!
-
-| Macro/Template | Snowflake                                     | Google BigQuery                               | MS SQL Server                                 | Databricks**                                      | Postgres**                                        | Redshift**                                        |
-|----------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|---------------------------------------------------|---------------------------------------------------|---------------------------------------------------|
-| hash           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| stage          | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| hub            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| link           | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| sat            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-check:{ .required }     | :fontawesome-solid-circle-minus:{ .not-required } |
-| t_link         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| eff_sat        | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| ma_sat         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| xts            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| pit            | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-| bridge         | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-check:{ .required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } | :fontawesome-solid-circle-minus:{ .not-required } |
-
-!!! note "**"
-    These platforms are either planned or actively being worked on by the community and/or internal dbtvault team.
-    See the issues below for more information:
-
-    - [Databricks](https://github.com/Datavault-UK/dbtvault/issues/98)
-    - [Postgres](https://github.com/Datavault-UK/dbtvault/issues/117)
-    - [Redshift](https://github.com/Datavault-UK/dbtvault/issues/86)
-
-### Limitations
-
-This section documents platform-specific limitations.
-
-#### Postgres
-
-2. Due to the way Postgres handles CTEs, dbtvault's [custom materialisations](../materialisations.md) are not yet 
-available for use on Postgres. An exception will be raised if their use is attempted.
-
 ## Table templates
 
 ###### (macros/tables)
@@ -289,11 +344,11 @@ for your Data Vault 2.0 Data Warehouse.
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/hub.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/hub.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/hub.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/databricks/hub.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/postgres/hub.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/hub.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/hub.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/hub.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/hub.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/hub.sql)
 
 Generates SQL to build a Hub table using the provided parameters.
 
@@ -301,9 +356,9 @@ Generates SQL to build a Hub table using the provided parameters.
 
 ``` jinja
 
-{{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                src_extra_columns=src_extra_columns,
-                src_source=src_source, source_model=source_model) }}
+{{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                   src_extra_columns=src_extra_columns,
+                   src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -334,145 +389,25 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_customer.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_customer_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
 === "Google BigQuery"
@@ -480,151 +415,25 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer.sql"
         ```
-
-    === "Single-Source (Subsequent Loads)"
+    
+    === "Single-Source (Incremental Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_customer_incremental.sql"
         ```
-
+    
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE 
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -632,205 +441,98 @@ Generates SQL to build a Hub table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.CUSTOMER_ID, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_customer.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.CUSTOMER_ID, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_customer_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.CUSTOMER_ID, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.CUSTOMER_ID, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *
-            FROM
-            (
-                SELECT ru.*,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY ru.CUSTOMER_HK
-                           ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                       ) AS row_rank_number
-                FROM stage_union AS ru
-                WHERE ru.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_orders_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.CUSTOMER_ID, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, CUSTOMER_ID, LOAD_DATE, RECORD_SOURCE,
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.CUSTOMER_ID, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *
-            FROM
-            (
-                SELECT ru.*,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY ru.CUSTOMER_HK
-                           ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                       ) AS row_rank_number
-                FROM stage_union AS ru
-                WHERE ru.CUSTOMER_HK IS NOT NULL
-            ) h
-            WHERE h.row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.CUSTOMER_ID, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.hub AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
         ```
 
+=== "Postgres"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_customer.sql"
+        ```
+    
+    === "Single-Source (Incremental Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_customer_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_orders_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Incremental Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        ```
+
+=== "Databricks"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_customer.sql"
+        ```
+    
+    === "Single-Source (Incremental Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_customer_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_orders_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Incremental Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/hubs/hub_orders_multi_source_incremental.sql"
+        ```
 ___
 
 ### link
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/link.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/databricks/link.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/postgres/link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/link.sql)
 
 Generates SQL to build a Link table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                 src_extra_columns=src_extra_columns,
-                 src_source=src_source, source_model=source_model) }}
+{{ automate_dv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                    src_extra_columns=src_extra_columns,
+                    src_source=src_source, source_model=source_model) }}
 ```                                             
 
 #### Parameters
@@ -861,166 +563,25 @@ Generates SQL to build a Link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-                
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT ru.*,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY ru.CUSTOMER_HK
-                       ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union AS ru
-            WHERE ru.ORDER_FK IS NOT NULL
-            AND ru.BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY rr.CUSTOMER_HK
-                       ORDER BY rr.LOAD_DATE ASC
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE AS rr
-            WHERE rr.CUSTOMER_HK IS NOT NULL
-            AND rr.ORDER_FK IS NOT NULL
-            AND rr.BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT ru.*,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY ru.CUSTOMER_HK
-                       ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union AS ru
-            WHERE ru.ORDER_FK IS NOT NULL
-            AND ru.BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/links/link_customer_order_multi_source_incremental.sql"
         ```
 
 === "Google BigQuery"
@@ -1028,156 +589,25 @@ Generates SQL to build a Link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-                
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            WHERE row_number = 1
-            UNION ALL
-            SELECT * FROM row_rank_2
-            WHERE row_number = 1
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_multi_source.sql"
         ```
-
-    === "Multi-Source (Subsequent Loads)"
+    
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE
-        ),
-        
-        row_rank_2 AS (
-            SELECT CUSTOMER_HK, ORDER_FK, BOOKING_FK, LOAD_DATE, RECORD_SOURCE,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE
-                   ) AS row_number
-            FROM DBTVAULT.TEST.MY_STAGE_2
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            WHERE row_number = 1
-            UNION ALL
-            SELECT * FROM row_rank_2
-            WHERE row_number = 1
-        ),
-        
-        row_rank_union AS (
-            SELECT *,
-                   ROW_NUMBER() OVER(
-                       PARTITION BY CUSTOMER_HK
-                       ORDER BY LOAD_DATE, RECORD_SOURCE ASC
-                   ) AS row_rank_number
-            FROM stage_union
-            WHERE CUSTOMER_HK IS NOT NULL
-            AND ORDER_FK IS NOT NULL
-            AND BOOKING_FK IS NOT NULL
-            QUALIFY row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/links/link_customer_order_multi_source_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -1185,217 +615,101 @@ Generates SQL to build a Link table using the provided parameters.
     === "Single-Source (Base Load)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order.sql"
         ```
     
-    === "Single-Source (Subsequent Loads)"
+    === "Single-Source (Incremental Loads)"
     
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_1 AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
-                
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_incremental.sql"
         ```
     
     === "Multi-Source (Base Load)"
 
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *
-            FROM
-            (
-                SELECT ru.*,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY ru.CUSTOMER_HK
-                           ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                       ) AS row_rank_number
-                FROM stage_union AS ru
-                WHERE ru.ORDER_FK IS NOT NULL
-                AND ru.BOOKING_FK IS NOT NULL
-            ) r
-            WHERE r.row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_multi_source.sql"
         ```
     
-    === "Multi-Source (Subsequent Loads)"
+    === "Multi-Source (Incremental Loads)"
  
         ```sql
-        WITH row_rank_1 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        row_rank_2 AS (
-            SELECT *
-            FROM
-            (
-                SELECT rr.CUSTOMER_HK, rr.ORDER_FK, rr.BOOKING_FK, rr.LOAD_DATE, rr.RECORD_SOURCE,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY rr.CUSTOMER_HK
-                           ORDER BY rr.LOAD_DATE ASC
-                       ) AS row_number
-                FROM DBTVAULT.TEST.MY_STAGE_2 AS rr
-                WHERE rr.CUSTOMER_HK IS NOT NULL
-                AND rr.ORDER_FK IS NOT NULL
-                AND rr.BOOKING_FK IS NOT NULL
-            ) l
-            WHERE l.row_number = 1
-        ),
-        
-        stage_union AS (
-            SELECT * FROM row_rank_1
-            UNION ALL
-            SELECT * FROM row_rank_2
-        ),
-        
-        row_rank_union AS (
-            SELECT *
-            FROM
-            (
-                SELECT ru.*,
-                       ROW_NUMBER() OVER(
-                           PARTITION BY ru.CUSTOMER_HK
-                           ORDER BY ru.LOAD_DATE, ru.RECORD_SOURCE ASC
-                       ) AS row_rank_number
-                FROM stage_union AS ru
-                WHERE ru.ORDER_FK IS NOT NULL
-                AND ru.BOOKING_FK IS NOT NULL
-            ) r
-            WHERE r.row_rank_number = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT a.CUSTOMER_HK, a.ORDER_FK, a.BOOKING_FK, a.LOAD_DATE, a.RECORD_SOURCE
-            FROM row_rank_union AS a
-            LEFT JOIN DBTVAULT.TEST.link AS d
-            ON a.CUSTOMER_HK = d.CUSTOMER_HK
-            WHERE d.CUSTOMER_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/links/link_customer_order_multi_source_incremental.sql"
         ```
 
+=== "Postgres"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order.sql"
+        ```
+    
+    === "Single-Source (Incremental Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Incremental Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/links/link_customer_order_multi_source_incremental.sql"
+        ```
+
+=== "Databricks"
+
+    === "Single-Source (Base Load)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order.sql"
+        ```
+    
+    === "Single-Source (Incremental Loads)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_incremental.sql"
+        ```
+    
+    === "Multi-Source (Base Load)"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_multi_source.sql"
+        ```
+    
+    === "Multi-Source (Incremental Loads)"
+ 
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/links/link_customer_order_multi_source_incremental.sql"
+        ```
 ___
 
-### t_link
+### nh_link
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/t_link.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/t_link.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/t_link.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/t_link.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/t_link.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/t_link.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/t_link.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/t_link.sql)
 
-Generates SQL to build a Transactional Link table using the provided parameters.
+Generates SQL to build a Non-historized Link table using the provided parameters.
+
+!!! note
+    As of AutomateDV v0.11.5, this replaces the `t_link()` macro. 
+    The `t_link()` macro is deprecated but still available for backwards compatibility.    
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.t_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
-                   src_extra_columns=src_extra_columns,
-                   src_eff=src_eff, src_ldts=src_ldts, 
-                   src_source=src_source, source_model=source_model) }}
+{{ automate_dv.nh_link(src_pk=src_pk, src_fk=src_fk, src_payload=src_payload,
+                       src_extra_columns=src_extra_columns,
+                       src_eff=src_eff, src_ldts=src_ldts, 
+                       src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -1412,7 +726,7 @@ Generates SQL to build a Transactional Link table using the provided parameters.
 | source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
 
 !!! tip
-    [Read the tutorial](../tutorial/tut_t_links.md) for more details
+    [Read the tutorial](../tutorial/tut_nh_links.md) for more details
 
 #### Example Metadata
 
@@ -1425,40 +739,13 @@ Generates SQL to build a Transactional Link table using the provided parameters.
     === "Base Load"
     
         ```sql
-        WITH stage AS (
-            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE TRANSACTION_HK IS NOT NULL
-            AND CUSTOMER_FK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
-            FROM stage AS stg
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Subsequent Loads"
-        
+    === "Incremental Loads"
+    
         ```sql
-        WITH stage AS (
-            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
-            WHERE TRANSACTION_HK IS NOT NULL
-            AND CUSTOMER_FK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
-            FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
-            ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
-            WHERE tgt.TRANSACTION_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/t_links/t_link_transactions_incremental.sql"
         ```
 
 === "Google BigQuery"
@@ -1466,38 +753,13 @@ Generates SQL to build a Transactional Link table using the provided parameters.
     === "Base Load"
     
         ```sql
-        WITH stage AS (
-            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE TRANSACTION_HK IS NOT NULL
-            AND CUSTOMER_FK IS NOT NULL
-        ),
-        records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
-            FROM stage AS stg
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/t_links/t_link_transactions.sql"
         ```
-
-    === "Subsequent Loads"
-        
+    
+    === "Incremental Loads"
+    
         ```sql
-        WITH stage AS (
-            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
-            WHERE TRANSACTION_HK IS NOT NULL
-            AND CUSTOMER_FK IS NOT NULL
-        ),
-        records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
-            FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
-            ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
-            WHERE tgt.TRANSACTION_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/t_links/t_link_transactions_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -1505,41 +767,43 @@ Generates SQL to build a Transactional Link table using the provided parameters.
     === "Base Load"
     
         ```sql
-        WITH stage AS (
-            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE
-            WHERE TRANSACTION_HK IS NOT NULL
-            AND CUSTOMER_FK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
-            FROM stage AS stg
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/t_links/t_link_transactions.sql"
         ```
     
-    === "Subsequent Loads"
-        
+    === "Incremental Loads"
+    
         ```sql
-        WITH stage AS (
-            SELECT TRANSACTION_HK, CUSTOMER_FK, TRANSACTION_NUMBER, TRANSACTION_DATE, TYPE, AMOUNT, EFFECTIVE_FROM, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.raw_stage_hashed
-            WHERE TRANSACTION_HK IS NOT NULL
-            AND CUSTOMER_FK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT stg.TRANSACTION_HK, stg.CUSTOMER_FK, stg.TRANSACTION_NUMBER, stg.TRANSACTION_DATE, stg.TYPE, stg.AMOUNT, stg.EFFECTIVE_FROM, stg.LOAD_DATE, stg.SOURCE
-            FROM stage AS stg
-            LEFT JOIN DBTVAULT.TEST.t_link AS tgt
-            ON stg.TRANSACTION_HK = tgt.TRANSACTION_HK
-            WHERE tgt.TRANSACTION_HK IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/t_links/t_link_transactions_incremental.sql"
         ```
+
+=== "Postgres"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/t_links/t_link_transactions.sql"
+        ```
+    
+    === "Incremental Loads"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/t_links/t_link_transactions_incremental.sql"
+        ```
+
+=== "Databricks"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/t_links/t_link_transactions.sql"
+        ```
+    
+    === "Incremental Loads"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/t_links/t_link_transactions_incremental.sql"
+        ```
+
 
 ___
 
@@ -1547,28 +811,28 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/sat.sql)
-[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/databricks/sat.sql)
-[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/postgres/sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/`sat`.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/sat.sql)
 
 Generates SQL to build a Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
-                src_extra_columns=src_extra_columns,
-                src_eff=src_eff, src_ldts=src_ldts, 
-                src_source=src_source, source_model=source_model) }}
+{{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                   src_extra_columns=src_extra_columns,
+                   src_eff=src_eff, src_ldts=src_ldts, 
+                   src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
 
 | Parameter         | Description                                 | Type                | Required?                                         |
 |-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
-| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_pk            | Source primary key column                   | List[String]/String | :fontawesome-solid-circle-check:{ .required }     |
 | src_hashdiff      | Source hashdiff column                      | String              | :fontawesome-solid-circle-check:{ .required }     |
 | src_payload       | Source payload column(s)                    | List[String]        | :fontawesome-solid-circle-check:{ .required }     |
 | src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
@@ -1583,6 +847,97 @@ Generates SQL to build a Satellite table using the provided parameters.
 !!! tip
     [Read the tutorial](../tutorial/tut_satellites.md) for more details
 
+#### Satellite Behaviour Flags
+
+This section covers global variables ([var](https://docs.getdbt.com/docs/build/project-variables)) and [config](https://docs.getdbt.com/reference/model-configs#configuring-models) options that affect the behaviour of satellites.
+
+| Parameter            | Description                                             | Type    | Flag type | Required?                                         |
+|----------------------|---------------------------------------------------------|---------|-----------|---------------------------------------------------|
+| apply_source_filter  | Adds additional logic to filter the `source_model` data | Boolean | config    | :fontawesome-solid-circle-minus:{ .not-required } |
+| enable_ghost_records | Adds a single ghost record to the satellite             | Boolean | var       | :fontawesome-solid-circle-minus:{ .not-required } |
+
+
+=== "apply_source_filter (config)"
+
+    !!! tip "Added in v0.10.1"
+
+    This config option adds a WHERE clause (in incremental mode) using an additional CTE in the SQL code to filter the `source_model`'s data
+
+    This ensures that records in the source data are filtered so that only records with `src_ldts` after the MAX ldts in the existing Satellite
+    are processed during the satellite load.
+
+    **It is intended for this config option to be used if you cannot guarantee atomic/idempotent batches i.e. only data which has not been loaded yet in your stage data.**
+
+    === "config level (compatible with dbt Core)"
+
+        ```sql
+
+        -- sat_customer_details.sql
+        {{
+          config(
+            apply_source_filter = true
+          )
+        }}
+
+        {% set src_pk = ... %}
+        ...
+
+        {{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                           src_extra_columns=src_extra_columns,
+                           src_eff=src_eff, src_ldts=src_ldts,
+                           src_source=src_source, source_model=source_model) }}
+
+        ```
+
+    === "meta level (compatible with dbt Core and Fusion)"
+
+        ```sql
+
+        -- sat_customer_details.sql
+        {{
+          config(
+            meta={'apply_source_filter': true}
+          )
+        }}
+
+        {% set src_pk = ... %}
+        ...
+
+        {{ automate_dv.sat(src_pk=src_pk, src_hashdiff=src_hashdiff, src_payload=src_payload,
+                           src_extra_columns=src_extra_columns,
+                           src_eff=src_eff, src_ldts=src_ldts,
+                           src_source=src_source, source_model=source_model) }}
+
+        ```
+
+    !!! note "Configuration: config level vs. meta level"
+        The `apply_source_filter` config can be provided in two ways:
+
+        - **config level** (compatible with dbt Core): Set directly under `config()`
+        - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
+    
+=== "enable_ghost_records (var)"
+
+    This global variable option enables additional logic to add a ghost record **_upon first creation_** OR **_once when running in incremental mode_** 
+    if a ghost record has not already been added.
+    
+    [Read more](#ghost-record-configuration) about ghost records. 
+
+#### Providing the `src_eff` parameter
+
+Prior to AutomateDV v0.11.1, the `src_eff` parameter was not used in the Satellite SQL logic, but simply selected from source for metadata purposes.
+
+The intent behind this was to allow for reasoning about bi-temporality in downstream structures
+
+As of v0.11.1, the `src_eff` parameter is more than just metadata and will be used for improving the ordering logic **_when provided_**.
+
+This fixes a bug present prior to v0.11.1 which would struggle with multiple changes to the same keys in the same batch which may occur or 
+be sent in the wrong order due to source data issues or as a by-product of the business processes. 
+
+The `src_eff` parameter remains optional, so this logic is only introduced should you provide the `src_eff` parameter to the `sat()` macro.
+
+Please see this [GitHub Issue](https://github.com/Datavault-UK/automate-dv/issues/253) for more detail around the decision to introduce this change. 
+
 #### Example Metadata
 
 [See examples](../metadata.md#satellites)
@@ -1594,281 +949,51 @@ Generates SQL to build a Satellite table using the provided parameters.
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
         
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE
-            FROM (
-                SELECT current_records.CUSTOMER_HK, current_records.HASHDIFF, current_records.LOAD_DATE,
-                RANK() OVER (
-                    PARTITION BY c.CUSTOMER_HK
-                    ORDER BY c.LOAD_DATE DESC
-                ) AS rank
-            FROM DBTVAULT.TEST.SATELLITE AS c
-            JOIN (
-                SELECT DISTINCT source_data.CUSTOMER_PK
-                FROM source_data
-            ) AS source_records
-                ON c.CUSTOMER_PK = source_records.CUSTOMER_PK
-            QUALIFY rank = 1
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-                ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_incremental.sql"
         ```
 
     === "Base Load with Ghost Record"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_PHONE", a."CUSTOMER_DOB", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE a."CUSTOMER_PK" IS NOT NULL
-        ),
-
-        ghost AS (SELECT
-            NULL AS "CUSTOMER_NAME",
-            NULL AS "CUSTOMER_DOB",
-            NULL AS "CUSTOMER_PHONE",
-            TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
-            TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
-        ),
-
-        records_to_insert AS (SELECT
-                g."CUSTOMER_HK", g."HASHDIFF", g."CUSTOMER_NAME", g."CUSTOMER_PHONE", g."CUSTOMER_DOB", g."EFFECTIVE_FROM", g."LOAD_DATE", g."SOURCE"
-                FROM ghost AS g
-            UNION
-            SELECT DISTINCT stage."CUSTOMER_PK", stage."HASHDIFF", stage."CUSTOMER_NAME", stage."CUSTOMER_PHONE", stage."CUSTOMER_DOB", stage."EFFECTIVE_FROM", stage."LOAD_DATE", stage."SOURCE"
-            FROM source_data AS stage
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Loads with Ghost Record"
-
+    === "Incremental Loads with Ghost Record"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."CUSTOMER_NAME", a."CUSTOMER_DOB", a."CUSTOMER_PHONE", a."EFFECTIVE_FROM", a."LOAD_DATE", a."SOURCE"
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE a."CUSTOMER_PK" IS NOT NULL
-        ),
-
-        latest_records AS (
-            SELECT a."CUSTOMER_HK", a."HASHDIFF", a."LOAD_DATE"
-            FROM (
-                SELECT current_records."CUSTOMER_HK", current_records."HASHDIFF", current_records."LOAD_DATE",
-                    RANK() OVER (
-                       PARTITION BY current_records."CUSTOMER_HK"
-                       ORDER BY current_records."LOAD_DATE" DESC
-                    ) AS rank
-                FROM DBTVAULT.TEST.SATELLITE AS current_records
-                    JOIN (
-                        SELECT DISTINCT source_data."CUSTOMER_HK"
-                        FROM source_data
-                    ) AS source_records
-                        ON current_records."CUSTOMER_HK" = source_records."CUSTOMER_HK"
-            ) AS a
-            WHERE a.rank = 1
-        ),
-
-        ghost AS (SELECT
-            NULL AS "CUSTOMER_NAME",
-            NULL AS "CUSTOMER_DOB",
-            NULL AS "CUSTOMER_PHONE",
-            TO_DATE('1900-01-01 00:00:00') AS "LOAD_DATE",
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR) AS "SOURCE",
-            TO_DATE('1900-01-01 00:00:00') AS "EFFECTIVE_FROM",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "CUSTOMER_HK",
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS "HASHDIFF"
-        ),
-        
-        records_to_insert AS (SELECT
-                g."CUSTOMER_HK", g."HASHDIFF", g."CUSTOMER_NAME", g."CUSTOMER_DOB", g."CUSTOMER_PHONE", g."EFFECTIVE_FROM", g."LOAD_DATE", g."SOURCE"
-                FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
-            UNION
-            SELECT DISTINCT stage."CUSTOMER_HK", stage."HASHDIFF", stage."CUSTOMER_NAME", stage."CUSTOMER_DOB", stage."CUSTOMER_PHONE", stage."EFFECTIVE_FROM", stage."LOAD_DATE", stage."SOURCE"
-            FROM source_data AS stage
-            LEFT JOIN latest_records
-            ON latest_records."CUSTOMER_HK" = stage."CUSTOMER_HK"
-                AND latest_records."HASHDIFF" = stage."HASHDIFF"
-            WHERE latest_records."HASHDIFF" IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/satellites/satellite_ghost_incremental.sql"
         ```
+
 === "Google BigQuery"
 
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite.sql"
         ```
-
-    === "Subsequent Loads"
-
+    
+    === "Incremental Loads"
+        
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        latest_records AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.LOAD_DATE
-            FROM (
-                SELECT c.CUSTOMER_HK, c.HASHDIFF, c.LOAD_DATE, 
-                RANK() OVER (
-                PARTITION BY c.CUSTOMER_HK
-                ORDER BY c.LOAD_DATE DESC
-                ) AS rank
-                FROM DBTVAULT.TEST.SATELLITE AS c
-                JOIN (  
-                SELECT DISTICT source_data.CUSTOMER_HK
-                FROM source_data
-                ) AS source_records
-                ON c.CUSTOMER_HK = source_records.CUSTOMER_HK
-                ) AS a
-            WHERE a.rank = 1
-        ),
-
-        records_to_insert AS (
-            SELECT DISTICT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_recods.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-            OR latest_records.HASHDIFF IS NULL
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_incremental.sql"
         ```
 
     === "Base Load with Ghost Record"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
-            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
-            WHERE a.`CUSTOMER_PK` IS NOT NULL
-        ),
-        
-        ghost AS (SELECT
-            CAST(NULL AS STRING) AS `CUSTOMER_NAME`,
-            CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
-            CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
-            CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
-            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
-            CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
-        ),
-        
-        records_to_insert AS (SELECT
-                g.`CUSTOMER_HK`, g.`HASHDIFF`, g.`CUSTOMER_NAME`, g.`CUSTOMER_DOB`, g.`CUSTOMER_PHONE`, g.`EFFECTIVE_FROM`, g.`LOAD_DATE`, g.`SOURCE`
-                FROM ghost AS g
-            UNION DISTINCT
-            SELECT DISTINCT stage.`CUSTOMER_HK`, stage.`HASHDIFF`, stage.`CUSTOMER_NAME`, stage.`CUSTOMER_DOB`, stage.`CUSTOMER_PHONE`, stage.`EFFECTIVE_FROM`, stage.`LOAD_DATE`, stage.`SOURCE`
-            FROM source_data AS stage
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Load with Ghost Record"
+    === "Incremental Loads with Ghost Record"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`CUSTOMER_NAME`, a.`CUSTOMER_DOB`, a.`CUSTOMER_PHONE`, a.`EFFECTIVE_FROM`, a.`LOAD_DATE`, a.`SOURCE`
-            FROM `DBTVAULT`.`TEST`.`MY_STAGE` AS a
-            WHERE a.`CUSTOMER_PK` IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT a.`CUSTOMER_HK`, a.`HASHDIFF`, a.`LOAD_DATE`
-            FROM (
-                SELECT current_records.`CUSTOMER_HK`, current_records.`HASHDIFF`, current_records.`LOAD_DATE`,
-                    RANK() OVER (
-                       PARTITION BY current_records.`CUSTOMER_HK`
-                       ORDER BY current_records.`LOAD_DATE` DESC
-                    ) AS rank
-                FROM `DBTVAULT`.`TEST`.`SATELLITE` AS current_records
-                    JOIN (
-                        SELECT DISTINCT source_data.`CUSTOMER_HK`
-                        FROM source_data
-                    ) AS source_records
-                        ON current_records.`CUSTOMER_HK` = source_records.`CUSTOMER_HK`
-            ) AS a
-            WHERE a.rank = 1
-        ),
-
-        ghost AS (SELECT
-            CAST(NULL AS STRING) AS `CUSTOMER_NAME`,
-            CAST(NULL AS DATE) AS `CUSTOMER_DOB`,
-            CAST(NULL AS STRING) AS `CUSTOMER_PHONE`,
-            CAST('1900-01-01' AS DATE) AS `LOAD_DATE`,
-            CAST('DBTVAULT_SYSTEM' AS STRING) AS `SOURCE`,
-            CAST('1900-01-01' AS DATE) AS `EFFECTIVE_FROM`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `CUSTOMER_HK`,
-            CAST('00000000000000000000000000000000' AS STRING) AS `HASHDIFF`
-        ),
-        
-        records_to_insert AS (SELECT
-                g.`CUSTOMER_HK`, g.`HASHDIFF`, g.`CUSTOMER_NAME`, g.`CUSTOMER_DOB`, g.`CUSTOMER_PHONE`, g.`EFFECTIVE_FROM`, g.`LOAD_DATE`, g.`SOURCE`
-                FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM `DBTVAULT`.`TEST`.`SATELLITE` AS h WHERE h.`HASHDIFF` = g.`HASHDIFF` )
-            UNION DISTINCT
-            SELECT DISTINCT stage.`CUSTOMER_HK`, stage.`HASHDIFF`, stage.`CUSTOMER_NAME`, stage.`CUSTOMER_DOB`, stage.`CUSTOMER_PHONE`, stage.`EFFECTIVE_FROM`, stage.`LOAD_DATE`, stage.`SOURCE`
-            FROM source_data AS stage
-            LEFT JOIN latest_records
-            ON latest_records.`CUSTOMER_HK` = stage.`CUSTOMER_HK`
-                AND latest_records.`HASHDIFF` = stage.`HASHDIFF`
-            WHERE latest_records.`HASHDIFF` IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/satellites/satellite_ghost_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -1876,152 +1001,78 @@ Generates SQL to build a Satellite table using the provided parameters.
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite.sql"
         ```
     
-    === "Subsequent Loads"
+    === "Incremental Loads"
         
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.LOAD_DATE
-            FROM
-            (
-                SELECT current_records.CUSTOMER_PK, current_records.HASHDIFF, current_records.LOAD_DATE,
-                    RANK() OVER (
-                       PARTITION BY current_records.CUSTOMER_PK
-                       ORDER BY current_records.LOAD_DATE DESC
-                    ) AS rank
-                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
-                JOIN (
-                    SELECT DISTINCT source_data.CUSTOMER_PK
-                    FROM source_data
-                ) AS source_records
-                ON current_records.CUSTOMER_PK = source_records.CUSTOMER_PK
-            ) AS a
-            WHERE a.rank = 1
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_incremental.sql"
         ```
+
     === "Base Load with Ghost Record"
     
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-
-        ghost AS (SELECT
-            NULL AS CUSTOMER_NAME,
-            NULL AS CUSTOMER_DOB,
-            NULL AS CUSTOMER_PHONE,
-            CAST('1900-01-01' AS DATE) AS LOAD_DATE,
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
-            CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
-        ),
-
-        records_to_insert AS (
-            SELECT g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_PHONE, g.CUSTOMER_DOB, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
-            FROM ghost AS g
-            UNION
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_ghost.sql"
         ```
 
-    === "Subsequent Loads"
+    === "Incremental Loads with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/satellites/satellite_ghost_incremental.sql"
+        ```
+
+=== "Postgres"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite.sql"
+        ```
+    
+    === "Incremental Loads"
         
         ```sql
-        WITH source_data AS (
-            SELECT a.CUSTOMER_HK, a.HASHDIFF, a.CUSTOMER_NAME, a.CUSTOMER_PHONE, a.CUSTOMER_DOB, a.EFFECTIVE_FROM, a.LOAD_DATE, a.SOURCE
-            FROM DBTVAULT.TEST.MY_STAGE AS a
-            WHERE CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT a.CUSTOMER_PK, a.HASHDIFF, a.LOAD_DATE
-            FROM
-            (
-                SELECT current_records.CUSTOMER_PK, current_records.HASHDIFF, current_records.LOAD_DATE,
-                    RANK() OVER (
-                       PARTITION BY current_records.CUSTOMER_PK
-                       ORDER BY current_records.LOAD_DATE DESC
-                    ) AS rank
-                FROM DBTVAULT_DEV.TEST.SATELLITE AS current_records
-                JOIN (
-                    SELECT DISTINCT source_data.CUSTOMER_PK
-                    FROM source_data
-                ) AS source_records
-                ON current_records.CUSTOMER_PK = source_records.CUSTOMER_PK
-            ) AS a
-            WHERE a.rank = 1
-        ),
-
-        ghost AS (SELECT
-            NULL AS CUSTOMER_NAME,
-            NULL AS CUSTOMER_DOB,
-            NULL AS CUSTOMER_PHONE,
-            CAST('1900-01-01' AS DATE) AS LOAD_DATE,
-            CAST('DBTVAULT_SYSTEM' AS VARCHAR(50)) AS SOURCE,
-            CAST('1900-01-01' AS DATE) AS EFFECTIVE_FROM,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS CUSTOMER_HK,
-            CAST('00000000000000000000000000000000' AS BINARY(16)) AS HASHDIFF
-        ),
-
-        records_to_insert AS (SELECT
-                g.CUSTOMER_HK, g.HASHDIFF, g.CUSTOMER_NAME, g.CUSTOMER_DOB, g.CUSTOMER_PHONE, g.EFFECTIVE_FROM, g.LOAD_DATE, g.SOURCE
-                FROM ghost AS g
-                WHERE NOT EXISTS ( SELECT 1 FROM DBTVAULT.TEST.SATELLITE AS h WHERE h."HASHDIFF" = g."HASHDIFF" )
-            UNION
-            SELECT DISTINCT e.CUSTOMER_HK, e.HASHDIFF, e.CUSTOMER_NAME, e.CUSTOMER_PHONE, e.CUSTOMER_DOB, e.EFFECTIVE_FROM, e.LOAD_DATE, e.SOURCE
-            FROM source_data AS e
-            LEFT JOIN latest_records
-            ON latest_records.CUSTOMER_HK = e.CUSTOMER_HK
-            WHERE latest_records.HASHDIFF != e.HASHDIFF
-                OR latest_records.HASHDIFF IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_incremental.sql"
         ```
 
-#### Ghost records
+    === "Base Load with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_ghost.sql"
+        ```
 
-Ghost Records are system-generated records which are added to Satellites to provide equi-join performance in PIT tables
-downstream. dbtvault will generate ghost records if the [global variable](#ghost-record-configuration) is set to `true`.
+    === "Incremental Loads with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/satellites/satellite_ghost_incremental.sql"
+        ```
 
-!!! tip "New in v0.9.1"
-    Ghost Records are here! More details (including examples of how it works) coming soon!
+=== "Databricks"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite.sql"
+        ```
+    
+    === "Incremental Loads"
+        
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_incremental.sql"
+        ```
+
+    === "Base Load with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_ghost.sql"
+        ```
+
+    === "Incremental Loads with Ghost Record"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/satellites/satellite_ghost_incremental.sql"
+        ```
 
 #### Hashdiff Aliasing
 
@@ -2051,13 +1102,13 @@ src_source: RECORD_SOURCE
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-{{ dbtvault.sat(src_pk=metadata_dict["src_pk"],
-                src_hashdiff=metadata_dict["src_hashdiff"],
-                src_payload=metadata_dict["src_payload"],
-                src_eff=metadata_dict["src_eff"],
-                src_ldts=metadata_dict["src_ldts"],
-                src_source=metadata_dict["src_source"],
-                source_model=metadata_dict["source_model"]) }}
+{{ automate_dv.sat(src_pk=metadata_dict["src_pk"],
+                   src_hashdiff=metadata_dict["src_hashdiff"],
+                   src_payload=metadata_dict["src_payload"],
+                   src_eff=metadata_dict["src_eff"],
+                   src_ldts=metadata_dict["src_ldts"],
+                   src_source=metadata_dict["src_source"],
+                   source_model=metadata_dict["source_model"]) }}
 
 ```
 
@@ -2072,20 +1123,22 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/eff_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/eff_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/eff_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/eff_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/eff_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/eff_sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/eff_sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/eff_sat.sql)
 
 Generates SQL to build an Effectivity Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                    src_start_date=src_start_date, src_end_date=src_end_date,
-                    src_extra_columns=src_extra_columns,
-                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                    source_model=source_model) }}
+{{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                       src_start_date=src_start_date, src_end_date=src_end_date,
+                       src_extra_columns=src_extra_columns,
+                       src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                       source_model=source_model) }}
 ```
 
 #### Parameters
@@ -2115,585 +1168,137 @@ Generates SQL to build an Effectivity Satellite table using the provided paramet
 === "Snowflake"
 
     === "Base Load"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order.sql"
+        ```
+    
+    === "With auto end-dating (Incremental)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "With auto end-dating (Subsequent)"
-
+    === "Without auto end-dating (Incremental)"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.EFFECTIVE_FROM AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            INNER JOIN latest_open AS lo
-            ON lo.ORDER_HK = h.ORDER_HK
-            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
-        ),
-        
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-            UNION
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
-        ```
-        
-    === "Without auto end-dating (Subsequent)"   
-        
-        ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE TO_DATE(c.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE TO_DATE(d.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.START_DATE AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE TO_DATE(g.END_DATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                h.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            LEFT JOIN Latest_open AS lo
-            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            LEFT JOIN latest_closed AS lc
-            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            WHERE TO_DATE(h.END_DATE) != TO_DATE('9999-12-31 23:59:59.999999')
-            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
-            AND lc.ORDER_CUSTOMER_HK IS NULL
-        ),
-
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
 
 === "Google BigQuery"
 
     === "Base Load"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order.sql"
+        ```
+    
+    === "With auto end-dating (Incremental)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "With auto end-dating (Subsequent)"
-
+    === "Without auto end-dating (Incremental)"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            WHERE b.ORDER_HK IS NOT NULL
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE DATE(c.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE DATE(d.END_DATE) != DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.EFFECTIVE_FROM AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE DATE(g.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            INNER JOIN latest_open AS lo
-            ON lo.ORDER_HK = h.ORDER_HK
-            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
-        ),
-        
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION DISTINCT
-            SELECT * FROM new_reopened_records
-            UNION DISTINCT
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
-        
-    === "Without auto end-dating (Subsequent)"   
-        
-        ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                ROW_NUMBER() OVER (
-                    PARTITION BY b.ORDER_CUSTOMER_HK
-                    ORDER BY b.LOAD_DATETIME DESC
-                ) AS row_num
-            FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            WHERE b.ORDER_HK IS NOT NULL
-            QUALIFY row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE DATE(c.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE DATE(d.END_DATE) != DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.START_DATE AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE DATE(g.END_DATE) = DATE('9999-12-31 23:59:59.999')
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                h.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            LEFT JOIN Latest_open AS lo
-            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            LEFT JOIN latest_closed AS lc
-            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            WHERE DATE(h.END_DATE) != DATE('9999-12-31 23:59:59.999')
-            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
-            AND lc.ORDER_CUSTOMER_HK IS NULL
-        ),
 
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION DISTINCT
-            SELECT * FROM new_reopened_records
-            UNION DISTINCT
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
-        ```
 
 === "MS SQL Server"
 
     === "Base Load"
-
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT i.ORDER_CUSTOMER_HK, i.ORDER_HK, i.CUSTOMER_HK, i.START_DATE, i.END_DATE, i.EFFECTIVE_FROM, i.LOAD_DATETIME, i.SOURCE
-            FROM source_data AS i
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order.sql"
+        ```
+    
+    === "With auto end-dating (Incremental)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
         ```
 
-    === "With auto end-dating (Subsequent)"
-
+    === "Without auto end-dating (Incremental)"
+    
         ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT *
-            FROM
-            (
-                SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                    ) AS row_num
-                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            ) l
-            WHERE l.row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE CONVERT(DATE, c.END_DATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE CONVERT(DATE, d.END_DATE) != CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.EFFECTIVE_FROM AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE CAST((g."END_DATE") AS DATE) = CAST(('9999-12-31 23:59:59.9999999') AS DATE)
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                lo.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            INNER JOIN latest_open AS lo
-            ON lo.ORDER_HK = h.ORDER_HK
-            WHERE (lo.CUSTOMER_HK <> h.CUSTOMER_HK)
-        ),
-        
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-            UNION
-            SELECT * FROM new_closed_records
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
-        
-    === "Without auto end-dating (Subsequent)"   
-        
-        ```sql
-        WITH source_data AS (
-            SELECT a.ORDER_CUSTOMER_HK, a.ORDER_HK, a.CUSTOMER_HK, a.START_DATE, a.END_DATE, a.EFFECTIVE_FROM, a.LOAD_DATETIME, a.SOURCE
-            FROM DBTVAULT.TEST.STG_ORDER_CUSTOMER AS a
-            WHERE a.ORDER_HK IS NOT NULL
-            AND a.CUSTOMER_HK IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT *
-            FROM
-            (
-                SELECT b.ORDER_CUSTOMER_HK, b.ORDER_HK, b.CUSTOMER_HK, b.START_DATE, b.END_DATE, b.EFFECTIVE_FROM, b.LOAD_DATETIME, b.SOURCE,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY b.ORDER_CUSTOMER_HK
-                        ORDER BY b.LOAD_DATETIME DESC
-                    ) AS row_num
-                FROM DBTVAULT.TEST.EFF_SAT_ORDER_CUSTOMER AS b
-            ) l
-            WHERE l.row_num = 1
-        ),
-        
-        latest_open AS (
-            SELECT c.ORDER_CUSTOMER_HK, c.ORDER_HK, c.CUSTOMER_HK, c.START_DATE, c.END_DATE, c.EFFECTIVE_FROM, c.LOAD_DATETIME, c.SOURCE
-            FROM latest_records AS c
-            WHERE CONVERT(DATE, c.END_DATE) = CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        latest_closed AS (
-            SELECT d.ORDER_CUSTOMER_HK, d.ORDER_HK, d.CUSTOMER_HK, d.START_DATE, d.END_DATE, d.EFFECTIVE_FROM, d.LOAD_DATETIME, d.SOURCE
-            FROM latest_records AS d
-            WHERE CONVERT(DATE, d."END_DATE") != CONVERT(DATE, '9999-12-31 23:59:59.9999999')
-        ),
-        
-        new_open_records AS (
-            SELECT DISTINCT
-                f.ORDER_CUSTOMER_HK, f.ORDER_HK, f.CUSTOMER_HK, f.START_DATE, f.END_DATE, f.EFFECTIVE_FROM, f.LOAD_DATETIME, f.SOURCE
-            FROM source_data AS f
-            LEFT JOIN latest_records AS lr
-            ON f.ORDER_CUSTOMER_HK = lr.ORDER_CUSTOMER_HK
-            WHERE lr.ORDER_CUSTOMER_HK IS NULL
-        ),
-        
-        new_reopened_records AS (
-            SELECT DISTINCT
-                lc.ORDER_CUSTOMER_HK,
-                lc.ORDER_HK, lc.CUSTOMER_HK,
-                g.START_DATE AS START_DATE,
-                g.END_DATE AS END_DATE,
-                g.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                g.LOAD_DATETIME,
-                g.SOURCE
-            FROM source_data AS g
-            INNER JOIN latest_closed lc
-            ON g.ORDER_CUSTOMER_HK = lc.ORDER_CUSTOMER_HK
-            WHERE CAST((g.END_DATE) AS DATE) = CAST(('9999-12-31 23:59:59.9999999') AS DATE)
-        ),
-        
-        new_closed_records AS (
-            SELECT DISTINCT
-                lo.ORDER_CUSTOMER_HK,
-                lo.ORDER_HK, lo.CUSTOMER_HK,
-                h.START_DATE AS START_DATE,
-                h.EFFECTIVE_FROM AS END_DATE,
-                h.EFFECTIVE_FROM AS EFFECTIVE_FROM,
-                h.LOAD_DATETIME,
-                lo.SOURCE
-            FROM source_data AS h
-            LEFT JOIN Latest_open AS lo
-            ON lo.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            LEFT JOIN latest_closed AS lc
-            ON lc.ORDER_CUSTOMER_HK = h.ORDER_CUSTOMER_HK
-            WHERE CAST((h.END_DATE) AS DATE) != CAST(('9999-12-31 23:59:59.9999999') AS DATE)
-            AND lo.ORDER_CUSTOMER_HK IS NOT NULL
-            AND lc.ORDER_CUSTOMER_HK IS NULL
-        ),
 
-        records_to_insert AS (
-            SELECT * FROM new_open_records
-            UNION
-            SELECT * FROM new_reopened_records
-        )
-        
-        SELECT * FROM records_to_insert
+
+=== "Postgres"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order.sql"
+        ```
+    
+    === "With auto end-dating (Incremental)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
+        ```
+
+    === "Without auto end-dating (Incremental)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
+        ```
+
+
+=== "Databricks"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order.sql"
+        ```
+    
+    === "With auto end-dating (Incremental)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order_incremental.sql"
+        ```
+
+    === "Without auto end-dating (Incremental)"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/eff_sats/eff_sat_customer_order_incremental_nae.sql"
         ```
 
 #### Auto end-dating
 
 Auto end-dating is enabled by providing a config option as below:
 
-``` jinja
-{{ config(is_auto_end_dating=true) }}
+=== "config level (compatible with dbt Core)"
 
-{{ dbtvault.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
-                    src_start_date=src_start_date, src_end_date=src_end_date,
-                    src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
-                    source_model=source_model) }}
-```
+    ``` jinja
+    {{ config(is_auto_end_dating=true) }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+=== "meta level (compatible with dbt Core and Fusion)"
+
+    ``` jinja
+    {{ config(meta={'is_auto_end_dating': true}) }}
+
+    {{ automate_dv.eff_sat(src_pk=src_pk, src_dfk=src_dfk, src_sfk=src_sfk,
+                           src_start_date=src_start_date, src_end_date=src_end_date,
+                           src_eff=src_eff, src_ldts=src_ldts, src_source=src_source,
+                           source_model=source_model) }}
+    ```
+
+!!! note "Configuration: config level vs. meta level"
+    The `is_auto_end_dating` config can be provided in two ways:
+
+    - **config level** (compatible with dbt Core): Set directly under `config()`
+    - **meta level** (compatible with dbt Core and Fusion): Place within a `meta` dict under `config()`
 
 This will enable 3 extra CTEs in the Effectivity Satellite SQL generated by the macro. Examples of this SQL are in the
 Example Output section above. The result of this will be additional effectivity records with end dates included, which
@@ -2716,19 +1321,21 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/ma_sat.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/ma_sat.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/ma_sat.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/ma_sat.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/ma_sat.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/ma_sat.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/ma_sat.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/ma_sat.sql)
 
 Generates SQL to build a Multi-Active Satellite (MAS) table.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
-                   src_payload=src_payload, src_eff=src_eff,
-                   src_extra_columns=src_extra_columns, src_ldts=src_ldts, 
-                   src_source=src_source, source_model=source_model) }}
+{{ automate_dv.ma_sat(src_pk=src_pk, src_cdk=src_cdk, src_hashdiff=src_hashdiff, 
+                      src_payload=src_payload, src_eff=src_eff,
+                      src_extra_columns=src_extra_columns, src_ldts=src_ldts, 
+                      src_source=src_source, source_model=source_model) }}
 ```
 
 #### Parameters
@@ -2759,97 +1366,13 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-                AND s.CUSTOMER_PHONE IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
-            FROM source_data
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
-    === "Subsequent Loads"
-        
+    === "Incremental Loads"
+    
         ```sql
-        WITH source_data AS (
-            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE 
-                ,COUNT(DISTINCT s.HASHDIFF, s.CUSTOMER_PHONE)
-                    OVER (PARTITION BY s.CUSTOMER_PK) AS source_count
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-                AND s.CUSTOMER_PHONE IS NOT NULL
-        ),
-        
-        latest_records AS (
-            SELECT mas.CUSTOMER_PK
-                ,mas.HASHDIFF
-                ,mas.CUSTOMER_PHONE
-                ,mas.LOAD_DATE
-                ,mas.latest_rank
-                ,DENSE_RANK() OVER (
-                    PARTITION BY mas.CUSTOMER_PK
-                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC
-                ) AS check_rank
-            FROM (
-                SELECT inner_mas.CUSTOMER_PK
-                    ,inner_mas.HASHDIFF
-                    ,inner_mas.CUSTOMER_PHONE
-                    ,inner_mas.LOAD_DATE
-                    ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
-                        ORDER BY inner_mas.LOAD_DATE DESC) AS latest_rank
-                FROM DBTVAULT.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
-                INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
-                    ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK 
-                QUALIFY latest_rank = 1
-            ) AS mas
-        ),
-        
-        latest_group_details AS (
-            SELECT lr.CUSTOMER_PK
-                ,lr.LOAD_DATE
-                ,MAX(lr.check_rank) AS latest_count
-            FROM latest_records AS lr
-            GROUP BY lr.CUSTOMER_PK, lr.LOAD_DATE
-        ),
-        
-        records_to_insert AS (
-            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
-            FROM source_data
-            WHERE EXISTS
-            (
-                SELECT 1
-                FROM source_data AS stage
-                WHERE NOT EXISTS
-                (
-                    SELECT 1
-                    FROM
-                    (
-                        SELECT lr.CUSTOMER_PK
-                        ,lr.HASHDIFF
-                        ,lr.CUSTOMER_PHONE
-                        ,lr.LOAD_DATE
-                        ,lg.latest_count
-                        FROM latest_records AS lr
-                        INNER JOIN latest_group_details AS lg
-                            ON lr.CUSTOMER_PK = lg.CUSTOMER_PK 
-                            AND lr.LOAD_DATE = lg.LOAD_DATE
-                    ) AS active_records
-                    WHERE stage.CUSTOMER_PK = active_records.CUSTOMER_PK 
-                        AND stage.HASHDIFF = active_records.HASHDIFF
-                        AND stage.CUSTOMER_PHONE = active_records.CUSTOMER_PHONE 
-                        AND stage.source_count = active_records.latest_count
-                )
-                AND source_data.CUSTOMER_PK = stage.CUSTOMER_PK 
-            )
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 === "Google BigQuery"
@@ -2857,110 +1380,13 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-                AND s.CUSTOMER_PHONE IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
-            FROM source_data
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
-    === "Subsequent Loads"
-        
+    
+    === "Incremental Loads"
+    
         ```sql
-        WITH source_data AS (
-            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATETIME, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-                AND s.CUSTOMER_PHONE IS NOT NULL
-        ),
-
-        source_data_with_count AS (
-            SELECT a.*
-                ,b.source_count
-            FROM source_data a
-            INNER JOIN
-            (
-                SELECT t.CUSTOMER_PK
-                    ,COUNT(*) AS source_count
-                FROM (SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE FROM source_data AS s) AS t
-                GROUP BY t.CUSTOMER_PK
-            ) AS b
-            ON a.CUSTOMER_PK = b.CUSTOMER_PK
-        ),
-
-        latest_records AS (
-            SELECT mas.CUSTOMER_PK
-                ,mas.HASHDIFF
-                ,mas.CUSTOMER_PHONE
-                ,mas.LOAD_DATETIME
-                ,mas.latest_rank
-                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
-                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
-            FROM
-            (
-            SELECT inner_mas.CUSTOMER_PK
-                ,inner_mas.HASHDIFF
-                ,inner_mas.CUSTOMER_PHONE
-                ,inner_mas.LOAD_DATETIME
-                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
-                    ORDER BY inner_mas.LOAD_DATETIME DESC) AS latest_rank
-            FROM flash-bazaar-332912.DBTVAULT_FLASH_BAZAAR_332912.MULTI_ACTIVE_SATELLITE_TS AS inner_mas
-            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
-                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK
-            ) AS mas
-            WHERE latest_rank = 1
-        ),
-
-        latest_group_details AS (
-            SELECT lr.CUSTOMER_PK
-                ,lr.LOAD_DATETIME
-                ,MAX(lr.check_rank) AS latest_count
-            FROM latest_records AS lr
-            GROUP BY lr.CUSTOMER_PK, lr.LOAD_DATETIME
-        ),
-
-
-
-        records_to_insert AS (
-            SELECT source_data_with_count.CUSTOMER_PK, source_data_with_count.HASHDIFF, source_data_with_count.CUSTOMER_PHONE, source_data_with_count.CUSTOMER_NAME, source_data_with_count.EFFECTIVE_FROM, source_data_with_count.LOAD_DATETIME, source_data_with_count.SOURCE
-            FROM source_data_with_count
-            WHERE EXISTS
-            (
-                SELECT 1
-                FROM source_data_with_count AS stage
-                WHERE NOT EXISTS
-                (
-                    SELECT 1
-                    FROM
-                    (
-                        SELECT lr.CUSTOMER_PK
-                        ,lr.HASHDIFF
-                        ,lr.CUSTOMER_PHONE
-                        ,lr.LOAD_DATETIME
-                        ,lg.latest_count
-                        FROM latest_records AS lr
-                        INNER JOIN latest_group_details AS lg
-                            ON lr.CUSTOMER_PK = lg.CUSTOMER_PK
-                            AND lr.LOAD_DATETIME = lg.LOAD_DATETIME
-                    ) AS active_records
-                    WHERE stage.CUSTOMER_PK = active_records.CUSTOMER_PK
-                        AND stage.HASHDIFF = active_records.HASHDIFF
-                        AND stage.CUSTOMER_PHONE = active_records.CUSTOMER_PHONE
-                        AND stage.source_count = active_records.latest_count
-                )
-                AND source_data_with_count.CUSTOMER_PK = stage.CUSTOMER_PK
-            )
-
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 === "MS SQL Server"
@@ -2968,126 +1394,61 @@ Generates SQL to build a Multi-Active Satellite (MAS) table.
     === "Base Load"
     
         ```sql
-        WITH source_data AS (
-            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-                AND s.CUSTOMER_PHONE IS NOT NULL
-        ),
-        
-        records_to_insert AS (
-            SELECT source_data.CUSTOMER_PK, source_data.HASHDIFF, source_data.CUSTOMER_PHONE, source_data.CUSTOMER_NAME, source_data.EFFECTIVE_FROM, source_data.LOAD_DATE, source_data.SOURCE
-            FROM source_data
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/ma_sat_customer_address.sql"
         ```
     
-    === "Subsequent Loads"
-        
+    === "Incremental Loads"
+    
         ```sql
-        WITH source_data AS (
-            SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE, s.CUSTOMER_NAME, s.EFFECTIVE_FROM, s.LOAD_DATETIME, s.SOURCE
-            FROM DBTVAULT_DEV.TEST.STG_CUSTOMER AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-                AND s.CUSTOMER_PHONE IS NOT NULL
-        ),
-        
-        source_data_with_count AS (
-            SELECT a.*
-                ,b.source_count
-            FROM source_data a
-            INNER JOIN
-            (
-                SELECT t.CUSTOMER_PK
-                    ,COUNT(*) AS source_count
-                FROM (SELECT DISTINCT s.CUSTOMER_PK, s.HASHDIFF, s.CUSTOMER_PHONE FROM source_data AS s) AS t
-                GROUP BY t.CUSTOMER_PK
-            ) AS b
-            ON a.CUSTOMER_PK = b.CUSTOMER_PK
-        ),
-        
-        latest_records AS (
-            SELECT mas.CUSTOMER_PK
-                ,mas.HASHDIFF
-                ,mas.CUSTOMER_PHONE
-                ,mas.LOAD_DATETIME
-                ,mas.latest_rank
-                ,DENSE_RANK() OVER (PARTITION BY mas.CUSTOMER_PK
-                    ORDER BY mas.HASHDIFF, mas.CUSTOMER_PHONE ASC) AS check_rank
-            FROM
-            (
-            SELECT inner_mas.CUSTOMER_PK
-                ,inner_mas.HASHDIFF
-                ,inner_mas.CUSTOMER_PHONE
-                ,inner_mas.LOAD_DATETIME
-                ,RANK() OVER (PARTITION BY inner_mas.CUSTOMER_PK
-                    ORDER BY inner_mas.LOAD_DATETIME DESC) AS latest_rank
-            FROM DBTVAULT_DEV.TEST.MULTI_ACTIVE_SATELLITE AS inner_mas
-            INNER JOIN (SELECT DISTINCT s.CUSTOMER_PK FROM source_data as s ) AS spk
-                ON inner_mas.CUSTOMER_PK = spk.CUSTOMER_PK
-            ) AS mas
-            WHERE latest_rank = 1
-        ),
-        
-        latest_group_details AS (
-            SELECT lr.CUSTOMER_PK
-                ,lr.LOAD_DATETIME
-                ,MAX(lr.check_rank) AS latest_count
-            FROM latest_records AS lr
-            GROUP BY lr.CUSTOMER_PK, lr.LOAD_DATETIME
-        ),
-        
-        records_to_insert AS (
-            SELECT source_data_with_count.CUSTOMER_PK, source_data_with_count.HASHDIFF, source_data_with_count.CUSTOMER_PHONE, source_data_with_count.CUSTOMER_NAME, source_data_with_count.EFFECTIVE_FROM, source_data_with_count.LOAD_DATETIME, source_data_with_count.SOURCE
-            FROM source_data_with_count
-            WHERE EXISTS
-            (
-                SELECT 1
-                FROM source_data_with_count AS stage
-                WHERE NOT EXISTS
-                (
-                    SELECT 1
-                    FROM
-                    (
-                        SELECT lr.CUSTOMER_PK
-                        ,lr.HASHDIFF
-                        ,lr.CUSTOMER_PHONE
-                        ,lr.LOAD_DATETIME
-                        ,lg.latest_count
-                        FROM latest_records AS lr
-                        INNER JOIN latest_group_details AS lg
-                            ON lr.CUSTOMER_PK = lg.CUSTOMER_PK
-                            AND lr.LOAD_DATETIME = lg.LOAD_DATETIME
-                    ) AS active_records
-                    WHERE stage.CUSTOMER_PK = active_records.CUSTOMER_PK
-                        AND stage.HASHDIFF = active_records.HASHDIFF
-                        AND stage.CUSTOMER_PHONE = active_records.CUSTOMER_PHONE
-                        AND stage.source_count = active_records.latest_count
-                )
-                AND source_data_with_count.CUSTOMER_PK = stage.CUSTOMER_PK
-            )
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
+        ```
+
+=== "Postgres"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/ma_sat_customer_address.sql"
+        ```
+    
+    === "Incremental Loads"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
+        ```
+
+=== "Databricks"
+
+    === "Base Load"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/ma_sat_customer_address.sql"
+        ```
+    
+    === "Incremental Loads"
+    
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/raw_vault/ma_sats/ma_sat_customer_address_incremental.sql"
         ```
 
 ### xts
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/xts.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/xts.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/xts.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/xts.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/xts.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/xts.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/xts.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/xts.sql)
 
 Generates SQL to build an Extended Tracking Satellite table using the provided parameters.
 
 #### Usage
 
 ``` jinja
-{{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, 
-                src_extra_columns=src_extra_columns, src_ldts=src_ldts,
-                src_source=src_source, source_model=source_model) }}`
+{{ automate_dv.xts(src_pk=src_pk, src_satellite=src_satellite, 
+                   src_extra_columns=src_extra_columns, src_ldts=src_ldts,
+                   src_source=src_source, source_model=source_model) }}`
 ```
 
 #### Parameters
@@ -3118,119 +1479,19 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * 
-            FROM satellite_a
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* 
-            FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/xts/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/xts/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_c AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_d AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-            UNION ALL
-            SELECT * FROM satellite_c
-            UNION ALL
-            SELECT * FROM satellite_d
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/xts/xts_customer_phone_multi_source.sql"
         ```
 
 === "Google Bigquery"
@@ -3238,279 +1499,66 @@ Generates SQL to build an Extended Tracking Satellite table using the provided p
     === "Single-Source"
 
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * 
-            FROM satellite_a
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* 
-            FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/xts/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        WITH 
-
-        satellite_a AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_b AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-            )
-            WHERE d.HASHDIFF IS NULL
-            AND d.LOAD_DATE IS NULL
-            AND d.SATELLITE_NAME IS NULL
-        )
-
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/xts/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        
-        WITH 
-
-        satellite_a AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_b AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_c AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_d AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_e AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_1 AS HASHDIFF, s.SATELLITE_1 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        satellite_f AS (
-            SELECT s.CUSTOMER_PK, s.HASHDIFF_2 AS HASHDIFF, s.SATELLITE_2 AS SATELLITE_NAME, s.LOAD_DATE, s.SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2 AS s
-            WHERE s.CUSTOMER_PK IS NOT NULL
-        ),
-
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-            UNION ALL
-            SELECT * FROM satellite_c
-            UNION ALL
-            SELECT * FROM satellite_d
-            UNION ALL
-            SELECT * FROM satellite_e
-            UNION ALL
-            SELECT * FROM satellite_f
-        ),
-
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-            AND d.LOAD_DATE IS NULL
-            AND d.SATELLITE_NAME IS NULL
-        )
-
-    SELECT * FROM records_to_insert
-    ```
+        --8<-- "docs/assets/snippets/compiled/bigquery/raw_vault/xts/xts_customer_phone_multi_source.sql"
+        ```
 
 === "MS SQL Server"
 
     === "Single-Source"
 
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF AS HASHDIFF, SATELLITE_NAME AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * 
-            FROM satellite_a
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* 
-            FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone.sql"
         ```
 
     === "Single-Source with Multiple Satellite Feeds"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone_multi_sat.sql"
         ```
 
     === "Multi-Source"
         
         ```sql
-        WITH satellite_a AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_b AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_1
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_c AS (
-            SELECT CUSTOMER_PK, HASHDIFF_1 AS HASHDIFF, SATELLITE_1 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        satellite_d AS (
-            SELECT CUSTOMER_PK, HASHDIFF_2 AS HASHDIFF, SATELLITE_2 AS SATELLITE_NAME, LOAD_DATE, SOURCE
-            FROM DBTVAULT.TEST.STG_CUSTOMER_2SAT_2
-            WHERE CUSTOMER_PK IS NOT NULL
-        ),
-        
-        union_satellites AS (
-            SELECT * FROM satellite_a
-            UNION ALL
-            SELECT * FROM satellite_b
-            UNION ALL
-            SELECT * FROM satellite_c
-            UNION ALL
-            SELECT * FROM satellite_d
-        ),
-        
-        records_to_insert AS (
-            SELECT DISTINCT union_satellites.* FROM union_satellites
-            LEFT JOIN DBTVAULT.TEST.XTS_2SAT AS d
-                ON (union_satellites.HASHDIFF = d.HASHDIFF
-                    AND union_satellites.LOAD_DATE = d.LOAD_DATE
-                    AND union_satellites.SATELLITE_NAME = d.SATELLITE_NAME
-                )
-            WHERE d.HASHDIFF IS NULL
-                AND d.LOAD_DATE IS NULL
-                AND d.SATELLITE_NAME IS NULL
-        )
-        
-        SELECT * FROM records_to_insert
+        --8<-- "docs/assets/snippets/compiled/sqlserver/raw_vault/xts/xts_customer_phone_multi_source.sql"
         ```
 
 ### pit
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/pit.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/pit.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/pit.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/pit.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/pit.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/pit.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/pit.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/pit.sql)
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    Since AutomateDV v0.11.0, the **pit()** macro is now deprecated. This is because it is not currently fit-for-purpose and needs significant usability
+    and peformance improvements, as well as a design overhaul. An improved implementation will be released in a future version of AutomateDV.
 
 Generates SQL to build a Point-In-Time (PIT) table.
 
 ``` jinja
-{{ dbtvault.pit(src_pk=src_pk, 
-                as_of_dates_table=as_of_dates_table,
-                satellites=satellites,
-                stage_tables_ldts=stage_tables_ldts,
-                src_ldts=src_ldts,
-                source_model=source_model) }}
+{{ automate_dv.pit(src_pk=src_pk, 
+                   as_of_dates_table=as_of_dates_table,
+                   satellites=satellites,
+                   stage_tables_ldts=stage_tables_ldts,
+                   src_ldts=src_ldts,
+                   source_model=source_model) }}
 ```
 
 #### Parameters
@@ -3538,211 +1586,14 @@ Generates SQL to build a Point-In-Time (PIT) table.
     === "Base Load"
 
         ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE AS a
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN as_of_dates AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-        )
-        
-        SELECT DISTINCT * FROM pit
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/pits/base_load.sql"
         ```
 
     === "Incremental Load"
 
         ```sql
-        WITH as_of_dates AS (
-            SELECT * 
-            FROM DBTVAULT.TEST.AS_OF_DATE
-        ),
-        
-        last_safe_load_datetime AS (
-            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME 
-            FROM (
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_DETAILS
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_LOGIN
-                UNION ALL
-                SELECT MIN(LOAD_DATE) AS LOAD_DATETIME FROM DBTVAULT.TEST.STG_CUSTOMER_PROFILE
-            ) a
-        ),
-        
-        as_of_grain_old_entries AS (
-            SELECT DISTINCT AS_OF_DATE 
-            FROM DBTVAULT.TEST.PIT_CUSTOMER
-        ),
-        
-        as_of_grain_lost_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_grain_old_entries AS a
-            LEFT OUTER JOIN as_of_dates AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        as_of_grain_new_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_dates AS a
-            LEFT OUTER JOIN as_of_grain_old_entries AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        min_date AS (
-            SELECT min(AS_OF_DATE) AS MIN_DATE
-            FROM as_of_dates
-        ),
-        
-        backfill_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_pks AS (
-            SELECT a.CUSTOMER_PK
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            WHERE a.LOAD_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of_dates AS a
-            WHERE a.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-            UNION
-            SELECT AS_OF_DATE
-            FROM as_of_grain_new_entries
-        ),
-        
-        overlap AS (
-            SELECT a.*
-            FROM DBTVAULT.TEST.PIT_CUSTOMER AS a
-            INNER JOIN DBTVAULT.TEST.HUB_CUSTOMER as b
-                ON a.CUSTOMER_PK = b.CUSTOMER_PK
-            WHERE a.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND a.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND a.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        -- Back-fill any newly arrived hubs, set all historical pit dates to ghost records
-        
-        backfill_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM new_rows_pks AS a
-            INNER JOIN backfill_as_of AS b
-                ON (1=1 )
-        ),
-        
-        backfill AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_DETAILS_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_DETAILS_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_LOGIN_PK,
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_LOGIN_LDTS,
-                CAST('0000000000000000' AS BINARY(16)) AS SAT_CUSTOMER_PROFILE_PK,        
-                CAST('1900-01-01 00:00:00.000' AS timestamp_ntz) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM backfill_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        new_rows_as_of_dates AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-            FROM DBTVAULT.TEST.HUB_CUSTOMER AS a
-            INNER JOIN new_rows_as_of AS b
-            ON (1=1)
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                a.AS_OF_DATE,
-                COALESCE(MAX(sat_customer_details_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_DETAILS_PK,
-                COALESCE(MAX(sat_customer_details_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_DETAILS_LDTS,
-                COALESCE(MAX(sat_customer_login_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_LOGIN_PK,
-                COALESCE(MAX(sat_customer_login_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_LOGIN_LDTS,
-                COALESCE(MAX(sat_customer_profile_src.CUSTOMER_PK), CAST('0000000000000000' AS BINARY(16))) AS SAT_CUSTOMER_PROFILE_PK,
-                COALESCE(MAX(sat_customer_profile_src.LOAD_DATE), CAST('1900-01-01 00:00:00.000' AS timestamp_ntz)) AS SAT_CUSTOMER_PROFILE_LDTS
-            FROM new_rows_as_of_dates AS a
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_DETAILS AS sat_customer_details_src
-                ON a.CUSTOMER_PK = sat_customer_details_src.CUSTOMER_PK
-                AND sat_customer_details_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_LOGIN AS sat_customer_login_src
-                ON a.CUSTOMER_PK = sat_customer_login_src.CUSTOMER_PK
-                AND sat_customer_login_src.LOAD_DATE <= a.AS_OF_DATE
-            LEFT JOIN DBTVAULT.TEST.SAT_CUSTOMER_PROFILE AS sat_customer_profile_src
-                ON a.CUSTOMER_PK = sat_customer_profile_src.CUSTOMER_PK
-                AND sat_customer_profile_src.LOAD_DATE <= a.AS_OF_DATE
-            GROUP BY
-                a.CUSTOMER_PK, a.AS_OF_DATE
-        ),
-        
-        pit AS (
-            SELECT * FROM new_rows
-            UNION ALL
-            SELECT * FROM overlap
-            UNION ALL
-            SELECT * FROM backfill
-        )
-        
-        SELECT DISTINCT * FROM pit
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/pits/incremental_load.sql"
         ```
-
-=== "Google Bigquery"
-    Coming soon!
-
-=== "MS SQL Server"
-    Coming soon!
 
 #### As Of Date Tables
 
@@ -3763,7 +1614,7 @@ forward to reflect the current date.
 Think of As of Date tables as essentially a rolling window of time.
 
 !!! note 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you
+    At the current release of AutomateDV there is no functionality that auto generates this table for you, so you
     will have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
 
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
@@ -3776,9 +1627,17 @@ ___
 
 ###### view source:
 
-[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/snowflake/bridge.sql)
-[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/bigquery/bridge.sql)
-[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.9.1/macros/tables/sqlserver/bridge.sql)
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/snowflake/bridge.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/bigquery/bridge.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/sqlserver/bridge.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/databricks/bridge.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/automate-dv/blob/v0.11.0/macros/tables/postgres/bridge.sql)
+
+!!! warning 
+    **Deprecated since v0.11.0**
+
+    Since AutomateDV v0.11.0, the **bridge()** macro is now deprecated. This is because it is not currently fit-for-purpose and needs significant usability
+    and peformance improvements, as well as a design overhaul. An improved implementation will be released in a future version of AutomateDV.
 
 Generates SQL to build a simple Bridge table, starting from a Hub and 'walking' through one or more associated Links (
 and their Effectivity Satellites), using the provided parameters.
@@ -3788,11 +1647,11 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
 #### Usage
 
 ``` jinja
-{{ dbtvault.bridge(source_model=source_model, src_pk=src_pk,
-                        src_ldts=src_ldts,
-                        bridge_walk=bridge_walk,
-                        as_of_dates_table=as_of_dates_table,
-                        stage_tables_ldts=stage_tables_ldts) }}
+{{ automate_dv.bridge(source_model=source_model, src_pk=src_pk,
+                      src_ldts=src_ldts,
+                      bridge_walk=bridge_walk,
+                      as_of_dates_table=as_of_dates_table,
+                      stage_tables_ldts=stage_tables_ldts) }}
 ```
 
 #### Parameters
@@ -3820,197 +1679,26 @@ For the current version, Effectivity Satellite auto end dating must be enabled.
     === "Base Load"
 
         ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
-            INNER JOIN AS_OF AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-        
-        all_rows AS (
-            SELECT * FROM new_rows
-        ),
-        
-        candidate_rows AS (
-            SELECT *,
-                ROW_NUMBER() OVER (
-                    PARTITION BY AS_OF_DATE,
-                        LINK_CUSTOMER_ORDER_PK
-                    ORDER BY
-                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
-                    ) AS row_num
-            FROM all_rows
-            QUALIFY row_num = 1
-        ),
-        
-        bridge AS (
-            SELECT
-                c.CUSTOMER_PK,
-                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
-            FROM candidate_rows AS c
-            WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        )
-        
-        SELECT * FROM bridge
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/bridges/base_load.sql"
         ```
 
-    === "Subsequent Loads"
-        
+    === "Incremental Load"
+
         ```sql
-        WITH as_of AS (
-             SELECT a.AS_OF_DATE
-             FROM DBTVAULT_DEV.TEST.AS_OF_DATE AS a
-             WHERE a.AS_OF_DATE <= CURRENT_DATE()
-        ),
-        
-        last_safe_load_datetime AS (
-            SELECT MIN(LOAD_DATETIME) AS LAST_SAFE_LOAD_DATETIME
-            FROM (SELECT MIN(LOAD_DATETIME) AS LOAD_DATETIME FROM DBTVAULT_DEV.TEST.STG_CUSTOMER_ORDER
-                        
-                    ) AS l
-        ),
-        
-        as_of_grain_old_entries AS (
-            SELECT DISTINCT AS_OF_DATE
-            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER
-        ),
-        
-        as_of_grain_lost_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of_grain_old_entries AS a
-            LEFT OUTER JOIN as_of AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        as_of_grain_new_entries AS (
-            SELECT a.AS_OF_DATE
-            FROM as_of AS a
-            LEFT OUTER JOIN as_of_grain_old_entries AS b
-                ON a.AS_OF_DATE = b.AS_OF_DATE
-            WHERE b.AS_OF_DATE IS NULL
-        ),
-        
-        min_date AS (
-            SELECT min(AS_OF_DATE) AS MIN_DATE
-            FROM as_of
-        ),
-        
-        new_rows_pks AS (
-            SELECT h.CUSTOMER_PK
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS h
-            WHERE h.LOAD_DATETIME >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-        ),
-        
-        new_rows_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of
-            WHERE as_of.AS_OF_DATE >= (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-            UNION
-            SELECT as_of_date
-            FROM as_of_grain_new_entries
-        ),
-        
-        overlap_pks AS (
-            SELECT p.CUSTOMER_PK
-            FROM DBTVAULT_DEV.TEST.BRIDGE_CUSTOMER_ORDER AS p
-            INNER JOIN DBTVAULT_DEV.TEST.HUB_CUSTOMER as h
-                ON p.CUSTOMER_PK = h.CUSTOMER_PK
-            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        overlap_as_of AS (
-            SELECT AS_OF_DATE
-            FROM as_of AS p
-            WHERE p.AS_OF_DATE >= (SELECT MIN_DATE FROM min_date)
-                AND p.AS_OF_DATE < (SELECT LAST_SAFE_LOAD_DATETIME FROM last_safe_load_datetime)
-                AND p.AS_OF_DATE NOT IN (SELECT AS_OF_DATE FROM as_of_grain_lost_entries)
-        ),
-        
-        overlap AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE
-                            ,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM overlap_pks AS a
-            INNER JOIN overlap_as_of AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-        
-        new_rows AS (
-            SELECT
-                a.CUSTOMER_PK,
-                b.AS_OF_DATE,LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK AS LINK_CUSTOMER_ORDER_PK
-                            ,EFF_SAT_CUSTOMER_ORDER.END_DATE AS EFF_SAT_CUSTOMER_ORDER_ENDDATE
-                            ,EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME AS EFF_SAT_CUSTOMER_ORDER_LOADDATE
-            FROM DBTVAULT_DEV.TEST.HUB_CUSTOMER AS a
-            INNER JOIN NEW_ROWS_AS_OF AS b
-                ON (1=1)
-            LEFT JOIN DBTVAULT_DEV.TEST.LINK_CUSTOMER_ORDER AS LINK_CUSTOMER_ORDER
-                ON a.CUSTOMER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_FK
-            INNER JOIN DBTVAULT_DEV.TEST.EFF_SAT_CUSTOMER_ORDER AS EFF_SAT_CUSTOMER_ORDER
-                ON EFF_SAT_CUSTOMER_ORDER.CUSTOMER_ORDER_PK = LINK_CUSTOMER_ORDER.CUSTOMER_ORDER_PK
-                AND EFF_SAT_CUSTOMER_ORDER.LOAD_DATETIME <= b.AS_OF_DATE
-        ),
-        
-        all_rows AS (
-            SELECT * FROM new_rows
-            UNION ALL
-            SELECT * FROM overlap
-        ),
-        
-        candidate_rows AS (
-            SELECT *,
-                ROW_NUMBER() OVER (
-                    PARTITION BY AS_OF_DATE,
-                        LINK_CUSTOMER_ORDER_PK
-                    ORDER BY
-                        EFF_SAT_CUSTOMER_ORDER_LOADDATE DESC
-                    ) AS row_num
-            FROM all_rows
-            QUALIFY row_num = 1
-        ),
-        
-        bridge AS (
-            SELECT
-                c.CUSTOMER_PK,
-                c.AS_OF_DATE,c.LINK_CUSTOMER_ORDER_PK
-            FROM candidate_rows AS c
-            WHERE TO_DATE(c.EFF_SAT_CUSTOMER_ORDER_ENDDATE) = TO_DATE('9999-12-31 23:59:59.999999')
-        )
-        
-        SELECT * FROM bridge
+        --8<-- "docs/assets/snippets/compiled/snowflake/query_helpers/bridges/incremental_load.sql"
         ```
 
-=== "Google BigQuery"
-    Coming soon!
+=== "Google Bigquery"
+    Example Coming soon!
 
 === "MS SQL Server"
-    Coming soon!
+    Example Coming soon!
+
+=== "Postgres"
+    Example Coming soon!
+
+=== "Databricks"
+    Example Coming soon!
 
 #### As Of Date Table Structures
 
@@ -4018,12 +1706,164 @@ An As of Date table contains a single column of dates used to construct the hist
 
 !!! note
 
-    At the current release of dbtvault there is no functionality that auto generates this table for you, so you will 
+    At the current release of AutomateDV there is no functionality that auto generates this table for you, so you will 
     have to supply this yourself. For further information, please check the tutorial [page](../tutorial/tut_as_of_date.md).
     
     Another caveat is that even though the As of Date table can take any name, you need to make sure it's defined 
     accordingly in the `as_of_dates_table` metadata parameter (see the [metadata section](../metadata.md#bridge-tables) 
     for Bridges). The column name in the As of Date table is currently defaulted to 'AS_OF_DATE' and it cannot be changed.
+
+___
+
+### ref_table
+
+###### view source:
+
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/snowflake/ref_table.sql)
+[![BigQuery](../assets/images/platform_icons/bigquery.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/bigquery/ref_table.sql)
+[![SQLServer](../assets/images/platform_icons/sqlserver.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/sqlserver/ref_table.sql)
+[![Databricks](../assets/images/platform_icons/databricks.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/databricks/ref_table.sql)
+[![Postgres](../assets/images/platform_icons/postgres.png)](https://github.com/Datavault-UK/dbtvault/blob/v0.10.0/macros/tables/postgres/ref_table.sql)
+
+Generates SQL to build a Reference table using the provided parameters.
+
+#### Usage
+
+``` jinja
+
+{{ automate_dv.ref_table(src_pk=src_pk, src_ldts=src_ldts,
+                         src_extra_columns=src_extra_columns,
+                         src_ldts=src_ldts, src_source=src_source,
+                         source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter         | Description                                 | Type                | Required?                                         |
+|-------------------|---------------------------------------------|---------------------|---------------------------------------------------|
+| src_pk            | Source primary key column                   | String              | :fontawesome-solid-circle-check:{ .required }     |
+| src_extra_columns | Select arbitrary columns from the source    | List[String]/String | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_ldts          | Source load date timestamp column           | String              | :fontawesome-solid-circle-minus:{ .not-required } |
+| src_source        | Name of the column containing the source ID | String              | :fontawesome-solid-circle-minus:{ .not-required } |
+| source_model      | Staging model name                          | String              | :fontawesome-solid-circle-check:{ .required }     |
+
+!!! tip
+    [Read the tutorial](../tutorial/tut_ref_tables.md) for more details
+
+#### Example Metadata
+
+[See examples](../metadata.md#reference-tables)
+
+#### Example Output
+
+=== "Base Load"
+
+    ```sql
+    --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ref_tables/ref_tables_base.sql"
+    ```
+
+=== "Incremental Load"
+
+    ```sql
+    --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/ref_tables/ref_tables_incremental.sql"
+    ```
+
+___
+
+### lat_sat
+
+###### view source:
+
+[![Snowflake](../assets/images/platform_icons/snowflake.png)](https://github.com/Datavault-UK/automate-dv/blob/master/macros/tables/snowflake/lat_sat.sql)
+
+Generates SQL to build a Latest Satellite using the provided parameters.
+
+A Latest Satellite returns exactly one record per primary key from an existing [Satellite](#sat): the record
+with the most recent value in the column provided as `src_latest`. This is useful for downstream structures and queries
+which only need the current state of each key, without having to implement this logic themselves.
+
+!!! warning "Snowflake only"
+    The `lat_sat` macro is currently only supported on Snowflake. Support for other platforms will be released in a 
+    future version of AutomateDV.
+
+!!! note
+    Unlike the other table macros, a Latest Satellite is built on top of a Satellite rather than a stage. 
+    The `source_model` should be the name of the Satellite model, **not** the staging model. 
+    We recommend materialising Latest Satellites as a `view`, so that they always reflect the current contents of the 
+    Satellite.
+
+#### Usage
+
+``` jinja
+{{ automate_dv.lat_sat(src_pk=src_pk, src_latest=src_latest,
+                       source_model=source_model) }}
+```
+
+#### Parameters
+
+| Parameter    | Description                                       | Type                | Required?                                     |
+|--------------|---------------------------------------------------|---------------------|-----------------------------------------------|
+| src_pk       | Source primary key column                         | List[String]/String | :fontawesome-solid-circle-check:{ .required } |
+| src_latest   | Source column used to determine the latest record | String              | :fontawesome-solid-circle-check:{ .required } |
+| source_model | Satellite model name                              | String              | :fontawesome-solid-circle-check:{ .required } |
+
+!!! tip "Choosing a `src_latest` column"
+    Any date or timestamp column in the Satellite can be provided as `src_latest`, depending on how you wish to 
+    define the latest record. For example, use the effective from column to get the latest record in business 
+    time, or the load date timestamp to get the most recently loaded record.
+
+#### Latest Satellite Behaviour
+
+The SQL generated by the macro selects all columns from the source Satellite and keeps the first record per `src_pk` 
+when ordered by the column provided as `src_latest`, in descending order.
+
+=== "Latest Record Selection"
+
+    The latest record is determined by the column provided as `src_latest` **_only_**.
+
+    This means that if a later load contains a record with an older `src_latest` value than one already loaded, the 
+    record with the most recent `src_latest` value will still be returned, regardless of when it was loaded.
+
+=== "NULL Values"
+
+    `NULL` values in the column provided as `src_latest` are always sorted last. This ensures the behaviour is consistent 
+    and does not depend on platform defaults or Snowflake's `DEFAULT_NULL_ORDERING` parameter.
+
+    - If a key has a record with a `NULL` `src_latest` value amongst non-`NULL` records, the latest non-`NULL` record 
+      will be returned.
+    - If a key **_only_** has records with a `NULL` `src_latest` value, a record will still be returned for that key.
+
+=== "Ghost Records"
+
+    If [ghost records](#ghost-record-configuration) are enabled for the source Satellite, the ghost record 
+    will be carried through into the Latest Satellite. As the ghost record has its own `src_pk` value (0000...), 
+    it will never replace the latest record of a real key.
+
+!!! warning "Ties on `src_latest`"
+    Multiple records for the same key with the **_same_** `src_latest` value are not currently handled, and an 
+    arbitrary one of the tied records will be returned. This should not occur when the primary key and the column 
+    provided as `src_latest` are correct in the source Satellite. 
+    [**_Please_** let us know](https://github.com/Datavault-UK/automate-dv/issues) if this affects your use case!
+
+#### Example Metadata
+
+[See examples](../metadata.md#latest-satellites)
+
+#### Example Output
+
+=== "Snowflake"
+
+    === "Standard"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/lat_sats/lat_sat.sql"
+        ```
+
+    === "Composite Primary Key"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/snowflake/raw_vault/lat_sats/lat_sat_comp_pk.sql"
+        ```
 
 ___
 
@@ -4033,7 +1873,7 @@ ___
 
 These macros are intended for use in the staging layer.
 
-At dbtvault, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the
+In AutomateDV, we call this staging layer "primed staging" as we are preparing or 'priming' the data ready for use in the
 raw vault. It is important to understand that according to Data Vault 2.0 standards, the primed stages is
 essentially where all of our **_hard_** business rules are defined. We are not excessively transforming the data beyond
 what is reasonable prior to the raw stage, but simply creating some columns to drive audit and performance downstream.
@@ -4042,19 +1882,19 @@ ___
 
 ### stage
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.1/macros/staging/stage.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/staging/stage.sql))
 
 Generates SQL to build a staging area using the provided parameters.
 
 #### Usage
 
 ``` jinja 
-{{ dbtvault.stage(include_source_columns=true,
-                  source_model=source_model,
-                  derived_columns=derived_columns,
-                  null_columns=null_columns,
-                  hashed_columns=hashed_columns,
-                  ranked_columns=ranked_columns) }}
+{{ automate_dv.stage(include_source_columns=true,
+                     source_model=source_model,
+                     derived_columns=derived_columns,
+                     null_columns=null_columns,
+                     hashed_columns=hashed_columns,
+                     ranked_columns=ranked_columns) }}
 ```
 
 #### Parameters
@@ -4082,1001 +1922,166 @@ Generates SQL to build a staging area using the provided parameters.
 
 === "Snowflake"
 
-    === "All variables"
+    === "All configurations"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        derived_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            'STG_BOOKING' AS RECORD_SOURCE,
-            BOOKING_DATE AS EFFECTIVE_FROM
-        
-            FROM source_data
-        ),
-        
-        null_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            RECORD_SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
-            IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
-            IFNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
-            NATIONALITY AS NATIONALITY_ORIGINAL,
-            IFNULL(NATIONALITY, '-2') AS NATIONALITY
-
-            FROM derived_columns
-        ),
-
-        hashed_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_NAME_ORIGINAL,
-            NATIONALITY_ORIGINAL,
-        
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM derived_columns
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_NAME_ORIGINAL,
-            NATIONALITY_ORIGINAL,
-            CUSTOMER_HK,
-            CUST_CUSTOMER_HASHDIFF,
-            CUSTOMER_HASHDIFF
-        
-            FROM hashed_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_all.sql"
         ```
 
-    === "Only source"
+    === "Only source columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT *
-            
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-            
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-            
-            FROM source_data
-        )
-        
-        SELECT * FROM columns_to_select
-        ```
-
-    === "Only derived"
-
-        ```sql
-        WITH source_data AS (
-
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        derived_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            'STG_BOOKING' AS RECORD_SOURCE,
-            LOAD_DATE AS EFFECTIVE_FROM
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            SOURCE,
-            EFFECTIVE_FROM
-        
-            FROM derived_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        WITH source_data AS (
-
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        null_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
-            IFNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
-            IFNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
-            NATIONALITY AS NATIONALITY_ORIGINAL,
-            IFNULL(NATIONALITY, '-2') AS NATIONALITY
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_ID,
-            CUSTOMER_NAME_ORIGINAL,
-            CUSTOMER_NAME,
-            NATIONALITY_ORIGINAL,
-            NATIONALITY
-        
-            FROM null_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_null.sql"
         ```
 
-    === "Only hashing"
+    === "Only hashed columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        hashed_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-        
-            CAST((MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''))) AS BINARY(16)) AS CUSTOMER_HK,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(MD5_BINARY(CONCAT_WS('||',
-                IFNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR))), ''), '^^'),
-                IFNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR))), ''), '^^')
-            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            CUSTOMER_HK,
-            CUST_CUSTOMER_HASHDIFF,
-            CUSTOMER_HASHDIFF
-        
-            FROM hashed_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_hashed.sql"
         ```
 
-    === "Only ranked"
+    === "Only ranked columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        ranked_columns AS (
-        
-            SELECT *,
-        
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS DBTVAULT_RANK,
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS SAT_LOAD_RANK
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            DBTVAULT_RANK,
-            SAT_LOAD_RANK
-        
-            FROM ranked_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/snowflake/staging/primed_stages/stg_customer_only_ranked.sql"
         ```
+
+=== "Google BigQuery"
+
+    === "All configurations"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_all.sql"
+        ```
+
+    === "Only source columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_source.sql"
+        ```
+
+    === "Only null columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_null.sql"
+        ```
+
+    === "Only hashed columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_hashed.sql"
+        ```
+
+    === "Only ranked columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/bigquery/staging/primed_stages/stg_customer_only_ranked.sql"
 
 === "MS SQL Server"
 
-    === "All variables"
+    === "All configurations"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        derived_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            'STG_BOOKING' AS RECORD_SOURCE,
-            BOOKING_DATE AS EFFECTIVE_FROM
-        
-            FROM source_data
-        ),
-        
-        null_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            RECORD_SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
-            ISNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
-            ISNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
-            NATIONALITY AS NATIONALITY_ORIGINAL,
-            ISNULL(NATIONALITY, '-2') AS NATIONALITY
-
-            FROM derived_columns
-        ),
-
-        hashed_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_NAME_ORIGINAL,
-            NATIONALITY_ORIGINAL,
-        
-            CAST(HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), '')) AS BINARY(16)) AS CUSTOMER_HK,
-            CAST(HASHBYTES('MD5', (CONCAT_WS('||',
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR(max)))), ''), '^^')
-            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(HASHBYTES('MD5', (CONCAT_WS('||',
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR(max)))), ''), '^^')
-            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM derived_columns
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            SOURCE,
-            EFFECTIVE_FROM,
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_NAME_ORIGINAL,
-            NATIONALITY_ORIGINAL,
-            CUSTOMER_HK,
-            CUST_CUSTOMER_HASHDIFF,
-            CUSTOMER_HASHDIFF
-        
-            FROM hashed_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_all.sql"
         ```
 
-    === "Only source"
+    === "Only source columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT *
-            
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-            
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-            
-            FROM source_data
-        )
-        
-        SELECT * FROM columns_to_select
-        ```
-
-    === "Only derived"
-
-        ```sql
-        WITH source_data AS (
-
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        derived_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            'STG_BOOKING' AS RECORD_SOURCE,
-            LOAD_DATE AS EFFECTIVE_FROM
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            SOURCE,
-            EFFECTIVE_FROM
-        
-            FROM derived_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_source.sql"
         ```
 
     === "Only null columns"
 
         ```sql
-        WITH source_data AS (
-
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        null_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-            CUSTOMER_ID AS CUSTOMER_ID_ORIGINAL,
-            ISNULL(CUSTOMER_ID, '-1') AS CUSTOMER_ID,
-            CUSTOMER_NAME AS CUSTOMER_NAME_ORIGINAL,
-            ISNULL(CUSTOMER_NAME, '-2') AS CUSTOMER_NAME,
-            NATIONALITY AS NATIONALITY_ORIGINAL,
-            ISNULL(NATIONALITY, '-2') AS NATIONALITY
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            CUSTOMER_ID_ORIGINAL,
-            CUSTOMER_ID,
-            CUSTOMER_NAME_ORIGINAL,
-            CUSTOMER_NAME,
-            NATIONALITY_ORIGINAL,
-            NATIONALITY
-        
-            FROM null_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_null.sql"
         ```
 
-    === "Only hashing"
+    === "Only hashed columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        hashed_columns AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE,
-        
-            CAST(HASHBYTES('MD5', NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), '')) AS BINARY(16)) AS CUSTOMER_HK,
-            CAST(HASHBYTES('MD5', (CONCAT_WS('||',
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_DOB AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_NAME AS VARCHAR(max)))), ''), '^^')
-            )) AS BINARY(16)) AS CUST_CUSTOMER_HASHDIFF,
-            CAST(HASHBYTES('MD5', (CONCAT_WS('||',
-                ISNULL(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(NATIONALITY AS VARCHAR(max)))), ''), '^^'),
-                ISNULL(NULLIF(UPPER(TRIM(CAST(PHONE AS VARCHAR(max)))), ''), '^^')
-            )) AS BINARY(16)) AS CUSTOMER_HASHDIFF
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            CUSTOMER_HK,
-            CUST_CUSTOMER_HASHDIFF,
-            CUSTOMER_HASHDIFF
-        
-            FROM hashed_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_hashed.sql"
         ```
 
-    === "Only ranked"
+    === "Only ranked columns"
 
         ```sql
-        WITH source_data AS (
-        
-            SELECT
-        
-            BOOKING_FK,
-            ORDER_FK,
-            CUSTOMER_HK,
-            CUSTOMER_ID,
-            LOAD_DATE,
-            RECORD_SOURCE,
-            CUSTOMER_DOB,
-            CUSTOMER_NAME,
-            NATIONALITY,
-            PHONE,
-            TEST_COLUMN_2,
-            TEST_COLUMN_3,
-            TEST_COLUMN_4,
-            TEST_COLUMN_5,
-            TEST_COLUMN_6,
-            TEST_COLUMN_7,
-            TEST_COLUMN_8,
-            TEST_COLUMN_9,
-            BOOKING_DATE
-        
-            FROM DBTVAULT.TEST.my_raw_stage
-        ),
-        
-        ranked_columns AS (
-        
-            SELECT *,
-        
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS DBTVAULT_RANK,
-            RANK() OVER (PARTITION BY CUSTOMER_ID ORDER BY LOAD_DATE) AS SAT_LOAD_RANK
-        
-            FROM source_data
-        ),
-        
-        columns_to_select AS (
-        
-            SELECT
-        
-            DBTVAULT_RANK,
-            SAT_LOAD_RANK
-        
-            FROM ranked_columns
-        )
-        
-        SELECT * FROM columns_to_select
+        --8<-- "docs/assets/snippets/compiled/sqlserver/staging/primed_stages/stg_customer_only_ranked.sql"
+        ```
+
+=== "Postgres"
+
+    === "All configurations"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_all.sql"
+        ```
+
+    === "Only source columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_source.sql"
+        ```
+
+    === "Only null columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_null.sql"
+        ```
+
+    === "Only hashed columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_hashed.sql"
+        ```
+
+    === "Only ranked columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/postgres/staging/primed_stages/stg_customer_only_ranked.sql"
+        ```
+
+=== "Databricks"
+
+    === "All configurations"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_all.sql"
+        ```
+
+    === "Only source columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_source.sql"
+        ```
+
+    === "Only null columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_null.sql"
+        ```
+
+    === "Only hashed columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_hashed.sql"
+        ```
+
+    === "Only ranked columns"
+
+        ```sql
+        --8<-- "docs/assets/snippets/compiled/databricks/staging/primed_stages/stg_customer_only_ranked.sql"
         ```
 
 ### Stage Macro Configurations
 
-[Navigate to our dedicated Stage Macro page](stage_macro_configurations.md)
+[Stage Macro In-Depth](stage_macro_configurations.md){: .md-button .md-button--primary .btn }
 
 ## Supporting Macros
 
@@ -5090,7 +2095,7 @@ ___
 
 ### hash (macro)
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.1/macros/supporting/hash.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/supporting/hash.sql))
 
 !!! warning
     This macro ***should not be*** used for cryptographic purposes.
@@ -5102,7 +2107,7 @@ ___
     - Read [Hashing best practices and why we hash](../best_practises/hashing.md)
     for more detailed information on the purposes of this macro and what it does.
     - You may choose between `MD5` and `SHA-256` hashing.
-    [Learn how](../best_practises/hashing.md#choosing-a-hashing-algorithm-in-dbtvault)
+    [Learn how](../best_practises/hashing.md#choosing-a-hashing-algorithm)
     
 A macro for generating hashing SQL for columns.
 
@@ -5111,8 +2116,8 @@ A macro for generating hashing SQL for columns.
 === "Input"
 
     ```yaml
-    {{ dbtvault.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
-    {{ dbtvault.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
+    {{ automate_dv.hash('CUSTOMERKEY', 'CUSTOMER_HK') }},
+    {{ automate_dv.hash(['CUSTOMERKEY', 'PHONE', 'DOB', 'NAME'], 'HASHDIFF', true) }}
     ```
 
 === "Output (Snowflake)"
@@ -5175,7 +2180,7 @@ ___
 
 ### prefix
 
-([view source](https://github.com/Datavault-UK/dbtvault/blob/release/0.9.1/macros/supporting/prefix.sql))
+([view source](https://github.com/Datavault-UK/automate-dv/blob/release/0.9.6/macros/supporting/prefix.sql))
 
 A macro for quickly prefixing a list of columns with a string.
 
@@ -5191,7 +2196,7 @@ A macro for quickly prefixing a list of columns with a string.
 === "Input"
 
     ```sql 
-    {{ dbtvault.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ dbtvault.prefix(['CUSTOMERKEY'], 'a') }}
+    {{ automate_dv.prefix(['CUSTOMERKEY', 'DOB', 'NAME', 'PHONE'], 'a') }} {{ automate_dv.prefix(['CUSTOMERKEY'], 'a') }}
     ```
 
 === "Output"
@@ -5209,7 +2214,7 @@ ___
 
 ###### (macros/internal)
 
-Internal macros are used by other macros provided by dbtvault. They process provided metadata and should not need to be
+Internal macros are used by other macros provided by AutomateDV. They process provided metadata and should not need to be
 called directly.
 
 --8<-- "includes/abbreviations.md"

@@ -19,7 +19,7 @@ The name of the Satellite that the payload is being staged to. This allows us to
 #### Hashdiff (src_satellite.hashdiff)
 A hashed representation of the record's payload. An XTS only needs to identify differences in payload it is more suitable to store the hash rather than the full payload.
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. this identifies when the record first gets loaded into the database.
 
 #### Record Source (src_source)
@@ -35,12 +35,12 @@ Create a new dbt model as before. We'll call this one `xts_customer`.
 === "xts_customer.sql"
 
     ```jinja
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 To create a XTS model, we simply copy and paste the above template into a model named after the XTS we
-are creating. dbtvault will generate an XTS using parameters provided in the next steps.
+are creating. AutomateDV will generate an XTS using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -94,8 +94,8 @@ When we provide the metadata above, our model should now look like the following
     {% set src_ldts = metadata_dict["src_ldts"] %}
     {% set src_source = metadata_dict["src_source"] %}
 
-    {{ dbtvault.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.xts(src_pk=src_pk, src_satellite=src_satellite, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 !!! Note
@@ -105,11 +105,7 @@ When we provide the metadata above, our model should now look like the following
 
 With our model complete, and our metadata stored in our YAML. We can run dbt to create our `xts_customer` table.
 
-=== "< dbt v0.20.x"
-    `dbt run -m +xts_customer`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +xts_customer`
+`dbt run -s +xts_customer`
     
 The resulting Extended Tracking Satellite table will look like this:
 

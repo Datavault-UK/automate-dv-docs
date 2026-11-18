@@ -19,7 +19,7 @@ This is usually a formal identification for the record, such as a customer ID or
 order number. Usually called the business key because this value has meaning in
 business processes such as transactions and events.
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
 #### Record Source (src_source)
@@ -35,12 +35,12 @@ Create a new dbt model as before. We'll call this one `hub_customer`.
 === "hub_customer.sql"
 
     ```jinja
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 To create a Hub model, we simply copy and paste the above template into a model named after the Hub we
-are creating. dbtvault will generate a Hub using parameters provided in the next steps.
+are creating. AutomateDV will generate a Hub using parameters provided in the next steps.
 
 #### Materialisation
 
@@ -76,8 +76,8 @@ When we provide the metadata above, our model should look like the following:
     {%- set src_ldts = "LOAD_DATETIME"      -%}
     {%- set src_source = "RECORD_SOURCE"    -%}
     
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 !!! Note
@@ -87,11 +87,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our metadata provided and our model complete, we can run dbt to create our `hub_customer` Hub, as follows:
 
-=== "< dbt v0.20.x"
-    `dbt run -m +hub_customer`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +hub_customer`
+`dbt run -s +hub_customer`
 
 The resulting Hub table will look like this:
 
@@ -140,8 +136,8 @@ will handle the rest:
     {%- set src_ldts = "LOAD_DATETIME"            -%}
     {%- set src_source = "RECORD_SOURCE"          -%}
     
-    {{ dbtvault.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.hub(src_pk=src_pk, src_nk=src_nk, src_ldts=src_ldts,
+                       src_source=src_source, source_model=source_model) }}
     ```
 
 === "YAML Metadata approach"
@@ -160,11 +156,11 @@ will handle the rest:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.hub(src_pk=metadata_dict["src_pk"],
-                    src_nk=metadata_dict["src_nk"], 
-                    src_ldts=metadata_dict["src_ldts"],
-                    src_source=metadata_dict["src_ldts"],
-                    source_model=metadata_dict["source_model"]) }}
+    {{ automate_dv.hub(src_pk=metadata_dict["src_pk"],
+                       src_nk=metadata_dict["src_nk"], 
+                       src_ldts=metadata_dict["src_ldts"],
+                       src_source=metadata_dict["src_ldts"],
+                       source_model=metadata_dict["source_model"]) }}
     ```
 
 See the [Hub metadata reference](../metadata.md#hubs) for more examples.

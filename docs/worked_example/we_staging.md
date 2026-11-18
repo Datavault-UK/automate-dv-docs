@@ -27,7 +27,7 @@ making a number of calculations on orders made by customers and creating transac
 
 ## Building the raw staging layer
 
-To build this layer with dbtvault, run the below command:
+To build this layer with AutomateDV, run the below command:
 
 === "< dbt v0.20.x" 
     `dbt run --models tag:raw`
@@ -61,7 +61,7 @@ The tables in the raw staging layer need additional columns to prepare the data 
 Specifically, we need to add primary key hashes, hashdiffs, and any implied fixed-value columns 
 (see the diagram at the top of the page).
 
-We have created a helper macro for dbtvault, to make this step easier; the [stage](../macros/index.md#stage) macro, which 
+We have created a helper macro for AutomateDV, to make this step easier; the [stage](../macros/index.md#stage) macro, which 
 generates derived and hashed columns from a given raw staging table.
 
 ### v_stg_orders and v_stg_inventory
@@ -82,12 +82,12 @@ By using the below template and providing the required metadata, the stage macro
 from the source table. 
 
 ```jinja2
-{{ dbtvault.stage(include_source_columns=true,
-                  source_model=source_model,
-                  derived_columns=derived_columns,
-                  null_columns=null_columns,
-                  hashed_columns=hashed_columns,
-                  ranked_columns=none) }}
+{{ automate_dv.stage(include_source_columns=true,
+                     source_model=source_model,
+                     derived_columns=derived_columns,
+                     null_columns=null_columns,
+                     hashed_columns=hashed_columns,
+                     ranked_columns=none) }}
 ```
 
 Let's take a look at some metadata supplied to the stage macro for the `v_stg_transactions` view:
@@ -117,12 +117,12 @@ Let's take a look at some metadata supplied to the stage macro for the `v_stg_tr
     
     {% set hashed_columns = metadata_dict['hashed_columns'] %}
     
-    {{ dbtvault.stage(include_source_columns=true,
-                      source_model=source_model,
-                      derived_columns=derived_columns,
-                      null_columns=none,
-                      hashed_columns=hashed_columns,
-                      ranked_columns=none) }}
+    {{ automate_dv.stage(include_source_columns=true,
+                         source_model=source_model,
+                         derived_columns=derived_columns,
+                         null_columns=none,
+                         hashed_columns=hashed_columns,
+                         ranked_columns=none) }}
     ```
 
 #### source_model
@@ -147,7 +147,7 @@ Here, we are creating three new columns, which are all metadata columns
 required for auditability in the raw vault. 
 
 1. `RECORD_SOURCE` is defined as a constant by prefixing the constant value with `!`. This is syntactic sugar to inform 
-   dbtvault to treat this value as a constant string and not a column name.
+   AutomateDV to treat this value as a constant string and not a column name.
    
 2. `LOAD_DATE` is defined as a calculated column using a function. Here we are synthetically creating a `LOAD_DATE` 
    for the purposes of simulating a transaction feed as described earlier in this guide.
@@ -200,12 +200,12 @@ Defining a hashdiff using this syntax will ensure the columns are automatically 
 for hashdiffs
 
 !!! tip
-    For more detail on dbtvault's hashing process, 
+    For more detail on AutomateDV's hashing process, 
     why we hash, and the differences between hash keys and hashdiffs, [read more](../best_practises/hashing.md).
 
 ## Deploying the 'prepared' staging layer
 
-To build this layer with dbtvault, run the below command:
+To build this layer with AutomateDV, run the below command:
 
 === "< dbt v0.20.x" 
     `dbt run --models +tag:stage`

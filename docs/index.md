@@ -1,5 +1,5 @@
-# Welcome to dbtvault!
-dbtvault is a dbt package that generates & executes the ETL you need to build a Data Vault 2.0 Data Warehouse.
+# Welcome to the AutomateDV docs!
+AutomateDV is a dbt package that generates & executes the ETL you need to build a Data Vault 2.0 Data Warehouse.
 
 !!! Note
     You need to be running dbt to use the package. If needed, you can find get more guidance 
@@ -16,7 +16,7 @@ and is free to download and use. Alternatively, you can use their SaaS offering 
 which functions as a dbt IDE.
 
 Our package runs inside the dbt environment, so you can use dbt to run other parts of the Data Vault pipeline, combined with the 
-dbtvault package for the Data Vault 2.0 specific steps.
+AutomateDV package for the Data Vault 2.0 specific steps.
 
 !!! tip "Join our Slack community!"
     [Join now](https://join.slack.com/t/dbtvault/shared_invite/enQtODY5MTY3OTIyMzg2LWJlZDMyNzM4YzAzYjgzYTY0MTMzNTNjN2EyZDRjOTljYjY0NDYyYzEwMTlhODMzNGY3MmU2ODNhYWUxYmM2NjA){ .md-button .md-button--primary }
@@ -28,7 +28,7 @@ The method covers the full approach for developing a Data Warehouse: architectur
 and includes a number of unique techniques. 
 
 If you want to learn about Data Vault 2.0, your best starting point is the book Building a Scalable Data Warehouse with 
-Data Vault 2.0 (see details [below](#pre-requisite)).
+Data Vault 2.0 (see details [below](#pre-requisites)).
 
 ## Why do Data Vault 2.0 and dbt integrate well? 
 The Data Vault 2.0 method uses a small set of standard building blocks to model your data warehouse 
@@ -36,9 +36,9 @@ The Data Vault 2.0 method uses a small set of standard building blocks to model 
 templated SQL. dbt allows for a template-driven implementation using Jinja. This leads to better quality code, 
 fewer mistakes, and greatly improved productivity: i.e. Agility.
 
-## Where does dbtvault fit in?
-The dbtvault package generates and runs Data Vault ETL code from your metadata (table names and mapping details) which is 
-then provided to your dbt models contains calls to dbtvault macros.
+## Where does AutomateDV fit in?
+The AutomateDV package generates and runs Data Vault ETL code from your metadata (table names and mapping details) which is 
+then provided to your dbt models contains calls to AutomateDV macros.
 The macro does the rest of the work: it processes the metadata, generates SQL and then dbt executes the load 
 respecting any and all dependencies. 
 
@@ -46,12 +46,11 @@ dbt even runs the load in parallel. As Data Vault 2.0 is designed for parallel l
 your ETL load will finish in rapid time. Your experience may vary form platform to platform, however we aim to be as
 consistent as possible.
 
-dbtvault reduces the need to write SQL by hand to load the Data Vault, which is a repetitive, time-consuming 
+AutomateDV reduces the need to write SQL by hand to load the Data Vault, which is a repetitive, time-consuming 
 and potentially error-prone task.
 
-
-## What are the advantages of dbtvault?
-dbt works with the dbtvault package to:
+## What are the advantages of AutomateDV?
+dbt works with the AutomateDV package to:
 
 - Generate SQL to process the staging layer and load the data vault.
 - Ensure consistency and correctness in the generated SQL.
@@ -62,8 +61,8 @@ dbt works with the dbtvault package to:
 - Generate data flow diagrams showing data lineage.
 - Automatically build a documentation website.
 
-## Pre-requisite
-If you are going to use the dbtvault package for your Data Vault 2.0 project, then we expect you to have some prior 
+## Pre-requisites
+If you are going to use the AutomateDV package for your Data Vault 2.0 project, then we expect you to have some prior 
 knowledge about the Data Vault 2.0 method.
 
 In the case you do need to get up to speed with Data Vault 2.0, we recommend the following resources for further 
@@ -77,8 +76,10 @@ information:
 
 ### Blogs and Downloads
 
-- [What is Data Vault?](https://www.data-vault.co.uk/what-is-data-vault/)
-- [Agile Modeling: Not an Option Anymore](https://www.vertabelo.com/blog/data-vault-series-agile-modeling-not-an-option-anymore/)
+- [What is Data Vault?](https://www.data-vault.com/what-is-data-vault/)
+- [Agile Modeling: Not an Option Anymore (via WayBackMachine)](https://web.archive.org/web/20230329184416/https://vertabelo.com/blog/data-vault-series-agile-modeling-not-an-option-anymore/)
+    - Original article now unavailable, however it can be found on the WayBackMachine (linked above).
+      It is important to note that the content and topic of this article is also compiled and extended in Kent's book, listed above.
 
 ## Roadmap and Changelog
 

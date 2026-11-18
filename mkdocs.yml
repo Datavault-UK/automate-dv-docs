@@ -1,9 +1,9 @@
-site_name: dbtvault
+site_name: AutomateDV
 site_author: Datavault
 site_dir: 'site'
-repo_name: 'Datavault-UK/dbtvault'
-site_url: 'https://dbtvault.readthedocs.io/'
-repo_url: 'https://github.com/Datavault-UK/dbtvault'
+repo_name: 'Datavault-UK/automate-dv'
+site_url: 'https://automate-dv.readthedocs.io/'
+repo_url: 'https://github.com/Datavault-UK/automate-dv'
 dev_addr: 127.0.0.1:8001
 edit_uri: ""
 
@@ -12,10 +12,11 @@ theme:
   custom_dir: 'overrides'
   show_sidebar: true
   logo: 'assets/images/logo.png'
-  banner: 'assets/images/docs-banner.png'
   favicon: 'assets/images/favicon.ico'
+  banner_dark: 'assets/images/banner/docs-banner-adv-drk.png'
+  banner_light: 'assets/images/banner/docs-banner-adv-lgt.png'
   palette:
-    - scheme: material
+    - scheme: default
       primary: 'black'
       accent: 'indigo'
       toggle:
@@ -27,10 +28,14 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
+  icon:
+    annotation: material/arrow-right-circle-outline
   highlightjs: true
   features:
+    - announce.dismiss
     - navigation.top
     - navigation.indexes
+    - content.tabs.link
 
 nav:
   - Home: 'index.md'
@@ -39,7 +44,7 @@ nav:
       - Staging: 'tutorial/tut_staging.md'
       - Hubs: 'tutorial/tut_hubs.md'
       - Links: 'tutorial/tut_links.md'
-      - Transactional Links: 'tutorial/tut_t_links.md'
+      - Non-Historized Links: 'tutorial/tut_nh_links.md'
       - Satellites: 'tutorial/tut_satellites.md'
       - Effectivity Satellites: 'tutorial/tut_eff_satellites.md'
       - Multi-Active Satellites: 'tutorial/tut_multi_active_satellites.md'
@@ -47,6 +52,7 @@ nav:
       - As of Date Tables: 'tutorial/tut_as_of_date.md'
       - Point In Time (PIT) tables: 'tutorial/tut_point_in_time.md'
       - Bridge Tables: 'tutorial/tut_bridges.md'
+      - Reference Tables: 'tutorial/tut_ref_tables.md'
   - Worked example:
       - Getting Started: 'worked_example/index.md'
       - Project setup: 'worked_example/we_setup.md'
@@ -68,18 +74,17 @@ nav:
   - Migration Guides: 'migration_guides.md'
   - Extending: 'extending.md'
   - Roadmap: 'roadmap.md'
-  - Versions: 'versions.md'
+  - dbt Compatibility: 'versions.md'
+  - Platform Support: 'platform_support.md'
   - Changelog:
       - Stable Releases: 'changelog/index.md'
       - Beta Releases: 'changelog/beta.md'
       - Archived Releases: 'changelog/archived.md'
   - Contributing:
-      - Getting Started: 'contributing/index.md'
-      - Style Guides:
-          - Tutorials: 'contributing/style_guides/tutorials.md'
+    - 'contributing/index.md'
   - Licence: 'LICENSE.md'
   - Find Us:
-      - GitHub: 'https://github.com/Datavault-UK/dbtvault'
+      - GitHub: 'https://github.com/Datavault-UK/automate-dv'
       - Facebook: 'https://www.facebook.com/DataVaultUK/'
       - Twitter: 'https://twitter.com/datavault_uk'
       - LinkedIn: 'https://www.linkedin.com/company/business-thinking-limited'
@@ -88,17 +93,18 @@ nav:
       - Data Vault User Group Forums: 'https://forum.ukdatavaultusergroup.co.uk/'
       - YouTube: 'https://www.youtube.com/channel/UCdhSsZWTwkX1-v8EX84WLYg'
       - Datavault Website: 'https://www.data-vault.com/'
+      - AutomateDV Website: 'https://www.automate-dv.com'
 
 extra:
   social:
     - icon: 'fontawesome/solid/globe'
-      link: 'https://www.data-vault.co.uk'
+      link: 'https://www.automate-dv.com'
     - icon: 'fontawesome/brands/github'
       link: 'https://github.com/Datavault-UK/'
     - icon: 'fontawesome/brands/twitter'
-      link: 'https://twitter.com/datavault_uk'
+      link: 'https://twitter.com/Automate_DV'
     - icon: 'fontawesome/brands/linkedin'
-      link: 'https://www.linkedin.com/company/business-thinking-limited'
+      link: 'https://www.linkedin.com/showcase/dbtvault/'
     - icon: 'fontawesome/brands/facebook'
       link: 'https://www.facebook.com/DataVaultUK/'
 
@@ -120,18 +126,21 @@ markdown_extensions:
       permalink: true
       toc_depth: 1-3
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - attr_list
 
 plugins:
   - search
   - git-revision-date-localized:
       type: timeago
+  - redirects:
+      redirect_maps:
+        'tutorial/tut_t_links.md': 'tutorial/tut_nh_links.md'
 
 extra_css:
   - 'stylesheets/extra.css'
   - 'stylesheets/all.css'
   - 'stylesheets/icons.css'
 
-copyright: dbtvault and documentation &copy; Business Thinking trading as Datavault 2019-2023 - Data Vault 2.0 is a registered trademark of Dan Linstedt - dbt is a registered trademark of dbt labs
+copyright: AutomateDV (f.k.a dbtvault) and documentation &copy; Business Thinking trading as Datavault 2019-2024 - Data Vault 2.0™ is a trademark of Empowered Holdings LLP - dbt is a registered trademark of dbt labs

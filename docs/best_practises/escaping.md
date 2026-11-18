@@ -1,15 +1,15 @@
 Problematic column names have been a nuisance in SQL since its inception. If we have a reserved word as a column name, 
 for example a column named "COLUMN", or a column with spaces in, then we will get compilation issues.
 
-Prior to dbtvault v0.8.0, we had no built-in solution for this and users would have to solve this their own way using
+Prior to AutomateDV v0.8.0, we had no built-in solution for this and users would have to solve this their own way using
 a variety of work-arounds including staging layers specifically for fixing these issues, which is incredibly awkward!
 
-In dbtvault v0.8.0 we introduced column escaping, implementing it in a platform-agnostic (via multi-dispatch) way,
+In AutomateDV v0.8.0 we introduced column escaping, implementing it in a platform-agnostic (via multi-dispatch) way,
 allowing the user to configure it and ultimately solving the problem.
 
-Unfortunately, this introduced a whole load of [bugs](https://www.github.com/Datavault-UK/dbtvault/issues/168).
+Unfortunately, this introduced a whole load of [bugs](https://www.github.com/Datavault-UK/automate-dv/issues/168).
 
-In dbtvault v0.9.1, we have dialed this escaping back to what it should have been: only in the staging and nowhere else.
+In AutomateDV v0.9.1, we have dialed this escaping back to what it should have been: only in the staging and nowhere else.
 
 Escaping works as follows:
 
@@ -40,9 +40,9 @@ derived_columns:
   BOOKING_FLAG: "NOT \"BOOKING COMPLETED\""
 ```
 
-Because the user has escaped "BOOKING COMPLETED" dbtvault will use this information to ensure "BOOKING COMPLETED" 
+Because the user has escaped "BOOKING COMPLETED" AutomateDV will use this information to ensure "BOOKING COMPLETED" 
 is also escaped elsewhere in the stage, for example, in hashes and null column configurations which may have bene added
 by the user.
 
 !!! warning
-    This functionality is new! If you find any bugs or have issues related to this feature, [please submit a bug report](https://www.github.com/Datavault-UK/dbtvault/issues).
+    This functionality is new! If you find any bugs or have issues related to this feature, [please submit a bug report](https://www.github.com/Datavault-UK/automate-dv/issues).

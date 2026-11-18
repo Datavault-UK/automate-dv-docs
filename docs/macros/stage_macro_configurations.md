@@ -106,18 +106,19 @@ This section describes some specific use cases for the derived columns configura
 
 ```sql
 {% set yaml_metadata %}
+source_model: <your_raw_staging_model_name>
 derived_columns:
   RECORD_SOURCE: "!WORDPRESS"
 {% endset %}   
     
 {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-{{ dbtvault.stage(include_source_columns=true,
-                  source_model=source_model,
-                  derived_columns=metadata_dict['derived_columns'],
-                  null_columns=null_columns,
-                  hashed_columns=hashed_columns,
-                  ranked_columns=ranked_columns) }}
+{{ automate_dv.stage(include_source_columns=true,
+                     source_model=metadata_dict['source_model'],
+                     derived_columns=metadata_dict['derived_columns'],
+                     null_columns=metadata_dict['null_columns'],
+                     hashed_columns=metadata_dict['hashed_columns'],
+                     ranked_columns=metadata_dict['ranked_columns']) }}
 ```
 
 !!! note
@@ -200,7 +201,7 @@ SELECT TO_VARCHAR(CUSTOMER_DOB::date, 'DD-MM-YYYY') AS CUSTOMER_DOB_UK
     ```
 
 In the above example we define a constant value for our new `SOURCE` column. We do this by prefixing our string with an
-exclamation mark: `!`. This is syntactic sugar provided by dbtvault to avoid having to escape quotes and other
+exclamation mark: `!`. This is syntactic sugar provided by AutomateDV to avoid having to escape quotes and other
 characters.
 
 As an example, in the highlighted derived column configuration in the snippet above, the generated SQL would look like
@@ -270,9 +271,6 @@ FROM MY_DB.MY_SCHEMA.MY_TABLE
 ```
 
 ### Escaping column names that are not SQL compliant
-
-!!! note
-    As of dbtvault 0.9.1, columns are **_not_** escaped by default. 
 
 To enable the escaping functionality, a mapping of the source column name and an escape flag must be provided.
 Alternatively, for computed derived columns, escape characters can be explicitly coded within the function itself.
@@ -386,7 +384,7 @@ The replacement process is enabled as follows:
 ## Hashed columns
 
 The hashed columns configuration in the stage macro provides functionality to easily and reliably generated
-hash keys and hashdiffs for various dbtvault (and Data Vault 2.0) tables and structures.
+hash keys and hashdiffs for various AutomateDV (and Data Vault 2.0) tables and structures.
 
 This section describes some specific use cases for the hashed columns configuration, with examples.
 
@@ -403,12 +401,12 @@ hashed_columns:
     
 {% set metadata_dict = fromyaml(yaml_metadata) %}
 
-{{ dbtvault.stage(include_source_columns=true,
-                  source_model=source_model,
-                  derived_columns=derived_columns,
-                  null_columns=null_columns,
-                  hashed_columns=metadata_dict['hashed_columns'],
-                  ranked_columns=ranked_columns) }}
+{{ automate_dv.stage(include_source_columns=true,
+                     source_model=source_model,
+                     derived_columns=derived_columns,
+                     null_columns=null_columns,
+                     hashed_columns=metadata_dict['hashed_columns'],
+                     ranked_columns=ranked_columns) }}
 ```
 
 !!! note
@@ -421,7 +419,7 @@ A flag can be provided for hashdiff columns which will invert the selection of c
 This is extremely useful when a hashdiff composed of many columns needs to be generated, and you do not wish to
 individually provide all the columns.
 
-The snippets below demonstrate the use of an `exclude_columns` flag. This will inform dbtvault to exclude the columns
+The snippets below demonstrate the use of an `exclude_columns` flag. This will inform AutomateDV to exclude the columns
 listed under the `columns` key, instead of using them to create the hashdiff.
 
 !!! tip "Hash every column without listing them all"
@@ -525,7 +523,7 @@ listed under the `columns` key, instead of using them to create the hashdiff.
 ## Ranked Columns
 
 Generates SQL to create columns using the `RANK()` or `DENSE_RANK()` window function. This is predominantly for use with
-[custom dbtvault materialisations](../materialisations.md).
+[custom AutomateDV materialisations](../materialisations.md).
 
 ### Defining and configuring Ranked columns
 
@@ -538,7 +536,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: CUSTOMER_HK
         order_by: LOAD_DATETIME
       SAT_BOOKING_RANK:
@@ -549,7 +547,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -558,7 +556,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: 
             - CUSTOMER_HK
             - CUSTOMER_REF
@@ -573,7 +571,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -584,7 +582,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: 
             - CUSTOMER_HK
             - CUSTOMER_REF
@@ -600,7 +598,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS DBTVAULT_RANK,
+    DENSE_RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE, LOAD_DATETIME) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -611,7 +609,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: CUSTOMER_HK
         order_by:
            LOAD_DATETIME: DESC
@@ -623,7 +621,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK ORDER BY LOAD_DATETIME DESC) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```
 
@@ -632,7 +630,7 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
     ```yaml
     source_model: MY_STAGE
     ranked_columns:
-      DBTVAULT_RANK:
+      AUTOMATE_DV_RANK:
         partition_by: 
           - CUSTOMER_HK
           - CUSTOMER_REF
@@ -647,6 +645,6 @@ The `ranked_columns` configuration allows you to define ranked columns to genera
 === "Generated SQL"
 
     ```sql
-    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS DBTVAULT_RANK,
+    RANK() OVER(PARTITION BY CUSTOMER_HK, CUSTOMER_REF ORDER BY RECORD_SOURCE DESC, LOAD_DATETIME ASC) AS AUTOMATE_DV_RANK,
     RANK() OVER(PARTITION BY BOOKING_HK ORDER BY LOAD_DATETIME) AS SAT_BOOKING_RANK
     ```

@@ -18,7 +18,7 @@ and create a hash on a concatenation of them.
 Foreign keys referencing the primary key for each Hub referenced in the Link (2 or more depending on the number of Hubs 
 referenced) 
 
-#### Load date (src_ldts)
+#### Load Date/Timestamp (src_ldts)
 A load date or load date timestamp. This identifies when the record was first loaded into the database.
 
 #### Record Source (src_source)
@@ -35,12 +35,12 @@ Create a new dbt model as before. We'll call this one `link_customer_order`.
 === "link_customer_order.sql"
 
     ```jinja
-    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                    src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
     ```
 
 To create a Link model, we simply copy and paste the above template into a model named after the Link we
-are creating. dbtvault will generate a Link using metadata provided in the next steps.
+are creating. AutomateDV will generate a Link using metadata provided in the next steps.
 
 #### Materialisation
 
@@ -76,8 +76,8 @@ When we provide the metadata above, our model should look like the following:
     {%- set src_ldts = "LOAD_DATETIME"           -%}
     {%- set src_source = "RECORD_SOURCE"         -%}
     
-    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                     src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
     ```
 
 !!! Note
@@ -87,11 +87,7 @@ When we provide the metadata above, our model should look like the following:
 
 With our metadata provided and our model complete, we can run dbt to create our `link_customer_order` Link, as follows:
 
-=== "< dbt v0.20.x"
-    `dbt run -m +link_customer_order`
-
-=== "> dbt v0.21.0"
-    `dbt run -s +link_customer_order`
+`dbt run -s +link_customer_order`
 
 The resulting Link table will look like this:
 
@@ -139,8 +135,8 @@ will handle the rest:
     {%- set src_ldts = "LOAD_DATETIME"            -%}
     {%- set src_source = "RECORD_SOURCE"          -%}
     
-    {{ dbtvault.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
-                     src_source=src_source, source_model=source_model) }}
+    {{ automate_dv.link(src_pk=src_pk, src_fk=src_fk, src_ldts=src_ldts,
+                        src_source=src_source, source_model=source_model) }}
     ```
 
 === "YAML Metadata approach"
@@ -161,11 +157,11 @@ will handle the rest:
     
     {% set metadata_dict = fromyaml(yaml_metadata) %}
     
-    {{ dbtvault.link(src_pk=metadata_dict["src_pk"],
-                     src_fk=metadata_dict["src_fk"], 
-                     src_ldts=metadata_dict["src_ldts"],
-                     src_source=metadata_dict["src_source"], 
-                     source_model=metadata_dict["source_model"]) }}
+    {{ automate_dv.link(src_pk=metadata_dict["src_pk"],
+                        src_fk=metadata_dict["src_fk"], 
+                        src_ldts=metadata_dict["src_ldts"],
+                        src_source=metadata_dict["src_source"], 
+                        source_model=metadata_dict["source_model"]) }}
     ```
 
 See the [Link metadata reference](../metadata.md#links) for more examples.

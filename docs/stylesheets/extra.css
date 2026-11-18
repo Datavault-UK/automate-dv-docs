@@ -39,3 +39,13 @@ a.btn {
 .not-required {
     color: red;
 }
+
+[data-md-color-scheme="default"] img[src$="#gh-dark-mode-only"],
+[data-md-color-scheme="default"] img[src$="#only-dark"] {
+    display: none;
+}
+
+[data-md-color-scheme="slate"] img[src$="#gh-light-mode-only"],
+[data-md-color-scheme="slate"] img[src$="#only-light"] {
+    display: none;
+}
