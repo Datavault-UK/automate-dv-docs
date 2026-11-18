@@ -1196,6 +1196,72 @@ ___
                              source_model=source_model) }}
     ```
 
+___
+
+### Latest Satellites
+
+#### Parameters
+
+[lat_sat macro parameters](macros/index.md#lat_sat)
+
+#### Metadata
+
+=== "Standard"
+
+    ```jinja
+    {{ config(materialized='view') }}
+
+    {%- set yaml_metadata -%}
+    source_model: sat_customer_details
+    src_pk: CUSTOMER_HK
+    src_eff: EFFECTIVE_FROM
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+
+    {{ automate_dv.lat_sat(src_pk=metadata_dict["src_pk"],
+                           src_eff=metadata_dict["src_eff"],
+                           source_model=metadata_dict["source_model"]) }}
+    ```
+
+=== "Using Load Datetime"
+
+    ```jinja
+    {{ config(materialized='view') }}
+
+    {%- set yaml_metadata -%}
+    source_model: sat_customer_details
+    src_pk: CUSTOMER_HK
+    src_eff: LOAD_DATETIME
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+
+    {{ automate_dv.lat_sat(src_pk=metadata_dict["src_pk"],
+                           src_eff=metadata_dict["src_eff"],
+                           source_model=metadata_dict["source_model"]) }}
+    ```
+
+=== "Composite Primary Key"
+
+    ```jinja
+    {{ config(materialized='view') }}
+
+    {%- set yaml_metadata -%}
+    source_model: sat_customer_order_details
+    src_pk:
+      - CUSTOMER_HK
+      - ORDER_HK
+    src_eff: EFFECTIVE_FROM
+    {%- endset -%}
+
+    {% set metadata_dict = fromyaml(yaml_metadata) %}
+
+    {{ automate_dv.lat_sat(src_pk=metadata_dict["src_pk"],
+                           src_eff=metadata_dict["src_eff"],
+                           source_model=metadata_dict["source_model"]) }}
+    ```
+
 ### The problem with metadata
 
 When metadata gets stored in the `dbt_project.yml`, you can probably foresee the file getting very large for bigger
