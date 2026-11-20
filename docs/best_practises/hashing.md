@@ -75,7 +75,9 @@ Single-column hashing step by step:
    hash to the same value. For example <code>1001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> and <code>&nbsp;1001</code>.
 
 3. `UPPER` Next we eliminate problems where the casing in a string will cause a different hash value to be generated for
-   the same word, for example `AUTOMATE_DV` and `automate_dv`.
+   the same word, for example `AUTOMATE_DV` and `automate_dv`. This step can be turned off for hash keys and hashdiffs
+   together with [`hash_content_casing`](../macros/index.md#hash_content_casing-1), or for hashdiffs only with
+   [`hashdiff_content_casing`](../macros/index.md#hashdiff_content_casing-1).
 
 4. `NULLIF ''` At this point we ensure that if an empty string has been provided, it will be considered `NULL`. This
    kind of problem can arise if data gets ingested into your warehouse from semi-structured data such as JSON or CSV,

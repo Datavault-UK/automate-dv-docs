@@ -81,6 +81,7 @@ vars:
   concat_string: '||'
   null_placeholder_string: '^^'
   hash_content_casing: 'UPPER'
+  hashdiff_content_casing: 'UPPER'
   enable_native_hashes: false
 ```
 
@@ -110,7 +111,7 @@ This can be one of:
 
 1.  **Default Value:** 
     ```yaml
-    concat_string: 'upper'
+    concat_string: '||'
     ```
 
 Configure the string value to use for concatenating strings together when hashing.
@@ -138,6 +139,7 @@ Configure the string value to use for replacing `NULL` values when hashing.
     ```
 
 This variable configures whether hashed columns are normalised with `UPPER()` when calculating the hash value.
+It applies to hash keys, and to hashdiffs unless [`hashdiff_content_casing`](#hashdiff_content_casing-1) is set.
 
 This can be one of:
 
@@ -170,6 +172,74 @@ This can be one of:
 !!! info
     We've added this config to give you more options when hashing. If there is logical difference between uppercase
     and lowercase values in your data, set this to `DISABLED` otherwise, the standard approach is to use `UPPER` 
+
+<div class="annotate" markdown>
+#### hashdiff_content_casing (1)
+</div>
+
+1.  **Default Value:** the value of `hash_content_casing`
+    ```yaml
+    hashdiff_content_casing: 'UPPER'
+    ```
+
+!!! tip "New in v0.12.0"
+
+This variable configures whether hashdiff columns are normalised with `UPPER()` when calculating the hash value,
+separately from hash keys. Use it to make hashdiffs case-sensitive while hash keys stay case-insensitive: a change in
+casing alone (e.g. `alice` to `Alice`) then produces a new hashdiff, so a Satellite loads a new record.
+
+This can be one of:
+
+- UPPER
+- DISABLED
+
+Values are case-insensitive. Only `UPPER()` is affected: values are still trimmed, and `NULL` or empty values are still
+replaced with the [`null_placeholder_string`](#null_placeholder_string-1).
+
+| `hash_content_casing` | `hashdiff_content_casing` | Hash keys | Hashdiffs |
+|---|---|---|---|
+| `UPPER` (default) | not set | `UPPER()` | `UPPER()` |
+| `DISABLED` | not set | No `UPPER()` | No `UPPER()` |
+| `UPPER` (default) | `DISABLED` | `UPPER()` | No `UPPER()` |
+| `DISABLED` | `UPPER` | No `UPPER()` | `UPPER()` |
+
+=== "DISABLED Example"
+    === "YAML config input"
+        ```yaml
+        # dbt_project.yml
+        vars:
+          hashdiff_content_casing: 'DISABLED'
+        ```
+
+        ```yaml
+        source_model: raw_source
+        hashed_columns:
+          CUSTOMER_HK: CUSTOMER_ID
+          HASHDIFF:
+            is_hashdiff: true
+            columns:
+              - CUSTOMER_NAME
+              - CUSTOMER_DOB
+              - CUSTOMER_PHONE
+        ```
+    === "SQL Output"
+        ```sql
+        CAST(MD5_BINARY(NULLIF(UPPER(TRIM(CAST(CUSTOMER_ID AS VARCHAR))), '')) AS BINARY(16)) AS CUSTOMER_HK,
+
+        CAST(MD5_BINARY(CONCAT_WS('||',
+            IFNULL(NULLIF(TRIM(CAST(CUSTOMER_DOB AS VARCHAR)), ''), '^^'),
+            IFNULL(NULLIF(TRIM(CAST(CUSTOMER_NAME AS VARCHAR)), ''), '^^'),
+            IFNULL(NULLIF(TRIM(CAST(CUSTOMER_PHONE AS VARCHAR)), ''), '^^')
+        )) AS BINARY(16)) AS HASHDIFF
+        ```
+
+!!! warning "Changing casing on an existing Satellite"
+    Changing either variable on an existing project changes the hashdiffs calculated for the same data. The next load
+    then sees every record as changed and inserts a new version of each one into your Satellites. Decide on casing
+    before your first load, or plan a reload of the affected Satellites.
+
+    Upgrading on its own does not change your hashdiffs: when `hashdiff_content_casing` isn't set, hashdiffs follow
+    `hash_content_casing`, as they did before this variable was added.
 
 <div class="annotate" markdown>
 #### enable_native_hashes (1)
