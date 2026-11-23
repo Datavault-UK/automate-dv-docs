@@ -13,6 +13,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+# [v0.12.0] - 2026-11-23
+[![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.12.0)](https://automate-dv.readthedocs.io/en/v0.12.0/?badge=v0.12.0)
+![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.9.x%20%3C=3.0.0-orange?logo=dbt)
+
+!!! warning "Upgrading? Action required for Ghost Records on Postgres, and on Databricks with native hashes"
+    Ghost Record hash keys and hashdiffs are now zero bytes on these platforms, so each Satellite gets a new
+    Ghost Record on its next load. Delete the old one: see the [migration guide](../migration_guides.md#migrating-from-0115-to-0120).
+
+👍 Tested on dbt 1.11.x (dbt-core 1.11.7), with dbt-snowflake 1.12, dbt-databricks 1.12, dbt-bigquery 1.12, dbt-postgres 1.11 and dbt-sqlserver 1.11.
+
+## New
+
+### Latest Satellites (Snowflake)
+
+- A new `lat_sat()` macro builds a Latest Satellite: one record per key from an existing Satellite, the most recent by the column given as `src_latest`. We recommend materialising it as a `view`. [Read more](../macros/index.md#lat_sat)  
+  _Snowflake only for now. Other platforms will follow in a future release._
+
+### All Platforms
+
+- [#247](https://github.com/Datavault-UK/automate-dv/issues/247) Hashdiffs can now be case-sensitive while hash keys stay upper-cased, with the new `hashdiff_content_casing` global variable. [Read more](../macros/index.md#hashdiff_content_casing)  
+  _It defaults to the value of `hash_content_casing`, so your existing hashdiffs don't change._
+
+## Improved
+
+### Ghost Records
+
+- Clearer errors when a Satellite's source model is missing its key, hashdiff, load date or record source columns, or is ephemeral. `dbt compile`, `docs generate` and `parse` now log a warning instead of failing.
+- The relation that Ghost Record column types are read from can now be overridden (`ghost_record_source_relation`), e.g. in dbt unit tests or when using `--defer`.
+
+### Google BigQuery
+
+- The string-hash Ghost Record warning is clearer (`STRING` is still the default; native `BYTES` hashes are recommended) and is only logged when a model is built, not repeatedly during `dbt test`.
+
+## Fixed
+
+### Postgres
+
+- Ghost Record hash keys and hashdiffs are now zero bytes (16 for MD5), as on every other platform, instead of the text `0000...` stored as `BYTEA` (32 bytes). PITs use the same key.  
+  :warning: _See the [migration guide](../migration_guides.md#migrating-from-0115-to-0120) if you use Ghost Records._
+
+### Databricks
+
+- With `enable_native_hashes`, Ghost Record hash keys and hashdiffs are now zero bytes instead of the text `0000...` cast to `BINARY`.  
+  :warning: _See the [migration guide](../migration_guides.md#migrating-from-0115-to-0120) if you use Ghost Records with native hashes._
+
+### Microsoft SQL Server
+
+- Hashes whose columns are given as a one-item list (e.g. `CUSTOMER_HK: [CUSTOMER_ID]`) failed with _"The concat_ws function requires 3 to 254 arguments"_. They now work, and give the same value as the single-column form.
+
+### All Platforms
+
+- The _"Loading ... from N source(s)"_ message is now only logged when a model is built (`dbt run`, `build`, `retry`), not during `dbt test`, `compile` or `show`, or once per unit test.
+
+## Backend
+
+- AutomateDV's own tests are now dbt unit tests, run on every change against all five supported platforms: Snowflake, Databricks, Google BigQuery, Postgres and Microsoft SQL Server.
+
+___
+
 # [v0.11.5] - 2026-02-05
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.11.5)](https://automate-dv.readthedocs.io/en/v0.11.5/?badge=v0.11.5)
 ![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.9.x%20%3C=3.0.0-orange?logo=dbt)
