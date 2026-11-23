@@ -34,6 +34,5 @@ an issue on GitHub](https://github.com/Datavault-UK/automate-dv/issues). Thank y
 
 ### Notes
 
-\*\*\*For MSSQL Server, dbt 1.10.x is currently not supported officially.
-Please use dbt 1.9.x versions instead.
+\*\*\*For Microsoft SQL Server, use AutomateDV v0.12.0 or later.
     
