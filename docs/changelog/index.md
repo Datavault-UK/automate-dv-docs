@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### All Platforms
 
-- [#247](https://github.com/Datavault-UK/automate-dv/issues/247) Hashdiffs can now be case-sensitive while hash keys stay upper-cased, with the new `hashdiff_content_casing` global variable. [Read more](../macros/index.md#hashdiff_content_casing)  
+- [#247](https://github.com/Datavault-UK/automate-dv/issues/247) Hashdiffs can now be case-sensitive while hash keys stay upper-cased, with the new `hashdiff_content_casing` global variable. [Read more](../macros/index.md#hashdiff_content_casing-1)  
   _It defaults to the value of `hash_content_casing`, so your existing hashdiffs don't change._
 
 ## Improved
