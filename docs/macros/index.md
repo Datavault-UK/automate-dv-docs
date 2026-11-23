@@ -261,6 +261,49 @@ This will set the record source system for the ghost record. The default is `AUT
 !!! note
     If this is changed on an existing project, the source system of already loaded ghost records will not be changed unless you `--full-refresh`.
 
+#### Source model requirements
+
+A ghost record takes its column types from the Satellite's source model (usually a stage), so that source model must
+exist in your warehouse as a table or view when the Satellite is built. Ephemeral source models are not supported.
+
+`dbt run` and `dbt build` build the source model first, so normally there is nothing to do. If AutomateDV can't read
+the source model's columns, or the key, hashdiff, load date or record source column is missing from it, it raises an
+error starting with `create_ghost_record:` that says what to do, e.g. build or rebuild the source model.
+
+!!! tip "New in v0.12.0"
+    These errors are only raised by commands that execute SQL (`run`, `build`, `test`, `show`, `retry`,
+    `snapshot`). `dbt compile`, `dbt docs generate` and `dbt parse` log them as warnings instead, so you can compile a
+    project before its source models are built.
+
+#### Ghost records in dbt unit tests
+
+In a dbt unit test, the source model is a CTE built from the test's fixtures, so AutomateDV can't read column types
+from it. Instead, it looks for the real source model in the same database and schema as the model under test, so build
+the source model there first (e.g. `dbt run --select stg_customer`).
+
+If the source model lives somewhere else, or the test runs with `--defer`, override
+`automate_dv.ghost_record_source_relation` in the unit test with the relation to read. It accepts
+`'identifier'`, `'schema.identifier'` or `'database.schema.identifier'`:
+
+```yaml
+unit_tests:
+  - name: test_sat_customer_ghost_record
+    model: sat_customer
+    overrides:
+      vars:
+        enable_ghost_records: true
+      macros:
+        automate_dv.ghost_record_source_relation: 'my_database.my_schema.stg_customer'
+    given:
+      ...
+```
+
+#### Composite keys with string hashes
+
+On Google BigQuery and Databricks without [native hashes](#enable_native_hashes-1), hashes are `STRING` values. A ghost
+record can't tell a `STRING` hash apart from a `STRING` column in a multi-column `src_pk`, so that column is filled with
+zeros (`0000...`) like the hash, rather than `NULL`. With native hashes, and on the other platforms, it is `NULL`.
+
 ### NULL Key configurations
 
 ```yaml
