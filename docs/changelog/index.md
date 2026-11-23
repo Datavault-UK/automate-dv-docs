@@ -55,6 +55,10 @@ Happy Data Vaulting! :smile:
 
 ## Fixed
 
+!!! note "PITs and Bridges"
+    PITs and Bridges have been deprecated since v0.11.0, and a rework of both is planned next. Until then, we're still
+    fixing bugs in the current macros for anyone using them, including the PIT fixes below.
+
 ### Postgres
 
 - Ghost Record hash keys and hashdiffs are now zero bytes (16 for MD5), as on every other platform, instead of the text `0000...` stored as `BYTEA` (32 bytes). PITs use the same key.  
