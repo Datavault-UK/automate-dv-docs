@@ -66,10 +66,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The _"Loading ... from N source(s)"_ message is now only logged when a model is built (`dbt run`, `build`, `retry`), not during `dbt test`, `compile` or `show`, or once per unit test.
 
-## Backend
-
-- AutomateDV's own tests are now dbt unit tests, run on every change against all five supported platforms: Snowflake, Databricks, Google BigQuery, Postgres and Microsoft SQL Server.
-
 ___
 
 # [v0.11.5] - 2026-02-05
