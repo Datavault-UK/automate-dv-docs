@@ -21,8 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 v0.12.0 is the first of a series of releases we have lined up. It brings a new Latest Satellite macro, one of our
 most-requested options (separate casing for hashdiffs), a round of Ghost Record fixes, and support for the latest dbt
-versions. There's plenty more in the pipeline, starting with Latest Satellites on more platforms, so please keep the
-[issues and ideas](https://github.com/Datavault-UK/automate-dv/issues) coming. Happy Data Vaulting! :smile:
+versions. We know there are a good number of open issues and pull requests, and we'll be working through them over the
+coming releases. Thank you for raising them! There's plenty more in the pipeline, starting with Latest Satellites on
+more platforms, so please keep the [issues and ideas](https://github.com/Datavault-UK/automate-dv/issues) coming.
+Happy Data Vaulting! :smile:
 
 !!! warning "Upgrading? Action required for Ghost Records on Postgres, and on Databricks with native hashes"
     Ghost Record hash keys and hashdiffs are now zero bytes on these platforms, so each Satellite gets a new
