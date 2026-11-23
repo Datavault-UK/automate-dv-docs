@@ -17,8 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [![Documentation Status](https://readthedocs.org/projects/automate_dv/badge/?version=v0.12.0)](https://automate-dv.readthedocs.io/en/v0.12.0/?badge=v0.12.0)
 ![dbt Versions](https://img.shields.io/badge/compatible%20dbt%20versions-%3E=1.9.x%20%3C=3.0.0-orange?logo=dbt)
 
-## A new chapter for AutomateDV
-
 v0.12.0 is the first of a series of releases we have lined up. It brings a new Latest Satellite macro, one of our
 most-requested options (separate casing for hashdiffs), a round of Ghost Record fixes, and support for the latest dbt
 versions. We know there are a good number of open issues and pull requests, and we'll be working through them over the
