@@ -28,7 +28,7 @@ Happy Data Vaulting! :smile:
     Ghost Record hash keys and hashdiffs are now zero bytes on these platforms, so each Satellite gets a new
     Ghost Record on its next load. Delete the old one: see the [migration guide](../migration_guides.md#migrating-from-0115-to-0120).
 
-👍 Tested on dbt 1.11.x (dbt-core 1.11.7), with dbt-snowflake 1.12, dbt-databricks 1.12, dbt-bigquery 1.12, dbt-postgres 1.11 and dbt-sqlserver 1.11.
+👍 Tested on dbt 1.12.x (dbt-core 1.12.7), with dbt-snowflake 1.12, dbt-databricks 1.13, dbt-bigquery 1.12, dbt-postgres 1.11 and dbt-sqlserver 1.12.
 
 ## New
 
