@@ -39,8 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Ghost Records
 
-- Clearer errors when a Satellite's source model is missing its key, hashdiff, load date or record source columns, or is ephemeral. `dbt compile`, `docs generate` and `parse` now log a warning instead of failing.
-- The relation that Ghost Record column types are read from can now be overridden (`ghost_record_source_relation`), e.g. in dbt unit tests or when using `--defer`.
+- Clearer errors when a Satellite's source model is missing its key, hashdiff, load date or record source columns, or is ephemeral. `dbt compile`, `docs generate` and `parse` now log a warning instead of failing. [Read more](../macros/index.md#source-model-requirements)
+- The relation that Ghost Record column types are read from can now be overridden (`ghost_record_source_relation`), e.g. in dbt unit tests or when using `--defer`. [Read more](../macros/index.md#ghost-records-in-dbt-unit-tests)
 
 ### Google BigQuery
 
