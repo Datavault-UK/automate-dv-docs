@@ -221,8 +221,8 @@ The below tables describe what a ghost record will look like:
 
     | Parameter                        | Value                            |
     |----------------------------------|----------------------------------|
-    | src_pk Binary MD5/SHA256)        | 0000..(x32) / 0000..(x64)        |
-    | src_hashdiff (Binary MD5/SHA256) | 0000..(x32) / 0000..(x64)        |
+    | src_pk (hash)                    | All zeros (see below)            |
+    | src_hashdiff (hash)              | All zeros (see below)            |
     | src_payload (Any)                | NULL                             |
     | src_extra_columns (Any)          | NULL                             |
     | src_eff (Date/Timestamp)         | 1900-01-01 / 1900-01-01 00:00:00 |
@@ -234,6 +234,20 @@ The below tables describe what a ghost record will look like:
     | CUSTOMER_HK | HASHDIFF  | CUSTOMER_NAME | CUSTOMER_DOB | CUSTOMER_PHONE | EFFECTIVE_FROM      | LOAD_DATETIME       | RECORD_SOURCE      |
     |-------------|-----------|---------------|--------------|----------------|---------------------|---------------------|--------------------|
     | 000000...   | 000000... | _NULL_        | _NULL_       | _NULL_         | 1900-01-01 00:00:00 | 1900-01-01 00:00:00 | AUTOMATE_DV_SYSTEM |
+
+The ghost record's hash key and hashdiff are all zeros, matching the hash's type and length:
+
+| Hash type                                                             | Ghost value                                                                  |
+|-----------------------------------------------------------------------|------------------------------------------------------------------------------|
+| Binary: Snowflake, SQL Server, Postgres, and BigQuery/Databricks with `enable_native_hashes` | Zero **bytes**: 16 (MD5), 20 (SHA-1) or 32 (SHA-256). In hex, 32, 40 or 64 zeros. |
+| String: BigQuery and Databricks (the default)                          | The **text** `0000...`: 32 (MD5), 40 (SHA-1) or 64 (SHA-256) characters     |
+
+!!! warning "Changed in v0.12.0: Postgres, and Databricks with native hashes"
+
+    Before v0.12.0, the ghost record's hash key and hashdiff on Postgres, and on Databricks with `enable_native_hashes`,
+    were the text `0000...` stored as binary (32 bytes of the character `0` for MD5) rather than zero bytes.
+    Existing satellites get a second ghost record on their next load. See the [migration guide](../migration_guides.md#migrating-from-0115-to-0120)
+    to remove the old one.
 
 
 !!! tip "Improved Ghost Record handling"

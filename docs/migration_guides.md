@@ -1,3 +1,35 @@
+## Migrating from 0.11.5 to 0.12.0
+
+This only affects ghost records (`enable_ghost_records: true`) on **Postgres**, and on **Databricks with `enable_native_hashes: true`**.
+
+### Changes
+
+A ghost record's hash key and hashdiff are meant to be all zero bytes, as on the other platforms: 16 bytes for MD5, 20 for SHA-1 and 32 for SHA-256.
+On these two platforms they were instead the text `0000...` stored as binary (for MD5, 32 bytes of the character `0`), which is twice the length of a real hash.
+From v0.12.0 they are zero bytes.
+
+#### What does this mean for me?
+
+The first time each satellite loads after upgrading, it gets a second ghost record with the new key, because the old one no longer matches.
+Delete the old ghost record from each satellite. For example, with MD5 hashes:
+
+=== "Postgres"
+
+    ```sql
+    DELETE FROM <satellite> WHERE <src_pk> = CAST('00000000000000000000000000000000' AS BYTEA);
+    ```
+
+=== "Databricks (native hashes)"
+
+    ```sql
+    DELETE FROM <satellite> WHERE <src_pk> = CAST('00000000000000000000000000000000' AS BINARY);
+    ```
+
+Use 40 zeros for SHA-1 and 64 for SHA-256.
+
+On Postgres, PITs now use the same zero key for satellites that have no record at a point in time, so it still matches the satellite's ghost record.
+Rebuild incremental PITs with `--full-refresh` so older rows use the new key.
+
 ## Migrating from 0.9.7 to 0.10.0
 
 ### Changes
