@@ -64,9 +64,15 @@ Happy Data Vaulting! :smile:
 
 - With `enable_native_hashes`, Ghost Record hash keys and hashdiffs are now zero bytes instead of the text `0000...` cast to `BINARY`.  
   :warning: _See the [migration guide](../migration_guides.md#migrating-from-0115-to-0120) if you use Ghost Records with native hashes._
+- PITs with `enable_native_hashes` produced invalid SQL on incremental runs. They now build.
+
+### Google BigQuery
+
+- PITs with `enable_native_hashes` produced invalid SQL on incremental runs, and gave gaps a hash key of the text `FROM_HEX(000...)` instead of zero bytes. They now build with the correct zero key.
 
 ### Microsoft SQL Server
 
+- PITs failed to build with _"Error converting data type varchar to varbinary"_ (shown as _"Null value is eliminated by an aggregate"_). They now build.
 - Hashes whose columns are given as a one-item list (e.g. `CUSTOMER_HK: [CUSTOMER_ID]`) failed with _"The concat_ws function requires 3 to 254 arguments"_. They now work, and give the same value as the single-column form.
 
 ### All Platforms
